@@ -1,0 +1,13 @@
+{
+    "plugins":{
+        "ML_fakeBeamPlugin":"data.scripts.plugins.FakeBeamPlugin",
+        "ML_spriteRenderManager":"data.scripts.plugins.SpriteRenderManager",        
+    },
+
+    "graphics":{
+        "beams":{
+            "fakeBeamCore":"graphics/FAKEBEAM/fakeBeamCore.png",
+            "fakeBeamFringe":"graphics/FAKEBEAM/fakeBeamFringe.png",
+        },
+    }
+}
