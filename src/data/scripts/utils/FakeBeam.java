@@ -1,6 +1,6 @@
 // By Tartiflette and DeathFly
 
-package data.scripts.util;
+package data.scripts.utils;
 
 import com.fs.starfarer.api.combat.CollisionClass;
 import com.fs.starfarer.api.combat.CombatAsteroidAPI;
@@ -14,60 +14,80 @@ import com.fs.starfarer.api.combat.ShieldAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import data.scripts.plugins.FakeBeamPlugin;
 import java.awt.geom.Line2D;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.lazywizard.lazylib.CollisionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.combat.CombatUtils;
 
-public class FakeBeam {
+public class FakeBeam {       
 
-    //
-    //Fake beam generator. 
-    //
-    //Create a visually convincing beam from arbitrary coordinates.
-    //It however has several limitation:
-    // - It deal damage instantly and is therefore only meant to be used for burst beams.
-    // - It cannot be "cut" by another object passing between the two ends, thus a very short duration is preferable.
-    // - Unlike vanilla, it deals full damage to armor, be carefull when using HIGH_EXPLOSIVE damage type.
-    //
-    // Most of the parameters are self explanatory but just in case:
-    //
-    //engine : combat Engine
-    //start : source point of the beam
-    //range : maximum effective range of the beam (it will visually fade a few pixels farther)
-    //aim : direction of the beam
-    //width : width of the beam
-    //fading : duration of the beam
-    //normalDamage : nominal burst damage of the beam (don't forget to calculate the skill modifiers before that)
-    //               may be modified when fighting some modded factions like Exigency.
-    //type : damage type of the beam
-    //emp : nominal emp damage if any
-    //source : ship dealing the damage
-    //size : glow size on the impact point
-    //duration : duration of the impact glow (should be at least as long as the beam fading)
-    //color : color of the impact glow
-    //
-    //Note that there is no control over the beam's color, you'll have to directly modify the fakeBeamFX.png for that
-    //        
-    
+    /**
+     * Fake beam generator. Create a visually convincing beam from arbitrary coordinates.
+     * It however has several limitation:
+     * - It deal damage instantly and is therefore only meant to be used for burst beams.
+     * - It cannot be "cut" by another object passing between the two ends, thus a very short duration is preferable.
+     * - Unlike vanilla, it deals full damage to armor, be careful when using HIGH_EXPLOSIVE damage type.
+     * It's usage is recommended for short snappy beams or for FXs
+     * 
+     * @param engine
+     * Combat engine
+     * 
+     * @param from
+     * Point of origin of the beam
+     * 
+     * @param range
+     * Maximum range of the beam
+     * 
+     * @param angle
+     * Angle of the beam
+     * 
+     * @param width
+     * Width of the beam
+     * 
+     * @param full
+     * Duration of the beam at full opacity
+     * 
+     * @param fading
+     * Duration of the beam fading
+     * 
+     * @param impactSize
+     * Size of the impact glow
+     * 
+     * @param core
+     * Core color of the beam
+     * 
+     * @param fringe
+     * Fringe color of the beam
+     * 
+     * @param normalDamage
+     * Base damage of the beam
+     * 
+     * @param type
+     * Damage type
+     * 
+     * @param emp
+     * Emp damage
+     * 
+     * @param source
+     * Damage source to calculate skill and ship damage bonuses
+     */
+        
     /////////////////////////////////////////
     //                                     //
     //             FAKE BEAM               //
     //                                     //
     /////////////////////////////////////////    
+    
+    public static void applyFakeBeamEffect (CombatEngineAPI engine, Vector2f from, float range, float angle, float width, float full, float fading, float impactSize, Color core, Color fringe, float normalDamage, DamageType type, float emp, ShipAPI source) {            
         
-    public static void applyFakeBeamEffect (CombatEngineAPI engine, Vector2f start, float range, float aim, float width, float fading, float normalDamage, DamageType type, float emp, ShipAPI source, float size, float duration, Color color)
-    {            
         CombatEntityAPI theTarget= null;
         float damage = normalDamage;
 
         //default end point
-        Vector2f end = MathUtils.getPointOnCircumference(start,range,aim);
+        Vector2f end = MathUtils.getPointOnCircumference(from,range,angle);
 
         //list all nearby entities that could be hit
-        List <CombatEntityAPI> entity = CombatUtils.getEntitiesWithinRange(start, range+500);
+        List <CombatEntityAPI> entity = CombatUtils.getEntitiesWithinRange(from, range+500);
         if (!entity.isEmpty()){
             for (CombatEntityAPI e : entity){
 
@@ -89,14 +109,14 @@ public class FakeBeam {
                             &&
                             !(e.getCollisionClass()==CollisionClass.FIGHTER && e.getOwner()==source.getOwner() && !((ShipAPI)e).getEngineController().isFlamedOut())
                             &&
-                            CollisionUtils.getCollides(start, end, e.getLocation(), e.getCollisionRadius())
+                            CollisionUtils.getCollides(from, end, e.getLocation(), e.getCollisionRadius())
                             ){
 
                         //check for a shield impact, then hull and take the closest one                  
                         ShipAPI s = (ShipAPI) e;
 
                         //find the collision point with shields/hull
-                        Vector2f hitPoint = getShipCollisionPoint(start, end, s, aim);
+                        Vector2f hitPoint = getShipCollisionPoint(from, end, s, angle);
                         if ( hitPoint != null ){
                             col = hitPoint;
                         }
@@ -116,9 +136,9 @@ public class FakeBeam {
                                e.getOwner()!=source.getOwner()
                                )
                                && 
-                               CollisionUtils.getCollides(start, end, e.getLocation(), e.getCollisionRadius())
+                               CollisionUtils.getCollides(from, end, e.getLocation(), e.getCollisionRadius())
                                ){                               
-                    Vector2f cAst = getCollisionPointOnCircumference(start,end,e.getLocation(),e.getCollisionRadius());
+                    Vector2f cAst = getCollisionPointOnCircumference(from,end,e.getLocation(),e.getCollisionRadius());
                     if ( cAst != null){
                         col = cAst;
                     }
@@ -127,7 +147,7 @@ public class FakeBeam {
                 //if there was an impact and it is closer than the curent beam end point, set it as the new end point and store the target to apply damage later damage
                 if (
                         col.x != 1000000 &&
-                        MathUtils.getDistanceSquared(start, col) < MathUtils.getDistanceSquared(start, end)) {
+                        MathUtils.getDistanceSquared(from, col) < MathUtils.getDistanceSquared(from, end)) {
                     end = col;
                     theTarget = e;
                     damage = newDamage;
@@ -152,35 +172,26 @@ public class FakeBeam {
                 engine.addHitParticle(
                         end,
                         theTarget.getVelocity(),
-                        (float)Math.random()*size/2+size,
+                        (float)Math.random()*impactSize/2+impactSize,
                         1,
-                        (float)Math.random()*duration/2+duration,
-                        color
+                        (float)Math.random()*0.1f+0.15f,
+                        fringe
                 );
                 engine.addHitParticle(
                         end,
                         theTarget.getVelocity(),
-                        (float)Math.random()*size/4+size/2,
+                        (float)Math.random()*impactSize/4+impactSize/2,
                         1,
                         0.1f,
-                        Color.WHITE
+                        core
                 );
             }           
-                
-            //create the visual effect
-            Map <String,Float> VALUES = new HashMap<>();
-            VALUES.put("t", fading); //duration
-            VALUES.put("w", width); //width
-            VALUES.put("h", MathUtils.getDistance(start, end)+10); //length
-            VALUES.put("x", start.x); //origin X
-            VALUES.put("y", start.y); //origin Y
-            VALUES.put("a", aim); //angle
             
-            //Add the beam to the plugin
-            FakeBeamPlugin.addMember(VALUES);
+            //Add the beam to the plugin            
+            //public static void addBeam(float duration, float fading, float width, Vector2f from, float angle, float length, Color core, Color fringe){            
+            FakeBeamPlugin.addBeam(full, fading, width, from, angle, MathUtils.getDistance(from, end)+10, core, fringe);
         }
     }
-    
     
     /////////////////////////////////////////
     //                                     //
@@ -205,42 +216,6 @@ public class FakeBeam {
             return CollisionUtils.getCollisionPoint(segStart, segEnd, ship);
         } // If ship's shield is on, thing goes complicated...
         else {
-//            Vector2f circleCenter = shield.getLocation();
-//            float circleRadius = shield.getRadius();
-//            // calculate the shield collision point
-//            Vector2f tmp1 = getCollisionPointOnCircumference(segStart, segEnd, circleCenter, circleRadius);
-//            if (tmp1 != null) {
-//                // OK! hit the shield in face
-//                if (shield.isWithinArc(tmp1)) {
-//                    return tmp1;
-//                } else {
-//                    // if the hit come outside the shield's arc but it hit the shield's "edge", find that point.
-//                    boolean hit = false;
-//                    Vector2f tmp = new Vector2f(segEnd);
-//
-//                    //the beam cannot go farther than it's max range or the hull
-//                    Vector2f hullHit = CollisionUtils.getCollisionPoint(segStart, segEnd, ship);
-//                    if (hullHit != null) {
-//                        tmp = hullHit;
-//                        hit = true;
-//                    }
-//                    Vector2f shieldEdge1 = MathUtils.getPointOnCircumference(circleCenter, circleRadius, MathUtils.clampAngle(shield.getFacing() + shield.getActiveArc() / 2));
-//                    Vector2f tmp2 = CollisionUtils.getCollisionPoint(segStart, tmp, circleCenter, shieldEdge1);
-//                    if (tmp2 != null) {
-//                        tmp = tmp2;
-//                        hit = true;
-//                    }
-//                    Vector2f shieldEdge2 = MathUtils.getPointOnCircumference(circleCenter, circleRadius, MathUtils.clampAngle(shield.getFacing() - shield.getActiveArc() / 2));
-//                    Vector2f tmp3 = CollisionUtils.getCollisionPoint(segStart, tmp, circleCenter, shieldEdge2);
-//                    if (tmp3 != null) {
-//                        tmp = tmp3;
-//                        hit = true;
-//                    }
-//                    tmp = MathUtils.getPointOnCircumference(tmp, 1, aim);
-//                    // return null if do not hit anything.
-//                    return hit ? tmp : null;
-//                }
-//            }
             
             Vector2f circleCenter = shield.getLocation();
             float circleRadius = shield.getRadius();
