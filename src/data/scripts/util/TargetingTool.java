@@ -1,7 +1,7 @@
 /*
 By Tartiflette
  */
-package data.scripts.utils;
+package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;

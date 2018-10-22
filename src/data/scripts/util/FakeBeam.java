@@ -1,6 +1,6 @@
 // By Tartiflette and DeathFly
 
-package data.scripts.utils;
+package data.scripts.util;
 
 import com.fs.starfarer.api.combat.CollisionClass;
 import com.fs.starfarer.api.combat.CombatAsteroidAPI;
@@ -174,7 +174,7 @@ public class FakeBeam {
                         theTarget.getVelocity(),
                         (float)Math.random()*impactSize/2+impactSize,
                         1,
-                        (float)Math.random()*0.1f+0.15f,
+                        full+fading,
                         fringe
                 );
                 engine.addHitParticle(
@@ -182,7 +182,7 @@ public class FakeBeam {
                         theTarget.getVelocity(),
                         (float)Math.random()*impactSize/4+impactSize/2,
                         1,
-                        0.1f,
+                        full,
                         core
                 );
             }           

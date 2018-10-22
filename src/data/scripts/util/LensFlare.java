@@ -1,7 +1,7 @@
 /*
 By Tartiflette, based on a script by DarkRevenant
 */
-package data.scripts.utils;
+package data.scripts.util;
 
 import java.awt.Color;
 
@@ -111,9 +111,5 @@ public class LensFlare {
                         coreColor
                 );
         }
-    }
-
-    private LensFlare() {
-
     }
 }
