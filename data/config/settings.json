@@ -6,8 +6,8 @@
 
     "graphics":{
         "beams":{
-            "fakeBeamCore":"graphics/FAKEBEAM/fakeBeamCore.png",
-            "fakeBeamFringe":"graphics/FAKEBEAM/fakeBeamFringe.png",
+            "fakeBeamCore":"graphics/fx/fakebeam/fakeBeamCore.png",
+            "fakeBeamFringe":"graphics/fx/fakebeam/fakeBeamFringe.png",
         },
     }
 }

@@ -18,12 +18,11 @@ public class FakeBeamPlugin extends BaseEveryFrameCombatPlugin {
     private SpriteAPI core = Global.getSettings().getSprite("beams", "fakeBeamCore");
     private SpriteAPI fringe = Global.getSettings().getSprite("beams", "fakeBeamFringe");
     
-    //FAKEBEAMS is the core of the script, storing both the weapons that have a flash rendered and the index of the current sprite used 
     public static List<fakeBeamData> BEAMS = new ArrayList();
     
      /**
-     * Fake beam rendered
-     * Draw the actual fake beam, can be directly called when it is only for FXs
+     * Fake beam renderer
+     * Draw the actual fake beam, can be directly called when it is only for visual effects
      * 
      * @param duration
      * Duration of the beam at full opacity
@@ -49,8 +48,6 @@ public class FakeBeamPlugin extends BaseEveryFrameCombatPlugin {
      * @param fringe
      * Fringe color of the beam
      */
-    
-    //set the function to access FAKEBEAMS from the weapons scripts   
     public static void addBeam(float duration, float fading, float width, Vector2f from, float angle, float length, Color core, Color fringe){
         fakeBeamData DATA= new fakeBeamData(duration, fading, width, from, angle, length, core, fringe);
         BEAMS.add(DATA);
@@ -115,6 +112,7 @@ public class FakeBeamPlugin extends BaseEveryFrameCombatPlugin {
     
     private void render ( SpriteAPI sprite, float width, float height, float angle, Color color, float opacity, float posX, float posY){
         //where the magic happen
+        sprite.setColor(color);
         sprite.setAlphaMult(opacity); 
         sprite.setSize(width, height);
         sprite.setAdditiveBlend();

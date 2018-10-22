@@ -78,7 +78,7 @@ public class FakeBeam {
     //                                     //
     /////////////////////////////////////////    
     
-    public static void applyFakeBeamEffect (CombatEngineAPI engine, Vector2f from, float range, float angle, float width, float full, float fading, float impactSize, Color core, Color fringe, float normalDamage, DamageType type, float emp, ShipAPI source) {            
+    public static void spawnFakeBeam (CombatEngineAPI engine, Vector2f from, float range, float angle, float width, float full, float fading, float impactSize, Color core, Color fringe, float normalDamage, DamageType type, float emp, ShipAPI source) {            
         
         CombatEntityAPI theTarget= null;
         float damage = normalDamage;
@@ -188,7 +188,7 @@ public class FakeBeam {
             }           
             
             //Add the beam to the plugin            
-            //public static void addBeam(float duration, float fading, float width, Vector2f from, float angle, float length, Color core, Color fringe){            
+            //public static void addBeam(float duration, float fading, float width, Vector2f from, float angle, float length, Color core, Color fringe)      
             FakeBeamPlugin.addBeam(full, fading, width, from, angle, MathUtils.getDistance(from, end)+10, core, fringe);
         }
     }
