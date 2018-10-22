@@ -31,6 +31,20 @@ public class TargetingTool {
     private static CombatEngineAPI engine;
     
     /**
+     * 
+     * Example use:
+     * (ShipAPI) target = TargetingTool.assignTarget(
+     *               missile,
+     *               TargetingTool.targetSeeking.NO_RANDOM,
+     *               (int)missile.getWeapon().getRange(),
+     *               360,
+     *               0,
+     *               1,
+     *               2,
+     *               4,
+     *               4
+     *           );
+     * 
      * @param missile
      * The missile concerned.
      * 
