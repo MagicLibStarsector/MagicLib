@@ -9,7 +9,7 @@ public class MagicAnim {
     
     /**
      * Smooth
-     * Translation of a 0 to 1 value to the same range with smooth ease in and ease out.
+     * Translates a value in a (0,1) range to a value in the same range with smooth ease in and ease out.
      * 0, 0.5 and 1 returns the same but 0.25 returns 0.11 and 0.75 return 0.89
      * 
      * @param x
@@ -24,7 +24,7 @@ public class MagicAnim {
     
     /**
      * Arbitrary Smooth
-     * Translation of an arbitrary value in a min-max range to the same range with smooth ease in and ease out.
+     * Translates a value in a (min,max) range to a value in the same range with smooth ease in and ease out.
      * 
      * @param x
      * Float clamped from 0 to 1
@@ -40,16 +40,35 @@ public class MagicAnim {
      */
     public static float AS (float x, float min, float max){
         float value=Math.min(max, Math.max(min, x));
-        value = (value/(max-min))-min;
+        value = (value-min)/(max-min);
         value = (0.5f - ((float)(FastTrig.cos(value*Math.PI) /2 )));
         value *= (max-min) + min;
         return value;
     }
     
+    /**
+     * Range
+     * Translates a value in a (0,1) range to a value in a (min,max) range.
+     * 
+     * @param x
+     * Float clamped from 0 to 1
+     * 
+     * @param min
+     * new range minimal value
+     * 
+     * @param max
+     * new range maximal value
+     * 
+     * @return 
+     * float value in the new range
+     */
+    public static float range (float x, float min, float max){
+        return (float) Math.min(1, Math.max( 0 , x))*(max-min) + min;
+    }
     
     /**
      * Offset
-     * Linear translation of a 0 to 1 value to a different arbitrary range.
+     * Translates a value in a (start,end) range into a value in a (0,1) range.
      * 
      * @param x
      * Float clamped from 0 to 1
@@ -64,12 +83,12 @@ public class MagicAnim {
      * float value in the new range
      */
     public static float offset (float x, float start, float end){
-        return (float) Math.min(1, Math.max( 0 , x))*(end-start) + start;
+        return (float) Math.min(1, Math.max( 0 , (x-start)*(1/(end-start))));
     }
     
     /**
      * Smooth + offset
-     * Translation of a 0 to 1 value to a different arbitrary range with smooth ease in and ease out.
+     * Translates a value in a (start,end) range into a value in a (0,1) range with smooth ease in and ease out.
      * 
      * @param x
      * Float clamped from 0 to 1
@@ -84,13 +103,12 @@ public class MagicAnim {
      * smoothed float value in the new range
      */
     public static float SO (float x, float start, float end){
-        return (0.5f - ((float)(FastTrig.cos(Math.min(1, Math.max(0, x))*Math.PI) /2 ))) * (end-start) + start;
+        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *Math.PI ) /2 );
     }
     
     /**
      * Return + Smooth + Offset
-     * Translation of a 0 to 1 to a "back-and-forth" value in a different arbitrary range with smooth ease in and ease out.
-     * The output will be a the minimal value with 0 and 1 inputs, and maximum value with 0.5 input.
+     * Translates a value in a (start,end) range into a "back-and-forth" value in a (0,1) range with smooth ease in and ease out.
      * 
      * @param x
      * Float clamped from 0 to 1
@@ -105,6 +123,6 @@ public class MagicAnim {
      * smooth "back-and-forth" float value in the new range
      */
     public static float RSO (float x, float start, float end){
-        return (0.5f - ((float)(FastTrig.cos(Math.min(1, Math.max(0, x))*Math.PI*2) /2 ))) * (end-start) + start;
+        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *Math.PI*2 ) /2 );
     }  
 }
