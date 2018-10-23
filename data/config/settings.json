@@ -1,13 +1,13 @@
 {
     "plugins":{
-        "ML_fakeBeamPlugin":"data.scripts.plugins.FakeBeamPlugin",
-        "ML_spriteRenderManager":"data.scripts.plugins.SpriteRenderManager",        
+        "ML_fakeBeamPlugin":"data.scripts.plugins.MagicFakeBeamPlugin",
+        "ML_spriteRenderManager":"data.scripts.plugins.MagicRenderPlugin",        
     },
 
     "graphics":{
         "beams":{
-            "fakeBeamCore":"graphics/fx/fakebeam/fakeBeamCore.png",
-            "fakeBeamFringe":"graphics/fx/fakebeam/fakeBeamFringe.png",
+            "fakeBeamCore":"graphics/magic/fx/fakebeam/fakeBeamCore.png",
+            "fakeBeamFringe":"graphics/magic/fx/fakebeam/fakeBeamFringe.png",
         },
     }
 }
