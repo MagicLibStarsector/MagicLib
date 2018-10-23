@@ -88,7 +88,7 @@ public class MagicFakeBeamPlugin extends BaseEveryFrameCombatPlugin {
                             entry.LENGTH*2, //Height entry, multiplied by two because centered
                             entry.ANGLE, //Angle entry
                             entry.CORE, //color...
-                            opacity, //opacity duh!
+                            Math.min(1,Math.max(0,(opacity*2)-1)), //opacity duh!
                             entry.FROM.x, //X position entry
                             entry.FROM.y //Y position entry
                     );

@@ -171,7 +171,7 @@ public class MagicFakeBeam {
                 //impact flash
                 engine.addHitParticle(
                         end,
-                        theTarget.getVelocity(),
+                        new Vector2f(),
                         (float)Math.random()*impactSize/2+impactSize,
                         1,
                         full+fading,
@@ -179,7 +179,7 @@ public class MagicFakeBeam {
                 );
                 engine.addHitParticle(
                         end,
-                        theTarget.getVelocity(),
+                        new Vector2f(),
                         (float)Math.random()*impactSize/4+impactSize/2,
                         1,
                         full,
