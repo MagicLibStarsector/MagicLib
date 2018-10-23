@@ -17,7 +17,7 @@ import org.lazywizard.lazylib.combat.AIUtils;
 import org.lazywizard.lazylib.combat.CombatUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-public class TargetingTool {    
+public class MagicTargeting {    
     
     public static enum targetSeeking{
         NO_RANDOM,

@@ -12,14 +12,14 @@ import com.fs.starfarer.api.combat.DamageType;
 import com.fs.starfarer.api.combat.MissileAPI;
 import com.fs.starfarer.api.combat.ShieldAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
-import data.scripts.plugins.FakeBeamPlugin;
+import data.scripts.plugins.MagicFakeBeamPlugin;
 import java.awt.geom.Line2D;
 import java.util.List;
 import org.lazywizard.lazylib.CollisionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.combat.CombatUtils;
 
-public class FakeBeam {       
+public class MagicFakeBeam {       
 
     /**
      * Fake beam generator. Create a visually convincing beam from arbitrary coordinates.
@@ -189,7 +189,7 @@ public class FakeBeam {
             
             //Add the beam to the plugin            
             //public static void addBeam(float duration, float fading, float width, Vector2f from, float angle, float length, Color core, Color fringe)      
-            FakeBeamPlugin.addBeam(full, fading, width, from, angle, MathUtils.getDistance(from, end)+10, core, fringe);
+            MagicFakeBeamPlugin.addBeam(full, fading, width, from, angle, MathUtils.getDistance(from, end)+10, core, fringe);
         }
     }
     

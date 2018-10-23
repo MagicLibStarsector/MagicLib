@@ -15,7 +15,7 @@ import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 
-public class LensFlare {
+public class MagicLensFlare {
     
     /**
      * Creates sharp lensflares, more suited to very thin short lived flares

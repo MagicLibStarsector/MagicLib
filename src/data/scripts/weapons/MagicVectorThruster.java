@@ -17,7 +17,7 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 //import data.scripts.plugins.SpriteRenderManager;
 
-public class VectorThrusterEffect implements EveryFrameWeaponEffectPlugin {
+public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
     
     private boolean runOnce=false, accel=false, turn=false;
     private ShipAPI SHIP;

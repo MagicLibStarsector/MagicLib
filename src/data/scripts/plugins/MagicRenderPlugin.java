@@ -37,7 +37,7 @@ import java.util.List;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-public class SpriteRenderManager extends BaseEveryFrameCombatPlugin {
+public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     
     private static List<renderData> SINGLEFRAME = new ArrayList<>();
     private static List<battlespaceData> BATTLESPACE = new ArrayList<>();

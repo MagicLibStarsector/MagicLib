@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 
-public class FakeBeamPlugin extends BaseEveryFrameCombatPlugin {
+public class MagicFakeBeamPlugin extends BaseEveryFrameCombatPlugin {
     
     private SpriteAPI core = Global.getSettings().getSprite("beams", "fakeBeamCore");
     private SpriteAPI fringe = Global.getSettings().getSprite("beams", "fakeBeamFringe");
