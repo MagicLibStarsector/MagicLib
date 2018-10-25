@@ -93,7 +93,7 @@ public class MagicTargeting {
      * ShipAPI target
      */
     
-    public static CombatEntityAPI pickMissileTarget(MissileAPI missile, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
+    public static ShipAPI pickMissileTarget(MissileAPI missile, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
         
         CombatEngineAPI engine = Global.getCombatEngine();
         
@@ -259,7 +259,7 @@ public class MagicTargeting {
      * @return 
      * ShipAPI target
      */
-    public static CombatEntityAPI pickShipTarget(ShipAPI source, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
+    public static ShipAPI pickShipTarget(ShipAPI source, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
         
         CombatEngineAPI engine = Global.getCombatEngine();
         

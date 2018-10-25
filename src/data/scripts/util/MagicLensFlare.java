@@ -74,10 +74,11 @@ public class MagicLensFlare {
      * @param point
      * Absolute coordinates of the flare.
      * @param thickness
-     * Thickness of the flare in pixels. Work best between 24 and 128(max).
+     * Thickness of the flare in pixels. 
+     * Work best between 24 and 128(max).
      * @param length
      * Rougth length of the flare's branches. 
-     * Works best between 200 and 500.
+     * Works best between 200 and 750. BEWARE OF PERFORMANCES IMPACT WITH LARGE SIZES
      * @param angle
      * Angle of the flare. 0 means horizontal. 
      * Remember that real Anamorphic flares are always horizontal.
@@ -85,7 +86,7 @@ public class MagicLensFlare {
      * Fringe color of the flare.
      * @param coreColor
      * Core color of the flare.
-     * Alpha will have an impact on the minimal thickness.
+     * Will have an impact on the minimal thickness.
     */
     
     public static void createSmoothFlare(CombatEngineAPI engine, ShipAPI origin, Vector2f point, float thickness, float length, float angle, Color fringeColor, Color coreColor){

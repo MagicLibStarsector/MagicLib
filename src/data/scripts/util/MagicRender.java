@@ -2,23 +2,6 @@
  * By Tartiflette
  * Direct sprite rendering script to create new visual effect or add new UI elements with only one line of code. 
  * Note that every element will be drawn one frame late.
-
-    sample use:
-    MagicRender.screenspace(
-            Global.getSettings().getSprite("misc", "graphics/fx/wormhole_ring_bright3.png"),
-            MAgicRender.positioning.FULLSCREEN_MAINTAIN_RATIO,
-            new Vector2f(),
-            null,
-            new Vector2f(50,50),
-            null,
-            0,
-            360,
-            Color.blue,
-            false,
-            1,
-            3,
-            1
-    );
  */
 package data.scripts.util;
 
