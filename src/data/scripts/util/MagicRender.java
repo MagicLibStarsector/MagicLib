@@ -11,9 +11,31 @@ import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import data.scripts.plugins.MagicRenderPlugin;
 import java.awt.Color;
+import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 public class MagicRender {
+    
+    /**
+     * Checks if a point is within a certain distance of the screen's edges;
+     * Used to avoid spawning particles or other effects that won't be seen by the player while impacting performances.
+     * The longer lived the effect is, the farther should be the cut-off distance
+     * 
+     * @param distance
+     * Distance away from the edges of the screen, in screen width.
+     * A good default is 0.5f, or half a screen away from the edge.
+     * Can be shorter for short lived particles and such.
+     * 
+     * @param point
+     * Location to check.
+     * 
+     * @return 
+     */
+    public static boolean screenCheck (float distance, Vector2f point){
+        float space = Global.getCombatEngine().getViewport().getVisibleWidth();
+        space = (space/2)*(distance+0.5f);
+        return MathUtils.isWithinRange(point, Global.getCombatEngine().getViewport().getCenter(), space);
+    }
     
     /**
      * Single frame render,
