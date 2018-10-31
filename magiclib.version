@@ -1,11 +1,11 @@
 {
-    "masterVersionFile":"",
+    "masterVersionFile":"https://bitbucket.org/CodingTartiflette/magiclib/downloads/magiclib.version",
     "modName":"MagicLib",
-    "modThreadId":,
+    "modThreadId":"13718",
     "modVersion":
     {
         "major":0,
         "minor":1,
-        "patch":0
+        "patch":1
     }
 }
