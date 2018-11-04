@@ -8,18 +8,17 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.MissileAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
-import org.lazywizard.lazylib.combat.AIUtils;
 import org.lazywizard.lazylib.combat.CombatUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-public class MagicTargeting {    
-    
+public class MagicTargeting {
     public static enum targetSeeking{
         NO_RANDOM,
         LOCAL_RANDOM,
@@ -36,31 +35,30 @@ public class MagicTargeting {
     private static Map<ShipAPI.HullSize, Integer> WEIGHT = new HashMap<>();
     
     /**
-     * Select a proper target from a missile
+     * Generic target picker
+     * Will always fall back on the closest target if none are found within the search parameters
      * 
-     * @param missile
-     * The missile concerned.
+     * @param seeker
+     * The CombatEntity concerned. Can only be a ship or a missile.
      * 
      * @param seeks
      * Does the missile find a random target or tries to hit the ship's one?
      * 
      *  NO_RANDOM, 
-     * If the launching ship has a valid target, the missile will pursue it.
-     * If there is no target, it will check for an unselected cursor target.
-     * If there is none, it will pursue its closest valid threat.    
+     * If the launching ship has a valid target within arc, the missile will pursue it.
+     * If there is no target, it will check for an unselected cursor target within arc.
+     * If there is none, it will pursue its closest valid threat within arc.    
      *
      *  LOCAL_RANDOM, 
-     * If the ship has a target, the missile will pick a random valid threat 
-     * around that one. 
-     * If the ship has none, the missile will pursue a random valid threat 
-     * around the cursor, or itself.
+     * If the ship has a target, the missile will pick a random valid threat around that one. 
+     * If the ship has none, the missile will pursue a random valid threat around the cursor, or itself.
      * Can produce strange behavior if used with a limited search cone.
      * 
      *  FULL_RANDOM, 
-     * The missile will always seek a random valid threat around itself.
+     * The missile will always seek a random valid threat within arc around itself.
      * 
      *  IGNORE_SOURCE,
-     * The missile will pick the closest target of interest. Useful for MIRVs.
+     * The missile will pick the closest target of interest. Useful for custom MIRVs.
      * 
      * @param maxRange
      * Range in which the missile seek a target in game units.
@@ -89,64 +87,25 @@ public class MagicTargeting {
      * Target priority, set to 0 to ignore that class. 
      * Other values only used for random targeting.
      * 
+     * @param failsafe
+     * fallback option, if no suitable target is found within the search parameters, the script will pick the closest possible target.
+     * 
      * @return 
      * ShipAPI target
      */
     
-    public static ShipAPI pickMissileTarget(MissileAPI missile, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
+    public static ShipAPI pickTarget(CombatEntityAPI seeker, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight, boolean failsafe){
         
         CombatEngineAPI engine = Global.getCombatEngine();
-        
-        ShipAPI theTarget=null;        
-        ShipAPI source = missile.getSource();
-        
-        if(seeks==targetSeeking.LOCAL_RANDOM || seeks==targetSeeking.NO_RANDOM){ 
 
-            //CHECK FOR A SHIP TARGET
-            //FULL_RANDOM AND IGNORE_SOURCE ONLY NEED TO LOOK AROUND THE MISSILE ITSELF AND CAN IGNORE THAT PART
-        
-            if(source!=null && source.isAlive()){ //SOURCE IS ALIVE
-                
-                if(source.getWeaponGroupFor(missile.getWeapon())!=null ){
-                    boolean auto = (
-                            source.getWeaponGroupFor(missile.getWeapon()).isAutofiring()                             
-                            && (
-                                engine.getPlayerShip()!=source 
-                                || 
-                                source.getSelectedGroupAPI()!=source.getWeaponGroupFor(missile.getWeapon()
-                                )
-                            ));
-                    
-                    if(auto){
-                        //WEAPON IN AUTOFIRE
-                        theTarget=source.getWeaponGroupFor(missile.getWeapon()).getAutofirePlugin(missile.getWeapon()).getTargetShip();
-                    } else { //WEAPON IS PURPOSELY FIRED
-                        theTarget=source.getShipTarget();
-                    }
-                }
-
-                //pointer target if needed
-                if(theTarget==null){
-                    for(ShipAPI s : engine.getShips()){
-                        if(s.isAlive() && s.getOwner()!= missile.getOwner() && MathUtils.isWithinRange(s,source.getMouseTarget(),100)){
-                            theTarget=s;
-                        }                    
-                    }
-                }
-
-                //targeting failsafes:
-                if(theTarget!=null && (!theTarget.isAlive() || !Global.getCombatEngine().isEntityInPlay(theTarget) || theTarget.getOwner()==source.getOwner() || !CombatUtils.isVisibleToSide(theTarget, missile.getOwner()))){
-                    theTarget=null;
-                }
-
-                //if there is a current target and the missile doesn't target randomly, look no further.
-                //Manual targeting ignore the size priorities.            
-                //////////
-                if(theTarget!=null && seeks==targetSeeking.NO_RANDOM){
-                    return theTarget;
-                }
-                //////////
-            }
+        ShipAPI theTarget;  
+        WeaponAPI weapon = null;
+        ShipAPI source;
+        if(seeker instanceof MissileAPI){
+            weapon=((MissileAPI) seeker).getWeapon();
+            source=((MissileAPI) seeker).getSource();
+        } else {
+            source=(ShipAPI)seeker;
         }
         
         //PRIORITY WEIGHTS:   
@@ -154,203 +113,43 @@ public class MagicTargeting {
         WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
         WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
         WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
-        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);            
+        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);  
         
-        
-        if(seeks==targetSeeking.IGNORE_SOURCE || seeks==targetSeeking.NO_RANDOM){
-            
-            //NO RANDOM / IGNORE_SOURCE:
-            //GET CLOSEST VALID TARGET
-            //ONLY TRIGGERS FOR NO_RANDOM IF THERE WASN'T ALREADY A SHIP TARGET
-            theTarget = getClosestTargetInCone(engine, missile, maxRange, Math.max(25, Math.min(360, searchCone)));
-            
-        } else {      
-            //FULL/LOCAL RANDOM:
-            //WHERE TO LOOK        
-            Vector2f lookAround;
-            if(seeks == targetSeeking.LOCAL_RANDOM && theTarget!=null){
-                lookAround=new Vector2f (theTarget.getLocation());
-            } else {
-                lookAround = new Vector2f (missile.getLocation());
-            }
-            
-            //GET A RANDOM TARGET AROUND THAT POINT
-            theTarget = getRandomTargetInCone(engine, missile, lookAround, maxRange, Math.max(25, Math.min(360, searchCone)));
-        }
-        
-        
-        //////////
-        if(theTarget!=null){
-            return theTarget;
-        }        
-        //////////
-        
-        
-        //NORMAL PICK FAILED, GET THE CLOSEST TARGET (ignore the search cone and the range)
-        theTarget=AIUtils.getNearestEnemy(missile);
-        
-        //////////
-        if (theTarget!=null && WEIGHT.get(theTarget.getHullSize())>0 && CombatUtils.isVisibleToSide(theTarget, missile.getOwner())){
-            return theTarget;
-        }
-        //////////
-        
-        //STILL NO TARGET, RETURN NULL
-        
-        //////////
-        return null;
-        //////////
-        
-    }
-    
-    /**
-     * Select a proper target from a ship
-     * 
-     * @param source
-     * The ship concerned.
-     * 
-     * @param seeks
-     * Does the ship find a random target or tries to hit its selected one?
-     * 
-     *  NO_RANDOM, 
-     * If the ship has a valid target, the script will return it.
-     * If there is no target, it will check for an unselected cursor target.
-     * If there is none, it will return its closest valid threat.    
-     *
-     *  LOCAL_RANDOM, 
-     * If the ship has a target, the script will pick a random valid threat around that one. 
-     * If the ship has none, the script will pick a random valid threat around the cursor, 
-     * If none are found, the script will pick a random valid threat around itself, 
-     * Can produce strange behavior if used with a limited search cone.
-     * 
-     *  FULL_RANDOM, 
-     * The script will always return a random valid threat around the ship itself.
-     * 
-     *  IGNORE_SOURCE,
-     * The script will pick the closest target of interest.
-     * 
-     * @param maxRange
-     * Range within which the script seeks a target in game units.
-     * 
-     * @param searchCone
-     * Angle within which the script will seek the target. 
-     * Set to 360 or more to ignore.
-     * 
-     * @param fighterWeight
-     * Target priority, set to 0 to ignore that class. 
-     * Other values only used for random targeting.
-     * 
-     * @param frigateWeight
-     * Target priority, set to 0 to ignore that class. 
-     * Other values only used for random targeting.
-     * 
-     * @param destroyerWeight
-     * Target priority, set to 0 to ignore that class. 
-     * Other values only used for random targeting.
-     * 
-     * @param cruiserWeight
-     * Target priority, set to 0 to ignore that class. 
-     * Other values only used for random targeting.
-     * 
-     * @param capitalWeight
-     * Target priority, set to 0 to ignore that class. 
-     * Other values only used for random targeting.
-     * 
-     * @return 
-     * ShipAPI target
-     */
-    public static ShipAPI pickShipTarget(ShipAPI source, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
-        
-        CombatEngineAPI engine = Global.getCombatEngine();
-        
-        ShipAPI theTarget=null;
-        
-        if(seeks==targetSeeking.LOCAL_RANDOM || seeks==targetSeeking.NO_RANDOM){ 
-
-            //CHECK FOR A SHIP TARGET
-            //FULL_RANDOM AND IGNORE_SOURCE ONLY NEED TO LOOK AROUND THE MISSILE ITSELF AND CAN IGNORE THAT PART
+        switch(seeks){
+            case NO_RANDOM:
                 
-            if(source.getShipTarget()!=null ){
-                    theTarget=source.getShipTarget();
-            } else {
-            //pointer target if needed
-                for(ShipAPI s : engine.getShips()){
-                    if(s.isAlive() && s.getOwner()!= source.getOwner() && MathUtils.isWithinRange(s,source.getMouseTarget(),100)){
-                        theTarget=s;
-                        break;
-                    } 
+                theTarget = getDirectTarget(engine, source, weapon, seeker.getLocation(), seeker.getFacing(), searchCone); //get deliberate target
+                
+                if(theTarget==null){ //if there are none, get closest valid target
+
+                    theTarget = getClosestTargetInCone(engine, seeker, maxRange, searchCone, true);
                 }
-            }
-
-            //targeting failsafes:
-            if(theTarget!=null && (!theTarget.isAlive() || !Global.getCombatEngine().isEntityInPlay(theTarget) || theTarget.getOwner()==source.getOwner() || !CombatUtils.isVisibleToSide(theTarget, source.getOwner()))){
-                theTarget=null;
-            }
-
-            //if there is a current target and the missile doesn't target randomly, look no further.
-            //Manual targeting ignore the size priorities.            
-            //////////
-            if(theTarget!=null && seeks==targetSeeking.NO_RANDOM){
+                
                 return theTarget;
-            }
-            //////////
-            
+                
+            case LOCAL_RANDOM:
+                
+                theTarget = getDirectTarget(engine, source, weapon, seeker.getLocation(), seeker.getFacing(), searchCone); //get deliberate target
+        
+                if(theTarget==null){
+                    theTarget = getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, true); //if there are none, pick a random threat around the missile
+                } else {
+                    theTarget = getRandomTargetInCone(engine, seeker, theTarget.getLocation(), maxRange, searchCone, true); //else pick a random threat around the direct target 
+                }
+                return theTarget;
+                
+            case FULL_RANDOM:    
+                
+                return getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, true); //pick a random threat around the missile
+                
+            case IGNORE_SOURCE:
+                
+                return getClosestTargetInCone(engine, seeker, maxRange, searchCone, true);
+                
+            default:
+                return null;
         }
-        
-        //PRIORITY WEIGHTS:   
-        WEIGHT.put(ShipAPI.HullSize.FIGHTER, fighterWeight);            
-        WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
-        WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
-        WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
-        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);            
-        
-        
-        if(seeks==targetSeeking.IGNORE_SOURCE || seeks==targetSeeking.NO_RANDOM){
-            
-            //NO RANDOM / IGNORE_SOURCE:
-            //GET CLOSEST VALID TARGET
-            //ONLY TRIGGERS FOR NO_RANDOM IF THERE WASN'T ALREADY A SHIP TARGET
-            theTarget = getClosestTargetInCone(engine, source, maxRange, Math.max(25, Math.min(360, searchCone)));
-            
-        } else {      
-            //FULL/LOCAL RANDOM:
-            //WHERE TO LOOK        
-            Vector2f lookAround;
-            if(seeks == targetSeeking.LOCAL_RANDOM && theTarget!=null){
-                lookAround=new Vector2f (theTarget.getLocation());
-            } else {
-                lookAround = new Vector2f (source.getLocation());
-            }
-            
-            //GET A RANDOM TARGET AROUND THAT POINT
-            theTarget = getRandomTargetInCone(engine, source, lookAround, maxRange, Math.max(25, Math.min(360, searchCone)));
-        }
-        
-        
-        //////////
-        if(theTarget!=null){
-            return theTarget;
-        }        
-        //////////
-        
-        
-        //NORMAL PICK FAILED, GET THE CLOSEST TARGET (ignore the search cone and the range)
-        theTarget=AIUtils.getNearestEnemy(source);
-        
-        //////////
-        if (theTarget!=null && WEIGHT.get(theTarget.getHullSize())>0 && CombatUtils.isVisibleToSide(theTarget, source.getOwner())){
-            return theTarget;
-        }
-        //////////
-        
-        //STILL NO TARGET, RETURN NULL
-        
-        //////////
-        return null;
-        //////////
-        
     }
-    
     
     /**
      * Picks a random enemy missile within parameters:
@@ -448,8 +247,279 @@ public class MagicTargeting {
         return null;
     }
     
-    private static ShipAPI getClosestTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Integer maxRange, Integer searchCone){
-        ShipAPI candidate = null;
+    /**
+     * Select a proper target from a missile
+     * 
+     * @param missile
+     * The missile concerned.
+     * 
+     * @param seeks
+     * Does the missile find a random target or tries to hit the ship's one?
+     * 
+     *  NO_RANDOM, 
+     * If the launching ship has a valid target within arc, the missile will pursue it.
+     * If there is no target, it will check for an unselected cursor target within arc.
+     * If there is none, it will pursue its closest valid threat within arc.    
+     *
+     *  LOCAL_RANDOM, 
+     * If the ship has a target, the missile will pick a random valid threat around that one. 
+     * If the ship has none, the missile will pursue a random valid threat around the cursor, or itself.
+     * Can produce strange behavior if used with a limited search cone.
+     * 
+     *  FULL_RANDOM, 
+     * The missile will always seek a random valid threat within arc around itself.
+     * 
+     *  IGNORE_SOURCE,
+     * The missile will pick the closest target of interest. Useful for custom MIRVs.
+     * 
+     * @param maxRange
+     * Range in which the missile seek a target in game units.
+     * 
+     * @param searchCone
+     * Angle in which the missile will seek the target. 
+     * Set to 360 or more to ignore.
+     * 
+     * @param fighterWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param frigateWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param destroyerWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param cruiserWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param capitalWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @return 
+     * ShipAPI target
+     */
+    
+    public static ShipAPI pickMissileTarget(MissileAPI missile, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
+        
+        CombatEngineAPI engine = Global.getCombatEngine();
+
+        ShipAPI theTarget;        
+        ShipAPI source = missile.getSource();
+        
+        //PRIORITY WEIGHTS:   
+        WEIGHT.put(ShipAPI.HullSize.FIGHTER, fighterWeight);            
+        WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
+        WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
+        WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
+        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);  
+        
+        switch(seeks){
+            case NO_RANDOM:
+                
+                theTarget = getDirectTarget(engine, source, missile.getWeapon(), missile.getLocation(), missile.getFacing(), searchCone); //get deliberate target
+                
+                if(theTarget==null){ //if there are none, get closest valid target
+
+                    theTarget = getClosestTargetInCone(engine, missile, maxRange, searchCone, false);
+                }
+                
+                return theTarget;
+                
+            case LOCAL_RANDOM:
+                
+                theTarget = getDirectTarget(engine, source, missile.getWeapon(), missile.getLocation(), missile.getFacing(), searchCone); //get deliberate target
+        
+                if(theTarget==null){
+                    theTarget = getRandomTargetInCone(engine, missile, missile.getLocation(), maxRange, searchCone, false); //if there are none, pick a random threat around the missile
+                } else {
+                    theTarget = getRandomTargetInCone(engine, missile, theTarget.getLocation(), maxRange, searchCone, false); //else pick a random threat around the direct target 
+                }
+                return theTarget;
+                
+            case FULL_RANDOM:    
+                
+                return getRandomTargetInCone(engine, missile, missile.getLocation(), maxRange, searchCone, false); //pick a random threat around the missile
+                
+            case IGNORE_SOURCE:
+                
+                return getClosestTargetInCone(engine, missile, maxRange, searchCone, false);
+                
+            default:
+                return null;
+        }
+    }
+    
+    /**
+     * Select a proper target from a ship
+     * 
+     * @param source
+     * The ship concerned.
+     * 
+     * @param seeks
+     * Does the ship find a random target or tries to hit its selected one?
+     * 
+     *  NO_RANDOM, 
+     * If the ship has a valid target, the script will return it.
+     * If there is no target, it will check for an unselected cursor target.
+     * If there is none, it will return its closest valid threat.    
+     *
+     *  LOCAL_RANDOM, 
+     * If the ship has a target, the script will pick a random valid threat around that one. 
+     * If the ship has none, the script will pick a random valid threat around the cursor, 
+     * If none are found, the script will pick a random valid threat around itself, 
+     * Can produce strange behavior if used with a limited search cone.
+     * 
+     *  FULL_RANDOM, 
+     * The script will always return a random valid threat around the ship itself.
+     * 
+     *  IGNORE_SOURCE,
+     * The script will pick the closest target of interest.
+     * 
+     * @param maxRange
+     * Range within which the script seeks a target in game units.
+     * 
+     * @param searchCone
+     * Angle within which the script will seek the target. 
+     * Set to 360 or more to ignore.
+     * 
+     * @param fighterWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param frigateWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param destroyerWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param cruiserWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @param capitalWeight
+     * Target priority, set to 0 to ignore that class. 
+     * Other values only used for random targeting.
+     * 
+     * @return 
+     * ShipAPI target
+     */
+    public static ShipAPI pickShipTarget(ShipAPI source, targetSeeking seeks, Integer maxRange, Integer searchCone, Integer fighterWeight, Integer frigateWeight, Integer destroyerWeight, Integer cruiserWeight, Integer capitalWeight){
+        
+        CombatEngineAPI engine = Global.getCombatEngine();
+
+        ShipAPI theTarget;
+        
+        //PRIORITY WEIGHTS:   
+        WEIGHT.put(ShipAPI.HullSize.FIGHTER, fighterWeight);            
+        WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
+        WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
+        WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
+        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);  
+        
+        switch(seeks){
+            case NO_RANDOM:
+                
+                theTarget = getDirectTarget(engine, source, null, source.getLocation(), source.getFacing(), searchCone); //get deliberate target
+                
+                if(theTarget==null){ //if there are none, get closest valid target
+
+                    theTarget = getClosestTargetInCone(engine, source, maxRange, searchCone, false);
+                }
+                
+                return theTarget;
+                
+            case LOCAL_RANDOM:
+                
+                theTarget = getDirectTarget(engine, source, null, source.getLocation(), source.getFacing(), searchCone); //get deliberate target
+        
+                if(theTarget==null){
+                    theTarget = getRandomTargetInCone(engine, source, source.getLocation(), maxRange, searchCone, false); //if there are none, pick a random threat around the missile
+                } else {
+                    theTarget = getRandomTargetInCone(engine, source, theTarget.getLocation(), maxRange, searchCone, false); //else pick a random threat around the direct target 
+                }
+                return theTarget;
+                
+            case FULL_RANDOM:    
+                
+                return getRandomTargetInCone(engine, source, source.getLocation(), maxRange, searchCone, false); //pick a random threat around the missile
+                
+            case IGNORE_SOURCE:
+                
+                return getClosestTargetInCone(engine, source, maxRange, searchCone, false);
+                
+            default:
+                return null;
+        }
+    }
+    
+    private static ShipAPI getDirectTarget( CombatEngineAPI engine, ShipAPI source, WeaponAPI checkWeaponGroup, Vector2f loc, float aim, Integer searchCone){
+        if(source!=null && source.isAlive()){ //SOURCE IS ALIVE
+            boolean allAspect=(searchCone>=360);
+            //AUTO FIRE TARGET
+            if(checkWeaponGroup!=null){
+                if(source.getWeaponGroupFor(checkWeaponGroup)!=null ){
+                    //WEAPON IN AUTOFIRE
+                    if(source.getWeaponGroupFor(checkWeaponGroup).isAutofiring()  //weapon group is autofiring          
+                            && source.getSelectedGroupAPI()!=source.getWeaponGroupFor(checkWeaponGroup)){ //weapon group is not the selected group
+                        ShipAPI weaponTarget = source.getWeaponGroupFor(checkWeaponGroup).getAutofirePlugin(checkWeaponGroup).getTargetShip();
+                        if(weaponTarget!=null //weapon target exist
+                                && (
+                                    allAspect // either missile has full arc
+                                    || Math.abs(MathUtils.getShortestRotation(aim,VectorUtils.getAngle(loc, weaponTarget.getLocation())))<searchCone/2 //or missile has limited arc and the target is within
+                                    )
+                                ){
+                            //then return the auto-fire target
+                            return source.getWeaponGroupFor(checkWeaponGroup).getAutofirePlugin(checkWeaponGroup).getTargetShip();
+                        }
+                    } 
+                }
+            }
+            
+            //SHIP TARGET
+            ShipAPI shipTarget= source.getShipTarget();
+            if(
+                    shipTarget!=null
+                    && shipTarget.isAlive()
+                    && shipTarget.getOwner()!=source.getOwner()
+                    && CombatUtils.isVisibleToSide(shipTarget, source.getOwner())
+                    && (
+                        allAspect
+                        || Math.abs(MathUtils.getShortestRotation(aim,VectorUtils.getAngle(loc, shipTarget.getLocation())))<searchCone/2
+                        )
+                    ){
+                return shipTarget;
+            }
+            
+            //POINTER TARGET
+            for(ShipAPI s : engine.getShips()){
+                if(
+                        s.isAlive() 
+                        && s.getOwner()!= source.getOwner() 
+                        && CombatUtils.isVisibleToSide(s, source.getOwner())
+                        && MathUtils.isWithinRange(s,source.getMouseTarget(),100)
+                        && (
+                            allAspect
+                            || Math.abs(MathUtils.getShortestRotation(aim,VectorUtils.getAngle(loc, s.getLocation())))<searchCone/2
+                            )
+                        ){
+                    return s;
+                }                    
+            }
+        }
+        
+        //nothing fits
+        return null;
+    }
+    
+    private static ShipAPI getClosestTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Integer maxRange, Integer searchCone, boolean failsafe){
+        ShipAPI candidate=null;
+        ShipAPI backup=null;
         boolean allAspect=(searchCone>=360);
         Integer range= maxRange*maxRange;
         
@@ -460,20 +530,24 @@ public class MagicTargeting {
                 if(CombatUtils.isVisibleToSide(s, source.getOwner()) && MathUtils.getDistanceSquared(source, s)<range){ //is it closer
                     
                     if(allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), s.getLocation())))<searchCone/2){ //is it in cone
-                        
                         candidate=s;
                         range=(int)MathUtils.getDistanceSquared(source, s);
-                        
+                    } else {
+                        backup=s;
                     }
                 }
             }            
+        }
+        if(failsafe && candidate==null){
+            return backup;
         }
         return candidate;
     }
     
     
-    private static ShipAPI getRandomTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Vector2f lookAround, Integer maxRange, Integer searchCone){
+    private static ShipAPI getRandomTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Vector2f lookAround, Integer maxRange, Integer searchCone, boolean failsafe){
         ShipAPI candidate = null;
+        ShipAPI backup=null;
         boolean allAspect=(searchCone>=360); 
         
         WeightedRandomPicker<ShipAPI> targetPicker = new WeightedRandomPicker<>();
@@ -488,6 +562,8 @@ public class MagicTargeting {
                         
                         targetPicker.add(s, WEIGHT.get(s.getHullSize()));
                         
+                    } else if(backup==null || Math.random()<0.25f){
+                        backup=s;
                     }
                 }
             }
@@ -497,6 +573,9 @@ public class MagicTargeting {
             candidate = targetPicker.pick();
         }
         
+        if(failsafe && candidate==null){
+            return backup;
+        }
         return candidate;
     }            
 }
