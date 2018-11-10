@@ -88,7 +88,7 @@ public class MagicTargeting {
      * Other values only used for random targeting.
      * 
      * @param failsafe
-     * fallback option, if no suitable target is found within the search parameters, the script will pick the closest possible target.
+     * fallback option: if no suitable target is found within the search cone and distance the script will pick the closest possible target as long as it is within twice the max range.
      * 
      * @return 
      * ShipAPI target
@@ -121,8 +121,7 @@ public class MagicTargeting {
                 theTarget = getDirectTarget(engine, source, weapon, seeker.getLocation(), seeker.getFacing(), searchCone); //get deliberate target
                 
                 if(theTarget==null){ //if there are none, get closest valid target
-
-                    theTarget = getClosestTargetInCone(engine, seeker, maxRange, searchCone, true);
+                    theTarget = getClosestTargetInCone(engine, seeker, maxRange, searchCone, failsafe);
                 }
                 
                 return theTarget;
@@ -132,19 +131,19 @@ public class MagicTargeting {
                 theTarget = getDirectTarget(engine, source, weapon, seeker.getLocation(), seeker.getFacing(), searchCone); //get deliberate target
         
                 if(theTarget==null){
-                    theTarget = getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, true); //if there are none, pick a random threat around the missile
+                    theTarget = getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, failsafe); //if there are none, pick a random threat around the missile
                 } else {
-                    theTarget = getRandomTargetInCone(engine, seeker, theTarget.getLocation(), maxRange, searchCone, true); //else pick a random threat around the direct target 
+                    theTarget = getRandomTargetInCone(engine, seeker, theTarget.getLocation(), maxRange, searchCone, failsafe); //else pick a random threat around the direct target 
                 }
                 return theTarget;
                 
             case FULL_RANDOM:    
                 
-                return getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, true); //pick a random threat around the missile
+                return getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, failsafe); //pick a random threat around the missile
                 
             case IGNORE_SOURCE:
                 
-                return getClosestTargetInCone(engine, seeker, maxRange, searchCone, true);
+                return getClosestTargetInCone(engine, seeker, maxRange, searchCone, failsafe);
                 
             default:
                 return null;
@@ -527,12 +526,17 @@ public class MagicTargeting {
             
             if(s.isAlive() && s.getOwner()!=source.getOwner() && WEIGHT.get(s.getHullSize())>0){ //is the ship targetable
                 
-                if(CombatUtils.isVisibleToSide(s, source.getOwner()) && MathUtils.getDistanceSquared(source, s)<range){ //is it closer
+                if(CombatUtils.isVisibleToSide(s, source.getOwner())){
                     
-                    if(allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), s.getLocation())))<searchCone/2){ //is it in cone
-                        candidate=s;
-                        range=(int)MathUtils.getDistanceSquared(source, s);
-                    } else {
+                    if(MathUtils.getDistanceSquared(source, s)<range){ //is it closer
+
+                        if(allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), s.getLocation())))<searchCone/2){ //is it in cone
+                            candidate=s;
+                            range=(int)MathUtils.getDistanceSquared(source, s);
+                        } else {
+                            backup=s;
+                        }
+                    } else  if(backup==null && MathUtils.getDistanceSquared(source, s)<4*range){
                         backup=s;
                     }
                 }
@@ -548,7 +552,9 @@ public class MagicTargeting {
     private static ShipAPI getRandomTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Vector2f lookAround, Integer maxRange, Integer searchCone, boolean failsafe){
         ShipAPI candidate = null;
         ShipAPI backup=null;
-        boolean allAspect=(searchCone>=360); 
+        boolean allAspect=(searchCone>=360);
+        
+        Integer range= 4*maxRange*maxRange;
         
         WeightedRandomPicker<ShipAPI> targetPicker = new WeightedRandomPicker<>();
         
@@ -556,14 +562,20 @@ public class MagicTargeting {
             
             if(s.isAlive() && s.getOwner()!=source.getOwner() && WEIGHT.get(s.getHullSize())>0){ //is the ship targetable
                 
-                if(CombatUtils.isVisibleToSide(s, source.getOwner()) && MathUtils.isWithinRange(lookAround, s.getLocation(),maxRange)){ //is it close
+                if(CombatUtils.isVisibleToSide(s, source.getOwner())){
+                    if(MathUtils.isWithinRange(lookAround, s.getLocation(),maxRange)){ //is it close
                     
-                    if(allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), s.getLocation())))<searchCone/2){ //is it in cone
-                        
-                        targetPicker.add(s, WEIGHT.get(s.getHullSize()));
-                        
-                    } else if(backup==null || Math.random()<0.25f){
+                        if(allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), s.getLocation())))<searchCone/2){ //is it in cone
+
+                            targetPicker.add(s, WEIGHT.get(s.getHullSize()));
+
+                        } else if(backup==null || MathUtils.getDistanceSquared(lookAround, s.getLocation())<range){
+                            backup=s;
+                            range=(int)MathUtils.getDistanceSquared(lookAround, s.getLocation());
+                        }
+                    } else if(backup==null && MathUtils.isWithinRange(lookAround, s.getLocation(), maxRange*2)){
                         backup=s;
+                        range=(int)MathUtils.getDistanceSquared(lookAround, s.getLocation());
                     }
                 }
             }
