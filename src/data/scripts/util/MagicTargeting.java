@@ -207,7 +207,7 @@ public class MagicTargeting {
                         switch(priority){
                             
                             case RANDOM: //random target, all missiles have the same weight
-                                missilePicker.add(m);
+                                missilePicker.add(m,1);
                                 break;
                             
                             case DAMAGE_PRIORITY: //damage priority, all missiles have their damage as weight
@@ -234,10 +234,16 @@ public class MagicTargeting {
             }
             
         }
+        
         //there is a candidate,
-        if(candidate!=null){
+        if(priority==missilePriority.HIGHTEST_DAMAGE){
+            if(candidate!=null){
             return candidate;
+            } else {
+                return null;
+            }
         }
+        
         //no candidate, try to pick random
         if(!missilePicker.isEmpty()){
             return missilePicker.pick();
