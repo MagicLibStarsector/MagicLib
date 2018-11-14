@@ -1,0 +1,41 @@
+MagicLib
+
+0.12
+
+CONTENT:
+
+MagicUI (from Dark.Revenant)
+   Draws a small UI bar/tick box near the ship system for custom dual-system charge-bar
+
+MagicMissileAI (loose script)
+   Fast and easily customizable missile AI
+
+BUGFIXES/IMPROVEMENTS:
+
+MagicTargeting
+   Added a superior simpler function for targeting from both missile and ships, with fallback target option.
+
+
+
+0.10
+
+CONTENT:
+
+MagicAnim
+   A collection of functions to make smooth animations.
+
+MagicFakeBeam
+   Creates convincing ponctual beams from arbitrary coordinates.
+
+MagicLensFlare
+   Creates "cinematic" lensflares.
+
+MagicRender
+   Draw arbitrary sprites on screen with constraints to entities/camera when needed. (aka "SpriteRenderManager")
+   Also has a screencheck function
+
+MagicTargeting
+   Allows "smart" target selection for systems and missiles within distance and search cone parameters, plus it can use ship-class preferences.
+
+MagicVectorThruster (loose script)
+   Manages vectoring or vernier-style attitude thrusters. 

@@ -84,7 +84,7 @@ public class MagicFakeBeam {
         float damage = normalDamage;
 
         //default end point
-        Vector2f end = MathUtils.getPointOnCircumference(from,range,angle);
+        Vector2f end = MathUtils.getPoint(from,range,angle);
 
         //list all nearby entities that could be hit
         List <CombatEntityAPI> entity = CombatUtils.getEntitiesWithinRange(from, range+500);
@@ -222,7 +222,7 @@ public class MagicFakeBeam {
             //the beam already start within the shield radius:
             if (MathUtils.isPointWithinCircle(segStart, circleCenter, circleRadius)){
                 if (shield.isWithinArc(segStart)){
-                    return MathUtils.getPointOnCircumference(segStart, 15, aim);
+                    return MathUtils.getPoint(segStart, 15, aim);
                 } else {
                     return CollisionUtils.getCollisionPoint(segStart, segEnd, ship);
                 }
@@ -230,9 +230,9 @@ public class MagicFakeBeam {
             {
                 Vector2f tmp1 = getCollisionPointOnCircumference(segStart, segEnd, circleCenter, circleRadius);
                 if (tmp1!=null && shield.isWithinArc(tmp1)){
-                    return MathUtils.getPointOnCircumference(tmp1, 1, aim);
+                    return MathUtils.getPoint(tmp1, 1, aim);
                 } else {
-                    return MathUtils.getPointOnCircumference(
+                    return MathUtils.getPoint(
                             CollisionUtils.getCollisionPoint(segStart, segEnd, ship),
                             1,
                             aim

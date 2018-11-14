@@ -198,9 +198,9 @@ public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
                         }
                         
                         //DEBUG
-//                        engine.addHitParticle(MathUtils.getPointOnCircumference(weapon.getLocation(), 20, SHIP.getFacing()+accelerateAngle), new Vector2f(), 5, 0.5f, 0.05f, Color.yellow);
-//                        engine.addHitParticle(MathUtils.getPointOnCircumference(weapon.getLocation(), 20, SHIP.getFacing()+turnAngle), new Vector2f(), 5, 0.5f, 0.05f, Color.red);
-//                        engine.addHitParticle(MathUtils.getPointOnCircumference(weapon.getLocation(), 20*combinedThrust, SHIP.getFacing()+combinedAngle), new Vector2f(), 5, 0.5f, 0.05f, Color.green);
+//                        engine.addHitParticle(MathUtils.getPoint(weapon.getLocation(), 20, SHIP.getFacing()+accelerateAngle), new Vector2f(), 5, 0.5f, 0.05f, Color.yellow);
+//                        engine.addHitParticle(MathUtils.getPoint(weapon.getLocation(), 20, SHIP.getFacing()+turnAngle), new Vector2f(), 5, 0.5f, 0.05f, Color.red);
+//                        engine.addHitParticle(MathUtils.getPoint(weapon.getLocation(), 20*combinedThrust, SHIP.getFacing()+combinedAngle), new Vector2f(), 5, 0.5f, 0.05f, Color.green);
 //                        engine.addFloatingText(weapon.getLocation(), " "+clampedThrustToTurn, 20, Color.yellow, SHIP, 1, 1);
 //                        engine.addFloatingText(weapon.getLocation(), " "+offAxis, 20, Color.yellow, SHIP, 1, 1);
                         //DEBUG
