@@ -6,3 +6,6 @@ All contributions are welcome! To get your stuff released within MagicLib, pleas
 http://fractalsoftworks.com/forum/index.php?topic=13718.0
 Or on the Unofficial Discord:
 http://fractalsoftworks.com/forum/index.php?topic=11488.0
+
+All contributions have to be fully documented on the Wiki and given proper Javadocs
+https://starsector.wikia.com/wiki/MagicLib
