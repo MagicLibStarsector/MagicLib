@@ -8,12 +8,11 @@ import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import data.scripts.util.MagicTrailObject;
 import data.scripts.util.MagicTrailTracker;
+import org.jetbrains.annotations.Nullable;
+import org.lazywizard.lazylib.combat.CombatUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.awt.Color;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -67,11 +66,35 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         }
     }
 
-    //Ticks all maps
+    //Ticks all maps, and checks for any entity that should recieve library-free cutting
     @Override
     public void advance (float amount, java.util.List<InputEventAPI> events) {
         if (Global.getCombatEngine() == null || Global.getCombatEngine().isPaused()) {
             return;
+        }
+
+        //Checks our combat engine's customData and sees if someone has attempted a library-free trail cutting this frame
+        //If they have, cut it properly and store the fact that cutting took place this frame
+        boolean cutSomethingThisFrame = false;
+        for (String key : Global.getCombatEngine().getCustomData().keySet()) {
+            if (key.contains("MagicTrailPlugin_LIB_FREE_TRAIL_CUT")) {
+                if (Global.getCombatEngine().getCustomData().get(key) instanceof CombatEntityAPI) {
+                    cutSomethingThisFrame = true;
+                    cutTrailsOnEntity((CombatEntityAPI)Global.getCombatEngine().getCustomData().get(key));
+                }
+            }
+        }
+
+        //If cutting took place this frame, we remove all CustomData key-data pairs that are used for lib-free cutting
+        if (cutSomethingThisFrame) {
+            Set<String> keySet = Global.getCombatEngine().getCustomData().keySet();
+            for (String key : keySet) {
+                if (key.contains("MagicTrailPlugin_LIB_FREE_TRAIL_CUT")) {
+                    if (Global.getCombatEngine().getCustomData().get(key) instanceof CombatEntityAPI){
+                        Global.getCombatEngine().getCustomData().remove(key);
+                    }
+                }
+            }
         }
 
         //Ticks the main map
@@ -159,7 +182,8 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity, (Math.max(startSize,endSize)*3f)+(duration*300f));
+                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity, (Math.max(startSize,endSize)*3f)+(duration*300f),
+                0f, 0);
 
         //And finally add it to the correct location in our maps
         plugin.mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -223,12 +247,19 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
      * @param aggressiveCulling If the trail is this many SU off-screen, it is removed from memory. Set to -1 to
      *                          disable this behaviour
+     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
+     *                        correct type values and use the right data keys. Any new features will be added here to
+     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
+     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
      */
     public static void AddTrailMemberAdvanced (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, float aggressiveCulling) {
-        //First, find the plugin
+                                               Vector2f offsetVelocity, float aggressiveCulling, @Nullable Map<String,Object> advancedOptions) {
+        //First, find the plugin, and if it doesn't exist do nothing
         if (Global.getCombatEngine() == null) {
             return;
         } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
@@ -259,9 +290,19 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         //Adjusts scroll speed to our most recent trail's value
         plugin.mainMap.get(texID).get(ID).scrollSpeed = textureScrollSpeed;
 
+        //--Reads in our special options, if we have any--
+        float sizePulseWidth = 0f;
+        int sizePulseCount = 0;
+        if (advancedOptions != null) {
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
+        }
+        //--End of special options--
+
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling);
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling,
+                sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
         plugin.mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -326,11 +367,18 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
      * @param aggressiveCulling If the trail is this many SU off-screen, it is removed from memory. Set to -1 to
      *                          disable this behaviour
+     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
+     *                        correct type values and use the right data keys. Any new features will be added here to
+     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
+     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
      */
     public static void AddTrailMemberAnimated (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, float aggressiveCulling) {
+                                               Vector2f offsetVelocity, float aggressiveCulling, @Nullable Map<String,Object> advancedOptions) {
         //First, find the plugin
         if (Global.getCombatEngine() == null) {
             return;
@@ -352,6 +400,15 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             }
         }
 
+        //--Reads in our special options, if we have any--
+        float sizePulseWidth = 0f;
+        int sizePulseCount = 0;
+        if (advancedOptions != null) {
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
+        }
+        //--End of special options--
+
         //Adjusts scroll speed to our most recent trail's value
         plugin.animMap.get(ID).scrollSpeed = textureScrollSpeed;
 
@@ -362,7 +419,8 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling);
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling,
+                sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
         plugin.animMap.get(ID).addNewTrailObject(objectToAdd);
@@ -380,9 +438,8 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         return toReturn;
     }
 
-    //Similar to above, but is *explicitly* intended for the cutTrailsOnEntity function, so is private
+    //Similar to above, but is *explicitly* intended for the cutTrailsOnEntity function, and is thus private
     private static float getUniqueCutterID () {
-
         //Gets a value 0.1f lower than the previous maximum ID, and marks that as our previous maximum ID
         float toReturn = usedCutterIDs - 0.1f;
         usedCutterIDs = toReturn;
@@ -393,7 +450,14 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
     /**
      * "Cuts" all trails on a designated entity, forcing new trail pieces to not link up with old ones. Should
      * be used before teleporting any entity, since it may have trails attached to it which will otherwise stretch
-     * in unintended ways
+     * in unintended ways.
+     *
+     * This can also be called (with a potential 1-frame delay) by adding an entity to any CustomData in
+     * the CombatEngineAPI with a key containing the phrase "MagicTrailPlugin_LIB_FREE_TRAIL_CUT" (note: *containing*.
+     * there must be more to the key than this, as it should be unique [optimally, use your modID and the ID of the
+     * ship trying to cut the trails]). This alternate  calling method does not require MagicLib, and may thus
+     * be optimal for smaller mods or mods that don't want any  other MagicLib features but still needs
+     * trail-cutting support
      *
      * @param entity The entity you want to cut all trails on
      */

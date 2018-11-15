@@ -1,8 +1,10 @@
 //By Nicke535
-//This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly
+//This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will
+//most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.
 package data.scripts.util;
 
 import org.lazywizard.lazylib.FastTrig;
+import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 
@@ -21,6 +23,8 @@ public class MagicTrailObject {
     private Color startColor = new Color(255, 255, 255);
     private Color endColor = new Color(255, 255, 255);
     private Vector2f offsetVelocity = new Vector2f(0f, 0f);
+    private float sizePulseWidth = 0f;
+    private float sizePulseCount = 0;
 
     //Public, non-varying values
     public int blendModeSRC = 0;
@@ -42,7 +46,7 @@ public class MagicTrailObject {
     public MagicTrailObject (float inDuration, float mainDuration, float outDuration, float startSize, float endSize, float startAngleVelocity,
                                     float endAngleVelocity, float mainOpacity, int blendModeSRC, int blendModeDEST, float startSpeed, float endSpeed,
                                     Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength,
-                                    Vector2f offsetVelocity, float aggressiveCulling) {
+                                    Vector2f offsetVelocity, float aggressiveCulling, float sizePulseWidth, float sizePulseCount) {
         this.inDuration = inDuration;
         this.mainDuration = mainDuration;
         this.outDuration = outDuration;
@@ -63,6 +67,8 @@ public class MagicTrailObject {
         this.textureLoopLength = textureLoopLength;
         this.offsetVelocity = offsetVelocity;
         this.aggressiveCulling = aggressiveCulling;
+        this.sizePulseWidth = sizePulseWidth;
+        this.sizePulseCount = sizePulseCount;
 
         this.currentColor = startColor;
         this.currentSize = startSize;
@@ -86,8 +92,19 @@ public class MagicTrailObject {
             spentLifetime = getTotalLifetime();
         }
 
+        //Calculates our "pulse" size, depending on pulse count, width and lifetime
+        //It is "smoothly" transitioned using MagicAnim.smooth(), and repeats itself sizePulseCount times
+        //Counts the first "half" of its lifetime as rising, the other as falling. sizePulseCount makes this "internal"
+        //lifetime happen multiple times over the trail's true lifetime
+        float thisFramePulseWidth = (spentLifetime/getTotalLifetime() * sizePulseCount);
+        while (thisFramePulseWidth > 1f) {thisFramePulseWidth--;}
+        if (thisFramePulseWidth > 0.5f) {thisFramePulseWidth = 1f - thisFramePulseWidth;}
+        thisFramePulseWidth = MagicAnim.smooth(thisFramePulseWidth) * sizePulseWidth;
+
+
         //Slides all values along depending on lifetime
-        currentSize = startSize * (1 - (spentLifetime / getTotalLifetime())) + endSize * (spentLifetime / getTotalLifetime());
+        currentSize = startSize * (1 - (spentLifetime / getTotalLifetime())) + endSize * (spentLifetime / getTotalLifetime())
+                + thisFramePulseWidth;
         currentSpeed = startSpeed * (1 - (spentLifetime / getTotalLifetime())) + endSpeed * (spentLifetime / getTotalLifetime());
         currentAngularVelocity = startAngleVelocity * (1 - (spentLifetime / getTotalLifetime())) + endAngleVelocity * (spentLifetime / getTotalLifetime());
         int red = ((int)(startColor.getRed() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getRed() * (spentLifetime / getTotalLifetime())));

@@ -1,5 +1,6 @@
 //By Nicke535
-//This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly
+//This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will
+//most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
