@@ -182,7 +182,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity, (Math.max(startSize,endSize)*3f)+(duration*300f),
+                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity, -1f,
                 0f, 0);
 
         //And finally add it to the correct location in our maps

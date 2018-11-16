@@ -73,7 +73,7 @@ public class MagicTrailTracker {
 
             //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
             //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
-            if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, part1.currentSize + 1f)) {
+            if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, partDistance*3f)) {
                 //Change our texture distance tracker depending on looping mode
                 //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                 //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
