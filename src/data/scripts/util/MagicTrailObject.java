@@ -46,7 +46,7 @@ public class MagicTrailObject {
     public MagicTrailObject (float inDuration, float mainDuration, float outDuration, float startSize, float endSize, float startAngleVelocity,
                                     float endAngleVelocity, float mainOpacity, int blendModeSRC, int blendModeDEST, float startSpeed, float endSpeed,
                                     Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength,
-                                    Vector2f offsetVelocity, float aggressiveCulling, float sizePulseWidth, float sizePulseCount) {
+                                    Vector2f offsetVelocity, float sizePulseWidth, float sizePulseCount) {
         this.inDuration = inDuration;
         this.mainDuration = mainDuration;
         this.outDuration = outDuration;
@@ -66,7 +66,6 @@ public class MagicTrailObject {
         this.currentLocation.y = spawnLocation.y;
         this.textureLoopLength = textureLoopLength;
         this.offsetVelocity = offsetVelocity;
-        this.aggressiveCulling = aggressiveCulling;
         this.sizePulseWidth = sizePulseWidth;
         this.sizePulseCount = sizePulseCount;
 
@@ -96,10 +95,10 @@ public class MagicTrailObject {
         //It is "smoothly" transitioned using MagicAnim.smooth(), and repeats itself sizePulseCount times
         //Counts the first "half" of its lifetime as rising, the other as falling. sizePulseCount makes this "internal"
         //lifetime happen multiple times over the trail's true lifetime
-        float thisFramePulseWidth = (spentLifetime/getTotalLifetime() * sizePulseCount);
+        float thisFramePulseWidth = ((spentLifetime/getTotalLifetime()) * sizePulseCount);
         while (thisFramePulseWidth > 1f) {thisFramePulseWidth--;}
         if (thisFramePulseWidth > 0.5f) {thisFramePulseWidth = 1f - thisFramePulseWidth;}
-        thisFramePulseWidth = MagicAnim.smooth(thisFramePulseWidth) * sizePulseWidth;
+        thisFramePulseWidth = MagicAnim.smooth(thisFramePulseWidth*2f) * sizePulseWidth;
 
 
         //Slides all values along depending on lifetime

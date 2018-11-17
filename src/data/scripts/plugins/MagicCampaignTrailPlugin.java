@@ -58,6 +58,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             }
             associatedEntity = Global.getSector().getPlayerFleet().getContainingLocation().addCustomEntity("nictoy_unique_custom_trail_tracker_object", "YOU SHOULD NOT SEE THIS",
                     "nictoy_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
+            associatedEntity.setFixedLocation(Global.getSector().getPlayerFleet().getLocation().x, Global.getSector().getPlayerFleet().getLocation().y);
         }
 
         //Ticks the main map
@@ -202,7 +203,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity, Math.max(startSize, endSize)*30f);
+                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -264,8 +265,6 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      *                           scrolling the entire texture length twice per second
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param aggressiveCulling If the trail is this many SU off-screen, it is removed from memory. Set to -1 to
-     *                          disable this behaviour
      * @param locationAPICulling If true, the trail is removed from memory as soon as the player fleet leaves the
      *                           location the trail is in. If false, the trail is only "frozen" when the player leaves
      * @param locationAPI Which locationAPI this trail is in; should ideally be in the same as the location the
@@ -274,21 +273,21 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     public static void AddTrailMemberAdvanced (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, float aggressiveCulling, boolean locationAPICulling, LocationAPI locationAPI) {
+                                               Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Runs the same function, but only on the specific script instead of the static interface
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAdvancedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
                         startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
                         inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                        offsetVelocity, aggressiveCulling, locationAPICulling, locationAPI);
+                        offsetVelocity, locationAPICulling, locationAPI);
             }
         }
     }
     private void AddTrailMemberAdvancedInternal (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                 float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                 float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                                Vector2f offsetVelocity, float aggressiveCulling, boolean locationAPICulling, LocationAPI locationAPI) {
+                                                Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Finds the correct maps, and ensures they are actually instantiated
         int texID = sprite.getTextureId();
         if (mainMap.get(texID) == null) {
@@ -318,7 +317,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling);
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -381,8 +380,6 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      *                           scrolling the entire texture length twice per second
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param aggressiveCulling If the trail is this many SU off-screen, it is removed from memory. Set to -1 to
-     *                          disable this behaviour
      * @param locationAPICulling If true, the trail is removed from memory as soon as the player fleet leaves the
      *                           location the trail is in. If false, the trail is only "frozen" when the player leaves
      * @param locationAPI Which locationAPI this trail is in; should ideally be in the same as the location the
@@ -391,14 +388,14 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     public static void AddTrailMemberAnimated (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, float aggressiveCulling, boolean locationAPICulling, LocationAPI locationAPI) {
+                                               Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Runs the same function, but only on the specific script instead of the static interface
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof  MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAnimatedInternal (linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
                 startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
                 inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                offsetVelocity, aggressiveCulling, locationAPICulling, locationAPI) ;
+                offsetVelocity, locationAPICulling, locationAPI) ;
                 break;
             }
         }
@@ -406,7 +403,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     private void AddTrailMemberAnimatedInternal (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                 float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                 float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                                Vector2f offsetVelocity, float aggressiveCulling, boolean locationAPICulling, LocationAPI locationAPI) {
+                                                Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Finds the correct maps, and ensures they are actually instantiated
         if (animMap.get(ID) == null) {
             animMap.put(ID, new NicToyCustomCampaignTrailTracker());
@@ -434,7 +431,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling);
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         animMap.get(ID).addNewTrailObject(objectToAdd);
@@ -571,7 +568,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
                 //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
                 //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
-                if (!Global.getSector().getViewport().isNearViewport(part1.currentLocation, part1.currentSize + 1f)) {
+                if (!Global.getSector().getViewport().isNearViewport(part1.currentLocation, partDistance*3f)) {
                     //Change our texture distance tracker depending on looping mode
                     //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                     //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
@@ -646,11 +643,11 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             scrollingTextureOffset += (amount * scrollSpeed) / 1000f;
         }
 
-        //Quickhand function to remove all trail objects which has timed out or should be auto-culled due to being too far offscreen
+        //Quickhand function to remove all trail objects which has timed out
         private void clearAllDeadObjects (){
             List<NicToyCustomCampaignTrailObject> toRemove = new ArrayList<NicToyCustomCampaignTrailObject>();
             for (NicToyCustomCampaignTrailObject part : allTrailParts) {
-                if (part.getSpentLifetime() >= part.getTotalLifetime() || (!Global.getSector().getViewport().isNearViewport(part.currentLocation, part.aggressiveCulling) && part.aggressiveCulling > 0f)) {
+                if (part.getSpentLifetime() >= part.getTotalLifetime()) {
                     toRemove.add(part);
                 }
             }
@@ -684,7 +681,6 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         public int blendModeDEST = 0;
         public float textureLoopLength = 0;
         public Vector2f offsetVelocity = new Vector2f(0f, 0f);
-        public float aggressiveCulling = -1f;
 
         //Public, varying values
         public Color currentColor = new Color(255, 255, 255);
@@ -699,8 +695,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         //Main instantiator: generates a full CustomCampaignTrailObject with all necessary values
         public NicToyCustomCampaignTrailObject (float inDuration, float mainDuration, float outDuration, float startSize, float endSize, float startAngleVelocity,
                                                 float endAngleVelocity, float mainOpacity, int blendModeSRC, int blendModeDEST, float startSpeed, float endSpeed,
-                                                Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength, Vector2f offsetVelocity,
-                                                float aggressiveCulling) {
+                                                Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength, Vector2f offsetVelocity) {
             this.inDuration = inDuration;
             this.mainDuration = mainDuration;
             this.outDuration = outDuration;
@@ -733,7 +728,6 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
             this.offsetVelocity.x = offsetVelocity.x;
             this.offsetVelocity.y = offsetVelocity.y;
-            this.aggressiveCulling = aggressiveCulling;
         }
 
         //Modifies lifetime, position and all other things time-related

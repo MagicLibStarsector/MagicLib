@@ -73,7 +73,7 @@ public class MagicTrailTracker {
 
             //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
             //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
-            if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, partDistance*3f)) {
+            if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, partDistance*2f)) {
                 //Change our texture distance tracker depending on looping mode
                 //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                 //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
@@ -148,11 +148,11 @@ public class MagicTrailTracker {
         scrollingTextureOffset += (amount * scrollSpeed) / 1000f;
     }
 
-    //Quickhand function to remove all trail objects which has timed out or should be auto-culled due to being too far offscreen
+    //Quickhand function to remove all trail objects which has timed out
     public void clearAllDeadObjects (){
         List<MagicTrailObject> toRemove = new ArrayList<MagicTrailObject>();
         for (MagicTrailObject part : allTrailParts) {
-            if (part.getSpentLifetime() >= part.getTotalLifetime() || (!Global.getSector().getViewport().isNearViewport(part.currentLocation, part.aggressiveCulling) && part.aggressiveCulling < 0f)) {
+            if (part.getSpentLifetime() >= part.getTotalLifetime()) {
                 toRemove.add(part);
             }
         }

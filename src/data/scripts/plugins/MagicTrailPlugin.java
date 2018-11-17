@@ -182,7 +182,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity, -1f,
+                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity,
                 0f, 0);
 
         //And finally add it to the correct location in our maps
@@ -245,8 +245,6 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                           scrolling the entire texture length twice per second
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param aggressiveCulling If the trail is this many SU off-screen, it is removed from memory. Set to -1 to
-     *                          disable this behaviour
      * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
      *                        correct type values and use the right data keys. Any new features will be added here to
      *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
@@ -258,7 +256,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
     public static void AddTrailMemberAdvanced (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, float aggressiveCulling, @Nullable Map<String,Object> advancedOptions) {
+                                               Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
         //First, find the plugin, and if it doesn't exist do nothing
         if (Global.getCombatEngine() == null) {
             return;
@@ -301,7 +299,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling,
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity,
                 sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
@@ -365,8 +363,6 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                           scrolling the entire texture length twice per second
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param aggressiveCulling If the trail is this many SU off-screen, it is removed from memory. Set to -1 to
-     *                          disable this behaviour
      * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
      *                        correct type values and use the right data keys. Any new features will be added here to
      *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
@@ -378,7 +374,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
     public static void AddTrailMemberAnimated (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, float aggressiveCulling, @Nullable Map<String,Object> advancedOptions) {
+                                               Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
         //First, find the plugin
         if (Global.getCombatEngine() == null) {
             return;
@@ -419,7 +415,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity, aggressiveCulling,
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity,
                 sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps

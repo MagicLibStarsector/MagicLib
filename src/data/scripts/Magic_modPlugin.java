@@ -2,6 +2,7 @@ package data.scripts;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
+import data.scripts.plugins.MagicCampaignTrailPlugin;
 
 public class Magic_modPlugin extends BaseModPlugin {
     
@@ -32,9 +33,13 @@ public class Magic_modPlugin extends BaseModPlugin {
 //    //                                    //
 //    ////////////////////////////////////////
 //    
-//    @Override
-//    public void onNewGame() {
-//    }
+    @Override
+    public void onNewGame() {
+        if (Global.getSector() != null) {
+            //Disabled for now
+            //Global.getSector().addScript(new MagicCampaignTrailPlugin());
+        }
+    }
 //    
 //    ////////////////////////////////////////
 //    //                                    //
