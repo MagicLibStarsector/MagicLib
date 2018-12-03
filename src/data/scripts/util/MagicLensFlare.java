@@ -94,8 +94,8 @@ public class MagicLensFlare {
         for(int i=1; i<length/50; i++){
             
             Vector2f offset = point;        
-            offset.x += FastTrig.cos(angle * Math.PI / 180f);
-            offset.y += FastTrig.sin(angle * Math.PI / 180f);
+            offset.x += FastTrig.cos(angle * MathUtils.FPI / 180f);
+            offset.y += FastTrig.sin(angle * MathUtils.FPI / 180f);
 
             engine.spawnEmpArc(
                         origin,

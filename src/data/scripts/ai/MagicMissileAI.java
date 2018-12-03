@@ -125,7 +125,7 @@ public class MagicMissileAI implements MissileAIPlugin, GuidedMissileAI {
         }        
         //calculate the precision range factor
         PRECISION_RANGE=(float)Math.pow((2*PRECISION_RANGE),2);
-        OFFSET=(float)(Math.random()*Math.PI*2);
+        OFFSET=(float)(Math.random()*MathUtils.FPI*2);
     }
     
     //////////////////////
@@ -215,7 +215,7 @@ public class MagicMissileAI implements MissileAIPlugin, GuidedMissileAI {
                     VectorUtils.getFacing(MISSILE.getVelocity())+180
                     ) 
                     * 0.5f * //oversteer
-                    (float)((FastTrig.sin(Math.PI/90*(Math.min(Math.abs(offCourseAngle),45))))); //damping when the correction isn't important
+                    (float)((FastTrig.sin(MathUtils.FPI/90*(Math.min(Math.abs(offCourseAngle),45))))); //damping when the correction isn't important
 
             //modified optimal facing to correct the velocity vector angle as soon as possible
             correctAngle = correctAngle+correction;
@@ -227,7 +227,7 @@ public class MagicMissileAI implements MissileAIPlugin, GuidedMissileAI {
             if(ECCM<=1){
                 multiplier=0.3f;
             }
-            correctAngle+=multiplier*WAVE_AMPLITUDE*check*Math.cos(OFFSET+MISSILE.getElapsed()*(2*Math.PI/WAVE_TIME));
+            correctAngle+=multiplier*WAVE_AMPLITUDE*check*Math.cos(OFFSET+MISSILE.getElapsed()*(2*MathUtils.FPI/WAVE_TIME));
         }
         
         //target angle for interception        

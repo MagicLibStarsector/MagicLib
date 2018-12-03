@@ -1,5 +1,21 @@
 MagicLib
 
+0.22
+
+MagicTargeting:
+ Missile targeting now ignores missiles without collisions
+
+All scripts now use simplified PI from LazyLib.
+
+0.20
+
+   Compiled for Starsector 0.9.0a
+
+CONTENT:
+
+MagicTrail (by Nicke)
+   Draws missile-like trails from arbitrary coordinates with a ton of fancy options to play with.
+
 0.12
 
 CONTENT:
@@ -13,7 +29,7 @@ MagicMissileAI (loose script)
 BUGFIXES/IMPROVEMENTS:
 
 MagicTargeting
-   Added a superior simpler function for targeting from both missile and ships, with fallback target option.
+   Added a superior simpler function for targeting from both missile and ships, with fallback target option. 
 
 
 

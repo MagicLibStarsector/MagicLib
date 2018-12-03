@@ -4,6 +4,7 @@ By Tartiflette
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.CollisionClass;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.MissileAPI;
@@ -198,7 +199,7 @@ public class MagicTargeting {
         
         for (MissileAPI m : missiles){
             
-            if(!m.isFading() && m.getOwner()!=source.getOwner()){ //is the missile alive and hostile
+            if(!m.isFading() && m.getOwner()!=source.getOwner() || m.getCollisionClass()==CollisionClass.NONE){ //is the missile alive, hittable and hostile
                 
                 if(CombatUtils.isVisibleToSide(m, source.getOwner()) && MathUtils.isPointWithinCircle(lookAround, m.getLocation(), maxRange)){ //is it around
                     

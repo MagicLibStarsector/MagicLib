@@ -51,7 +51,7 @@ public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
             }
             
             //desync the engines wobble
-            OFFSET=(float)(Math.random()*Math.PI);
+            OFFSET=(float)(Math.random()*MathUtils.FPI);
             
             //"rest" angle when not in use
             NEUTRAL_ANGLE=weapon.getSlot().getAngle();
@@ -315,6 +315,6 @@ public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
     //////////////////////////////////////////
     
     public float smooth (float x){
-        return 0.5f - ((float)(Math.cos(x*Math.PI) /2 ));
+        return 0.5f - ((float)(Math.cos(x*MathUtils.FPI) /2 ));
     }  
 }

@@ -4,6 +4,7 @@ By Tartiflette
 package data.scripts.util;
 
 import org.lazywizard.lazylib.FastTrig;
+import org.lazywizard.lazylib.MathUtils;
 
 public class MagicAnim {    
     
@@ -19,7 +20,7 @@ public class MagicAnim {
      * Smoothed float value
      */
     public static float smooth (float x){
-        return 0.5f - ((float)(FastTrig.cos(Math.min(1, Math.max(0, x))*Math.PI) /2 ));
+        return 0.5f - ((float)(FastTrig.cos(Math.min(1, Math.max(0, x))*MathUtils.FPI) /2 ));
     }
     
     /**
@@ -41,7 +42,7 @@ public class MagicAnim {
     public static float AS (float x, float min, float max){
         float value=Math.min(max, Math.max(min, x));
         value = (value-min)/(max-min);
-        value = (0.5f - ((float)(FastTrig.cos(value*Math.PI) /2 )));
+        value = (0.5f - ((float)(FastTrig.cos(value*MathUtils.FPI) /2 )));
         value *= (max-min) + min;
         return value;
     }
@@ -103,7 +104,7 @@ public class MagicAnim {
      * smoothed float value in the new range
      */
     public static float SO (float x, float start, float end){
-        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *Math.PI ) /2 );
+        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI ) /2 );
     }
     
     /**
@@ -123,6 +124,6 @@ public class MagicAnim {
      * smooth "back-and-forth" float value in the new range
      */
     public static float RSO (float x, float start, float end){
-        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *Math.PI*2 ) /2 );
+        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI*2 ) /2 );
     }  
 }
