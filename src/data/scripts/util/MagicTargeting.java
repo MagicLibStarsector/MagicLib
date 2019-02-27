@@ -199,7 +199,7 @@ public class MagicTargeting {
         
         for (MissileAPI m : missiles){
             
-            if(!m.isFading() && m.getOwner()!=source.getOwner() || m.getCollisionClass()==CollisionClass.NONE){ //is the missile alive, hittable and hostile
+            if(!m.isFading() && m.getOwner()!=source.getOwner() && m.getCollisionClass()!=CollisionClass.NONE){ //is the missile alive, hittable and hostile
                 
                 if(CombatUtils.isVisibleToSide(m, source.getOwner()) && MathUtils.isPointWithinCircle(lookAround, m.getLocation(), maxRange)){ //is it around
                     

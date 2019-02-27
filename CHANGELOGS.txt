@@ -3,7 +3,7 @@ MagicLib
 0.22
 
 MagicTargeting:
- Missile targeting now ignores missiles without collisions
+   . Missile targeting now ignores missiles without collisions
 
 All scripts now use simplified PI from LazyLib.
 
