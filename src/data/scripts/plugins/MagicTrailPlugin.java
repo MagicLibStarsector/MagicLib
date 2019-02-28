@@ -253,6 +253,9 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                                              most. Used in conjunction with SIZE_PULSE_COUNT
      *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
      *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                                                 "forward propagation". Used to be the default. CANNOT be
+     *                                                 changed mid-trail
      */
     public static void AddTrailMemberAdvanced (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
@@ -374,6 +377,9 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                                              most. Used in conjunction with SIZE_PULSE_COUNT
      *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
      *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                                                 "forward propagation". Used to be the default. CANNOT be
+     *                                                 changed mid-trail     
      */
     public static void AddTrailMemberAnimated (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
