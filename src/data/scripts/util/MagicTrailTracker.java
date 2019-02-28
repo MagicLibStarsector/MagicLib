@@ -20,6 +20,9 @@ public class MagicTrailTracker {
     private float scrollingTextureOffset = 0f;
     public float scrollSpeed = 0f;
 
+    //For legacy forward-propagating trail scrolling; causes some issues, but might remove stuttering when spawning trails slower than once-per-frame
+    public boolean usesForwardPropagation = false;
+
     //For animated textures: the trail counts as animated only if isAnimated = true
     public boolean isAnimated = false;
     public int currentAnimRenderTexture = 0;
@@ -55,25 +58,58 @@ public class MagicTrailTracker {
         glBindTexture(GL_TEXTURE_2D, trueTextureID);
         glBegin(GL_QUADS);
 
-        //Iterate through all trail parts except the most recent one: the idea is that each part renders in relation to the *next* part
-        float texDistTracker = 0f;
-        for (int i = 0; i < allTrailParts.size()-1; i++) {
-            //First, get a handle for our parts so we can make the code shorter
-            MagicTrailObject part1 = allTrailParts.get(i);   //Current part
-            MagicTrailObject part2 = allTrailParts.get(i+1); //Next part
+        //ADDITION 28/2-2019 Nicke535: chooses a render mode depending on if we use the old "forward-propagating-render" option
+        if (usesForwardPropagation) {
+            //Iterate through all trail parts except the most recent one: the idea is that each part renders in relation to the *next* part
+            float texDistTracker = 0f;
+            for (int i = 0; i < allTrailParts.size()-1; i++) {
+                //First, get a handle for our parts so we can make the code shorter
+                MagicTrailObject part1 = allTrailParts.get(i);   //Current part
+                MagicTrailObject part2 = allTrailParts.get(i+1); //Next part
 
-            //Then, determine the corner points of both this and the next trail part
-            Vector2f point1Left = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle + 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle + 90))));
-            Vector2f point1Right = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle - 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle - 90))));
-            Vector2f point2Left = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle + 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle + 90))));
-            Vector2f point2Right = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle - 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle - 90))));
+                //Then, determine the corner points of both this and the next trail part
+                Vector2f point1Left = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle + 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle + 90))));
+                Vector2f point1Right = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle - 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle - 90))));
+                Vector2f point2Left = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle + 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle + 90))));
+                Vector2f point2Right = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle - 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle - 90))));
 
-            //Saves an easy value for the distance between the current two parts
-            float partDistance = MathUtils.getDistance(part1.currentLocation, part2.currentLocation);
+                //Saves an easy value for the distance between the current two parts
+                float partDistance = MathUtils.getDistance(part1.currentLocation, part2.currentLocation);
 
-            //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
-            //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
-            if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, partDistance*2f)) {
+                //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
+                //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
+                if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, partDistance*2f)) {
+                    //Change our texture distance tracker depending on looping mode
+                    //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
+                    //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
+                    if (part1.textureLoopLength <= 0f) {
+                        texDistTracker = (float)(i + 1) / (float)allTrailParts.size();
+                    } else {
+                        texDistTracker += partDistance / part1.textureLoopLength;
+                    }
+
+                    continue;
+                }
+
+                //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
+                float opacityMult = 1f;
+                if (i < 2) {
+                    opacityMult *= ((float)i/2f);
+                } else if (i > allTrailParts.size()-3) {
+                    opacityMult *= ((float)allTrailParts.size()-1f-(float)i)/2f;
+                }
+
+                //Sets the current render color
+                glColor4ub((byte)part1.currentColor.getRed(),(byte)part1.currentColor.getGreen(),(byte)part1.currentColor.getBlue(),(byte)(part1.currentOpacity * opacityMult * 255));
+
+                //Sets corner 1, or the first left corner
+                glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point1Left.getX(),point1Left.getY());
+
+                //Sets corner 2, or the first right corner
+                glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point1Right.getX(),point1Right.getY());
+
                 //Change our texture distance tracker depending on looping mode
                 //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                 //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
@@ -83,55 +119,105 @@ public class MagicTrailTracker {
                     texDistTracker += partDistance / part1.textureLoopLength;
                 }
 
-                continue;
+                //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
+                opacityMult = 1f;
+                if ((i + 1) < 2) {
+                    opacityMult *= ((float)(i+1)/2f);
+                } else if ((i + 1) > allTrailParts.size()-3) {
+                    opacityMult *= ((float)allTrailParts.size()-2f-(float)i)/2f;
+                }
+
+                //Changes render color to our next segment's opacity
+                glColor4ub((byte)part2.currentColor.getRed(),(byte)part2.currentColor.getGreen(),(byte)part2.currentColor.getBlue(),(byte)(part2.currentOpacity * opacityMult * 255));
+
+                //Sets corner 3, or the second right corner
+                glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point2Right.getX(),point2Right.getY());
+
+                //Sets corner 4, or the second left corner
+                glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point2Left.getX(),point2Left.getY());
             }
+        } else {
+            //Iterate through all trail parts except the oldest one: the idea is that each part renders in relation to the *previous* part
+            //Note that this behaviour is inverted compared to forward-propagating render (the old method)
+            float texDistTracker = 0f;
+            for (int i = allTrailParts.size()-1; i > 0; i--) {
+                //First, get a handle for our parts so we can make the code shorter
+                MagicTrailObject part1 = allTrailParts.get(i);	//Current part
+                MagicTrailObject part2 = allTrailParts.get(i-1);	//Next part
 
-            //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
-            float opacityMult = 1f;
-            if (i < 2) {
-                opacityMult *= ((float)i/2f);
-            } else if (i > allTrailParts.size()-3) {
-                opacityMult *= ((float)allTrailParts.size()-1f-(float)i)/2f;
+                //Then, determine the corner points of both this and the next trail part
+                Vector2f point1Left = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle + 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle + 90))));
+                Vector2f point1Right = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle - 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle - 90))));
+                Vector2f point2Left = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle + 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle + 90))));
+                Vector2f point2Right = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle - 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle - 90))));
+
+                //Saves an easy value for the distance between the current two parts
+                float partDistance = MathUtils.getDistance(part1.currentLocation, part2.currentLocation);
+
+                //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
+                //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
+                if (!Global.getCombatEngine().getViewport().isNearViewport(part1.currentLocation, partDistance*2f)) {
+                    //Change our texture distance tracker depending on looping mode
+                    //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
+                    //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
+                    if (part1.textureLoopLength <= 0f) {
+                        texDistTracker = (float)(i - 1) / (float)allTrailParts.size();
+                    } else {
+                        texDistTracker += partDistance / part1.textureLoopLength;
+                    }
+
+                    continue;
+                }
+
+                //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
+                float opacityMult = 1f;
+                if (i < 2) {
+                    opacityMult *= ((float)i/2f);
+                } else if (i > allTrailParts.size()-3) {
+                    opacityMult *= ((float)allTrailParts.size()-1f-(float)i)/2f;
+                }
+
+                //Sets the current render color
+                glColor4ub((byte)part1.currentColor.getRed(),(byte)part1.currentColor.getGreen(),(byte)part1.currentColor.getBlue(),(byte)(part1.currentOpacity * opacityMult * 255));
+
+                //Sets corner 1, or the first left corner
+                glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point1Left.getX(),point1Left.getY());
+
+                //Sets corner 2, or the first right corner
+                glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point1Right.getX(),point1Right.getY());
+
+                //Change our texture distance tracker depending on looping mode
+                //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
+                //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
+                if (part1.textureLoopLength <= 0f) {
+                    texDistTracker = (float)(i - 1) / (float)allTrailParts.size();
+                } else {
+                    texDistTracker += partDistance / part1.textureLoopLength;
+                }
+
+                //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
+                opacityMult = 1f;
+                if ((i - 1) < 2) {
+                    opacityMult *= ((float)(i-1)/2f);
+                } else if ((i - 1) > allTrailParts.size()-3) {
+                    opacityMult *= ((float)allTrailParts.size()-1f-((float)i-1f))/2f;
+                }
+
+                //Changes render color to our next segment's opacity
+                glColor4ub((byte)part2.currentColor.getRed(),(byte)part2.currentColor.getGreen(),(byte)part2.currentColor.getBlue(),(byte)(part2.currentOpacity * opacityMult * 255));
+
+                //Sets corner 3, or the second right corner
+                glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point2Right.getX(),point2Right.getY());
+
+                //Sets corner 4, or the second left corner
+                glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
+                glVertex2f(point2Left.getX(),point2Left.getY());
             }
-
-            //Sets the current render color
-            glColor4ub((byte)part1.currentColor.getRed(),(byte)part1.currentColor.getGreen(),(byte)part1.currentColor.getBlue(),(byte)(part1.currentOpacity * opacityMult * 255));
-
-            //Sets corner 1, or the first left corner
-            glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
-            glVertex2f(point1Left.getX(),point1Left.getY());
-
-            //Sets corner 2, or the first right corner
-            glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
-            glVertex2f(point1Right.getX(),point1Right.getY());
-
-            //Change our texture distance tracker depending on looping mode
-            //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
-            //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
-            if (part1.textureLoopLength <= 0f) {
-                texDistTracker = (float)(i + 1) / (float)allTrailParts.size();
-            } else {
-                texDistTracker += partDistance / part1.textureLoopLength;
-            }
-
-            //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
-            opacityMult = 1f;
-            if ((i + 1) < 2) {
-                opacityMult *= ((float)(i+1)/2f);
-            } else if ((i + 1) > allTrailParts.size()-3) {
-                opacityMult *= ((float)allTrailParts.size()-2f-(float)i)/2f;
-            }
-
-            //Changes render color to our next segment's opacity
-            glColor4ub((byte)part2.currentColor.getRed(),(byte)part2.currentColor.getGreen(),(byte)part2.currentColor.getBlue(),(byte)(part2.currentOpacity * opacityMult * 255));
-
-            //Sets corner 3, or the second right corner
-            glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
-            glVertex2f(point2Right.getX(),point2Right.getY());
-
-            //Sets corner 4, or the second left corner
-            glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
-            glVertex2f(point2Left.getX(),point2Left.getY());
         }
 
         //And finally stops OpenGL

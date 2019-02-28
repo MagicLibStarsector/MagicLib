@@ -6,6 +6,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import data.scripts.util.MagicTrailObject;
 import data.scripts.util.MagicTrailTracker;
 import org.jetbrains.annotations.Nullable;
@@ -294,6 +295,9 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         if (advancedOptions != null) {
             if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
             if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean)advancedOptions.get("FORWARD_PROPAGATION")) {
+                plugin.mainMap.get(texID).get(ID).usesForwardPropagation = true;
+            }
         }
         //--End of special options--
 
@@ -402,6 +406,9 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         if (advancedOptions != null) {
             if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
             if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean)advancedOptions.get("FORWARD_PROPAGATION")) {
+                plugin.animMap.get(ID).usesForwardPropagation = true;
+            }
         }
         //--End of special options--
 
