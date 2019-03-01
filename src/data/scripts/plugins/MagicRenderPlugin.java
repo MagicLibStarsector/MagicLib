@@ -135,6 +135,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                             || !engine.isEntityInPlay(entry.ANCHOR))
                             ){
                         entry.FADEOUT=(entry.FADEOUT-entry.FULL)+entry.TIME;
+                        entry.FULL=entry.TIME;
                     }
                 }
                 
@@ -204,7 +205,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 
                 //finally render that stuff
                 
-                render(new renderData(entry.SPRITE, location));
+                 render(new renderData(entry.SPRITE, location));
             }
         }
         
