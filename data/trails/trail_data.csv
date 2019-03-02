@@ -1,0 +1,31 @@
+trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn,colorOut,opacity,textLength,textScroll,distance,dispersion,drift,fadeOnFadeOut,angleAdjustment,additive,velocityIn,velocityOut,angle,rotationIn,rotationOut
+# String trail: projectile ID plus a suffix if there are multiple trails for that proj
+# String projectile: projectile ID 
+# String sprite: sprite ID in data/config/settings.json: in the "graphics"\"fx" category
+# float minLength: minimal segment length. Improve the performance when time warp in involved as well as keeping the look consistent. 
+# !!!! Can be set to a negative value to triggers a more optimized SLOW MODE for projectiles with very low speeds. !!!!
+# float fadeIn: fade in time in seconds
+# float duration: full opacity duration in seconds
+# float fadeOut: fadeout time in seconds
+# float sizeIn: initial width
+# float sizeOut: final width
+# Color colorIn: initial color
+# Color colorOut: final color
+# float opacity: maximum opacity clamp
+# float textLength: texture length in pixels
+# float textScroll: texture scroll speed in pixels per seconds
+# float distance: distance behind the proj the trail spawns
+# float dispersion: amount of randomization per second, in su
+# float drift: amount of sideway compensation for drifting projectiles
+# boolean fadeOnFadeOut: forced fadeout if the proj fades
+# boolean angleAdjustment reorient the trail in the direction of the velocity rather than the proj facing. 
+# !!!! Must be FALSE for BALLISTIC_AS_BEAM projs !!!!
+# boolean additive: normal or additive blending
+# float velocityIn: speed at which the trail segments are "emited" at, in su
+# float velocityOut: final speed of the trail segments
+# float angle: offset angle of the trail relative to the projectile orientation, after corrections if any (default 0 for directly backward)
+# float rotationIn: initial angular momentum of the trail segments relative to the projectile
+# float rotationOut: final angular momentum of the trail segments
+
+# EXAMPLE
+#SKR_spike_shot,SKR_spike_shot,SKR_smokeTrail,20,0.1,0.25,1.5,12,24,"[175,128,75]","[128,128,128]",0.75,128,-256,5,10,0,FALSE,FALSE,FALSE,50,0,180,0,0

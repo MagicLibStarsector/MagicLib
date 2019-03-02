@@ -3,7 +3,8 @@
         "ML_fakeBeamPlugin":"data.scripts.plugins.MagicFakeBeamPlugin",
         "ML_spriteRenderManager":"data.scripts.plugins.MagicRenderPlugin",       
         "MagicCampaignTrailPlugin":"data.scripts.plugins.MagicCampaignTrailPlugin",     
-        "MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin",      
+        "MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin", 
+        "MagicAutoTrails":"data.scripts.plugins.MagicAutoTrails",
     },
 
     "graphics":{
