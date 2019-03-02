@@ -12,5 +12,7 @@
             "fakeBeamCore":"graphics/magic/fx/fakebeam/fakeBeamCore.png",
             "fakeBeamFringe":"graphics/magic/fx/fakebeam/fakeBeamFringe.png",
         },
+		"fx":{
+		},
     }
 }

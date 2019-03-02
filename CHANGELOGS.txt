@@ -2,9 +2,17 @@ MagicLib
 
 0.23
 
+Added CSV-based projectile trail manager. (see data/trails/trail_data.csv)
+
 MagicTrails:
    . Now uses an alternate rendering method which should fix a variety of issues
    . The old render version is available under "specialOptions", as the bool "FORWARD_PROPAGATION" (default false)
+
+MagicUI:
+   . Added two new methods to display full fat status bar in the UI and the player ship hud widget.
+
+MagicRender:
+   . Fixed issue with sprite attached to fading projectiles.
 
 0.22
 

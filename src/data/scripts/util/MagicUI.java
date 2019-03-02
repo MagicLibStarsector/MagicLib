@@ -425,10 +425,13 @@ public class MagicUI {
         }
         addHUDStatusBar(ship, fill, innerColor, borderColor, secondfill, pos2);
         if (TODRAW10 != null) {
-            pos2.translate(-31f, 8f);
-            addHUDStatusText(ship, bottext, innerColor, pos2);
+            TODRAW10.setText(bottext);
+            int pixelleft =(int)TODRAW10.getWidth();
+            pos2.translate(-pixelleft-5f, 8f);
+            addHUDStatusText(ship, innerColor, pos2);
             pos2.translate(0, 8f);
-            addHUDStatusText(ship, toptext, innerColor, pos2);
+            TODRAW10.setText(toptext);
+            addHUDStatusText(ship, innerColor, pos2);
         }
     }
     
@@ -574,7 +577,8 @@ public class MagicUI {
 
         openGL11ForText();
         TODRAW14.setText(text);
-        TODRAW14.setMaxHeight(46);
+        TODRAW14.setMaxWidth(46);
+        TODRAW14.setMaxHeight(14);
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
         TODRAW14.setColor(color);
@@ -694,11 +698,10 @@ public class MagicUI {
      * Draw text with the font victor10 where you want on the screen.
      *
      * @param ship The player ship.
-     * @param text The text to write(limited to qew characters)
      * @param textColor The color of the text
      * @param screenPos The position on the Screen.
      */
-    private static void addHUDStatusText(ShipAPI ship, String text, Color textColor, Vector2f screenPos) {
+    private static void addHUDStatusText(ShipAPI ship, Color textColor, Vector2f screenPos) {
         Color borderCol = textColor == null ? GREENCOLOR : textColor;
         if (!ship.isAlive()) {
             borderCol = BLUCOLOR;
@@ -720,8 +723,8 @@ public class MagicUI {
 
         // Global.getCombatEngine().getViewport().
         openGL11ForText();
-        TODRAW10.setText(text);
-        TODRAW10.setMaxHeight(26);
+       // TODRAW10.setText(text);
+       // TODRAW10.setMaxHeight(26);
         TODRAW10.setColor(shadowcolor);
         TODRAW10.draw(shadowLoc);
         TODRAW10.setColor(color);

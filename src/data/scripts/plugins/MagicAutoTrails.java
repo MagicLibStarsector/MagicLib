@@ -26,7 +26,7 @@ import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     
     private static Logger log = Global.getLogger(MagicAutoTrails.class); 
-    
+    private static final String PATH="data/trail/trail_data.csv";
     //Each proj can have multiple trails
     private static Map<String,List<trailData>> PROJ_TRAILS = new HashMap<>();
     
@@ -213,7 +213,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         //merge all the trail_data
         
         try {
-            JSONArray trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", "data/trails/trail_data.csv", "MagicLib");
+            JSONArray trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
             
             for(int i=0; i<trailData.length(); i++){
                 JSONObject row = trailData.getJSONObject(i);
