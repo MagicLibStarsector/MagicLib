@@ -2,10 +2,11 @@
     "masterVersionFile":"https://bitbucket.org/CodingTartiflette/magiclib/downloads/magiclib.version",
     "modName":"MagicLib",
     "modThreadId":"13718",
+	"modNexusId":"10",
     "modVersion":
     {
         "major":0,
         "minor":2,
-        "patch":2
+        "patch":4
     }
 }

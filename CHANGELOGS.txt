@@ -1,6 +1,19 @@
 MagicLib
 
+0.24
+
+MagicTrail CSV plugin:
+   . Added a velocity randomization parameter.
+
+MagicTargeting:
+   . Fixed issue with random missile targeting only working in the front of the source ship.
+
 0.23
+
+RC3
+MagicTrail CSV plugin:
+   . Fixed issue with multiple trails getting weird offsets
+   . Added second dispersion method to create non-linear offsets
 
 Added CSV-based projectile trail manager. (see data/trails/trail_data.csv)
 
