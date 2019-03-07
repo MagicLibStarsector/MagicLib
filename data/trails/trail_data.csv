@@ -1,4 +1,4 @@
-trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn,colorOut,opacity,textLength,textScroll,distance,dispersion,drift,fadeOnFadeOut,angleAdjustment,additive,velocityIn,velocityOut,angle,rotationIn,rotationOut,randomRotation
+trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn,colorOut,opacity,textLength,textScroll,distance,dispersion,drift,fadeOnFadeOut,angleAdjustment,additive,velocityIn,velocityOut,randomVelocity,angle,rotationIn,rotationOut,randomRotation
 
 # EXAMPLE
 #SKR_blackout_shot,SKR_blackout_shot,SKR_fuzzyTrail,10,0.1,0.1,0.5,24,12,"[25,200,150]","[50,100,200]",0.5,-128,-256,10,0,0,FALSE,FALSE,TRUE,50,0,0,0,180,true
@@ -27,6 +27,7 @@ trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn
 # boolean additive: normal or additive blending
 # float velocityIn: speed at which the trail segments are "emited" at, in su
 # float velocityOut: final speed of the trail segments
+# float randomVelocity: randomize both velocityIn and out in that proportion.
 # float angle: offset angle of the trail relative to the projectile orientation, after corrections if any (default 0 for directly backward)
 # float rotationIn: initial angular momentum of the trail segments relative to the projectile
 # float rotationOut: final angular momentum of the trail segments

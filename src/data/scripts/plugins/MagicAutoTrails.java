@@ -58,7 +58,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             return;
         }
         CombatEngineAPI engine = Global.getCombatEngine();
-
+        
         //Runs once on each projectile that matches one of the IDs specified in our maps
         for (DamagingProjectileAPI proj : engine.getProjectiles()) {
             
@@ -172,6 +172,9 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             float rotationIn = PROJ_TRAILS.get(specID).get(i).rotationIn;
             float rotationOut = PROJ_TRAILS.get(specID).get(i).rotationOut;
             
+            float velIn = PROJ_TRAILS.get(specID).get(i).velocityIn;
+            float velOut = PROJ_TRAILS.get(specID).get(i).velocityOut;
+            
             if(PROJ_TRAILS.get(specID).get(i).randomRotation){
                 float rand = MathUtils.getRandomNumberInRange(-1, 1);
                 rotationIn = rotationIn*rand;
@@ -183,6 +186,12 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                         sidewayVel,
                         MathUtils.getRandomPointInCircle(new Vector2f(),PROJ_TRAILS.get(specID).get(i).dispersion),
                         sidewayVel);
+            }
+            
+            if(PROJ_TRAILS.get(specID).get(i).randomVelocity>0){
+                float rand = MathUtils.getRandomNumberInRange(-1, 1);
+                velIn*= 1 + PROJ_TRAILS.get(specID).get(i).randomVelocity*rand;
+                velOut*= 1 + PROJ_TRAILS.get(specID).get(i).randomVelocity*rand;
             }
 
             //Opacity adjustment for fade-out, if the projectile uses it
@@ -197,8 +206,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                     trailIDs.get(i),
                     spriteToUse,
                     spawnPosition,
-                    PROJ_TRAILS.get(specID).get(i).velocityIn,
-                    PROJ_TRAILS.get(specID).get(i).velocityOut,
+                    velIn,
+                    velOut,
                     proj.getFacing() - 180f + PROJ_TRAILS.get(specID).get(i).angle,                    
                     rotationIn,
                     rotationOut,
@@ -263,6 +272,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("dispersion"),
                                     (float)row.getDouble("velocityIn"),
                                     (float)row.getDouble("velocityOut"),
+                                    (float)row.getDouble("randomVelocity"),
                                     (float)row.getDouble("angle"),
                                     (float)row.getDouble("rotationIn"),
                                     (float)row.getDouble("rotationOut"),
@@ -294,6 +304,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("dispersion"),
                                     (float)row.getDouble("velocityIn"),
                                     (float)row.getDouble("velocityOut"),
+                                    (float)row.getDouble("randomVelocity"),
                                     (float)row.getDouble("angle"),
                                     (float)row.getDouble("rotationIn"),
                                     (float)row.getDouble("rotationOut"),
@@ -355,6 +366,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         private final float dispersion;
         private final float velocityIn;
         private final float velocityOut;
+        private final float randomVelocity;
         private final float angle;
         private final float rotationIn;
         private final float rotationOut;
@@ -380,6 +392,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 float dispersion,
                 float velocityIn,
                 float velocityOut,
+                float randomVelocity,
                 float angle,
                 float rotationIn,
                 float rotationOut,
@@ -405,6 +418,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             this.dispersion=dispersion; 
             this.velocityIn=velocityIn; 
             this.velocityOut=velocityOut; 
+            this.randomVelocity=randomVelocity;
             this.angle=angle; 
             this.rotationIn=rotationIn; 
             this.rotationOut=rotationOut;
