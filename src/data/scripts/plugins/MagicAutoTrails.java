@@ -26,7 +26,7 @@ import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     
     private static Logger log = Global.getLogger(MagicAutoTrails.class); 
-    private static final String PATH="data/trail/trail_data.csv";
+    private static final String PATH="data/trails/trail_data.csv";
     //Each proj can have multiple trails
     private static Map<String,List<trailData>> PROJ_TRAILS = new HashMap<>();
     
@@ -162,11 +162,22 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             Vector2f spawnPosition = new Vector2f(offsetPoint.x + proj.getLocation().x, offsetPoint.y + proj.getLocation().y);
 
             //Sideway offset velocity, for projectiles that use it
-            Vector2f projBodyVel = VectorUtils.rotate(projVel, -proj.getFacing());
+            Vector2f projBodyVel = new Vector2f(projVel);
+            projBodyVel = VectorUtils.rotate(projBodyVel, -proj.getFacing());
             Vector2f projLateralBodyVel = new Vector2f(0f, projBodyVel.getY());
-            Vector2f sidewayVel = (Vector2f)VectorUtils.rotate(projLateralBodyVel, proj.getFacing()).scale(PROJ_TRAILS.get(specID).get(i).drift);
+            Vector2f sidewayVel = new Vector2f(projLateralBodyVel);
+            sidewayVel = (Vector2f)VectorUtils.rotate(sidewayVel, proj.getFacing()).scale(PROJ_TRAILS.get(specID).get(i).drift);
 
             //random dispersion of the segments if necessary
+            float rotationIn = PROJ_TRAILS.get(specID).get(i).rotationIn;
+            float rotationOut = PROJ_TRAILS.get(specID).get(i).rotationOut;
+            
+            if(PROJ_TRAILS.get(specID).get(i).randomRotation){
+                float rand = MathUtils.getRandomNumberInRange(-1, 1);
+                rotationIn = rotationIn*rand;
+                rotationOut = rotationOut*rand;
+            }
+            
             if(PROJ_TRAILS.get(specID).get(i).dispersion>0){
                 Vector2f.add(
                         sidewayVel,
@@ -189,8 +200,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                     PROJ_TRAILS.get(specID).get(i).velocityIn,
                     PROJ_TRAILS.get(specID).get(i).velocityOut,
                     proj.getFacing() - 180f + PROJ_TRAILS.get(specID).get(i).angle,                    
-                    PROJ_TRAILS.get(specID).get(i).rotationIn,
-                    PROJ_TRAILS.get(specID).get(i).rotationOut,
+                    rotationIn,
+                    rotationOut,
                     PROJ_TRAILS.get(specID).get(i).sizeIn,
                     PROJ_TRAILS.get(specID).get(i).sizeOut,
                     PROJ_TRAILS.get(specID).get(i).colorIn,
@@ -209,7 +220,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         }        
     }
     
-    private static void getTrailData(){
+    public static void getTrailData(){
         //merge all the trail_data
         
         try {
@@ -254,9 +265,10 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("velocityOut"),
                                     (float)row.getDouble("angle"),
                                     (float)row.getDouble("rotationIn"),
-                                    (float)row.getDouble("rotationOut")                                    
+                                    (float)row.getDouble("rotationOut"),
+                                    row.getBoolean("randomRotation")                                   
                             ));
-                    
+                
                 } else {
                     //add a new entry with that first trail
                     List<trailData> list = new ArrayList<>();
@@ -284,7 +296,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("velocityOut"),
                                     (float)row.getDouble("angle"),
                                     (float)row.getDouble("rotationIn"),
-                                    (float)row.getDouble("rotationIn")    
+                                    (float)row.getDouble("rotationOut"),
+                                    row.getBoolean("randomRotation")
                             ));                    
                     PROJ_TRAILS.put(
                             thisProj,
@@ -345,6 +358,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         private final float angle;
         private final float rotationIn;
         private final float rotationOut;
+        private final boolean randomRotation;
         public trailData(
                 String sprite,
                 float minLength,
@@ -368,7 +382,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 float velocityOut,
                 float angle,
                 float rotationIn,
-                float rotationOut
+                float rotationOut,
+                boolean randomRotation
         ){
             this.sprite=sprite;
             this.minLength=minLength;
@@ -393,6 +408,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             this.angle=angle; 
             this.rotationIn=rotationIn; 
             this.rotationOut=rotationOut;
+            this.randomRotation=randomRotation;
         }
     }
 }

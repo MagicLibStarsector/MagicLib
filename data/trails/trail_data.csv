@@ -1,9 +1,13 @@
-trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn,colorOut,opacity,textLength,textScroll,distance,dispersion,drift,fadeOnFadeOut,angleAdjustment,additive,velocityIn,velocityOut,angle,rotationIn,rotationOut
+trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn,colorOut,opacity,textLength,textScroll,distance,dispersion,drift,fadeOnFadeOut,angleAdjustment,additive,velocityIn,velocityOut,angle,rotationIn,rotationOut,randomRotation
+
+# EXAMPLE
+#SKR_blackout_shot,SKR_blackout_shot,SKR_fuzzyTrail,10,0.1,0.1,0.5,24,12,"[25,200,150]","[50,100,200]",0.5,-128,-256,10,0,0,FALSE,FALSE,TRUE,50,0,0,0,180,true
+
 # String trail: projectile ID plus a suffix if there are multiple trails for that proj
 # String projectile: projectile ID 
 # String sprite: sprite ID in data/config/settings.json: in the "graphics"\"fx" category
-# float minLength: minimal segment length. Improve the performance when time warp in involved as well as keeping the look consistent. 
-# !!!! Can be set to a negative value to triggers a more optimized SLOW MODE for projectiles with very low speeds. !!!!
+# float minLength: minimal segment length. Saves performances especially when time warp in involved. 
+# !!!! Can be set to a negative value to triggers a more optimized SLOW MODE for projectiles with speeds below 500. !!!!
 # float fadeIn: fade in time in seconds
 # float duration: full opacity duration in seconds
 # float fadeOut: fadeout time in seconds
@@ -26,6 +30,5 @@ trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn
 # float angle: offset angle of the trail relative to the projectile orientation, after corrections if any (default 0 for directly backward)
 # float rotationIn: initial angular momentum of the trail segments relative to the projectile
 # float rotationOut: final angular momentum of the trail segments
-
-# EXAMPLE
-#SKR_spike_shot,SKR_spike_shot,SKR_smokeTrail,20,0.1,0.25,1.5,12,24,"[175,128,75]","[128,128,128]",0.75,128,-256,5,10,0,FALSE,FALSE,FALSE,50,0,180,0,0
+# boolean randomRotation: randomize the angular momentums. 
+# Can be used to create non-linear dispersion effects when used with various velocities and angular momentums
