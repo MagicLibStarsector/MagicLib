@@ -203,7 +203,7 @@ public class MagicTargeting {
                 
                 if(CombatUtils.isVisibleToSide(m, source.getOwner()) && MathUtils.isPointWithinCircle(lookAround, m.getLocation(), maxRange)){ //is it around
                     
-                    if(allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), m.getLocation())))<searchCone/2){ //is it within cone of attack
+                    if(allAspect || Math.abs(MathUtils.getShortestRotation(direction, VectorUtils.getAngle(source.getLocation(), m.getLocation())))<searchCone/2){ //is it within cone of attack
                         
                         switch(priority){
                             
