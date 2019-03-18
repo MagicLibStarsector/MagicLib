@@ -47,7 +47,6 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         slowProjTrailIDs.clear();
         //reload the trails all the time in dev mode for easy testing :D
         if(Global.getSettings().isDevMode()){
-            PROJ_TRAILS.clear();
             getTrailData();
         }
     }
@@ -230,8 +229,10 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     }
     
     public static void getTrailData(){
-        //merge all the trail_data
+        //clear up the trash
+        PROJ_TRAILS.clear();
         
+        //merge all the trail_data
         try {
             JSONArray trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
             
