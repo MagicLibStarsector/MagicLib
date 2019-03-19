@@ -233,10 +233,20 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         PROJ_TRAILS.clear();
         
         //merge all the trail_data
+        JSONArray trailData = new JSONArray();
         try {
-            JSONArray trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
+            trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
+        } catch (IOException | JSONException ex) {
+            log.error("unable to read trail_data.csv");
+        }
             
-            for(int i=0; i<trailData.length(); i++){
+        for(int i=0; i<trailData.length(); i++){
+            try {
+                
+//                if(trailData.getJSONObject(i).get("projectile").equals("")){
+//                    continue;
+//                }
+                
                 JSONObject row = trailData.getJSONObject(i);
                 
                 //check the blending first
@@ -316,10 +326,10 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                             list
                             );
                 }
-            }
-        } catch (IOException | JSONException ex) {
-            log.error("unable to read trail_data.csv");
-        }        
+            } catch (JSONException ex) {
+               log.error("Invalid line, skipping");
+           }  
+        }
     }
     
     //public methods for those that do not want to use the CSV merging

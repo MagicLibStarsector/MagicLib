@@ -1,5 +1,19 @@
 MagicLib
 
+0.25
+
+RC2
+MagicTrail CSV plugin:
+   . Finally NAILED THAT FRICKING BUG WITH RON'S EDITOR CORRUPTING THE FILES!
+
+MagicTrail CSV plugin:
+   . Added a bunch of default textures.
+   . Fixed trail duplication bug on save reload from a battle.
+   . Fixed trail_data corruption using Ron's editor
+
+MagicFakeBeam:
+   . Added spawnAdvancedFakeBeam that can use custom vanilla-like textures.
+
 0.24
 
 MagicTrail CSV plugin:
