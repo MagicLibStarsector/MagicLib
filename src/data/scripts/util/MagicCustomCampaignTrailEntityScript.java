@@ -6,9 +6,11 @@ import com.fs.starfarer.api.campaign.CampaignEngineLayers;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.combat.ViewportAPI;
+import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import data.scripts.plugins.MagicCampaignTrailPlugin;
 
-public class MagicCustomCampaignTrailEntityScript implements CustomCampaignEntityPlugin {
+public class MagicCustomCampaignTrailEntityScript extends BaseCustomEntityPlugin {
 
     //Which plugin does this script belong to?
     private MagicCampaignTrailPlugin associatedPlugin = null;
@@ -34,8 +36,4 @@ public class MagicCustomCampaignTrailEntityScript implements CustomCampaignEntit
             associatedPlugin.render(layer, viewport);
         }
     }
-
-    //We don't do anything in advance()
-    @Override
-    public void advance(float amount) {}
 }
