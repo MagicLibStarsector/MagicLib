@@ -727,6 +727,12 @@ class MagicTrailRenderer extends BaseCombatLayeredRenderingPlugin {
     //Our parent plugin, which handles all trail activity *except* rendering
     private MagicTrailPlugin parentPlugin;
 
+    //No render distance limit!
+    @Override
+    public float getRenderRadius() {
+        return 999999999999999999999f;
+    }
+
     //Our constructor takes our parent plugin, so we can access the trail data during rendering
     protected MagicTrailRenderer (MagicTrailPlugin parentPlugin) {
         this.parentPlugin = parentPlugin;
@@ -758,5 +764,12 @@ class MagicTrailRenderer extends BaseCombatLayeredRenderingPlugin {
                 layerMap.get(ID).renderTrail(0);
             }
         }
+    }
+
+    //We render on all layers : ideally, we would render only on layers we have trails on, but this check only runs once
+    //so that doesn't work. Also, the overhead is pretty negligable, so it should be fine anyway
+    @Override
+    public EnumSet<CombatEngineLayers> getActiveLayers() {
+        return EnumSet.allOf(CombatEngineLayers.class);
     }
 }
