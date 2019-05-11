@@ -236,8 +236,9 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         JSONArray trailData = new JSONArray();
         try {
             trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
-        } catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException | RuntimeException ex) {
             log.error("unable to read trail_data.csv");
+            log.error(ex);
         }
             
         for(int i=0; i<trailData.length(); i++){
