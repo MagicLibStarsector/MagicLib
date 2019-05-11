@@ -231,7 +231,7 @@ public class MagicTrailTracker {
         }
 
         //Defines the scroll speed in 1/1000th of a full texture per second
-        scrollingTextureOffset += (amount * scrollSpeed) / 1000f;
+        scrollingTextureOffset -= (amount * scrollSpeed) / 1000f;
     }
 
     //Quickhand function to remove all trail objects which has timed out
