@@ -6,6 +6,7 @@
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
@@ -68,9 +69,17 @@ public class MagicRender {
         if(additive){
             sprite.setAdditiveBlend();
         }
-        MagicRenderPlugin.addSingleframe(sprite, loc);
+        MagicRenderPlugin.addSingleframe(sprite, loc, CombatEngineLayers.BELOW_INDICATORS_LAYER);
     }     
-    
+    public static void singleframe(SpriteAPI sprite, Vector2f loc, Vector2f size, float angle, Color color, boolean additive, CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }
+        MagicRenderPlugin.addSingleframe(sprite, loc, layer);
+    }
     /**
      * Draws a sprite in absolute engine coordinates for a duration.
      * 
@@ -119,8 +128,19 @@ public class MagicRender {
             sprite.setAdditiveBlend();
         }        
         Vector2f velocity=new Vector2f(vel);        
-        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin, fadein, fadein+full, fadein+full+fadeout);
-    }       
+        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin, fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+    }  
+    
+    public static void battlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, boolean additive, float fadein, float full, float fadeout, CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }        
+        Vector2f velocity=new Vector2f(vel);        
+        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin, fadein, fadein+full, fadein+full+fadeout, layer);
+    } 
     
     /**
      * Draws a sprite attached to an entity for a duration.
@@ -189,7 +209,28 @@ public class MagicRender {
         }
         Vector2f velocity=new Vector2f(vel);
         
-        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent, fadein, fadein+full, fadein+full+fadeout, fadeOnDeath);
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent, fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+    }
+    
+    public static void objectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f offset, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, boolean parent, Color color, boolean additive, float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        if(parent){            
+            sprite.setAngle(anchor.getFacing()+angle+90);
+        } else {
+            sprite.setAngle(angle+90);
+        }
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }
+        
+        Vector2f loc=new Vector2f(50000,50000);
+        if(anchor.getLocation()!=null){
+            loc=new Vector2f(anchor.getLocation());
+        }
+        Vector2f velocity=new Vector2f(vel);
+        
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent, fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
     }
     
     /**
@@ -261,7 +302,7 @@ public class MagicRender {
         }                 
         
         Vector2f velocity=new Vector2f(vel);  
-        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin, fadein, fadein+full, fadein+full+fadeout);        
+        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin, fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);        
     }  
         
     public static enum positioning{

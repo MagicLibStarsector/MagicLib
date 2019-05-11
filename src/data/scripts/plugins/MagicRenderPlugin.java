@@ -4,8 +4,10 @@
 package data.scripts.plugins;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.BaseCombatLayeredRenderingPlugin;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.DamagingProjectileAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
@@ -33,20 +35,20 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         SCREENSPACE.clear();
     }
     
-    public static void addSingleframe(SpriteAPI sprite, Vector2f loc){
-        SINGLEFRAME.add(new renderData(sprite, loc));
+    public static void addSingleframe(SpriteAPI sprite, Vector2f loc, CombatEngineLayers layer){
+        SINGLEFRAME.add(new renderData(sprite, loc, layer));
     }
     
-    public static void addBattlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin, float fadein, float full, float fadeout) {    
-        BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin, fadein, full, fadeout, 0));
+    public static void addBattlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin, float fadein, float full, float fadeout, CombatEngineLayers layer) {    
+        BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin, fadein, full, fadeout, 0, layer));
     }
     
-    public static void addObjectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent, float fadein, float full, float fadeout, boolean fadeOnDeath) {
-        OBJECTSPACE.add(new objectspaceData(sprite, anchor, loc, offset, vel, growth, angle, spin, parent, fadein, full, fadeout, fadeOnDeath, 0));
+    public static void addObjectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent, float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
+        OBJECTSPACE.add(new objectspaceData(sprite, anchor, loc, offset, vel, growth, angle, spin, parent, fadein, full, fadeout, fadeOnDeath, 0, layer));
     }
     
-    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin, float fadein, float full, float fadeout) { 
-        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin, fadein, full, fadeout, 0));        
+    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin, float fadein, float full, float fadeout, CombatEngineLayers layer) { 
+        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin, fadein, full, fadeout, 0, layer));        
     }  
     
     //////////////////////////////
@@ -112,7 +114,8 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 }
                 
                 //finally render that stuff
-                render(new renderData(entry.SPRITE, entry.LOC));
+//                render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
+                MagicRenderer.spriteRender(entry.LAYER, engine.getViewport(), new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
             }
         }
         
@@ -205,7 +208,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 
                 //finally render that stuff
                 
-                 render(new renderData(entry.SPRITE, location));
+//                 render(new renderData(entry.SPRITE, location, entry.LAYER));
+
+                MagicRenderer.spriteRender(entry.LAYER, engine.getViewport(), new renderData(entry.SPRITE, location, entry.LAYER));
             }
         }
         
@@ -255,7 +260,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     }
 
                     //finally render that stuff
-                    render(new renderData(entry.SPRITE, center));
+//                    render(new renderData(entry.SPRITE, center, entry.LAYER));
+
+                    MagicRenderer.spriteRender(entry.LAYER, engine.getViewport(), new renderData(entry.SPRITE, center, entry.LAYER));
                     //and immediatelly remove
                     iter.remove();
                 } else {
@@ -335,7 +342,11 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     }
                     
                     //finally render that stuff
-                    render(new renderData(entry.SPRITE, center));
+                    
+//                    render(new renderData(entry.SPRITE, center, entry.LAYER));
+
+                    MagicRenderer.spriteRender(entry.LAYER, engine.getViewport(), new renderData(entry.SPRITE, center, entry.LAYER));
+
                     if(entry.FADEOUT<0){
                         iter.remove();
                     }
@@ -346,7 +357,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         //Single frame sprite rendering
         if(!SINGLEFRAME.isEmpty()){
             for(renderData d : SINGLEFRAME){
-                render(d);
+//                render(d);
+                
+                MagicRenderer.spriteRender(d.LAYER, engine.getViewport(), d);
             }
             SINGLEFRAME.clear();
         }
@@ -358,11 +371,12 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     //                          //
     //////////////////////////////
     
-    private void render (renderData data){
-        //where the magic happen
-        SpriteAPI sprite = data.SPRITE;  
-        sprite.renderAtCenter(data.LOC.x, data.LOC.y);
-    }
+//    private void render (renderData data){
+//        //where the magic happen
+//        SpriteAPI sprite = data.SPRITE;  
+//        sprite.renderAtCenter(data.LOC.x, data.LOC.y);
+//    }
+    
     
     //////////////////////////////
     //                          //
@@ -370,13 +384,15 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     //                          //
     //////////////////////////////    
     
-    private static class renderData {   
-        private final SpriteAPI SPRITE; 
-        private final Vector2f LOC; 
+    public static class renderData {   
+        public final SpriteAPI SPRITE; 
+        public final Vector2f LOC; 
+        public final CombatEngineLayers LAYER;
         
-        public renderData(SpriteAPI sprite, Vector2f loc) {
+        public renderData(SpriteAPI sprite, Vector2f loc, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.LOC = loc;
+            this.LAYER = layer;
         }
     }
     
@@ -390,8 +406,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private final float FULL; //fade in + full
         private final float FADEOUT; //full duration
         private float TIME;
+        private final CombatEngineLayers LAYER;
         
-        public battlespaceData(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin, float fadein, float full, float fadeout, float time) {
+        public battlespaceData(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin, float fadein, float full, float fadeout, float time, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.LOC = loc;
             this.VEL = vel;
@@ -401,6 +418,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
             this.FULL = full;
             this.FADEOUT = fadeout;
             this.TIME = time;
+            this.LAYER = layer;
         }
     }
     
@@ -419,8 +437,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private float FADEOUT; //full duration
         private final boolean DEATHFADE;
         private float TIME;
+        private final CombatEngineLayers LAYER;
         
-        public objectspaceData(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent, float fadein, float full, float fadeout, boolean fade, float time) {
+        public objectspaceData(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent, float fadein, float full, float fadeout, boolean fade, float time, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.ANCHOR = anchor;
             this.LOCATION = loc;
@@ -435,6 +454,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
             this.FADEOUT = fadeout;
             this.DEATHFADE = fade;
             this.TIME = time;
+            this.LAYER = layer;
         }
     }
     
@@ -450,8 +470,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private final float FULL; //fade in + full
         private final float FADEOUT; //full duration
         private float TIME;
+        private final CombatEngineLayers LAYER;
         
-        public screenspaceData(SpriteAPI sprite, MagicRender.positioning position, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float spin, float fadein, float full, float fadeout, float time) {
+        public screenspaceData(SpriteAPI sprite, MagicRender.positioning position, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float spin, float fadein, float full, float fadeout, float time, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.POS = position;
             this.LOC = loc;
@@ -463,6 +484,21 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
             this.FULL = full;
             this.FADEOUT = fadeout;
             this.TIME = time;
+            this.LAYER = layer;
         }
     }    
+}
+
+class MagicRenderer extends BaseCombatLayeredRenderingPlugin {
+    //@Override
+    public static void spriteRender (CombatEngineLayers layer, ViewportAPI view, MagicRenderPlugin.renderData data) {
+        //Initial checks to see if required components exist
+        CombatEngineAPI engine = Global.getCombatEngine();
+        if (engine == null){
+            return;
+        }
+        
+        SpriteAPI sprite = data.SPRITE;  
+        sprite.renderAtCenter(data.LOC.x, data.LOC.y);
+    }
 }

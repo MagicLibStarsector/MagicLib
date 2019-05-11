@@ -25,10 +25,10 @@ import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
 public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     
-    private static Logger log = Global.getLogger(MagicAutoTrails.class); 
+    private static final Logger LOG = Global.getLogger(MagicAutoTrails.class); 
     private static final String PATH="data/trails/trail_data.csv";
     //Each proj can have multiple trails
-    private static Map<String,List<trailData>> PROJ_TRAILS = new HashMap<>();
+    private static final Map<String,List<trailData>> PROJ_TRAILS = new HashMap<>();
     
     //A map for known projectiles and their IDs: should be cleared in init
     private Map<DamagingProjectileAPI, List<Float>> slowProjTrailIDs = new WeakHashMap<>();
@@ -37,7 +37,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     private Map<DamagingProjectileAPI, Vector2f> fastProjLoc = new WeakHashMap<>();
     
     //timer for slow projectiles
-    private IntervalUtil timer = new IntervalUtil(0.06f,0.07f);
+    private final IntervalUtil timer = new IntervalUtil(0.06f,0.07f);
 
     @Override
     public void init(CombatEngineAPI engine) {
@@ -223,7 +223,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                     PROJ_TRAILS.get(specID).get(i).textLength,
                     PROJ_TRAILS.get(specID).get(i).textScroll,
                     sidewayVel,
-                    null
+                    null,
+                    PROJ_TRAILS.get(specID).get(i).layer
             );
         }        
     }
@@ -237,7 +238,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         try {
             trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
         } catch (IOException | JSONException ex) {
-            log.error("unable to read trail_data.csv");
+            LOG.error("unable to read trail_data.csv");
         }
             
         for(int i=0; i<trailData.length(); i++){
@@ -257,6 +258,16 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 
                 //get the concerned projectile
                 String thisProj = row.getString("projectile");
+                
+                //setup layer override
+                CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
+                try{
+                    if(row.getBoolean("renderBellowExplosions")==true){
+                        layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
+                    }
+                } catch (JSONException ex) {
+                    LOG.error("missing layer override for "+thisProj);
+                }
                 
                 //check if there are any trail already assigned to that projectile
                 if(PROJ_TRAILS.containsKey(thisProj)){
@@ -287,7 +298,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("angle"),
                                     (float)row.getDouble("rotationIn"),
                                     (float)row.getDouble("rotationOut"),
-                                    row.getBoolean("randomRotation")                                   
+                                    row.getBoolean("randomRotation"),
+                                    layer
                             ));
                 
                 } else {
@@ -319,7 +331,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("angle"),
                                     (float)row.getDouble("rotationIn"),
                                     (float)row.getDouble("rotationOut"),
-                                    row.getBoolean("randomRotation")
+                                    row.getBoolean("randomRotation"),
+                                    layer
                             ));                    
                     PROJ_TRAILS.put(
                             thisProj,
@@ -327,7 +340,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                             );
                 }
             } catch (JSONException ex) {
-               log.error("Invalid line, skipping");
+               LOG.error("Invalid line, skipping");
            }  
         }
     }
@@ -382,6 +395,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         private final float rotationIn;
         private final float rotationOut;
         private final boolean randomRotation;
+        private final CombatEngineLayers layer;
         public trailData(
                 String sprite,
                 float minLength,
@@ -407,7 +421,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 float angle,
                 float rotationIn,
                 float rotationOut,
-                boolean randomRotation
+                boolean randomRotation,
+                CombatEngineLayers layer
         ){
             this.sprite=sprite;
             this.minLength=minLength;
@@ -434,6 +449,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             this.rotationIn=rotationIn; 
             this.rotationOut=rotationOut;
             this.randomRotation=randomRotation;
+            this.layer=layer;
         }
     }
 }
