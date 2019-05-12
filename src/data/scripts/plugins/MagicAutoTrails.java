@@ -263,7 +263,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 //setup layer override
                 CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
                 try{
-                    if(row.getBoolean("renderBellowExplosions")==true){
+                    if(row.getBoolean("renderBelowExplosions")==true){
                         layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
                     }
                 } catch (JSONException ex) {

@@ -1,10 +1,23 @@
 MagicLib
 
+0.26
+
+MagicTrail:
+   . Now supports render order overrides.
+   
+MagicRender:
+   . Now supports render order overrides.
+   
+MagicTrail CSV plugin:
+   . Added renderBelowExplosion boolean to automatically render the trail under the FX layer
+   
+
 0.25
 
 RC2
 MagicTrail CSV plugin:
-   . Finally NAILED THAT FRICKING BUG WITH RON'S EDITOR CORRUPTING THE FILES!
+   . Finally NAILED THAT FRICKING BUG WITH RON'S EDITOR CORRUPTING THE FILES! 
+   . (and also future proofed the CSV read process, thanks Kitta Khan for the help)
 
 MagicTrail CSV plugin:
    . Added a bunch of default textures.

@@ -12,7 +12,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-import data.scripts.util.MagicUI;
+//import data.scripts.util.MagicUI;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
