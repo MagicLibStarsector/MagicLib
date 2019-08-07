@@ -34,7 +34,7 @@ public class MagicRender {
      */
     public static boolean screenCheck (float distance, Vector2f point){
         float space = Global.getCombatEngine().getViewport().getVisibleWidth();
-        space = (space/2)*(distance+0.5f);
+        space = (space/2)*(distance+1.4f);
         return MathUtils.isWithinRange(point, Global.getCombatEngine().getViewport().getCenter(), space);
     }
     

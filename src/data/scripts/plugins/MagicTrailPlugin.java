@@ -131,7 +131,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      */
     public static void AddTrailMemberSimple (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
                                              float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
-        AddTrailMemberSimple(linkedEntity, ID, sprite, position, speed, angle, startSize, endSize, color, opacity, duration, additive, offsetVelocity, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+        AddTrailMemberSimple(linkedEntity, ID, sprite, position, speed, angle, startSize, endSize, color, opacity, duration, additive, offsetVelocity, CombatEngineLayers.CONTRAILS_LAYER);
     }
 
     /**
@@ -293,7 +293,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
                                                Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
         AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
                 startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                offsetVelocity, advancedOptions, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+                offsetVelocity, advancedOptions, CombatEngineLayers.CONTRAILS_LAYER);
     }
 
     /**
