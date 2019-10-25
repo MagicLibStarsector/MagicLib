@@ -8,7 +8,7 @@
 //		proj being the projectile to guide
 //		target being the initial target (if any)
 //	You're done!
-package data.scripts.utils;
+package data.scripts.weapons;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
@@ -118,6 +118,9 @@ public class MagicGuidedProjectileScript extends BaseEveryFrameCombatPlugin {
 	//Whether phased ships are ignored for targeting (and an already phased target counts as "lost" and procs secondary targeting)
 	private static final boolean BROKEN_BY_PHASE = true;
 
+	//Whether the projectile switches to a new target if the current one becomes an ally
+	private static final boolean RETARGET_ON_SIDE_SWITCH = true;
+
 	//---Internal script variables: don't touch!---
 	private DamagingProjectileAPI proj; //The projectile itself
 	private CombatEntityAPI target; // Current target of the projectile
@@ -212,7 +215,7 @@ public class MagicGuidedProjectileScript extends BaseEveryFrameCombatPlugin {
 					target = null;
 				}
 				if (target instanceof ShipAPI) {
-					if (((ShipAPI)target).isHulk() || (((ShipAPI) target).isPhased() && BROKEN_BY_PHASE)) {
+					if (((ShipAPI)target).isHulk() || (((ShipAPI) target).isPhased() && BROKEN_BY_PHASE) || (target.getOwner() == proj.getOwner() && RETARGET_ON_SIDE_SWITCH)) {
 						target = null;
 					}
 				}
