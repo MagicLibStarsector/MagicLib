@@ -89,7 +89,7 @@ public class MagicAnim {
     
     /**
      * Smooth + offset
-     * Translates a value in a (start,end) range into a value in a (0,1) range with smooth ease in and ease out.
+     * Translates a value from a (start,end) range into a value in a (0,1) range with smooth ease in and ease out.
      * 
      * @param x
      * Float clamped from 0 to 1
@@ -112,18 +112,40 @@ public class MagicAnim {
      * Translates a value in a (start,end) range into a "back-and-forth" value in a (0,1) range with smooth ease in and ease out.
      * 
      * @param x
-     * Float clamped from 0 to 1
+     * Float clamped from start to end
      * 
      * @param start
-     * new range minimal value
+     * range minimal value
      * 
      * @param end
-     * new range maximal value
+     * range maximal value
      * 
      * @return 
-     * smooth "back-and-forth" float value in the new range
+     * smooth "back-and-forth" float value equals to 0 at start and end, and 1 at the mid-point between them
      */
     public static float RSO (float x, float start, float end){
         return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI*2 ) /2 );
-    }  
+    }
+    
+    /**
+     * Cycle within range
+     * Restricts a value to a cycling range, produces a seesaw.
+     * 
+     * @param x
+     * Float
+     * 
+     * @param min
+     * cycle minimal value
+     * 
+     * @param max
+     * cycle maximal value
+     * 
+     * @return
+     * "seesaw" value that cycles within the (min,max) range
+     */
+    public static float cycle (float x, float min, float max){
+        float range = max - min;
+        float i = (float)Math.floor((x - min) / range);
+        return min + x - range*i;
+    }
 }

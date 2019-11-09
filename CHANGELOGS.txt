@@ -1,12 +1,23 @@
 MagicLib
 
-0.26b
+0.28
+
+Added MagicGuidedProjectileScript loose weapon script
+
+MagicAnim:
+   . Added cycle(float x, float min, float max)
+
+
+
+0.27
 
 MagicRender:
    . Fixed screencheck culling being overly aggressive.
 
 MagicTrail:
    . Fixed case issue for Linux players.
+
+
 
 0.26
 
@@ -19,6 +30,8 @@ MagicRender:
 MagicTrail CSV plugin:
    . Added renderBelowExplosion boolean to automatically render the trail under the FX layer
    
+
+
 0.25
 
 RC2
@@ -34,6 +47,8 @@ MagicTrail CSV plugin:
 MagicFakeBeam:
    . Added spawnAdvancedFakeBeam that can use custom vanilla-like textures.
 
+
+
 0.24
 
 MagicTrail CSV plugin:
@@ -41,6 +56,8 @@ MagicTrail CSV plugin:
 
 MagicTargeting:
    . Fixed issue with random missile targeting only working in the front of the source ship.
+
+
 
 0.23
 
@@ -61,12 +78,16 @@ MagicUI:
 MagicRender:
    . Fixed issue with sprite attached to fading projectiles.
 
+
+
 0.22
 
 MagicTargeting:
    . Missile targeting now ignores missiles without collisions
 
 All scripts now use simplified PI from LazyLib.
+
+
 
 0.20
 
@@ -76,6 +97,8 @@ CONTENT:
 
 MagicTrail (by Nicke)
    Draws missile-like trails from arbitrary coordinates with a ton of fancy options to play with.
+
+
 
 0.12
 
