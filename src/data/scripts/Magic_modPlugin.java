@@ -3,7 +3,7 @@ package data.scripts;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import data.scripts.plugins.MagicAutoTrails;
-import data.scripts.plugins.MagicCampaignTrailPlugin;
+//import data.scripts.plugins.MagicCampaignTrailPlugin;
 
 public class Magic_modPlugin extends BaseModPlugin {
     
@@ -29,26 +29,26 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicAutoTrails.getTrailData();
     }    
     
-//    ////////////////////////////////////////
-//    //                                    //
-//    //        ON NEW GAME CREATION        //
-//    //                                    //
-//    ////////////////////////////////////////
-//    
-    @Override
-    public void onNewGame() {
-        if (Global.getSector() != null) {
-            //Disabled for now
-            //Global.getSector().addScript(new MagicCampaignTrailPlugin());
-        }
-    }
-//    
-//    ////////////////////////////////////////
-//    //                                    //
-//    //            ON GAME LOAD            //
-//    //                                    //
-//    ////////////////////////////////////////
-//    
+    ////////////////////////////////////////
+    //                                    //
+    //        ON NEW GAME CREATION        //
+    //                                    //
+    ////////////////////////////////////////
+    
+//    @Override
+//    public void onNewGame() {
+//        if (Global.getSector() != null) {
+//            //Disabled for now
+//            //Global.getSector().addScript(new MagicCampaignTrailPlugin());
+//        }
+//    }
+    
+    ////////////////////////////////////////
+    //                                    //
+    //            ON GAME LOAD            //
+    //                                    //
+    ////////////////////////////////////////
+    
     @Override
     public void onGameLoad(boolean newGame){
         MagicAutoTrails.getTrailData();
