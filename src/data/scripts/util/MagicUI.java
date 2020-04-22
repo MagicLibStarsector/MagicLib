@@ -373,7 +373,8 @@ public class MagicUI {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
-        if (Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+        
+        if (Global.getCombatEngine().getCombatUI()==null || Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
             return;
         }
 
