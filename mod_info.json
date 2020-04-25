@@ -3,8 +3,8 @@
     "name": "MagicLib",
     "author": "Modding Community",
     "utility": "true",
-    "version": "0.28",
-    "description": "A collection of classes to aid modding. Not a mod in itself, but required by certain other mods.",
+    "version": "0.29",
+    "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
     "gameVersion": "0.9.1a",
     "jars": ["jars/MagicLib.jar"],
     "modPlugin": "data.scripts.Magic_modPlugin"

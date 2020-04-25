@@ -1,5 +1,29 @@
 MagicLib
 
+0.29
+
+Added MagicTxt
+   . Allows to easily externalize compiled texts in a CSV to help translators.
+
+Added MagicInterferencePlugin
+   . Makes exceptionally strong weapons with the "Interference" trait have negative effects when more that one is mounted on a given ship.
+   . Those weapons need to trigger the plugin to check for possible other interference sources from a CSV file.
+   . If other sources are found, it will add a hullmod that reduced the ship's dissipation depending on the number of interfering weapons and their interference strength.
+
+Added MagicBasicInterferenceEffec loose weapon script to trigger an interference check.
+
+Added MagicIncompatibleHullmods
+   . Propose a uniformized "incompatible hullmod" solution.
+   . When triggered as two incompatible hullmods are added, it will remove the offending hullmod and add a hullmod to warn the player about that operation.
+   . The added hullmod's tooltip will indicate which hullmod was removed and why.
+
+Added MagicModuleRetreatCleaner
+   . Fixes the bug with retreating ships with modules preventing the combat from ending. 
+
+MagicRender:
+   . Added optional blending modes to the sprite renders.
+
+
 0.28
 
 Added MagicGuidedProjectileScript loose weapon script
