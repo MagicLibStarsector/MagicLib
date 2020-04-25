@@ -1,0 +1,6 @@
+id,intensity
+#id: weapon_data.csv id
+#intensity: amount of interference caused by the weapon, can be WEAK, MILD, STRONG
+#sample1,WEAK
+#sample2,MILD
+#sample3,STRONG
