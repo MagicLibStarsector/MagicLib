@@ -3,6 +3,9 @@ package data.scripts;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import data.scripts.plugins.MagicAutoTrails;
+import data.scripts.util.MagicIncompatibleHullmods;
+import data.scripts.util.MagicInterference;
+import data.scripts.util.MagicTxt;
 //import data.scripts.plugins.MagicCampaignTrailPlugin;
 
 public class Magic_modPlugin extends BaseModPlugin {
@@ -26,7 +29,12 @@ public class Magic_modPlugin extends BaseModPlugin {
                     + System.lineSeparator();
             throw new ClassNotFoundException(message);
         }
-        MagicAutoTrails.getTrailData();
+        
+        MagicAutoTrails.getTrailData();        
+        //gather the externalized strings
+        MagicTxt.readStringsFile();
+        //gather interference data
+        MagicInterference.mergeInterference();
     }    
     
     ////////////////////////////////////////
@@ -52,5 +60,6 @@ public class Magic_modPlugin extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame){
         MagicAutoTrails.getTrailData();
+        MagicIncompatibleHullmods.clearData();
     }    
 }
