@@ -5,6 +5,7 @@
         "MagicCampaignTrailPlugin":"data.scripts.plugins.MagicCampaignTrailPlugin",     
         "MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin", 
         "MagicAutoTrails":"data.scripts.plugins.MagicAutoTrails",
+        "MagicModuleRetreatFix":"data.scripts.plugins.MagicModuleRetreatCleaner"
     },
 
     "graphics":{
@@ -12,7 +13,7 @@
             "fakeBeamCore":"graphics/magic/fx/fakebeam/fakeBeamCore.png",
             "fakeBeamFringe":"graphics/magic/fx/fakebeam/fakeBeamFringe.png",
         },
-	"fx":{
+		"fx":{
             "base_trail_smooth":"graphics/magic/fx/base_trail_smooth.png",
             "base_trail_mild":"graphics/magic/fx/base_trail_mild.png",
             "base_trail_fuzzy":"graphics/magic/fx/base_trail_fuzzy.png",
