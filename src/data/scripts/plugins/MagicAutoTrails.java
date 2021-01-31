@@ -224,7 +224,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                     PROJ_TRAILS.get(specID).get(i).textScroll,
                     sidewayVel,
                     null,
-                    PROJ_TRAILS.get(specID).get(i).layer
+                    PROJ_TRAILS.get(specID).get(i).layer,
+                    PROJ_TRAILS.get(specID).get(i).frameOffsetMult
             );
         }        
     }
@@ -269,6 +270,13 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 } catch (JSONException ex) {
                     LOG.error("missing layer override for "+thisProj);
                 }
+
+                float frameOffsetMult = 1f;
+                try {
+                    frameOffsetMult = (float) row.getDouble("frameOffsetMult");
+                } catch (JSONException e) {
+                    LOG.error("missing frame offset mult override for " + thisProj);
+                }
                 
                 //check if there are any trail already assigned to that projectile
                 if(PROJ_TRAILS.containsKey(thisProj)){
@@ -300,7 +308,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("rotationIn"),
                                     (float)row.getDouble("rotationOut"),
                                     row.getBoolean("randomRotation"),
-                                    layer
+                                    layer,
+                                    frameOffsetMult
                             ));
                 
                 } else {
@@ -333,7 +342,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                                     (float)row.getDouble("rotationIn"),
                                     (float)row.getDouble("rotationOut"),
                                     row.getBoolean("randomRotation"),
-                                    layer
+                                    layer,
+                                    frameOffsetMult
                             ));                    
                     PROJ_TRAILS.put(
                             thisProj,
@@ -397,6 +407,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         private final float rotationOut;
         private final boolean randomRotation;
         private final CombatEngineLayers layer;
+        private final float frameOffsetMult;
         public trailData(
                 String sprite,
                 float minLength,
@@ -423,7 +434,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 float rotationIn,
                 float rotationOut,
                 boolean randomRotation,
-                CombatEngineLayers layer
+                CombatEngineLayers layer,
+                float frameOffsetMult
         ){
             this.sprite=sprite;
             this.minLength=minLength;
@@ -451,6 +463,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             this.rotationOut=rotationOut;
             this.randomRotation=randomRotation;
             this.layer=layer;
+            this.frameOffsetMult=frameOffsetMult;
         }
     }
 }
