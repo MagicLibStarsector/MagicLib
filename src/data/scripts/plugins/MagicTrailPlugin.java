@@ -11,8 +11,9 @@ import data.scripts.util.MagicTrailTracker;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
-import java.awt.Color;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -293,7 +294,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
                                                Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
         AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
                 startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                offsetVelocity, advancedOptions, CombatEngineLayers.CONTRAILS_LAYER);
+                offsetVelocity, advancedOptions, CombatEngineLayers.CONTRAILS_LAYER, 1f);
     }
 
     /**
@@ -365,11 +366,13 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
      *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
      *                        CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                        adjust trail offset at different speeds
      */
     public static void AddTrailMemberAdvanced (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, CombatEngineLayers layerToRenderOn) {
+                                               Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
         //First, find the plugin, and if it doesn't exist do nothing
         if (Global.getCombatEngine() == null) {
             return;
@@ -422,6 +425,15 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             }
         }
         //--End of special options--
+
+        //Offset tweaker to fix single frame delay for lateral movement
+        if (linkedEntity instanceof DamagingProjectileAPI) {
+            DamagingProjectileAPI proj = (DamagingProjectileAPI) linkedEntity;
+
+            Vector2f shipVelPerAdvance = (Vector2f) new Vector2f(proj.getSource().getVelocity()).scale(Global.getCombatEngine().getElapsedInLastFrame());
+            shipVelPerAdvance.scale(frameOffsetMult);
+            Vector2f.sub(position, shipVelPerAdvance, position);
+        }
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
@@ -506,7 +518,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
                                                Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
         AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
                 endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
-                advancedOptions, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+                advancedOptions, CombatEngineLayers.BELOW_INDICATORS_LAYER, 1f);
     }
 
     /**
@@ -579,11 +591,13 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
      *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
      *                        CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                        adjust trail offset at different speeds
      */
     public static void AddTrailMemberAnimated (CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, CombatEngineLayers layerToRenderOn) {
+                                               Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
         //First, find the plugin
         if (Global.getCombatEngine() == null) {
             return;
@@ -626,6 +640,15 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             }
         }
         //--End of special options--
+
+        //Offset tweaker to fix single frame delay for lateral movement
+        if (linkedEntity instanceof DamagingProjectileAPI) {
+            DamagingProjectileAPI proj = (DamagingProjectileAPI) linkedEntity;
+
+            Vector2f shipVelPerAdvance = (Vector2f) new Vector2f(proj.getSource().getVelocity()).scale(Global.getCombatEngine().getElapsedInLastFrame());
+            shipVelPerAdvance.scale(frameOffsetMult);
+            Vector2f.sub(position, shipVelPerAdvance, position);
+        }
 
         //Adjusts scroll speed to our most recent trail's value
         layerMap.get(ID).scrollSpeed = textureScrollSpeed;
