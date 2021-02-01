@@ -57,6 +57,7 @@ public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
             NEUTRAL_ANGLE=weapon.getSlot().getAngle();
             //ideal aim angle to rotate the ship (allows free-form placement on the hull)
             TURN_RIGHT_ANGLE=MathUtils.clampAngle(VectorUtils.getAngle(SHIP.getLocation(), weapon.getLocation()));
+            TURN_RIGHT_ANGLE=MathUtils.getShortestRotation(SHIP.getFacing(), TURN_RIGHT_ANGLE)+90;
             //is the thruster performant at turning the ship? Engines closer to the center of mass will concentrate more on dealing with changes of velocity.
             THRUST_TO_TURN=smooth(MathUtils.getDistance(SHIP.getLocation(), weapon.getLocation())/SHIP.getCollisionRadius());            
         }
@@ -136,12 +137,22 @@ public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
                 VectorUtils.rotate(offset, -SHIP.getFacing(), offset);
                 
                 if(!turn){
-                    //thrust only, easy.
-                    thrust(weapon, accelerateAngle, thrust*(SHIP.getMutableStats().getAcceleration().computeMultMod()), SMOOTH_THRUSTING);                    
+                    //thrust only, easy. 
+                    if(FRAMES==0){
+                        //non animated weapons like covers are just oriented
+                        rotate(weapon, accelerateAngle, thrust*(SHIP.getMutableStats().getAcceleration().computeMultMod()), SMOOTH_THRUSTING);
+                    } else {
+                        thrust(weapon, accelerateAngle, thrust*(SHIP.getMutableStats().getAcceleration().computeMultMod()), SMOOTH_THRUSTING);    
+                    }
                 } else {
-                    if(!accel){                        
-                        //turn only, easy too.
-                        thrust(weapon, turnAngle, thrust*(SHIP.getMutableStats().getTurnAcceleration().computeMultMod()), SMOOTH_THRUSTING);                          
+                    if(!accel){      
+                        if(FRAMES==0){
+                            //non animated weapons like covers are just oriented
+                            rotate(weapon, turnAngle, thrust*(SHIP.getMutableStats().getTurnAcceleration().computeMultMod()), SMOOTH_THRUSTING);
+                        } else {                  
+                            //turn only, easy too.
+                            thrust(weapon, turnAngle, thrust*(SHIP.getMutableStats().getTurnAcceleration().computeMultMod()), SMOOTH_THRUSTING);     
+                        }
                         
                     } else {
                         //combined turn and thrust, aka the funky part.

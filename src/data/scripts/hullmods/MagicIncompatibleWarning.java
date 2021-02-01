@@ -7,20 +7,29 @@ import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicTxt;
+import static data.scripts.util.MagicTxt.getString;
 import java.awt.Color;
 
 public class MagicIncompatibleWarning extends BaseHullMod {    
     
+    
+    private final String DESC0=MagicTxt.getString("conflictWarning");
+    
     @Override
     public String getDescriptionParam(int index, ShipAPI.HullSize hullSize) {
-        if (index == 0) return MagicTxt.getString("conflictWarning");
+        if (index == 0) return DESC0;
         return null;
     }
     
+    
+    private final String POST0=getString("conflictTitle");
+    private final String POST1=getString("conflictTxt1");
+    private final String POST2=getString("conflictTxt2");
+    private final String POST3=getString("conflictTxt3");
+    private final Color HL=Global.getSettings().getColor("hColor");
+    
     @Override
     public void addPostDescriptionSection(TooltipMakerAPI tooltip, ShipAPI.HullSize hullSize, ShipAPI ship, float width, boolean isForModSpec) {
-        
-        Color HL=Global.getSettings().getColor("hColor");
         
         //do nothing if there isn't an entry for that ship.
         if(MagicIncompatibleHullmods.getReason(ship.getVariant())!=null){
@@ -33,15 +42,15 @@ public class MagicIncompatibleWarning extends BaseHullMod {
 
 
             //title
-            tooltip.addSectionHeading(MagicTxt.getString("conflictTitle"), Alignment.MID, 15);        
+            tooltip.addSectionHeading(POST0, Alignment.MID, 15);        
 
             //effect
             tooltip.addPara(
-                    MagicTxt.getString("conflictTxt1")
+                    POST1
                     + removed
-                    + MagicTxt.getString("conflictTxt2")
+                    + POST2
                     + cause
-                    + MagicTxt.getString("conflictTxt3")
+                    + POST3
                     , 10
                     ,HL
                     ,removed

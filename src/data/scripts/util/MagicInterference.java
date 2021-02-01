@@ -175,7 +175,7 @@ public class MagicInterference {
         float hullmod=1;
         //scan for interference-reducing hullmod
         if(shipVariant.getHullMods().contains("fluxbreakers")){
-            hullmod*=RFC;
+            hullmod=RFC;
             
             LOG.info("Resistant Flux Conduits installed, debuff reduced.");
         }
@@ -192,11 +192,9 @@ public class MagicInterference {
                                 *WEAPONS.get(shipVariant.getWeaponId(w)) //
                                 *hullmod
                 );
-                
                 LOG.info(shipVariant.getWeaponSpec(w).getWeaponName() + " debuff: "+WEAPONS.get(shipVariant.getWeaponId(w)));
             }
         }
-        
         return theDebuffs;
     }
 }

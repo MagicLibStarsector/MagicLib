@@ -10,6 +10,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicTxt;
+import static data.scripts.util.MagicTxt.getString;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,16 +25,19 @@ public class MagicInterferenceWarning extends BaseHullMod {
     }
     
     //maintain status for the player ship in combat        
-    private final Map<ShipAPI, Integer> INTERFERED = new HashMap<>();
-    private final String UI1=MagicTxt.getString("interferenceUItitle");
-    private final String UI2=MagicTxt.getString("-");
-    private final String UI3=MagicTxt.getString("interferenceUItxt");
+    private final Map<String, Integer> SHIPS = new HashMap<>();
+    private final String UI1=getString("interferenceUItitle");
+    private final String UI2=getString("-");
+    private final String UI3=getString("interferenceUItxt");
             
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
+        if(Global.getCombatEngine().getTotalElapsedTime(false)==0){
+            SHIPS.clear();
+        }
         
-        if(!INTERFERED.containsKey(ship)){
-            INTERFERED.put(ship, Math.round(MagicInterference.getTotalInterference(ship.getVariant())));
+        if(!SHIPS.containsKey(ship.getId())){
+            SHIPS.put(ship.getId(), Math.round(MagicInterference.getTotalInterference(ship.getVariant())));
         }
         
         if(Global.getCombatEngine().getPlayerShip()==ship){
@@ -41,17 +45,17 @@ public class MagicInterferenceWarning extends BaseHullMod {
                     "Interference",
                     "graphics/SEEKER/icons/hullsys/SKR_interference.png",
                     UI1,                        
-                    UI2+INTERFERED.get(ship)+UI3,
+                    UI2+SHIPS.get(ship.getId())+UI3,
                     true
             );
         }
     }
     
     //description
-    private final String DESC0=MagicTxt.getString("interferenceWarning");
-    private final String DESC1=MagicTxt.getString("interferenceWeak");
-    private final String DESC2=MagicTxt.getString("interferenceMild");
-    private final String DESC3=MagicTxt.getString("interferenceStrong");
+    private final String DESC0=getString("interferenceWarning");
+    private final String DESC1=getString("interferenceWeak");
+    private final String DESC2=getString("interferenceMild");
+    private final String DESC3=getString("interferenceStrong");
     private final String DESC4=""+MagicInterference.getRates().get("WEAK");
     private final String DESC5=""+MagicInterference.getRates().get("MILD");
     private final String DESC6=""+MagicInterference.getRates().get("STRONG");
@@ -76,12 +80,15 @@ public class MagicInterferenceWarning extends BaseHullMod {
     //detailed description    
     private final Color HL=Global.getSettings().getColor("hColor");
     private final Color BAD=Misc.getNegativeHighlightColor();
-    private final String TTIP0 = MagicTxt.getString("interferenceTitle");
-    private final String TTIP1 = MagicTxt.getString("interferenceTxt1");
-    private final String TTIP2 = MagicTxt.getString("interferenceTxt2");
-    private final String TTIP3 = MagicTxt.getString("interferenceTxt3");
-    private final String TTIP4 = MagicTxt.getString("interferenceSource");
-    private final String TTIP5 = MagicTxt.getString("interferenceEffect");
+    private final String TTIP0 = getString("interferenceTitle");
+    private final String TTIP1 = getString("interferenceTxt1");
+    private final String TTIP2 = getString("interferenceTxt2");
+    private final String TTIP3 = getString("interferenceTxt3");
+    private final String TTIP4 = getString("interferenceSource");
+    private final String TTIP5 = getString("interferenceEffect");
+    private final String TTIP6 = getString("interferenceHullmod1");
+    private final String TTIP7 = getString("interferenceHullmod2");
+    private final String TTIP8 = getString("interferenceHullmod3");
     
     @Override
     public void addPostDescriptionSection(TooltipMakerAPI tooltip, ShipAPI.HullSize hullSize, ShipAPI ship, float width, boolean isForModSpec) {
@@ -90,6 +97,12 @@ public class MagicInterferenceWarning extends BaseHullMod {
         float total=0;
         for(String s : sources.keySet()){
             total+=sources.get(s);
+        }
+        boolean reducedEffect=false;
+        float mult=1;
+        if(ship.getVariant().getHullMods().contains("fluxbreakers")){
+            reducedEffect=true;
+            mult=MagicInterference.getRFC();
         }
         
         //title
@@ -100,14 +113,27 @@ public class MagicInterferenceWarning extends BaseHullMod {
                     TTIP1
                     + sources.size()
                     + TTIP2
-                    + Math.round(total)
+                    + Math.round(total)/mult
                     + TTIP3
                     , 10);
         global.setHighlightColors(HL,BAD);
-        global.setHighlight(""+sources.size(), ""+Math.round(total));
+        global.setHighlight(""+sources.size(), ""+(Math.round(total)/mult));
+        
+        if(reducedEffect){
+            LabelAPI hullmod = tooltip.addPara(
+                    TTIP6
+                    + Math.round(total)
+                    + TTIP7
+                    + DESC8
+                    + TTIP8,
+                    10
+            );
+            hullmod.setHighlightColors(BAD,HL);
+            hullmod.setHighlight(""+Math.round(total),DESC8);
+        }
         
         //detailed breakdown
-        tooltip.setBulletedListMode("    - ");        
+        tooltip.setBulletedListMode("    - ");  
         for(String s : sources.keySet()){
             
             String weapon = ship.getVariant().getWeaponSpec(s).getWeaponName();
@@ -120,7 +146,7 @@ public class MagicInterferenceWarning extends BaseHullMod {
                     3,
                     HL,
                     weapon,
-                    ""+(-effect)
+                    ""+(-effect*mult)
             );
         }
         tooltip.setBulletedListMode(null);
