@@ -10,10 +10,12 @@ import com.fs.starfarer.api.combat.CombatEngineLayers;
 import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
+import com.fs.starfarer.api.util.IntervalUtil;
 import data.scripts.plugins.MagicRenderPlugin;
 import java.awt.Color;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 public class MagicRender {
     
@@ -140,10 +142,14 @@ public class MagicRender {
             sprite.setAdditiveBlend();
         }        
         Vector2f velocity=new Vector2f(vel);        
-        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin, fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
     }
 
-    // layer : layer to render at
+    /*
+    * @param layer : layer to render at
+    */
     public static void battlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, boolean additive, float fadein, float full, float fadeout, CombatEngineLayers layer) {
         sprite.setSize(size.x, size.y);
         sprite.setAngle(angle);
@@ -152,18 +158,47 @@ public class MagicRender {
             sprite.setAdditiveBlend();
         }        
         Vector2f velocity=new Vector2f(vel);        
-        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin, fadein, fadein+full, fadein+full+fadeout, layer);
+        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, layer);
     }
-
-    // srcBlendFunc : openGL source blend function
-    // destBlendFunc : openGL destination blend function
+    /*
+    * @param srcBlendFunc : openGL source blend function
+    * @param destBlendFunc : openGL destination blend function
+    */
     public static void battlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, float fadein, float full, float fadeout, CombatEngineLayers layer, int srcBlendFunc, int destBlendFunc) {
         sprite.setSize(size.x, size.y);
         sprite.setAngle(angle);
         sprite.setColor(color);
         sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
         Vector2f velocity=new Vector2f(vel);
-        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin, fadein, fadein+full, fadein+full+fadeout, layer);
+        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, layer);
+    }
+    
+    /*
+    * @param jitterRange : max jitter offset from base position
+    * @param jitterTilt : max jitter rotation from base position
+    * @param flickerRange : max flickering range, can be >1 to maintain the sprite on or off
+    * @param flickerMedian : default opacity before flickering, can be > or < 0
+    * @param maxDelay : base frequency is 60 update per second, delay can be randomly increased to this value
+    */
+    public static void battlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, boolean additive,
+            float jitterRange, float jitterTilt, float flickerRange, float flickerMedian, float maxDelay,
+            float fadein, float full, float fadeout, CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }        
+        Vector2f velocity=new Vector2f(vel); 
+        IntervalUtil delay = new IntervalUtil(0.016f, Math.max(0.016f, maxDelay));
+        
+        MagicRenderPlugin.addBattlespace(sprite, loc, velocity, growth, spin,
+                jitterRange, jitterTilt, new Vector3f(), flickerRange, flickerMedian, delay,
+                fadein, fadein+full, fadein+full+fadeout, layer);
     }
 
 
@@ -233,10 +268,14 @@ public class MagicRender {
         }
         Vector2f velocity=new Vector2f(vel);
         
-        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent, fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, CombatEngineLayers.BELOW_INDICATORS_LAYER);
     }
 
-    // layer : layer to render at
+    /*
+    * @param layer : layer to render at
+    */
     public static void objectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f offset, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, boolean parent, Color color, boolean additive, float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
         sprite.setSize(size.x, size.y);
         if(parent){            
@@ -255,11 +294,15 @@ public class MagicRender {
         }
         Vector2f velocity=new Vector2f(vel);
         
-        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent, fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
     }
 
-    // srcBlendFunc : openGL source blend function
-    // destBlendFunc : openGL destination blend function
+    /*
+    * @param srcBlendFunc : openGL source blend function
+    * @param destBlendFunc : openGL destination blend function
+    */
     public static void objectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f offset, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, boolean parent, Color color, float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer, int srcBlendFunc, int destBlendFunc) {
         sprite.setSize(size.x, size.y);
         if(parent){
@@ -276,7 +319,44 @@ public class MagicRender {
         }
         Vector2f velocity=new Vector2f(vel);
 
-        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent, fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
+    }
+    
+    
+    /*
+    * @param jitterRange : max jitter offset from base position
+    * @param jitterTilt : max jitter rotation from base position
+    * @param flickerRange : max flickering range, can be >1 to maintain the sprite on or off
+    * @param flickerMedian : default opacity before flickering, can be > or < 0
+    * @param maxDelay : base frequency is 60 update per second, delay can be randomly increased to this value
+    */
+    public static void objectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f offset, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, boolean parent, Color color, boolean additive,
+            float jitterRange, float jitterTilt, float flickerRange, float flickerMedian, float maxDelay,
+            float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        if(parent){            
+            sprite.setAngle(anchor.getFacing()+angle+90);
+        } else {
+            sprite.setAngle(angle+90);
+        }
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }
+        
+        Vector2f loc=new Vector2f(50000,50000);
+        if(anchor.getLocation()!=null){
+            loc=new Vector2f(anchor.getLocation());
+        }
+        Vector2f velocity=new Vector2f(vel);
+        
+        IntervalUtil delay = new IntervalUtil(0.016f, Math.max(0.016f, maxDelay));
+        
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent,
+                jitterRange, jitterTilt, new Vector3f(), flickerRange, flickerMedian, delay,
+                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
     }
 
     
@@ -348,11 +428,15 @@ public class MagicRender {
         }                 
         
         Vector2f velocity=new Vector2f(vel);  
-        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin, fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);        
+        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);        
     }
 
-    // srcBlendFunc : openGL source blend function
-    // destBlendFunc : openGL destination blend function
+    /*
+    * @param srcBlendFunc : openGL source blend function
+    * @param destBlendFunc : openGL destination blend function
+    */
     public static void screenspace(SpriteAPI sprite, positioning pos, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, float fadein, float full, float fadeout, int srcBlendFunc, int destBlendFunc) {
         ViewportAPI screen = Global.getCombatEngine().getViewport();
 
@@ -375,9 +459,54 @@ public class MagicRender {
         sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
 
         Vector2f velocity=new Vector2f(vel);
-        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin, fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
     }
 
+    
+    /*
+    * @param layer : layer to render at
+    * @param jitterRange : max jitter offset from base position
+    * @param jitterTilt : max jitter rotation from base position
+    * @param flickerRange : max flickering range, can be >1 to maintain the sprite on or off
+    * @param flickerMedian : default opacity before flickering, can be > or < 0
+    * @param maxDelay : base frequency is 60 update per second, delay can be randomly increased to this value
+    */
+    public static void screenspace(SpriteAPI sprite, positioning pos, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, boolean additive,
+            float jitterRange, float jitterTilt, float flickerRange, float flickerMedian, float maxDelay,
+            float fadein, float full, float fadeout, CombatEngineLayers layer) {
+        ViewportAPI screen = Global.getCombatEngine().getViewport();
+        
+        Vector2f ratio=size;
+        Vector2f screenSize= new Vector2f(screen.getVisibleWidth(),screen.getVisibleHeight());
+        if(pos == positioning.STRETCH_TO_FULLSCREEN){
+            sprite.setSize(screenSize.x, screenSize.y);
+        } else if(pos == positioning.FULLSCREEN_MAINTAIN_RATIO) {
+            if(size.x/size.y > screenSize.x/screenSize.y){
+                ratio = new Vector2f((size.x/size.y)/(screenSize.x/screenSize.y),1);
+            } else {
+                ratio = new Vector2f(1, (size.y/size.x)/(screenSize.y/screenSize.x));
+                sprite.setSize(Global.getCombatEngine().getViewport().getVisibleWidth()*ratio.x,Global.getCombatEngine().getViewport().getVisibleHeight()*ratio.y);
+            }
+        } else {
+            sprite.setSize(size.x*screen.getViewMult(), size.y*screen.getViewMult());
+        }
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }                 
+        
+        Vector2f velocity=new Vector2f(vel);  
+        
+        IntervalUtil delay = new IntervalUtil(0.016f, Math.max(0.016f, maxDelay));
+        
+        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin,
+                jitterRange, jitterTilt, new Vector3f(), flickerRange, flickerMedian, delay,
+                fadein, fadein+full, fadein+full+fadeout, layer);        
+    }
+    
     public static enum positioning{
         CENTER,
         LOW_LEFT,

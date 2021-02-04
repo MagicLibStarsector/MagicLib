@@ -6,15 +6,18 @@ package data.scripts.plugins;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.graphics.SpriteAPI;
+import com.fs.starfarer.api.util.IntervalUtil;
 import data.scripts.util.MagicRender;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import org.lazywizard.lazylib.MathUtils;
 
 //import data.scripts.util.MagicUI;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     
@@ -40,16 +43,31 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         SINGLEFRAME.add(new renderData(sprite, loc, layer));
     }
 
-    public static void addBattlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin, float fadein, float full, float fadeout, CombatEngineLayers layer) {    
-        BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin, fadein, full, fadeout, 0, layer));
+    public static void addBattlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin,
+                float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                float fadein, float full, float fadeout, CombatEngineLayers layer) {    
+        
+        BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin,
+                jitterRange, jitterTilt, jitter, flickerRange, flickerMedian, delay,
+                fadein, full, fadeout, 0, layer));
     }
 
-    public static void addObjectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent, float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
-        OBJECTSPACE.add(new objectspaceData(sprite, anchor, loc, offset, vel, growth, angle, spin, parent, fadein, full, fadeout, fadeOnDeath, 0, layer));
+    public static void addObjectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent,
+                float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
+        
+        OBJECTSPACE.add(new objectspaceData(sprite, anchor, loc, offset, vel, growth, angle, spin, parent,
+                jitterRange, jitterTilt, jitter, flickerRange, flickerMedian, delay,
+                fadein, full, fadeout, fadeOnDeath, 0, layer));
     }
 
-    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin, float fadein, float full, float fadeout, CombatEngineLayers layer) { 
-        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin, fadein, full, fadeout, 0, layer));        
+    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin,
+                float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                float fadein, float full, float fadeout, CombatEngineLayers layer) { 
+        
+        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin,
+                jitterRange, jitterTilt, jitter, flickerRange, flickerMedian, delay,
+                fadein, full, fadeout, 0, layer));        
     }
     
     //////////////////////////////
@@ -107,13 +125,51 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
                 }
                 
+                float opacity=1;                
+                //jitter/flickerMedian
+                if(entry.DELAY!=null){
+                    entry.DELAY.advance(amount);
+                    if(entry.DELAY.intervalElapsed()){
+                        //jitter effect
+                        if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
+                            float a=0, b=0, c=0;
+                            float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
+                            //new jitter values
+                            if(entry.JITTER_RANGE>0){
+                                a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                                b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                            }
+                            if(entry.JITTER_TILT>0){
+                                c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
+                            }
+                            
+                            //remove old jitter, add new value
+                            Vector2f.add(entry.LOC, new Vector2f(x+a,y+b), entry.LOC);
+                            entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
+                            
+                            //store new jitter values
+                            entry.JITTER = new Vector3f(a,b,c);
+                        }
+                        //flicker effect
+                        if(entry.FLICKER_RANGE>0){
+                            opacity = Math.min(
+                                    1,
+                                    Math.max(
+                                            0,
+                                            MathUtils.getRandomNumberInRange(entry.FLICKER_MEDIAN-entry.FLICKER_RANGE, entry.FLICKER_MEDIAN+entry.FLICKER_RANGE)
+                                    )
+                            );
+                        }
+                    }
+                }
+                
                 //fading stuff
                 if(entry.TIME<entry.FADEIN){
-                    entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                    entry.SPRITE.setAlphaMult(opacity * (entry.TIME/entry.FADEIN));
                 } else if(entry.TIME>entry.FULL){                    
-                    entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    entry.SPRITE.setAlphaMult(opacity * (1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL))));
                 } else {
-                    entry.SPRITE.setAlphaMult(1);
+                    entry.SPRITE.setAlphaMult(opacity);
                 }
                 
                 //finally render that stuff
@@ -194,6 +250,45 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     }
                 }
                 
+                
+                float opacity=1;                
+                //jitter/flickerMedian
+                if(entry.DELAY!=null){
+                    entry.DELAY.advance(amount);
+                    if(entry.DELAY.intervalElapsed()){
+                        //jitter effect
+                        if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
+                            float a=0, b=0, c=0;
+                            float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
+                            //new jitter values
+                            if(entry.JITTER_RANGE>0){
+                                a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                                b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                            }
+                            if(entry.JITTER_TILT>0){
+                                c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
+                            }
+                            
+                            //remove old jitter, add new value
+                            Vector2f.add(entry.LOCATION, new Vector2f(x+a,y+b), entry.LOCATION);
+                            entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
+                            
+                            //store new jitter values
+                            entry.JITTER = new Vector3f(a,b,c);
+                        }
+                        //flicker effect
+                        if(entry.FLICKER_RANGE>0){
+                            opacity = Math.min(
+                                    1,
+                                    Math.max(
+                                            0,
+                                            MathUtils.getRandomNumberInRange(entry.FLICKER_MEDIAN-entry.FLICKER_RANGE, entry.FLICKER_MEDIAN+entry.FLICKER_RANGE)
+                                    )
+                            );
+                        }
+                    }
+                }                
+                
                 //move the offset on the anchor
                 if(engine.isEntityInPlay(entry.ANCHOR)){
                     Vector2f loc = new Vector2f(entry.ANCHOR.getLocation());
@@ -205,11 +300,11 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 
                 //fading stuff
                 if(entry.TIME<entry.FADEIN){
-                    entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                    entry.SPRITE.setAlphaMult(opacity * (entry.TIME/entry.FADEIN));
                 } else if(entry.TIME>entry.FULL){                    
-                    entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    entry.SPRITE.setAlphaMult(opacity * (1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL))));
                 } else {
-                    entry.SPRITE.setAlphaMult(1);
+                    entry.SPRITE.setAlphaMult(opacity);
                 }
                 
                 //finally render that stuff
@@ -283,6 +378,46 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         continue;
                     }                
 
+                    
+                    float opacity=1;                
+                    //jitter/flickerMedian
+                    if(entry.DELAY!=null){
+                        entry.DELAY.advance(amount);
+                        if(entry.DELAY.intervalElapsed()){
+                            //jitter effect
+                            if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
+                                float a=0, b=0, c=0;
+                                float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
+                                //new jitter values
+                                if(entry.JITTER_RANGE>0){
+                                    a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                                    b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                                }
+                                if(entry.JITTER_TILT>0){
+                                    c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
+                                }
+
+                                //remove old jitter, add new value
+                                Vector2f.add(entry.LOC, new Vector2f(x+a,y+b), entry.LOC);
+                                entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
+
+                                //store new jitter values
+                                entry.JITTER = new Vector3f(a,b,c);
+                            }
+                            //flicker effect
+                            if(entry.FLICKER_RANGE>0){
+                                opacity = Math.min(
+                                        1,
+                                        Math.max(
+                                                0,
+                                                MathUtils.getRandomNumberInRange(entry.FLICKER_MEDIAN-entry.FLICKER_RANGE, entry.FLICKER_MEDIAN+entry.FLICKER_RANGE)
+                                        )
+                                );
+                            }
+                        }
+                    }   
+                    
+                    
                     if(entry.POS == MagicRender.positioning.FULLSCREEN_MAINTAIN_RATIO){                    
                         center = new Vector2f(screen.getCenter());
                         entry.SPRITE.setSize(entry.SIZE.x*screen.getVisibleWidth(), entry.SIZE.y*screen.getVisibleHeight());
@@ -340,13 +475,14 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         }
                     }
 
+                    
                     //fading stuff
                     if(entry.TIME<entry.FADEIN){
-                        entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                        entry.SPRITE.setAlphaMult(opacity * (entry.TIME/entry.FADEIN));
                     } else if(entry.TIME>entry.FULL){                    
-                        entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                        entry.SPRITE.setAlphaMult(opacity * (1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL))));
                     } else {
-                        entry.SPRITE.setAlphaMult(1);
+                        entry.SPRITE.setAlphaMult(opacity);
                     }
                     
                     //finally render that stuff
@@ -413,18 +549,36 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private final Vector2f VEL;
         private final Vector2f GROWTH;
         private final float SPIN;
+        
+        private final float JITTER_RANGE;
+        private final float JITTER_TILT;
+        private Vector3f JITTER;
+        private final float FLICKER_RANGE;
+        private final float FLICKER_MEDIAN;
+        private IntervalUtil DELAY;
+        
         private final float FADEIN;
         private final float FULL; //fade in + full
         private final float FADEOUT; //full duration
         private float TIME;
         private final CombatEngineLayers LAYER;
         
-        public battlespaceData(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin, float fadein, float full, float fadeout, float time, CombatEngineLayers layer) {
+        public battlespaceData(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin,
+                float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                float fadein, float full, float fadeout, float time, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.LOC = loc;
             this.VEL = vel;
             this.GROWTH = growth;
             this.SPIN = spin;
+            
+            this.JITTER_RANGE = jitterRange;
+            this.JITTER_TILT = jitterTilt;
+            this.JITTER = jitter;
+            this.FLICKER_RANGE = flickerRange;
+            this.FLICKER_MEDIAN = flickerMedian;
+            this.DELAY = delay;
+            
             this.FADEIN = fadein;
             this.FULL = full;
             this.FADEOUT = fadeout;
@@ -443,6 +597,14 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private float ANGLE;
         private final float SPIN;
         private final boolean PARENT;
+        
+        private final float JITTER_RANGE;
+        private final float JITTER_TILT;
+        private Vector3f JITTER;
+        private final float FLICKER_RANGE;
+        private final float FLICKER_MEDIAN;
+        private IntervalUtil DELAY;
+        
         private final float FADEIN;
         private float FULL; //fade in + full
         private float FADEOUT; //full duration
@@ -450,7 +612,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private float TIME;
         private final CombatEngineLayers LAYER;
         
-        public objectspaceData(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent, float fadein, float full, float fadeout, boolean fade, float time, CombatEngineLayers layer) {
+        public objectspaceData(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin, boolean parent,
+                float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                float fadein, float full, float fadeout, boolean fade, float time, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.ANCHOR = anchor;
             this.LOCATION = loc;
@@ -460,6 +624,14 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
             this.ANGLE = angle;
             this.SPIN = spin;
             this.PARENT = parent;
+            
+            this.JITTER_RANGE = jitterRange;
+            this.JITTER_TILT = jitterTilt;
+            this.JITTER = jitter;
+            this.FLICKER_RANGE = flickerRange;
+            this.FLICKER_MEDIAN = flickerMedian;
+            this.DELAY = delay;            
+            
             this.FADEIN = fadein;
             this.FULL = full;
             this.FADEOUT = fadeout;
@@ -477,13 +649,23 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         private Vector2f SIZE;
         private final Vector2f GROWTH;
         private final float SPIN;
+        
+        private final float JITTER_RANGE;
+        private final float JITTER_TILT;
+        private Vector3f JITTER;
+        private final float FLICKER_RANGE;
+        private final float FLICKER_MEDIAN;
+        private IntervalUtil DELAY;
+        
         private final float FADEIN;
         private final float FULL; //fade in + full
         private final float FADEOUT; //full duration
         private float TIME;
         private final CombatEngineLayers LAYER;
         
-        public screenspaceData(SpriteAPI sprite, MagicRender.positioning position, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float spin, float fadein, float full, float fadeout, float time, CombatEngineLayers layer) {
+        public screenspaceData(SpriteAPI sprite, MagicRender.positioning position, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float spin,
+                float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                float fadein, float full, float fadeout, float time, CombatEngineLayers layer) {
             this.SPRITE = sprite;
             this.POS = position;
             this.LOC = loc;
@@ -491,6 +673,14 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
             this.SIZE = size;
             this.GROWTH = growth;
             this.SPIN = spin;
+            
+            this.JITTER_RANGE = jitterRange;
+            this.JITTER_TILT = jitterTilt;
+            this.JITTER = jitter;
+            this.FLICKER_RANGE = flickerRange;
+            this.FLICKER_MEDIAN = flickerMedian;
+            this.DELAY = delay;
+            
             this.FADEIN = fadein;
             this.FULL = full;
             this.FADEOUT = fadeout;
