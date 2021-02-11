@@ -1,0 +1,47 @@
+{
+    "MagicLib":{
+	
+        "magicTrail_files":[
+            # The default trail data file is "data/config/modFiles/magicTrail_data.csv"
+            # Mods that do not want to use the shared modFiles folder can point to their own file here
+            "data/trails/trail_data.csv",
+        ],
+
+        "interferences_rates":{
+            # "id" : (float)rate,
+            # id = amount of interference caused by the weapon,
+            # rate = ship's dissipation nerf per interference weapon of that rate for each interference weapon installed
+            # default : 
+            # "WEAK":20,
+            # "MILD":40,
+            # "STRONG":80,
+            # Technically mods can add new custom rates but those will NOT be mentioned in the hullmod description
+            "WEAK":20,
+            "MILD":40,
+            "STRONG":80,
+        },
+
+        "interference_RFCmult":0.5,	
+        # The Reinforced Flux Conduit hullmod reduces the impact of weapons interferences. Default : 0.5
+
+        "interferences_weapons":{
+            # List weapons that can "interfere" with each-other reducing the ship's dissipation when several are mounted on the same hull.
+            # "id" : "intensity",
+            # id = weapon.csv id
+            # intensity = interferences_rates id in MagicLib's settings. By default it can be WEAK MILD STRONG.
+            # "sample_weapon1":"WEAK",
+            # "sample_weapon2":"MILD",
+            # "sample_weapon3":"STRONG",
+            # To prevent breaking other mods these weapons are temporarily added to the default list
+            "SKR_blackout":"STRONG",
+            "SKR_glare":"MILD",
+            "SKR_ravager":"MILD",
+            "SKR_targetPainterSmall":"WEAK",
+            "SKR_targetPainterMedium":"WEAK",
+            "SKR_kaleidoscope":"WEAK",
+            "SKR_gatlingLance":"MILD",
+            "tahlan_titanomachy":"MILD",
+            "tahlan_pastel":"MILD",
+        },
+    },
+}

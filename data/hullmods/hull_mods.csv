@@ -5,5 +5,5 @@ Special weapons of great power can have unwanted interactions with each other an
 
 Those weapons interferences are rated %s, %s or %s. They reduce the ship's passive flux dissipation by a flat %s/%s/%s, for every other interfering weapon installed.
 
-That effect can be reduced by %s when installing the %s hullmod.",,graphics/MAGIC/hullmods/interference.png
+That effect can be reduced by %s when installing the %s hullmod.",,graphics/magic/hullmods/interference.png
 HULLMOD CONFLICT,ML_incompatibleHullmodWarning,,,,,,,,TRUE,,0,0,0,0,data.scripts.hullmods.MagicIncompatibleWarning,"%s, this hullmod cannot be installed on this ship or conflict with another previously installed hullmod.",,graphics/icons/intel/investigation.png

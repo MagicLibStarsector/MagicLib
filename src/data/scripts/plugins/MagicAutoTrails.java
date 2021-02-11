@@ -6,13 +6,18 @@ import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.loading.ProjectileSpawnType;
 import com.fs.starfarer.api.util.IntervalUtil;
+import data.scripts.util.MagicSettings;
+import static data.scripts.util.MagicSettings.toColor3;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,8 +30,7 @@ import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
 public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     
-    private static final Logger LOG = Global.getLogger(MagicAutoTrails.class); 
-    private static final String PATH="data/trails/trail_data.csv";
+    private static final Logger LOG = Global.getLogger(MagicAutoTrails.class);
     //Each proj can have multiple trails
     private static final Map<String,List<trailData>> PROJ_TRAILS = new HashMap<>();
     
@@ -234,125 +238,245 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         //clear up the trash
         PROJ_TRAILS.clear();
         
-        //merge all the trail_data
-        JSONArray trailData = new JSONArray();
-        try {
-            trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", PATH, "MagicLib");
-        } catch (IOException | JSONException | RuntimeException ex) {
-            LOG.error("unable to read trail_data.csv");
-            LOG.error(ex);
-        }
+        
+        List<String> trailFiles = MagicSettings.getList("MagicLib", "magicTrail_files");
+        trailFiles.add("data/config/modFiles/magicTrail_data.csv");
+        
+        for(String path : trailFiles){
             
-        for(int i=0; i<trailData.length(); i++){
-            try {
-                
-//                if(trailData.getJSONObject(i).get("projectile").equals("")){
-//                    continue;
-//                }
-                
-                JSONObject row = trailData.getJSONObject(i);
-                
-                //check the blending first
-                int blend = GL_ONE_MINUS_SRC_ALPHA;
-                if(row.getBoolean("additive")){
-                    blend=GL_ONE;
-                }
-                
-                //get the concerned projectile
-                String thisProj = row.getString("projectile");
-                
-                //setup layer override
-                CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
-                try{
-                    if(row.getBoolean("renderBelowExplosions")==true){
-                        layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
-                    }
-                } catch (JSONException ex) {
-                    LOG.error("missing layer override for "+thisProj);
+            if(Global.getSettings().isDevMode()){
+                LOG.error("Merging trails from "+path);
+
+                //merge all the trail
+                JSONArray trailData = new JSONArray();
+                try {
+                    trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, "MagicLib");
+                } catch (IOException | JSONException | RuntimeException ex) {
+                    LOG.error("unable to read "+path);
+                    LOG.error(ex);
                 }
 
-                float frameOffsetMult = 1f;
+                for(int i=0; i<trailData.length(); i++){
+                    try {
+                        JSONObject row = trailData.getJSONObject(i);
+
+                        //check the blending first
+                        int blend = GL_ONE_MINUS_SRC_ALPHA;
+                        if(row.getBoolean("additive")){
+                            blend=GL_ONE;
+                        }
+
+                        //get the concerned projectile
+                        String thisProj = row.getString("projectile");
+
+                        //setup layer override
+                        CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
+                        try{
+                            if(row.getBoolean("renderBelowExplosions")==true){
+                                layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
+                            }
+                        } catch (JSONException ex) {
+                            LOG.error("missing layer override for "+thisProj);
+                        }
+
+                        float frameOffsetMult = 1f;
+                        try {
+                            frameOffsetMult = (float) row.getDouble("frameOffsetMult");
+                        } catch (JSONException e) {
+                            LOG.error("missing frame offset mult override for " + thisProj);
+                        }
+
+                        //check if there are any trail already assigned to that projectile
+                        if(PROJ_TRAILS.containsKey(thisProj)){
+                            //add the new trail to the existing proj
+                            PROJ_TRAILS.get(thisProj).add(
+                                    new trailData(
+                                            row.getString("sprite"),
+                                            (float)row.getDouble("minLength"),
+                                            (float)row.getDouble("fadeIn"),
+                                            (float)row.getDouble("duration"),
+                                            (float)row.getDouble("fadeOut"),
+                                            (float)row.getDouble("sizeIn"),
+                                            (float)row.getDouble("sizeOut"),
+                                            toColor3(row.getString("colorIn")),
+                                            toColor3(row.getString("colorOut")),
+                                            (float)row.getDouble("opacity"),
+                                            blend,
+                                            (float)row.getDouble("textLength"),
+                                            (float)row.getDouble("textScroll"),
+                                            (float)row.getDouble("distance"),
+                                            (float)row.getDouble("drift"),
+                                            row.getBoolean("fadeOnFadeOut"),
+                                            row.getBoolean("angleAdjustment"),
+                                            (float)row.getDouble("dispersion"),
+                                            (float)row.getDouble("velocityIn"),
+                                            (float)row.getDouble("velocityOut"),
+                                            (float)row.getDouble("randomVelocity"),
+                                            (float)row.getDouble("angle"),
+                                            (float)row.getDouble("rotationIn"),
+                                            (float)row.getDouble("rotationOut"),
+                                            row.getBoolean("randomRotation"),
+                                            layer,
+                                            frameOffsetMult
+                                    ));
+
+                        } else {
+                            //add a new entry with that first trail
+                            List<trailData> list = new ArrayList<>();
+                            list.add(
+                                    new trailData(
+                                            row.getString("sprite"),
+                                            (float)row.getDouble("minLength"),
+                                            (float)row.getDouble("fadeIn"),
+                                            (float)row.getDouble("duration"),
+                                            (float)row.getDouble("fadeOut"),
+                                            (float)row.getDouble("sizeIn"),
+                                            (float)row.getDouble("sizeOut"),
+                                            toColor3(row.getString("colorIn")),
+                                            toColor3(row.getString("colorOut")),
+                                            (float)row.getDouble("opacity"),
+                                            blend,
+                                            (float)row.getDouble("textLength"),
+                                            (float)row.getDouble("textScroll"),
+                                            (float)row.getDouble("distance"),
+                                            (float)row.getDouble("drift"),
+                                            row.getBoolean("fadeOnFadeOut"),
+                                            row.getBoolean("angleAdjustment"),
+                                            (float)row.getDouble("dispersion"),
+                                            (float)row.getDouble("velocityIn"),
+                                            (float)row.getDouble("velocityOut"),
+                                            (float)row.getDouble("randomVelocity"),
+                                            (float)row.getDouble("angle"),
+                                            (float)row.getDouble("rotationIn"),
+                                            (float)row.getDouble("rotationOut"),
+                                            row.getBoolean("randomRotation"),
+                                            layer,
+                                            frameOffsetMult
+                                    ));                    
+                            PROJ_TRAILS.put(
+                                    thisProj,
+                                    list
+                                    );
+                        }
+                    } catch (JSONException ex) {
+                       LOG.error("Invalid line, skipping");
+                   }  
+                }
+            } else {
+                //merge all the trail
+                JSONArray trailData = new JSONArray();
                 try {
-                    frameOffsetMult = (float) row.getDouble("frameOffsetMult");
-                } catch (JSONException e) {
-                    LOG.error("missing frame offset mult override for " + thisProj);
+                    trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, "MagicLib");
+                } catch (IOException | JSONException | RuntimeException ex) {
+                    LOG.error("unable to read "+path);
+                    LOG.error(ex);
                 }
                 
-                //check if there are any trail already assigned to that projectile
-                if(PROJ_TRAILS.containsKey(thisProj)){
-                    //add the new trail to the existing proj
-                    PROJ_TRAILS.get(thisProj).add(
-                            new trailData(
-                                    row.getString("sprite"),
-                                    (float)row.getDouble("minLength"),
-                                    (float)row.getDouble("fadeIn"),
-                                    (float)row.getDouble("duration"),
-                                    (float)row.getDouble("fadeOut"),
-                                    (float)row.getDouble("sizeIn"),
-                                    (float)row.getDouble("sizeOut"),
-                                    toColor3(row.getString("colorIn")),
-                                    toColor3(row.getString("colorOut")),
-                                    (float)row.getDouble("opacity"),
-                                    blend,
-                                    (float)row.getDouble("textLength"),
-                                    (float)row.getDouble("textScroll"),
-                                    (float)row.getDouble("distance"),
-                                    (float)row.getDouble("drift"),
-                                    row.getBoolean("fadeOnFadeOut"),
-                                    row.getBoolean("angleAdjustment"),
-                                    (float)row.getDouble("dispersion"),
-                                    (float)row.getDouble("velocityIn"),
-                                    (float)row.getDouble("velocityOut"),
-                                    (float)row.getDouble("randomVelocity"),
-                                    (float)row.getDouble("angle"),
-                                    (float)row.getDouble("rotationIn"),
-                                    (float)row.getDouble("rotationOut"),
-                                    row.getBoolean("randomRotation"),
-                                    layer,
-                                    frameOffsetMult
-                            ));
-                
-                } else {
-                    //add a new entry with that first trail
-                    List<trailData> list = new ArrayList<>();
-                    list.add(
-                            new trailData(
-                                    row.getString("sprite"),
-                                    (float)row.getDouble("minLength"),
-                                    (float)row.getDouble("fadeIn"),
-                                    (float)row.getDouble("duration"),
-                                    (float)row.getDouble("fadeOut"),
-                                    (float)row.getDouble("sizeIn"),
-                                    (float)row.getDouble("sizeOut"),
-                                    toColor3(row.getString("colorIn")),
-                                    toColor3(row.getString("colorOut")),
-                                    (float)row.getDouble("opacity"),
-                                    blend,
-                                    (float)row.getDouble("textLength"),
-                                    (float)row.getDouble("textScroll"),
-                                    (float)row.getDouble("distance"),
-                                    (float)row.getDouble("drift"),
-                                    row.getBoolean("fadeOnFadeOut"),
-                                    row.getBoolean("angleAdjustment"),
-                                    (float)row.getDouble("dispersion"),
-                                    (float)row.getDouble("velocityIn"),
-                                    (float)row.getDouble("velocityOut"),
-                                    (float)row.getDouble("randomVelocity"),
-                                    (float)row.getDouble("angle"),
-                                    (float)row.getDouble("rotationIn"),
-                                    (float)row.getDouble("rotationOut"),
-                                    row.getBoolean("randomRotation"),
-                                    layer,
-                                    frameOffsetMult
-                            ));                    
-                    PROJ_TRAILS.put(
-                            thisProj,
-                            list
-                            );
+                for(int i=0; i<trailData.length(); i++){
+                    try {
+
+                        JSONObject row = trailData.getJSONObject(i);
+
+                        //check the blending first
+                        int blend = GL_ONE_MINUS_SRC_ALPHA;
+                        if(row.getBoolean("additive")){
+                            blend=GL_ONE;
+                        }
+
+                        //get the concerned projectile
+                        String thisProj = row.getString("projectile");
+
+                        //setup layer override
+                        CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
+                        try{
+                            if(row.getBoolean("renderBelowExplosions")==true){
+                                layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
+                            }
+                        } catch (JSONException ex) {
+                        }
+
+                        float frameOffsetMult = 1f;
+                        try {
+                            frameOffsetMult = (float) row.getDouble("frameOffsetMult");
+                        } catch (JSONException e) {
+                        }
+
+                        //check if there are any trail already assigned to that projectile
+                        if(PROJ_TRAILS.containsKey(thisProj)){
+                            //add the new trail to the existing proj
+                            PROJ_TRAILS.get(thisProj).add(
+                                    new trailData(
+                                            row.getString("sprite"),
+                                            (float)row.getDouble("minLength"),
+                                            (float)row.getDouble("fadeIn"),
+                                            (float)row.getDouble("duration"),
+                                            (float)row.getDouble("fadeOut"),
+                                            (float)row.getDouble("sizeIn"),
+                                            (float)row.getDouble("sizeOut"),
+                                            toColor3(row.getString("colorIn")),
+                                            toColor3(row.getString("colorOut")),
+                                            (float)row.getDouble("opacity"),
+                                            blend,
+                                            (float)row.getDouble("textLength"),
+                                            (float)row.getDouble("textScroll"),
+                                            (float)row.getDouble("distance"),
+                                            (float)row.getDouble("drift"),
+                                            row.getBoolean("fadeOnFadeOut"),
+                                            row.getBoolean("angleAdjustment"),
+                                            (float)row.getDouble("dispersion"),
+                                            (float)row.getDouble("velocityIn"),
+                                            (float)row.getDouble("velocityOut"),
+                                            (float)row.getDouble("randomVelocity"),
+                                            (float)row.getDouble("angle"),
+                                            (float)row.getDouble("rotationIn"),
+                                            (float)row.getDouble("rotationOut"),
+                                            row.getBoolean("randomRotation"),
+                                            layer,
+                                            frameOffsetMult
+                                    ));
+
+                        } else {
+                            //add a new entry with that first trail
+                            List<trailData> list = new ArrayList<>();
+                            list.add(
+                                    new trailData(
+                                            row.getString("sprite"),
+                                            (float)row.getDouble("minLength"),
+                                            (float)row.getDouble("fadeIn"),
+                                            (float)row.getDouble("duration"),
+                                            (float)row.getDouble("fadeOut"),
+                                            (float)row.getDouble("sizeIn"),
+                                            (float)row.getDouble("sizeOut"),
+                                            toColor3(row.getString("colorIn")),
+                                            toColor3(row.getString("colorOut")),
+                                            (float)row.getDouble("opacity"),
+                                            blend,
+                                            (float)row.getDouble("textLength"),
+                                            (float)row.getDouble("textScroll"),
+                                            (float)row.getDouble("distance"),
+                                            (float)row.getDouble("drift"),
+                                            row.getBoolean("fadeOnFadeOut"),
+                                            row.getBoolean("angleAdjustment"),
+                                            (float)row.getDouble("dispersion"),
+                                            (float)row.getDouble("velocityIn"),
+                                            (float)row.getDouble("velocityOut"),
+                                            (float)row.getDouble("randomVelocity"),
+                                            (float)row.getDouble("angle"),
+                                            (float)row.getDouble("rotationIn"),
+                                            (float)row.getDouble("rotationOut"),
+                                            row.getBoolean("randomRotation"),
+                                            layer,
+                                            frameOffsetMult
+                                    ));                    
+                            PROJ_TRAILS.put(
+                                    thisProj,
+                                    list
+                                    );
+                        }
+                    } catch (JSONException ex) {
+                    }  
                 }
-            } catch (JSONException ex) {
-               LOG.error("Invalid line, skipping");
-           }  
+            }   
         }
     }
     
@@ -367,18 +491,6 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
     public static void addProjTrail(String theProj, trailData theTrail){
         PROJ_TRAILS.get(theProj).add(theTrail);
     } 
-    
-    /////// UTILS ///////
-    
-    private static Color toColor3(String in) {
-        final String inPredicate = in.substring(1, in.length() - 1);
-        final String[] array = inPredicate.split(",");
-        return new Color(clamp255(Integer.parseInt(array[0])), clamp255(Integer.parseInt(array[1])), clamp255(Integer.parseInt(array[2])), 255);
-    }
-    
-    private static int clamp255(int x) {
-        return Math.max(0, Math.min(255, x));
-    }
     
     public static class trailData {
         private final String sprite;

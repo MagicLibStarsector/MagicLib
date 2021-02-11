@@ -5,7 +5,9 @@ import com.fs.starfarer.api.Global;
 import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
-//import data.scripts.plugins.MagicCampaignTrailPlugin;
+import data.scripts.util.MagicSettings;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Magic_modPlugin extends BaseModPlugin {
     
@@ -14,6 +16,8 @@ public class Magic_modPlugin extends BaseModPlugin {
     //       ON APPLICATION LOAD          //
     //                                    //
     ////////////////////////////////////////
+    
+    public static List<String> TRAIL_DATA = new ArrayList<>();
     
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
@@ -29,24 +33,15 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
         
-        MagicAutoTrails.getTrailData();
         //gather interference data
-        MagicInterference.mergeInterference();
+        MagicInterference.loadInterference();   
+        
+        //gather all magicTrail files
+        TRAIL_DATA = MagicSettings.getList("MagicLib", "magicTrail_files");
+        TRAIL_DATA.add("data/config/modFiles/magicTrail_data.csv");
+        //gather trail data
+        MagicAutoTrails.getTrailData();
     }    
-    
-    ////////////////////////////////////////
-    //                                    //
-    //        ON NEW GAME CREATION        //
-    //                                    //
-    ////////////////////////////////////////
-    
-//    @Override
-//    public void onNewGame() {
-//        if (Global.getSector() != null) {
-//            //Disabled for now
-//            //Global.getSector().addScript(new MagicCampaignTrailPlugin());
-//        }
-//    }
     
     ////////////////////////////////////////
     //                                    //
@@ -56,7 +51,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     
     @Override
     public void onGameLoad(boolean newGame){
-        MagicAutoTrails.getTrailData();
+//        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
-    }    
+    }
 }

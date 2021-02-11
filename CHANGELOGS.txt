@@ -1,9 +1,29 @@
 MagicLib
 
-0.29
+0.30
 
-Added MagicTxt
-   . Allows to easily externalize compiled texts in a CSV to help translators.
+Added MagicSettings:
+   . A collections of methods to easily read variables and lists from a shared modSettings.json file.
+   . It is intended to create a unified settings system across mods to make inter-mod integration much easier.
+   . Produces helpful error messages when failing, as well as a detailed log when in dev-mode.
+
+MagicRender:
+   . Now supports sprite flickering and jittering.
+
+MagicTrails:
+   . Added "base_trail_contrail" to default available trails.
+   . Added compensation attribute to MagicAutoTrails to fix offset following projectiles with fast lateral drift. (courtesy of TomatoPaste)
+   . Added a non-verbose implementation of MagicAutoTrails used when not in dev Mode.
+
+MagicVectorThrusters:
+   . Probably fixed a long standing rotation error with the vectoring thruster script
+   . Added support for vector thruster covers (non animated thrusters will only turn).
+
+MagicInterferencePlugin:
+   . Fixed minor error in the Interference hullmod tooltip.
+   . Added a non-verbose implementation used when not in dev Mode.
+
+0.29
 
 Added MagicInterferencePlugin
    . Makes exceptionally strong weapons with the "Interference" trait have negative effects when more that one is mounted on a given ship.
@@ -13,7 +33,7 @@ Added MagicInterferencePlugin
 Added MagicBasicInterferenceEffec loose weapon script to trigger an interference check.
 
 Added MagicIncompatibleHullmods
-   . Propose a uniformized "incompatible hullmod" solution.
+   . Proposes a uniform "incompatible hullmod" solution.
    . When triggered as two incompatible hullmods are added, it will remove the offending hullmod and add a hullmod to warn the player about that operation.
    . The added hullmod's tooltip will indicate which hullmod was removed and why.
 
@@ -23,6 +43,8 @@ Added MagicModuleRetreatCleaner
 MagicRender:
    . Added optional blending modes to the sprite renders.
 
+MagicUI:
+   . Fixed crash when used the first frame in combat.
 
 0.28
 
@@ -30,7 +52,6 @@ Added MagicGuidedProjectileScript loose weapon script
 
 MagicAnim:
    . Added cycle(float x, float min, float max)
-
 
 
 0.27

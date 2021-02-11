@@ -15,6 +15,7 @@
         },
 		"fx":{
             "base_trail_smooth":"graphics/magic/fx/base_trail_smooth.png",
+            "base_trail_contrail":"graphics/magic/fx/base_trail_contrail.png",
             "base_trail_mild":"graphics/magic/fx/base_trail_mild.png",
             "base_trail_fuzzy":"graphics/magic/fx/base_trail_fuzzy.png",
             "base_trail_rough":"graphics/magic/fx/base_trail_rough.png",

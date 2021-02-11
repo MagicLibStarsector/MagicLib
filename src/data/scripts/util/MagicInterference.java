@@ -5,15 +5,14 @@ package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MagicInterference {    
+    
+    private static final String INTERFERENCE_HULLMOD = "ML_interferenceWarning";
     
     //////////////////////////////
     //                          //
@@ -28,12 +27,10 @@ public class MagicInterference {
      * Variant of the ship affected by the interference debuff
      */
     
-    private static final String INTERFERENCE_HULLMOD = "ML_interferenceWarning";
-    
     public static void ApplyInterference (ShipVariantAPI shipVariant){
         //get interference data
         if(RATES.isEmpty() || Global.getSettings().isDevMode()){
-            mergeInterference();
+            loadInterference();
         }
         
         if(getTotalInterference(shipVariant)>0){
@@ -46,56 +43,28 @@ public class MagicInterference {
     }
     
 
-    
     //////////////////////////////
     //                          //
     //    INTERFERENCE DATA     //
     //                          //
     //////////////////////////////            
         
-    private static final Logger LOG=  Global.getLogger(MagicInterference.class);
-    private static final String INTERFERENCE = "data/config/magicLib/magicInterference.csv";
+    private static final Logger LOG =  Global.getLogger(MagicInterference.class);
     private static final Map<String, Float> WEAPONS =new HashMap<>();
-    private static final String SETTINGS = "data/config/magicLib/magicInterference_settings.csv";
-    private static final Map<String, Integer> RATES = new HashMap<>();
-    private static float RFC=0;
+    private static Map<String, Float> RATES = new HashMap<>();
+    private static float RFC_MULT=0;
     
-    public static void mergeInterference(){
+    public static void loadInterference(){
         
         WEAPONS.clear();
         RATES.clear(); 
         
-        //read interference_settings.csv
-        try {
-            LOG.info("loading interference_settings.csv");
-            JSONArray settings = Global.getSettings().getMergedSpreadsheetDataForMod("small", SETTINGS, "MagicLib");            
-            JSONObject row = settings.getJSONObject(0);
-            RATES.put("WEAK", row.getInt("weak"));
-            LOG.info("small weapon interference rate: "+row.getInt("weak"));
-            RATES.put("MILD", row.getInt("mild"));
-            LOG.info("medium weapon interference rate: "+row.getInt("mild"));
-            RATES.put("STRONG", row.getInt("strong"));
-            LOG.info("large weapon interference rate: "+row.getInt("strong"));
-            RFC= (float)row.getDouble("RFCmult");
-            LOG.info("RFC hullmod effect reduction : "+RFC);
-        } catch (IOException | JSONException ex) {
-            LOG.info("unable to read interference_settings.csv");
-        } 
-        
-        //read interference.csv
-        try {
-            LOG.info("loading interference.csv");
-            JSONArray weapons = Global.getSettings().getMergedSpreadsheetDataForMod("id", INTERFERENCE, "MagicLib");
-            for(int i=0; i<weapons.length();i++){
-                JSONObject row = weapons.getJSONObject(i);
-                if(row.getString("id")!=null && row.getString("intensity")!=null){
-                    WEAPONS.put(row.getString("id"),(float)RATES.get(row.getString("intensity")));
-                    LOG.info("interference source: "+row.getString("id") + " with a "+row.getString("intensity")+" intensity");
-                }
-            }
-        } catch (IOException | JSONException ex) {
-            LOG.info("unable to read interference.csv");
-        } 
+        RATES = MagicSettings.getFloatMap("MagicLib", "interferences_rates");
+        RFC_MULT = MagicSettings.getFloat("MagicLib", "interference_RFCmult");        
+        Map<String,String>rawWeapons = MagicSettings.getStringMap("MagicLib", "interferences_weapons");
+        for(Entry<String,String> w : rawWeapons.entrySet()){
+            WEAPONS.put(w.getKey(), RATES.get(w.getValue()));
+        }
     }
     
     
@@ -114,7 +83,6 @@ public class MagicInterference {
      * Uncapped reduction of the flux dissipation caused by the interfering weapons
      */
     
-    
     public static Float getTotalInterference (ShipVariantAPI shipVariant){
         
         float total=0;        
@@ -130,18 +98,18 @@ public class MagicInterference {
         return total;
     }
     
-    public static Map<String, Integer> getRates(){
+    public static Map<String, Float> getRates(){
          if(RATES.isEmpty()){
-            mergeInterference();
+            loadInterference();
          }        
         return RATES;
     }
     
     public static float getRFC(){
-         if(RFC==0){
-            mergeInterference();
+         if(RFC_MULT==0){
+            loadInterference();
          }        
-        return RFC;
+        return RFC_MULT;
     }
     
     /**
@@ -156,45 +124,75 @@ public class MagicInterference {
         
         //double check if all the values were loaded
         if(RATES.isEmpty()){
-            mergeInterference();
+            loadInterference();
         }
         
-        Map<String,Float> theDebuffs = new HashMap<>();
-        
-        LOG.info("computing interference debuff");
-        
-        //scan all weapons for interference sources
-        for(String w : shipVariant.getNonBuiltInWeaponSlots()){
-            if(shipVariant.getFittedWeaponSlots().contains(w) && WEAPONS.containsKey(shipVariant.getWeaponId(w))){
-                theDebuffs.put(w,0f);
-                
-                LOG.info("added interference source: "+shipVariant.getWeaponId(w));
+        if(Global.getSettings().isDevMode()){
+
+            Map<String,Float> theDebuffs = new HashMap<>();
+
+            LOG.info("computing interference debuff");
+
+            //scan all weapons for interference sources
+            for(String w : shipVariant.getNonBuiltInWeaponSlots()){
+                if(shipVariant.getFittedWeaponSlots().contains(w) && WEAPONS.containsKey(shipVariant.getWeaponId(w))){
+                    theDebuffs.put(w,0f);
+
+                    LOG.info("added interference source: "+shipVariant.getWeaponId(w));
+                }
             }
-        }
-        
-        float hullmod=1;
-        //scan for interference-reducing hullmod
-        if(shipVariant.getHullMods().contains("fluxbreakers")){
-            hullmod=RFC;
-            
-            LOG.info("Resistant Flux Conduits installed, debuff reduced.");
-        }
-        
-        //compute all the debuff
-        LOG.info("found "+theDebuffs.size()+" interference sources");
-        
-        if(theDebuffs.size()>1){
-            for (String w : theDebuffs.keySet()){
-                
-                theDebuffs.put(
-                        w,
-                        (float) (theDebuffs.size()-1) //interference sources
-                                *WEAPONS.get(shipVariant.getWeaponId(w)) //
-                                *hullmod
-                );
-                LOG.info(shipVariant.getWeaponSpec(w).getWeaponName() + " debuff: "+WEAPONS.get(shipVariant.getWeaponId(w)));
+
+            float hullmod=1;
+            //scan for interference-reducing hullmod
+            if(shipVariant.getHullMods().contains("fluxbreakers")){
+                hullmod=RFC_MULT;
+
+                LOG.info("Resistant Flux Conduits installed, debuff reduced.");
             }
+
+            //compute all the debuff
+            LOG.info("found "+theDebuffs.size()+" interference sources");
+
+            if(theDebuffs.size()>1){
+                for (String w : theDebuffs.keySet()){
+
+                    theDebuffs.put(
+                            w,
+                            (float) (theDebuffs.size()-1) //interference sources
+                                    *WEAPONS.get(shipVariant.getWeaponId(w)) //
+                                    *hullmod
+                    );
+                    LOG.info(shipVariant.getWeaponSpec(w).getWeaponName() + " debuff: "+WEAPONS.get(shipVariant.getWeaponId(w)));
+                }
+            }
+            return theDebuffs;
+        } else {
+            //Same without any log for performance saving
+            Map<String,Float> theDebuffs = new HashMap<>();
+            //scan all weapons for interference sources
+            for(String w : shipVariant.getNonBuiltInWeaponSlots()){
+                if(shipVariant.getFittedWeaponSlots().contains(w) && WEAPONS.containsKey(shipVariant.getWeaponId(w))){
+                    theDebuffs.put(w,0f);
+                }
+            }
+            float hullmod=1;
+            //scan for interference-reducing hullmod
+            if(shipVariant.getHullMods().contains("fluxbreakers")){
+                hullmod=RFC_MULT;
+            }
+            //compute all the debuff
+            if(theDebuffs.size()>1){
+                for (String w : theDebuffs.keySet()){
+
+                    theDebuffs.put(
+                            w,
+                            (float) (theDebuffs.size()-1) //interference sources
+                                    *WEAPONS.get(shipVariant.getWeaponId(w)) //
+                                    *hullmod
+                    );
+                }
+            }
+            return theDebuffs;            
         }
-        return theDebuffs;
     }
 }

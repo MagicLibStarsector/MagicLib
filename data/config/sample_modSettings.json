@@ -1,0 +1,40 @@
+}
+	#MODS INTEGRATION
+	
+	"diableavionics":{	
+		"missile_resist_derecho": [
+			# Lists missiles id that should loose guidance but not get flamed out by the Derecho ECM system
+		],
+		"missile_immune_derecho": [
+			# Lists missiles id that should not get affected at all by the Derecho ECM system
+			# Please be mindful to not break player expectations, only very special projectiles should be immune
+			# Such as phased missiles or "smart" bullets
+		],
+    },
+	
+	"MagicLib":{
+		"magicTrail_files":[
+			# The default trail data file is "data/config/modFiles/magicTrail_data.csv"
+			# Mods that do not want to use the shared modFiles folder can point to their own file here
+		],
+		"interferences_weapons":{
+			# List weapons that can "interfere" with each-other, reducing the ship's dissipation when several are mounted on the same hull.
+			# "id" : "intensity",
+			# id = weapon.csv id
+			# intensity = interferences_rates id in MagicLib's settings. By default it can be WEAK, MILD, STRONG.
+			# "sample_weapon1":"WEAK",
+			# "sample_weapon2":"MILD",
+			# "sample_weapon3":"STRONG",
+		},
+	},
+	
+	"SCY":{
+		"amity_factionWhitelist":[
+			# Lists factions that should have their known ships and weapons sold in Amity's Freeport discount trader.
+		],
+		"amity_blacklist":[
+			# Lists ships, weapons and wing ids that should be culled from Amity's Freeport discount trader.
+			# Consider that tier 3 weapons/wings and ships above 5/10/14/23 FP are already culled from that store.
+		],
+	},
+}
