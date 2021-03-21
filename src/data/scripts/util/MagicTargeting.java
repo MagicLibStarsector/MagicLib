@@ -554,8 +554,7 @@ public class MagicTargeting {
         }
         return candidate;
     }
-    
-    
+        
     private static ShipAPI getRandomTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Vector2f lookAround, Integer maxRange, Integer searchCone, boolean failsafe){
         ShipAPI candidate = null;
         ShipAPI backup=null;
