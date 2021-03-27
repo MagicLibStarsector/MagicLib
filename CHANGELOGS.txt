@@ -1,5 +1,19 @@
 MagicLib
 
+0.32
+
+Basic 0.95 compatibility update
+MagicUI is probably broken to hell and back due to the UI scaling, gotta fix that soon
+
+0.31
+
+Added MagicCampaign:
+   . A collection of methods that are handy to create systems and spawn stuff in them.
+   . Also includes a method to create custom bounty-type fleets and give them simple orders.
+
+Consolidated a lot of methods with incrementally more detailed declaration variable into fewer ones, 
+the old methods are still available to maintain compatibility but are now tagged as deprecated and will be removed in a future update.
+
 0.30
 
 Added MagicSettings:

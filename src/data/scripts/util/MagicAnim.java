@@ -8,21 +8,6 @@ import org.lazywizard.lazylib.MathUtils;
 
 public class MagicAnim {    
     
-    
-    /**
-     * Smooth
-     * Translates a value in a (0,1) range to a value in the same range with smooth ease in and ease out.
-     * 0, 0.5 and 1 returns the same but 0.25 returns 0.11 and 0.75 return 0.89
-     * 
-     * @param x
-     * Float clamped from 0 to 1
-     * 
-     * @return 
-     * Smoothed float value
-     */
-    public static float S (float x){
-        return 0.5f - ((float)(FastTrig.cos(Math.min(1, Math.max(0, x))*MathUtils.FPI) /2 ));
-    }
     /**
      * Translates a value in a (0,1) range to a value in the same range with smooth ease in and ease out.
      * 0, 0.5 and 1 returns the same but 0.25 returns 0.11 and 0.75 return 0.89
@@ -34,25 +19,20 @@ public class MagicAnim {
      * Smoothed float value
      */
     public static float smooth (float x){
-        return 0.5f - ((float)(FastTrig.cos(Math.min(1, Math.max(0, x))*MathUtils.FPI) /2 ));
+        if(x<=0){
+            return 0;
+        }
+        if(x>=1){
+            return 1;
+        }
+        return 0.5f - (float)(FastTrig.cos(x*MathUtils.FPI))/2 ;
     }
     
     /**
-     * Arbitrary Smooth
-     * Translates a value in a (min,max) range to a value in the same range with smooth ease in and ease out.
-     * 
-     * @param x
-     * Float clamped from 0 to 1
-     * 
-     * @param min
-     * minimal range value
-     * 
-     * @param max
-     * maximal range value
-     * 
-     * @return 
-     * smoothed float value in that range
+     * USE arbitrarySmooth() INSTEAD, will be removed with 0.95
+     * @deprecated use MagicAnim.arbitrarySmooth() instead
      */
+    @Deprecated
     public static float AS (float x, float min, float max){
         float value=Math.min(max, Math.max(min, x));
         value = (value-min)/(max-min);
@@ -64,7 +44,7 @@ public class MagicAnim {
      * Translates a value in a (min,max) range to a value in the same range with smooth ease in and ease out.
      * 
      * @param x
-     * Float clamped from 0 to 1
+     * Float clamped from min to max
      * 
      * @param min
      * minimal range value
@@ -76,13 +56,30 @@ public class MagicAnim {
      * smoothed float value in that range
      */
     public static float arbitrarySmooth (float x, float min, float max){
-        float value=Math.min(max, Math.max(min, x));
-        value = (value-min)/(max-min);
-        value = (0.5f - ((float)(FastTrig.cos(value*MathUtils.FPI) /2 )));
-        value *= (max-min) + min;
-        return value;
+        if(x<=min){
+            return min;
+        }
+        if(x>max){
+            return max;
+        }
+//        float value=Math.min(max, Math.max(min, x));
+//        float value = (x-min)/(max-min);
+//        value = (0.5f - ((float)(FastTrig.cos(value*MathUtils.FPI) /2 )));
+//        value *= (max-min) + min;
+//        return value;
+        
+        float magicNumber = -(min-max)/2;
+        return (float)( FastTrig.cos((x-min)*(1/(max-min)) *MathUtils.FPI ))*magicNumber + magicNumber + min;
     }
     
+    /**
+     * USE offsetToRange() INSTEAD, will be removed with 0.95
+     * @deprecated use MagicAnim.offsetToRange() instead
+     */
+    @Deprecated
+    public static float range (float x, float min, float max){
+        return (float) Math.min(1, Math.max( 0 , x))*(max-min) + min;
+    }
     /**
      * Translates a value from a (0,1) range to a value in a (min,max) range.
      * 
@@ -98,18 +95,25 @@ public class MagicAnim {
      * @return 
      * float value in the new range
      */
-    public static float range (float x, float min, float max){
-        return (float) Math.min(1, Math.max( 0 , x))*(max-min) + min;
+    public static float offsetToRange (float x, float min, float max){
+        if(x<=0){
+            return min;
+        }
+        if(x>1){
+            return max;
+        }
+        return x*(max-min) + min;
     }
     
     /**
      * USE normalizeRange() INSTEAD, will be removed with 0.95
-     * @deprecated use {@link normalizeRange()}
+     * @deprecated use normalizeRange() instead
      */
     @Deprecated
     public static float offset (float x, float start, float end){
         return (float) Math.min(1, Math.max( 0 , (x-start)*(1/(end-start))));
     }
+    
     /**
      * Translates a value in a (start,end) range into a value in a (0,1) range.
      * 
@@ -126,56 +130,24 @@ public class MagicAnim {
      * float value in the new range
      */
     public static float normalizeRange (float x, float start, float end){
-        return (float) Math.min(1, Math.max( 0 , (x-start)*(1/(end-start))));
-    }
-    /**
-     * Normalize Range
-     * Translates a value in a (start,end) range into a value in a (0,1) range.
-     * 
-     * @param x
-     * Float clamped from 0 to 1
-     * 
-     * @param start
-     * new range minimal value
-     * 
-     * @param end
-     * new range maximal value
-     * 
-     * @return 
-     * float value in the new range
-     */
-    public static float NR (float x, float start, float end){
-        return (float) Math.min(1, Math.max( 0 , (x-start)*(1/(end-start))));
+        if(x<=start){
+            return 0;
+        }
+        if(x>end){
+            return 1;
+        }
+        return (x-start)*(1/(end-start));
     }
     
     /**
-     * USE smoothRange() OR SR() INSTEAD, will be removed with 0.95
-     * @deprecated use {@link SR()}
+     * USE smoothNormalizeRange INSTEAD, will be removed with 0.95
+     * @deprecated use smoothNormalizeRange()
      */
     @Deprecated
     public static float SO (float x, float start, float end){
         return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI ) /2 );
     }
-    /**
-     * Smooth + Range
-     * Translates a value from a (start,end) range into a value in a (0,1) range with smooth ease in and ease out.
-     * Allows to segment the value of a timer or an effect level into different shorter sliders
-     * 
-     * @param x
-     * Float clamped from 0 to 1
-     * 
-     * @param start
-     * new range minimal value
-     * 
-     * @param end
-     * new range maximal value
-     * 
-     * @return 
-     * smoothed float value in the new range
-     */
-    public static float SR (float x, float start, float end){
-        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI ) /2 );
-    }
+    
     /**
      * Translates a value from a (start,end) range into a value in a (0,1) range with smooth ease in and ease out.
      * Allows to segment the value of a timer or an effect level into different shorter sliders
@@ -192,18 +164,48 @@ public class MagicAnim {
      * @return 
      * smoothed float value in the new range
      */
-    public static float smoothRange (float x, float start, float end){
-        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI ) /2 );
+    public static float smoothNormalizeRange (float x, float start, float end){
+        if(x<=start){
+            return 0;
+        }
+        if(x>end){
+            return 1;
+        }
+        return 0.5f - (float)( FastTrig.cos((x-start)*(1/(end-start)) *MathUtils.FPI ) /2 );
     }
     
     /**
-     * USE smoothRangeReturn() OR SRR() INSTEAD, will be removed with 0.95
-     * @deprecated use {@link SRR()}
+     * Translates a value from a (fromMin,fromMax) range into a value in a (toMin,toMax) range with smooth ease in and ease out.
+     * Allows to segment the value of a timer or an effect level into different shorter sliders
+     * 
+     * @param x
+     * @param fromMin
+     * @param fromMax
+     * @param toMin
+     * @param toMax
+     * @return 
+     * smoothed float value clamped at the from range, into the new range
+     */
+    public static float smoothToRange (float x, float fromMin, float fromMax, float toMin, float toMax){
+        if (x<=fromMin){
+            return toMin;
+        }
+        if(x>=fromMax){
+            return toMax;
+        }
+        float magicNumber = -(toMax-toMin)/2;
+        return (float)( FastTrig.cos((x-fromMin)*(1/(fromMax-fromMin)) *MathUtils.FPI ))*magicNumber + magicNumber + toMin;
+    }
+    
+    /**
+     * USE smoothReturnNormalizeRange() INSTEAD, will be removed with 0.95
+     * @deprecated use smoothReturnNormalizeRange()
      */
     @Deprecated
     public static float RSO (float x, float start, float end){
         return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI*2 ) /2 );
     }
+    
     /**
      * Translates a value in a (start,end) range into a "back-and-forth" value in a (0,1) range with smooth ease in and ease out.
      * 
@@ -219,28 +221,33 @@ public class MagicAnim {
      * @return 
      * smooth "back-and-forth" float value equals to 0 at start and end, and 1 at the mid-point between them
      */
-    public static float smoothRangeReturn (float x, float start, float end){
-        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI*2 ) /2 );
+    public static float smoothReturnNormalizeRange (float x, float start, float end){
+        if (x<=start || x>=end){
+            return 0;
+        }
+        return 0.5f - (float)( FastTrig.cos((x-start)*(1/(end-start)) *MathUtils.FPI*2 ) /2 );
     }
+    
     /**
-     * Smooth + Range + Return
-     * Translates a value in a (start,end) range into a "back-and-forth" value in a (0,1) range with smooth ease in and ease out.
+     * Translates a value in a (fromMin,fromMax) range into a "back-and-forth" value in a (toMin,toMax) range with smooth ease in and ease out.
      * 
      * @param x
-     * Float clamped from start to end
-     * 
-     * @param start
-     * range minimal value
-     * 
-     * @param end
-     * range maximal value
-     * 
+     * @param fromMin
+     * @param fromMax
+     * @param toMin
+     * @param toMax
      * @return 
-     * smooth "back-and-forth" float value equals to 0 at start and end, and 1 at the mid-point between them
+     * smooth "back-and-forth" float value equals to toMin at start and toMin, and toMax at the mid-point between the (fromMin, fromMax) range
      */
-    public static float RSR (float x, float start, float end){
-        return 0.5f - (float)( FastTrig.cos( Math.min( 1, Math.max( 0 , (x-start)*(1/(end-start)))) *MathUtils.FPI*2 ) /2 );
+    public static float smoothReturnToRange (float x, float fromMin, float fromMax, float toMin, float toMax){
+        if (x<=fromMin || x>=fromMax){
+            return toMin;
+        }
+        
+        float magicNumber = -(toMax-toMin)/2;
+        return (float)( FastTrig.cos((x-fromMin)*(1/(fromMax-fromMin)) *MathUtils.FPI*2 ))*magicNumber + magicNumber + toMin;
     }
+    
     
     /**
      * Cycle within range

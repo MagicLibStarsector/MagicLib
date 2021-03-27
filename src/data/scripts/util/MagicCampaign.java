@@ -278,7 +278,7 @@ public class MagicCampaign {
                 theCargo.addMarines(amount);
                 break;
         }
-	BaseSalvageSpecial.setExtraSalvage(theCargo, carrier.getMemoryWithoutUpdate(), -1);
+	BaseSalvageSpecial.addExtraSalvage(theCargo, carrier.getMemoryWithoutUpdate(), -1);
         return theCargo;
     }
         
@@ -428,9 +428,9 @@ public class MagicCampaign {
      * @param isMarketAdmin
      * @param industrialPlanning_level
      * skill level for market admin
-     * @param fleetLogistic_level
+     * @param spaceOperation_level
      * skill level for market admin
-     * @param planetaryOperations_level
+     * @param groundOperations_level
      * skill level for market admin
      * @param commScreenPosition
      * position order in the comm screen, 0 is the admin position
@@ -447,8 +447,8 @@ public class MagicCampaign {
             String postId,
             boolean isMarketAdmin,
             Integer industrialPlanning_level,
-            Integer fleetLogistic_level,
-            Integer planetaryOperations_level,
+            Integer spaceOperation_level,
+            Integer groundOperations_level,
             Integer commScreenPosition
     ){
         
@@ -463,8 +463,8 @@ public class MagicCampaign {
         person.setPostId(postId);
         
         person.getStats().setSkillLevel(Skills.INDUSTRIAL_PLANNING, industrialPlanning_level);
-        person.getStats().setSkillLevel(Skills.FLEET_LOGISTICS, fleetLogistic_level);
-        person.getStats().setSkillLevel(Skills.PLANETARY_OPERATIONS, planetaryOperations_level);
+        person.getStats().setSkillLevel(Skills.SPACE_OPERATIONS, spaceOperation_level);
+        person.getStats().setSkillLevel(Skills.PLANETARY_OPERATIONS, groundOperations_level);
 
         if(isMarketAdmin){
             market.setAdmin(person);
@@ -821,7 +821,7 @@ public class MagicCampaign {
         }
 
         if (params.withOfficers) {
-            addCommanderAndOfficers(newFleet, params, 0, random);
+            addCommanderAndOfficers(newFleet, params, random);
         }
 
         newFleet.forceSync();

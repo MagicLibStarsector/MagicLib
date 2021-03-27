@@ -6,8 +6,6 @@ import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Magic_modPlugin extends BaseModPlugin {
     
@@ -17,7 +15,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     //                                    //
     ////////////////////////////////////////
     
-    public static List<String> TRAIL_DATA = new ArrayList<>();
+//    public static List<String> TRAIL_DATA = new ArrayList<>();
     
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
@@ -33,15 +31,26 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
         
+        MagicSettings.loadModSettings();
+        
+        if(MagicSettings.modSettings==null){
+            String message = System.lineSeparator()
+                    + System.lineSeparator() + "Malformed modSettings.json detected"
+                    + System.lineSeparator() + System.lineSeparator();
+            throw new ClassNotFoundException(message);
+        }
+        
         //gather interference data
         MagicInterference.loadInterference();   
         
-        //gather all magicTrail files
-        TRAIL_DATA = MagicSettings.getList("MagicLib", "magicTrail_files");
-        TRAIL_DATA.add("data/config/modFiles/magicTrail_data.csv");
         //gather trail data
         MagicAutoTrails.getTrailData();
     }    
+    
+    @Override
+    public void onDevModeF8Reload() {
+        MagicSettings.loadModSettings();
+    }
     
     ////////////////////////////////////////
     //                                    //

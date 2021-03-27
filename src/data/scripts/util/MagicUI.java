@@ -42,6 +42,8 @@ public class MagicUI {
     private static final Vector2f PERCENTBARVEC1 = new Vector2f(21f, 0f); // Just 21 pixel of width of difference.
     private static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
 
+    private static final float UIscale = Global.getSettings().getScreenScaleMult();
+    
     static {
         GREENCOLOR = Global.getSettings().getColor("textFriendColor");
         BLUCOLOR = Global.getSettings().getColor("textNeutralColor");
@@ -147,9 +149,9 @@ public class MagicUI {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glTranslatef(0.01f, 0.01f, 0);
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f, 80f),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f*UIscale, 80f*UIscale),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f, 79f),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f*UIscale, 79f*UIscale),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
 
         // Render the drop shadow
@@ -286,9 +288,9 @@ public class MagicUI {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glTranslatef(0.01f, 0.01f, 0);
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f, 80f),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f*UIscale, 80f*UIscale),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f, 79f),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f*UIscale, 79f*UIscale),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
 
         // Render the drop shadow
@@ -571,15 +573,15 @@ public class MagicUI {
                 alpha * (borderCol.getAlpha() / 255f)
                 * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(177f - 1f, 120f + 11f),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(176f*UIscale, 131f*UIscale),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(178f - 1f, 119f + 11f),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(177f*UIscale, 130f*UIscale),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
 
         openGL11ForText();
         TODRAW14.setText(text);
-        TODRAW14.setMaxWidth(46);
-        TODRAW14.setMaxHeight(14);
+        TODRAW14.setMaxWidth(46*UIscale);
+        TODRAW14.setMaxHeight(14*UIscale);
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
         TODRAW14.setColor(color);
@@ -623,9 +625,9 @@ public class MagicUI {
                 alpha * (borderCol.getAlpha() / 255f)
                 * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(356f - 1f, 120f + 11f),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(355f*UIscale, 131f*UIscale),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(357f - 1f, 119f + 11f),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(356f*UIscale, 130f*UIscale),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
 
         openGL11ForText();

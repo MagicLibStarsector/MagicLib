@@ -20,7 +20,6 @@
             "MILD":40,
             "STRONG":80,
         },
-
         "interference_RFCmult":0.5,	
         # The Reinforced Flux Conduit hullmod reduces the impact of weapons interferences. Default : 0.5
 
@@ -40,8 +39,6 @@
             "SKR_targetPainterMedium":"WEAK",
             "SKR_kaleidoscope":"WEAK",
             "SKR_gatlingLance":"MILD",
-            "tahlan_titanomachy":"MILD",
-            "tahlan_pastel":"MILD",
         },
     },
 }

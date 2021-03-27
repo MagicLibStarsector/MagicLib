@@ -238,7 +238,6 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         //clear up the trash
         PROJ_TRAILS.clear();
         
-        
         List<String> trailFiles = MagicSettings.getList("MagicLib", "magicTrail_files");
         trailFiles.add("data/config/modFiles/magicTrail_data.csv");
         

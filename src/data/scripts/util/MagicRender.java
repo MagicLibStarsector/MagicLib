@@ -251,48 +251,6 @@ public class MagicRender {
     }
 
     /**
-    * @param layer : layer to render at
-    * @deprecated 
-    */
-    @Deprecated
-    public static void battlespace(SpriteAPI sprite,Vector2f loc,Vector2f vel,Vector2f size,Vector2f growth,float angle,float spin,Color color,boolean additive,float fadein,float full,float fadeout,CombatEngineLayers layer) {
-        sprite.setSize(size.x, size.y);
-        sprite.setAngle(angle);
-        sprite.setColor(color);
-        if(additive){
-            sprite.setAdditiveBlend();
-        }              
-        MagicRenderPlugin.addBattlespace(
-                sprite,
-                new Vector2f(loc), new Vector2f(vel),
-                growth, spin,
-                0, 0, null,
-                0, 0, null,
-                fadein, fadein+full, fadein+full+fadeout,
-                layer);
-    }
-    
-    /**
-    * @param srcBlendFunc : openGL source blend function
-    * @param destBlendFunc : openGL destination blend function
-    * @deprecated
-    */
-    @Deprecated
-    public static void battlespace(SpriteAPI sprite,Vector2f loc,Vector2f vel,Vector2f size,Vector2f growth,float angle, float spin, Color color,float fadein,float full, float fadeout,CombatEngineLayers layer,int srcBlendFunc,int destBlendFunc) {
-        sprite.setSize(size.x, size.y);
-        sprite.setAngle(angle);
-        sprite.setColor(color);
-        sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
-        MagicRenderPlugin.addBattlespace(sprite, 
-                new Vector2f(loc), new Vector2f(vel),
-                growth, spin,
-                0, 0, null,
-                0, 0, null,
-                fadein, fadein+full, fadein+full+fadeout,
-                layer);
-    }
-    
-    /**
      * Draws a sprite in absolute engine coordinates for a duration. Advanced declaration.
      * 
      * @param sprite
@@ -482,7 +440,51 @@ public class MagicRender {
         );
     }
 
-        
+    // DEPRECATED METHODS
+    
+    /**
+    * @param layer : layer to render at
+    * @deprecated use battlespace() advanced declaration instead
+    */
+    @Deprecated
+    public static void battlespace(SpriteAPI sprite,Vector2f loc,Vector2f vel,Vector2f size,Vector2f growth,float angle,float spin,Color color,boolean additive,float fadein,float full,float fadeout,CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }              
+        MagicRenderPlugin.addBattlespace(
+                sprite,
+                new Vector2f(loc), new Vector2f(vel),
+                growth, spin,
+                0, 0, null,
+                0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout,
+                layer);
+    }
+    
+    /**
+    * @param srcBlendFunc : openGL source blend function
+    * @param destBlendFunc : openGL destination blend function
+    * @deprecated use battlespace() advanced declaration with OpenGL blending parameters instead
+    */
+    @Deprecated
+    public static void battlespace(SpriteAPI sprite,Vector2f loc,Vector2f vel,Vector2f size,Vector2f growth,float angle, float spin, Color color,float fadein,float full, float fadeout,CombatEngineLayers layer,int srcBlendFunc,int destBlendFunc) {
+        sprite.setSize(size.x, size.y);
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
+        MagicRenderPlugin.addBattlespace(sprite, 
+                new Vector2f(loc), new Vector2f(vel),
+                growth, spin,
+                0, 0, null,
+                0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout,
+                layer);
+    }
+    
+    
     //////////////////////////////////
     //                              //
     //      OBJECTSPACE RENDER      //
@@ -582,64 +584,6 @@ public class MagicRender {
                 CombatEngineLayers.BELOW_INDICATORS_LAYER
         );
     }
-
-    /**
-    * @param layer : layer to render at
-    */
-    @Deprecated
-    public static void objectspace(SpriteAPI sprite,CombatEntityAPI anchor,Vector2f offset,Vector2f vel,Vector2f size,Vector2f growth,float angle,float spin,boolean parent,Color color,boolean additive,float fadein,float full,float fadeout,boolean fadeOnDeath,CombatEngineLayers layer) {
-        sprite.setSize(size.x, size.y);
-        if(parent){            
-            sprite.setAngle(anchor.getFacing()+angle+90);
-        } else {
-            sprite.setAngle(angle+90);
-        }
-        sprite.setColor(color);
-        if(additive){
-            sprite.setAdditiveBlend();
-        }
-        
-        Vector2f loc=new Vector2f(50000,50000);
-        if(anchor.getLocation()!=null){
-            loc=new Vector2f(anchor.getLocation());
-        }
-        Vector2f velocity=new Vector2f(vel);
-        
-        MagicRenderPlugin.addObjectspace(
-                sprite,
-                anchor, loc, offset, velocity, growth, angle, spin, parent,
-                0, 0, null,
-                0, 0, null,
-                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath,
-                layer);
-    }
-
-    /**
-    * @param srcBlendFunc : openGL source blend function
-    * @param destBlendFunc : openGL destination blend function
-    */
-    @Deprecated
-    public static void objectspace(SpriteAPI sprite,CombatEntityAPI anchor,Vector2f offset,Vector2f vel,Vector2f size,Vector2f growth,float angle,float spin,boolean parent,Color color,float fadein,float full,float fadeout,boolean fadeOnDeath,CombatEngineLayers layer,int srcBlendFunc,int destBlendFunc) {
-        sprite.setSize(size.x, size.y);
-        if(parent){
-            sprite.setAngle(anchor.getFacing()+angle+90);
-        } else {
-            sprite.setAngle(angle+90);
-        }
-        sprite.setColor(color);
-        sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
-
-        Vector2f loc=new Vector2f(50000,50000);
-        if(anchor.getLocation()!=null){
-            loc=new Vector2f(anchor.getLocation());
-        }
-        Vector2f velocity=new Vector2f(vel);
-
-        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent,
-                0, 0, null, 0, 0, null,
-                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
-    }
-    
     
     /**
      * Draws a sprite attached to an entity for a duration. Advanced declaration.    
@@ -885,6 +829,69 @@ public class MagicRender {
     }
     
     
+    // DEPRECATED METHODS
+    
+    /**
+    * @param layer : layer to render at
+    * @deprecated use objectspace() advanced declaration instead
+    */
+    @Deprecated
+    public static void objectspace(SpriteAPI sprite,CombatEntityAPI anchor,Vector2f offset,Vector2f vel,Vector2f size,Vector2f growth,float angle,float spin,boolean parent,Color color,boolean additive,float fadein,float full,float fadeout,boolean fadeOnDeath,CombatEngineLayers layer) {
+        sprite.setSize(size.x, size.y);
+        if(parent){            
+            sprite.setAngle(anchor.getFacing()+angle+90);
+        } else {
+            sprite.setAngle(angle+90);
+        }
+        sprite.setColor(color);
+        if(additive){
+            sprite.setAdditiveBlend();
+        }
+        
+        Vector2f loc=new Vector2f(50000,50000);
+        if(anchor.getLocation()!=null){
+            loc=new Vector2f(anchor.getLocation());
+        }
+        Vector2f velocity=new Vector2f(vel);
+        
+        MagicRenderPlugin.addObjectspace(
+                sprite,
+                anchor, loc, offset, velocity, growth, angle, spin, parent,
+                0, 0, null,
+                0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath,
+                layer);
+    }
+
+    /**
+    * @param srcBlendFunc : openGL source blend function
+    * @param destBlendFunc : openGL destination blend function
+    * @deprecated use objectspace() advanced declaration with OpenGL blending parameters instead
+    */
+    @Deprecated
+    public static void objectspace(SpriteAPI sprite,CombatEntityAPI anchor,Vector2f offset,Vector2f vel,Vector2f size,Vector2f growth,float angle,float spin,boolean parent,Color color,float fadein,float full,float fadeout,boolean fadeOnDeath,CombatEngineLayers layer,int srcBlendFunc,int destBlendFunc) {
+        sprite.setSize(size.x, size.y);
+        if(parent){
+            sprite.setAngle(anchor.getFacing()+angle+90);
+        } else {
+            sprite.setAngle(angle+90);
+        }
+        sprite.setColor(color);
+        sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
+
+        Vector2f loc=new Vector2f(50000,50000);
+        if(anchor.getLocation()!=null){
+            loc=new Vector2f(anchor.getLocation());
+        }
+        Vector2f velocity=new Vector2f(vel);
+
+        MagicRenderPlugin.addObjectspace(sprite, anchor, loc, offset, velocity, growth, angle, spin, parent,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, fadeOnDeath, layer);
+    }
+    
+    
+    
     //////////////////////////////////
     //                              //
     //      SCREENSPACE RENDER      //
@@ -988,39 +995,6 @@ public class MagicRender {
                 CombatEngineLayers.BELOW_INDICATORS_LAYER
         );        
     }
-
-    /**
-    * @param srcBlendFunc : openGL source blend function
-    * @param destBlendFunc : openGL destination blend function
-    */
-    @Deprecated
-    public static void screenspace(SpriteAPI sprite, positioning pos, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, float fadein, float full, float fadeout, int srcBlendFunc, int destBlendFunc) {
-        ViewportAPI screen = Global.getCombatEngine().getViewport();
-
-        Vector2f ratio=size;
-        Vector2f screenSize= new Vector2f(screen.getVisibleWidth(),screen.getVisibleHeight());
-        if(pos == positioning.STRETCH_TO_FULLSCREEN){
-            sprite.setSize(screenSize.x, screenSize.y);
-        } else if(pos == positioning.FULLSCREEN_MAINTAIN_RATIO) {
-            if(size.x/size.y > screenSize.x/screenSize.y){
-                ratio = new Vector2f((size.x/size.y)/(screenSize.x/screenSize.y),1);
-            } else {
-                ratio = new Vector2f(1, (size.y/size.x)/(screenSize.y/screenSize.x));
-                sprite.setSize(Global.getCombatEngine().getViewport().getVisibleWidth()*ratio.x,Global.getCombatEngine().getViewport().getVisibleHeight()*ratio.y);
-            }
-        } else {
-            sprite.setSize(size.x*screen.getViewMult(), size.y*screen.getViewMult());
-        }
-        sprite.setAngle(angle);
-        sprite.setColor(color);
-        sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
-
-        Vector2f velocity=new Vector2f(vel);
-        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin,
-                0, 0, null, 0, 0, null,
-                fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
-    }
-
     
     /**
      * Draws a sprite attached to the camera for a duration. Advanced declaration.
@@ -1265,6 +1239,43 @@ public class MagicRender {
                 fadein, fadein+full, fadein+full+fadeout,
                 layer);        
     }
+    
+    
+    // DEPRECATED METHODS
+    
+    /**
+    * @param srcBlendFunc : openGL source blend function
+    * @param destBlendFunc : openGL destination blend function
+    * @deprecated used screenspace() advanced declaration with OpenGL blending parameters instead
+    */
+    @Deprecated
+    public static void screenspace(SpriteAPI sprite, positioning pos, Vector2f loc, Vector2f vel, Vector2f size, Vector2f growth, float angle, float spin, Color color, float fadein, float full, float fadeout, int srcBlendFunc, int destBlendFunc) {
+        ViewportAPI screen = Global.getCombatEngine().getViewport();
+
+        Vector2f ratio=size;
+        Vector2f screenSize= new Vector2f(screen.getVisibleWidth(),screen.getVisibleHeight());
+        if(pos == positioning.STRETCH_TO_FULLSCREEN){
+            sprite.setSize(screenSize.x, screenSize.y);
+        } else if(pos == positioning.FULLSCREEN_MAINTAIN_RATIO) {
+            if(size.x/size.y > screenSize.x/screenSize.y){
+                ratio = new Vector2f((size.x/size.y)/(screenSize.x/screenSize.y),1);
+            } else {
+                ratio = new Vector2f(1, (size.y/size.x)/(screenSize.y/screenSize.x));
+                sprite.setSize(Global.getCombatEngine().getViewport().getVisibleWidth()*ratio.x,Global.getCombatEngine().getViewport().getVisibleHeight()*ratio.y);
+            }
+        } else {
+            sprite.setSize(size.x*screen.getViewMult(), size.y*screen.getViewMult());
+        }
+        sprite.setAngle(angle);
+        sprite.setColor(color);
+        sprite.setBlendFunc(srcBlendFunc, destBlendFunc);
+
+        Vector2f velocity=new Vector2f(vel);
+        MagicRenderPlugin.addScreenspace(sprite, pos, loc, velocity, ratio, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, fadein+full, fadein+full+fadeout, CombatEngineLayers.BELOW_INDICATORS_LAYER);
+    }
+
     
     public static enum positioning{
         CENTER,
