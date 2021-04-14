@@ -3,9 +3,9 @@
     "name": "MagicLib",
     "author": "Modding Community",
     "utility": "true",
-    "version": "0.32rc2",
+    "version": "0.33rc1",
     "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
-    "gameVersion": "0.95a-RC9",
+    "gameVersion": "0.95a-RC12",
     "dependencies": [
         {
             "id": "lw_lazylib",

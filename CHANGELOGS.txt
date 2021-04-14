@@ -1,5 +1,13 @@
 MagicLib
 
+0.33
+
+MagicUI: Should work with UI scalling now
+MagicCampaign:
+ - Fixed AI-core captains crashing the game upon looting their fleet,
+ - Deprecated the old captain declaration that still works for human officers
+ - Added support for 0.95 automatic levels and skills.
+
 0.32
 
 Basic 0.95 compatibility update

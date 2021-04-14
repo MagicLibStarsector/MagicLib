@@ -345,13 +345,13 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             float inDuration, float mainDuration, float outDuration,
             boolean additive,
             float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
-            CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
+            @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
         
         //Converts our additive/non-additive option to true openGL stuff
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
-        
+                
         AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
                 startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
                 offsetVelocity, advancedOptions, layerToRenderOn, frameOffsetMult);
@@ -438,8 +438,9 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             float inDuration, float mainDuration, float outDuration, 
             int blendModeSRC, int blendModeDEST,
             float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
-            CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
+            @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+        
         //First, find the plugin, and if it doesn't exist do nothing
         if (Global.getCombatEngine() == null) {
             return;
@@ -448,12 +449,27 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         }
         MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
 
+        Vector2f offset = new Vector2f();
+        if(offsetVelocity!=null){
+            offset=offsetVelocity;
+        }
+        
+        CombatEngineLayers layer=CombatEngineLayers.CONTRAILS_LAYER;
+        if(layerToRenderOn!=null){
+            layer=layerToRenderOn;
+        }
+        
+        float mult=1;
+        if(frameOffsetMult!=0){
+            mult=frameOffsetMult;
+        }
+        
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
         int texID = sprite.getTextureId();
-        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(layerToRenderOn);
+        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(layer);
         if (layerMap == null) {
             layerMap = new HashMap<>();
-            plugin.mainMap.put(layerToRenderOn, layerMap);
+            plugin.mainMap.put(layer, layerMap);
         }
         if (layerMap.get(texID) == null) {
             layerMap.put(texID, new HashMap<Float, MagicTrailTracker>());
@@ -462,10 +478,10 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             layerMap.get(texID).put(ID, new MagicTrailTracker());
         }
         if (linkedEntity != null) {
-            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(layerToRenderOn);
+            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(layer);
             if (layerCutMap == null) {
                 layerCutMap = new HashMap<>();
-                plugin.cuttingMap.put(layerToRenderOn, layerCutMap);
+                plugin.cuttingMap.put(layer, layerCutMap);
             }
             if (layerCutMap.get(texID) == null) {
                 layerCutMap.put(texID, new HashMap<CombatEntityAPI, List<Float>>());
@@ -499,13 +515,13 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             DamagingProjectileAPI proj = (DamagingProjectileAPI) linkedEntity;
 
             Vector2f shipVelPerAdvance = (Vector2f) new Vector2f(proj.getSource().getVelocity()).scale(Global.getCombatEngine().getElapsedInLastFrame());
-            shipVelPerAdvance.scale(frameOffsetMult);
+            shipVelPerAdvance.scale(mult);
             Vector2f.sub(position, shipVelPerAdvance, correctedPosition);
         }
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, offsetVelocity,
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, offset,
                 sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps

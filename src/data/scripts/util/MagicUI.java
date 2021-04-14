@@ -42,7 +42,7 @@ public class MagicUI {
     private static final Vector2f PERCENTBARVEC1 = new Vector2f(21f, 0f); // Just 21 pixel of width of difference.
     private static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
 
-    private static final float UIscale = Global.getSettings().getScreenScaleMult();
+    private static final float UIscaling = Global.getSettings().getScreenScaleMult();
     
     static {
         GREENCOLOR = Global.getSettings().getColor("textFriendColor");
@@ -92,8 +92,8 @@ public class MagicUI {
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
-        final float boxWidth = 27f;
-        final float boxHeight = 7f;
+        final float boxWidth = 27f * UIscaling;
+        final float boxHeight = 7f * UIscaling;
 
         // Used to properly interpolate between colors
         final CombatEngineAPI engine = Global.getCombatEngine();
@@ -149,10 +149,19 @@ public class MagicUI {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glTranslatef(0.01f, 0.01f, 0);
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f*UIscale, 80f*UIscale),
-                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f*UIscale, 79f*UIscale),
-                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
+        final Vector2f boxLoc = Vector2f.add(
+                new Vector2f(497f, 80f),
+                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()),
+                null
+        );
+        final Vector2f shadowLoc = Vector2f.add(
+                new Vector2f(498f, 79f),
+                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()),
+                null
+        );
+        
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
 
         // Render the drop shadow
         GL11.glBegin(GL11.GL_QUADS);
@@ -232,7 +241,7 @@ public class MagicUI {
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
-        final float boxSide = 7f;
+        final float boxSide = 7f * UIscaling;
 
         // Used to properly interpolate between colors
         final CombatEngineAPI engine = Global.getCombatEngine();
@@ -288,11 +297,14 @@ public class MagicUI {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glTranslatef(0.01f, 0.01f, 0);
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f*UIscale, 80f*UIscale),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f, 80f),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f*UIscale, 79f*UIscale),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f, 79f),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
 
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
+        
         // Render the drop shadow
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glColor4f(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
@@ -450,6 +462,30 @@ public class MagicUI {
                 (ccOld[3] * antiProgress) + (ccNew[3] * clampedProgress));
     }
     
+        /**
+     * Get the UI Element Offset for the Shipsystem bar. (Depends of the group
+     * layout, or if the player has some wing)
+     *
+     * @param ship The player ship.
+     * @param variant The variant of the ship.
+     * @return The offset who depends of weapon and wing.
+     */
+    private static Vector2f getInterfaceOffsetFromSystemBar(ShipAPI ship, ShipVariantAPI variant) {
+        return getUIElementOffset(ship, variant, SYSTEMBARVEC1, SYSTEMBARVEC2);
+    }
+
+    /**
+     * Get the UI Element Offset for the Third bar. (Depends of the group
+     * layout, or if the player has some wing)
+     *
+     * @param ship The player ship.
+     * @param variant The variant of the ship.
+     * @return The offset who depends of weapon and wing.
+     */
+    private static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
+        return getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
+    }
+    
     /**
      * Get the UI Element Offset.
      * (Depends on the weapon groups and wings present)
@@ -478,7 +514,7 @@ public class MagicUI {
                 if (!isUsable) {
                     continue;
                 }
-                String id = variant.getWeaponId(slot);
+                String id = Global.getSettings().getWeaponSpec(variant.getWeaponId(slot)).getWeaponName();
                 if (id != null) {
                     uniqueWeapons.add(id);
                 }
@@ -500,8 +536,8 @@ public class MagicUI {
     
     
     /**
-     * Draws a small UI bar above the flux bar. The HUD color change to blu when
-     * the ship is not alive. Bug: When you left the battle, the hud
+     * Draws a small UI bar above the flux bar. The HUD color change to blue 
+     * when the ship is not alive. Bug: When you left the battle, the hud
      * keep for qew second, no solution found. Bug: Also for other
      * normal drawBox, when paused, they switch brutally of "color".
      * 
@@ -515,11 +551,13 @@ public class MagicUI {
      */
     private static void addInterfaceStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill) {
 
-        final int boxWidth = 79;
-        final int boxHeight = 7;
+        final float boxWidth = 79 * UIscaling;
+        final float boxHeight = 7 * UIscaling;
         final Vector2f element = getInterfaceOffsetFromStatusBars(ship, ship.getVariant());
         final Vector2f boxLoc = Vector2f.add(new Vector2f(224f, 120f), element, null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(225f, 119f), element, null);
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
 
         // Used to properly interpolate between colors
         float alpha = 1;
@@ -573,15 +611,19 @@ public class MagicUI {
                 alpha * (borderCol.getAlpha() / 255f)
                 * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(176f*UIscale, 131f*UIscale),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(176f, 131f),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(177f*UIscale, 130f*UIscale),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(177f, 130f),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
+        
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
 
         openGL11ForText();
+        TODRAW14.setFontSize(14*UIscaling);
         TODRAW14.setText(text);
-        TODRAW14.setMaxWidth(46*UIscale);
-        TODRAW14.setMaxHeight(14*UIscale);
+        TODRAW14.setMaxWidth(46*UIscaling);
+        TODRAW14.setMaxHeight(14*UIscaling);
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
         TODRAW14.setColor(color);
@@ -625,10 +667,12 @@ public class MagicUI {
                 alpha * (borderCol.getAlpha() / 255f)
                 * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(355f*UIscale, 131f*UIscale),
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(355f, 131f),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(356f*UIscale, 130f*UIscale),
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(356f, 130f),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
 
         openGL11ForText();
         TODRAW14.setText(numb + "");
@@ -662,12 +706,14 @@ public class MagicUI {
      */
     private static void addHUDStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill, Vector2f screenPos) {
 
-        final int boxWidth = 59;
-        final int boxHeight = 5;
+        final float boxWidth = 59*UIscaling;
+        final float boxHeight = 5*UIscaling;
 
         final Vector2f element = getHUDOffset(ship);
         final Vector2f boxLoc = Vector2f.add(new Vector2f(screenPos.getX(), screenPos.getY()), element, null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f), element, null);
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
 
         // Used to properly interpolate between colors
         float alpha = 1f;
@@ -723,11 +769,14 @@ public class MagicUI {
                 getHUDOffset(ship), null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f),
                 getHUDOffset(ship), null);
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
 
         // Global.getCombatEngine().getViewport().
         openGL11ForText();
        // TODRAW10.setText(text);
        // TODRAW10.setMaxHeight(26);
+        TODRAW10.setFontSize(10*UIscaling);
         TODRAW10.setColor(shadowcolor);
         TODRAW10.draw(shadowLoc);
         TODRAW10.setColor(color);
@@ -735,7 +784,7 @@ public class MagicUI {
         closeGL11ForText();
     }
 
-    private static void OpenGLBar(ShipAPI ship, float alpha, Color borderCol, Color innerCol, int fboxWidth, int hfboxWidth, int boxHeight, int boxWidth, int pixelHardfill, Vector2f shadowLoc, Vector2f boxLoc) {
+    private static void OpenGLBar(ShipAPI ship, float alpha, Color borderCol, Color innerCol, int fboxWidth, int hfboxWidth, float boxHeight, float boxWidth, int pixelHardfill, Vector2f shadowLoc, Vector2f boxLoc) {
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
 
@@ -834,30 +883,6 @@ public class MagicUI {
 
         return new Vector2f((int) (-ship.getCollisionRadius() / mult),
                 (int) (ship.getCollisionRadius() / mult));
-    }
-
-    /**
-     * Get the UI Element Offset for the Shipsystem bar. (Depends of the group
-     * layout, or if the player has some wing)
-     *
-     * @param ship The player ship.
-     * @param variant The variant of the ship.
-     * @return The offset who depends of weapon and wing.
-     */
-    private static Vector2f getInterfaceOffsetFromSystemBar(ShipAPI ship, ShipVariantAPI variant) {
-        return getUIElementOffset(ship, variant, SYSTEMBARVEC1, SYSTEMBARVEC2);
-    }
-
-    /**
-     * Get the UI Element Offset for the Third bar. (Depends of the group
-     * layout, or if the player has some wing)
-     *
-     * @param ship The player ship.
-     * @param variant The variant of the ship.
-     * @return The offset who depends of weapon and wing.
-     */
-    private static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
-        return getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
     }
 
     /**

@@ -22,6 +22,7 @@ import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.BASE_QUAL
 import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.addCommanderAndOfficers;
 import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.createEmptyFleet;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
+import com.fs.starfarer.api.impl.campaign.ids.Commodities;
 import com.fs.starfarer.api.impl.campaign.ids.Entities;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
@@ -681,6 +682,122 @@ public class MagicCampaign {
      * Creates a captain PersonAPI
      * 
      * @param isAI
+     * @param AICoreType
+     * AI core from campaign.ids.Commodities
+     * @param firstName
+     * @param lastName
+     * @param portraitId
+     * id of the sprite in settings.json/graphics/characters
+     * @param gender
+     * @param factionId
+     * @param rankId
+     * rank from campaign.ids.Ranks
+     * @param postId
+     * post from campaign.ids.Ranks
+     * @param personality
+     * personality from campaign.ids.Personalities
+     * @param level
+     * Captain level, pick random skills according to the faction's doctrine
+     * @param eliteSkillsOverride
+     * Overrides the regular number of elite skills, set to -1 to ignore.
+     * @param skillPreference
+     * GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
+     * @param skillLevels
+     * Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
+     * @return 
+     */
+    public static PersonAPI createCaptain(
+            boolean isAI,
+            @Nullable String AICoreType,
+            String firstName,
+            String lastName,
+            String portraitId,
+            FullName.Gender gender,
+            String factionId,
+            String rankId,
+            String postId,
+            String personality,
+            Integer level,
+            Integer eliteSkillsOverride,
+            @Nullable OfficerManagerEvent.SkillPickPreference skillPreference,
+            @Nullable Map<String, Integer> skillLevels
+    ){
+        
+        boolean verbose = Global.getSettings().isDevMode();
+        
+        if(verbose){
+            log.error(" ");
+            log.error(" Creating captain " + firstName + " " + lastName);
+            log.error(" ");
+        }
+        
+//        PersonAPI person = Global.getFactory().createPerson();
+        PersonAPI person =
+//                OfficerManagerEvent.createOfficer(Global.getSector().getFaction(factionId), level, false);
+        OfficerManagerEvent.createOfficer(
+                Global.getSector().getFaction(factionId),
+                level,
+                skillPreference,
+                true, 
+                null,
+                true,
+                true,
+                eliteSkillsOverride,
+                null
+        );
+        
+        if(isAI){
+            person.setAICoreId(AICoreType);  
+            person.getName().setFirst(firstName); 
+            person.getName().setLast(lastName);
+            person.setGender(FullName.Gender.ANY);
+        } else{
+            person.getName().setFirst(firstName);
+            person.getName().setLast(lastName);
+            person.setGender(gender);
+        }
+        person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
+        person.setFaction(factionId);
+        person.setPersonality(personality);
+        if(verbose){
+            log.error("     They are " + personality);
+        }
+        
+        person.setRankId(rankId);
+        person.setPostId(postId);
+        
+        //reset and reatribute skills if needed
+        if(skillLevels!=null && !skillLevels.keySet().isEmpty()){
+            if(verbose){
+                for (SkillLevelAPI skill : person.getStats().getSkillsCopy()){
+                    if(skillLevels.keySet().contains(skill.getSkill().getId())){
+                        person.getStats().setSkillLevel(skill.getSkill().getId(),skillLevels.get(skill.getSkill().getId()));
+                        log.error("     "+ skill.getSkill().getName() +" : "+ skillLevels.get(skill.getSkill().getId()));
+                    } else {
+                        person.getStats().setSkillLevel(skill.getSkill().getId(),0);                        
+                        log.error("     "+ skill.getSkill().getName() +" : 0");
+                    }
+                }
+            } else {
+                for (SkillLevelAPI skill : person.getStats().getSkillsCopy()){
+                    if(skillLevels.keySet().contains(skill.getSkill().getId())){
+                        person.getStats().setSkillLevel(skill.getSkill().getId(),skillLevels.get(skill.getSkill().getId()));
+                    } else {
+                        person.getStats().setSkillLevel(skill.getSkill().getId(),0);
+                    }
+                }
+            }
+            person.getStats().refreshCharacterStatsEffects();
+        }
+        
+        return person;
+    }
+    
+    /**
+     * @deprecation THIS DECLARATION IS MISSING AN AI CORE TYPE FOR AI CAPTAINS
+     * Creates a captain PersonAPI
+     * 
+     * @param isAI
      * @param firstName
      * @param lastName
      * @param portraitId
@@ -699,6 +816,7 @@ public class MagicCampaign {
      * Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
      * @return 
      */
+    @Deprecated
     public static PersonAPI createCaptain(
             boolean isAI,
             String firstName,
@@ -712,6 +830,13 @@ public class MagicCampaign {
             Integer level,
             @Nullable Map<String, Integer> skillLevels
     ){
+        log.error("DEPRECATION WARNING!");
+        log.error("DEPRECATION WARNING!");
+        log.error(" ");
+        log.error("OBSOLETE DECLARATION OF MagicCampaign.createCaptain()");
+        log.error(" ");
+        log.error("DEPRECATION WARNING!");
+        log.error("DEPRECATION WARNING!");
         
         boolean verbose = Global.getSettings().isDevMode();
         
@@ -725,7 +850,7 @@ public class MagicCampaign {
         PersonAPI person = OfficerManagerEvent.createOfficer(Global.getSector().getFaction(factionId), level, false);
         
         if(isAI){
-            person.setAICoreId(firstName);  
+            person.setAICoreId(Commodities.ALPHA_CORE);  
             person.getName().setFirst(firstName); 
             person.getName().setLast(lastName);
             person.setGender(FullName.Gender.ANY);
