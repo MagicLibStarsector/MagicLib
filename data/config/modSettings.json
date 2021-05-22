@@ -40,5 +40,16 @@
             "SKR_kaleidoscope":"WEAK",
             "SKR_gatlingLance":"MILD",
         },
+		
+		"bounty_board":{
+			#List bounties that will be loaded from data/config/modFiles/MagicBounty_data.json 
+			#"id" : bounty id
+			#["required_mod"] : list mods that are required to load that bounty, can be used to make cross mod bounties. Can be left empty.
+			"test_bounty":[],
+		},
+		"bounty_market_blacklist":{
+			#Markets that for some reason have a regular bar but should NOT offer any job
+		},
+		"bounty_offersAtSizeThree":1; #default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
     },
 }

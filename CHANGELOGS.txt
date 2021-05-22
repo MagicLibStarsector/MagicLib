@@ -1,5 +1,24 @@
 MagicLib
 
+0.35
+
+MagicRender: Fixed issue where sprite flickering was applied incorrectly.
+MagicLensFlare: Now uses the "visual only" API.
+
+0.34
+
+MagicRender: Singleframe render is now maintained while the game is paused
+Magic UI: Should be displayed sharp at 100% UI scaling
+MagicTrail:
+   - Now properly supports texture scrolling whether the source is moving or not.
+   - Now supports one-time random texture offsets.
+   - Now supports per-segment texture offsets.
+   - MagicTrail.csv updated with a random trail offset boolean.
+   - Big thanks to Originem for fixing the scrolling issue as well as doing a massive optimization work, and making these new features possible.
+MagicLensFlare: createSmoothFlare() temporarily deprecated due to changes in 0.95 breaking them.
+
+Added some test plugin to add depth to combat nebulae. Disabled by default due to its jankyness, but can be enabled in the settings if you so desire.
+
 0.33
 
 MagicUI: Should work with UI scalling now

@@ -3,9 +3,11 @@ package data.scripts.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.JumpPointAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
+import com.fs.starfarer.api.campaign.RepLevel;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -30,6 +32,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Skills;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
 import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator;
@@ -41,13 +44,16 @@ import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin;
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldSource;
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.lazywizard.lazylib.MathUtils;
 
 public class MagicCampaign {
     
@@ -81,7 +87,7 @@ public class MagicCampaign {
      * @param discoveryXp 
      * XP awarded when found (<0 to use the default)
      * @param recoverable
-     * forces D-mods presence regardless of the condition 
+     * can be salvaged
      * @param orbitCenter
      * entity orbited
      * @param orbitStartAngle
@@ -163,10 +169,10 @@ public class MagicCampaign {
             float density,
             float duration,
             float glowDuration,
-            Integer salvageXp,
+            @Nullable Integer salvageXp,
             float defenderProbability,
             @Nullable String defenderFaction,
-            Integer defenderFP,
+            @Nullable Integer defenderFP,
             float detectionMult,
             boolean discoverable,
             @Nullable Integer discoveryXp,
@@ -195,10 +201,10 @@ public class MagicCampaign {
 				theGlowDuration); // days the field will keep generating glowing pieces
         params.source = DebrisFieldSource.MIXED;     
         params.baseDensity=density;     
-        if(salvageXp>=0){
+        if(salvageXp!=null && salvageXp>=0){
             params.baseSalvageXP = salvageXp; // base XP for scavenging in field
         }
-        if(defenderProbability>0 && defenderFaction!=null && defenderFP>0){
+        if(defenderProbability>0 && defenderFaction!=null && defenderFP!=null && defenderFP>0){
             params.defFaction=defenderFaction;
             params.defenderProb=defenderProbability;
             params.maxDefenderSize=defenderFP;
@@ -976,5 +982,466 @@ public class MagicCampaign {
         member.setShipName(name);
         fleet.getFleetData().addFleetMember(member);
         return member;
+    }
+    
+    
+    //BOUNTY CHECKS THAT MAY PROVE USEFULL FOR OTHER THINGS:    
+    /**
+     * 
+     * @param market
+     * checked market for triggers
+     * @param market_id
+     * list of preferred market IDs, bypass all other checks 
+     * @param marketFaction_any
+     * list of suitable faction IDs, any will do
+     * @param marketFaction_alliedWith
+     * market is suitable if least FAVORABLE with ANY of the required factions
+     * @param marketFaction_none
+     * list of unsuitable faction IDs
+     * @param marketFaction_enemyWith
+     * market is unsuitable if it is not HOSTILE with EVERY blacklisted factions
+     * @param market_minSize
+     * minimal market size
+     * @return 
+     */
+    public static boolean isAvailableAtMarket(
+            MarketAPI market,
+            @Nullable List <String> market_id,
+            @Nullable List <String> marketFaction_any,            
+            boolean marketFaction_alliedWith,
+            @Nullable List <String> marketFaction_none,           
+            boolean marketFaction_enemyWith,
+            int market_minSize
+            ){
+        
+        //exact id match beats everything
+        if(market_id!=null && !market_id.isEmpty()){
+            for (String m : market_id){
+                if (market.getId().equals(m))return true;
+            }
+        }
+        
+        //checking trigger_market_minSize
+        if(market_minSize>0 && market.getSize()<market_minSize)return false;
+                
+        //checking trigger_marketFaction_none and trigger_marketFaction_enemyWith
+        if(marketFaction_none!=null && !marketFaction_none.isEmpty()){
+            for(String f : marketFaction_none){
+                //skip non existing factions
+                if(Global.getSector().getFaction(f)==null)continue;
+                
+                FactionAPI this_faction = Global.getSector().getFaction(f);
+                if(market.getFaction()==this_faction){
+                    return false; //is one of the excluded factions
+                } else if(marketFaction_alliedWith && market.getFaction().isAtBest(this_faction, RepLevel.HOSTILE)){
+                    return false; //is not hostile with one of the excluded factions
+                }
+            }
+        }
+        
+        //checking trigger_marketFaction_any and trigger_marketFaction_alliedWith
+        if(marketFaction_any!=null && !marketFaction_any.isEmpty()){
+            
+            for(String f : marketFaction_any){
+                //skip non existing factions
+                if(Global.getSector().getFaction(f)==null)continue; 
+                
+                FactionAPI this_faction = Global.getSector().getFaction(f);
+                if(market.getFaction()==this_faction){
+                    return true; //is one of the required factions
+                } else if(marketFaction_alliedWith && market.getFaction().isAtWorst(this_faction, RepLevel.FAVORABLE)){
+                    return true;  //is friendly toward one of the required factions
+                }
+            }
+            return false; //the loop has not exited earlier, therefore it failed all of the market faction checks
+        }
+        
+        //failed none of the tests, must be good then
+        return true;
+    }
+    
+    /**
+     * 
+     * @param player_minLevel
+     * @param min_days_elapsed
+     * @param memKeys_all
+     * @param memKeys_any
+     * @param playerRelationship_atLeast
+     * @param playerRelationship_atMost
+     * @return 
+     */
+    public static boolean isAvailableToPlayer(
+            int player_minLevel,
+            int min_days_elapsed,                  
+            @Nullable Map <String,Boolean> memKeys_all,          
+            @Nullable Map <String,Boolean> memKeys_any,
+            @Nullable Map <String,Float> playerRelationship_atLeast,  
+            @Nullable Map <String,Float> playerRelationship_atMost
+    ){
+        
+        //checking min_days_elapsed
+        if(min_days_elapsed>0 && Global.getSector().getClock().getElapsedDaysSince(0)<min_days_elapsed)return false;
+        
+        //checking trigger_player_minLevel
+        if(player_minLevel>0 && Global.getSector().getPlayerStats().getLevel()<player_minLevel)return false;
+        
+        //checking trigger_playerRelationship_atLeast
+        if(playerRelationship_atLeast!=null && !playerRelationship_atLeast.isEmpty()){
+            for(String f : playerRelationship_atLeast.keySet()){
+                //skip non existing factions
+                if(Global.getSector().getFaction(f)!=null)continue;
+                if(!Global.getSector().getPlayerFaction().isAtWorst(f, RepLevel.getLevelFor(playerRelationship_atLeast.get(f))))return false;
+            }
+        }
+
+        //checking trigger_playerRelationship_atMost
+        if(playerRelationship_atMost!=null && !playerRelationship_atMost.isEmpty()){
+            for(String f : playerRelationship_atMost.keySet()){
+                //skip non existing factions
+                if(Global.getSector().getFaction(f)!=null)continue;
+                if(!Global.getSector().getPlayerFaction().isAtBest(f, RepLevel.getLevelFor(playerRelationship_atMost.get(f))))return false;
+            }
+        }
+        
+        //checking trigger_memKeys_all
+        if(memKeys_all!=null && !memKeys_all.isEmpty()){
+            for(String f : memKeys_all.keySet()){
+                //check if the memKey exists 
+                if(!Global.getSector().getMemoryWithoutUpdate().getKeys().contains(f))return false;
+                //check if it has the proper value
+                if(memKeys_all.get(f)!=Global.getSector().getMemoryWithoutUpdate().getBoolean(f))return false;
+            }
+        }
+        
+        //checking trigger_memKeys_any
+        if(memKeys_any!=null && !memKeys_any.isEmpty()){
+            for(String f : memKeys_any.keySet()){
+                //check if the memKey exists 
+                if(!Global.getSector().getMemoryWithoutUpdate().getKeys().contains(f)){
+                    //check if it has the proper value
+                    if(memKeys_any.get(f)==Global.getSector().getMemoryWithoutUpdate().getBoolean(f))return true;
+                }
+            }
+            //the loop has not been exited therefore some key is missing
+            return false;
+        }
+        
+        //failed none of the tests, must be good then
+        return true;
+    }
+    
+    /**
+     * Returns a random target SectorEntityToken given the following parameters:
+     * @param marketIDs
+     * List of IDs of preferred markets to target, supercedes all,              default to other parameters if none of those markets exist
+     * @param marketFactions
+     * List of faction to pick a market from, supercedes all but market ids,    default to other parameters if none of those markets exist
+     * @param distance
+     * "CORE", "CLOSE", "FAR", preferred range band for the target system if any
+     * @param themes
+     * List of preferred system themes TAGS from campaign.ids.Tags,             plus "PROCGEN_NO_THEME" and "PROCGEN_NO_THEME_NO_PULSAR_NO_BLACKHOLE"
+     * @param entities
+     * List of preferred entity types from campaign.ids.Tags
+     * @param defaultToAnyEntity
+     * If none of the systems in the required range band has any of the required entities, will the script default to any entity within a system with the proper range and themes instead of looking into a different range band
+     * @param prioritizeUnexplored
+     * Will the script target unexplored systems first before falling back to ones that have been visited by the player
+     * @param verbose
+     * Log some debug messages
+     * @return 
+     */
+    public static SectorEntityToken findSuitableTarget(
+            @Nullable List<String> marketIDs,
+            @Nullable List<String> marketFactions,
+            @Nullable String distance,
+            @Nullable List<String> themes,
+            @Nullable List<String> entities,
+            boolean defaultToAnyEntity,
+            boolean prioritizeUnexplored,
+            boolean verbose){
+        
+        if(verbose){
+            log.error("Find Suitable Target log");
+            log.error("Checking marketIDs");
+        }
+        //first priority, check if the preset location(s) exist(s)
+        if(marketIDs!=null && !marketIDs.isEmpty()){
+            //if there is just one location and it exist, lets use that.
+            if(marketIDs.size()==1 && Global.getSector().getEntityById(marketIDs.get(0))!=null){
+                return Global.getSector().getEntityById(marketIDs.get(0));
+            }
+            //if there are multiple possible location, pick a random one
+            WeightedRandomPicker<SectorEntityToken> picker = new WeightedRandomPicker<>();
+            for(String loc : marketIDs){
+                if(Global.getSector().getEntityById(loc)!=null) picker.add(Global.getSector().getEntityById(loc));
+            }
+            
+            if(verbose){
+                log.error("There are "+picker.getTotal()+" available market ids for pick");
+            }
+            
+            if(!picker.isEmpty()){
+                return picker.pick();
+            }
+        }
+        
+            
+        if(verbose){
+            log.error("Checking market factions");
+        }
+        //second priority is faction markets
+        if(marketFactions!=null && !marketFactions.isEmpty()){
+            WeightedRandomPicker<SectorEntityToken> picker = new WeightedRandomPicker<>();
+            for(MarketAPI m : Global.getSector().getEconomy().getMarketsCopy()){
+                if(marketFactions.contains(m.getFaction().getId()) && !picker.getItems().contains(m.getPrimaryEntity())){
+                    picker.add(m.getPrimaryEntity());
+                }
+            }
+            
+            if(verbose){
+                log.error("There are "+picker.getTotal()+" available faction markets for pick");
+            }
+            
+            if(!picker.isEmpty()){
+                return picker.pick();
+            }
+        }
+        
+        if(
+                (distance==null||distance.equals("")) && 
+                (themes==null||themes.isEmpty()) && 
+                (entities==null||entities.isEmpty())
+                ){
+            //there was no fallback filters defined, this is a wrap
+            return null;
+        }
+        
+        //time for some pain
+        
+        //calculate the sector size to define range bands
+        final HyperspaceTerrainPlugin hyper = (HyperspaceTerrainPlugin) Misc.getHyperspaceTerrain().getPlugin();
+        final int[][] cells = hyper.getTiles();
+        float sector_width = Math.min(cells.length,cells[0].length) * hyper.getTileSize();
+        
+        if(verbose){
+            log.error("Checking preferences");
+            log.error("Sector width = "+sector_width);
+        }
+        if(verbose){
+            log.error("Finding system with required themes");
+        }
+        //start with the themes preferences
+        List <StarSystemAPI> systems_core = new ArrayList<>();
+        List <StarSystemAPI> systems_close = new ArrayList<>();
+        List <StarSystemAPI> systems_far = new ArrayList<>();
+        if(themes!=null && !themes.isEmpty()){
+            for(StarSystemAPI s : Global.getSector().getStarSystems()){
+                for(String this_theme : themes){
+                    if(s.hasTag(this_theme)){
+                        //sort systems by distances because that will come in handy later
+                        float dist = s.getLocation().length();
+                        if(dist<sector_width*0.33f){
+                            systems_core.add(s);
+                        } else if (dist<sector_width*0.66f){
+                            systems_close.add(s);
+                        } else {
+                            systems_far.add(s);
+                        }
+                        break;
+                    }
+                }
+                //special test for basic procgen systems without special content
+                if(themes.contains("procgen_no_theme") || themes.contains("procgen_no_theme_pulsar_blackhole")){
+                    if(s.getTags().isEmpty() && s.isProcgen()){
+                        if(themes.contains("PROCGEN_NO_THEME_NO_PULSAR_NO_BLACKHOLE") && (s.hasBlackHole() || s.hasPulsar()))continue;
+                        //sort systems by distances because that will come in handy later
+                        float dist = s.getLocation().length();
+                        if(dist<sector_width*0.33f){
+                            systems_core.add(s);
+                        } else if (dist<sector_width*0.66f){
+                            systems_close.add(s);
+                        } else {
+                            systems_far.add(s);
+                        }
+                    }
+                }
+            }
+        } else {
+            //if there isn't any THEME preference, let's add *everything*
+            for(StarSystemAPI s : Global.getSector().getStarSystems()){
+                //sort systems by distances because that will come in handy later
+                float dist = s.getLocation().length();
+                if(dist<sector_width*0.33f){
+                    systems_core.add(s);
+                } else if (dist<sector_width*0.66f){
+                    systems_close.add(s);
+                } else {
+                    systems_far.add(s);
+                }
+            }
+        }
+        
+        if(verbose){
+                log.error("There are "+systems_core.size()+" themed systems in the core");
+                log.error("There are "+systems_close.size()+" themed systems close to the core");
+                log.error("There are "+systems_far.size()+" themed systems far from the core");
+        }
+                        
+        //TO DO: check if ALL lists are empty
+        
+        //now order the selected system lists by distance preferences
+        List <List<StarSystemAPI>> distance_priority = new ArrayList<>();
+        if(distance==null || distance.equals("")){
+            //random distance 
+            distance_priority.add(0, systems_core);
+            distance_priority.add(1, systems_close);
+            distance_priority.add(2, systems_far);
+            Collections.shuffle(distance_priority);            
+        } else switch (distance){
+            case "CORE":{
+                distance_priority.add(0, systems_core);
+                distance_priority.add(1, systems_close);
+                distance_priority.add(2, systems_far);
+                break;
+            }
+            case "CLOSE":{
+                distance_priority.add(0, systems_close);
+                distance_priority.add(1, systems_far);
+                distance_priority.add(2, systems_core);
+                break;
+            }
+            case "FAR":{
+                distance_priority.add(0, systems_far);
+                distance_priority.add(1, systems_close);
+                distance_priority.add(2, systems_core);
+                break;
+            }
+            default :{
+                //random distance if the field wasn't properly filled
+                distance_priority.add(0, systems_core);
+                distance_priority.add(1, systems_close);
+                distance_priority.add(2, systems_far);
+                Collections.shuffle(distance_priority);    
+            }
+        }
+        
+        //make sure the target entities list has something to look for
+        List<String> desiredEntities = new ArrayList<>();
+        if(entities==null || entities.isEmpty()){
+            desiredEntities.add(Tags.STABLE_LOCATION);
+            desiredEntities.add(Tags.PLANET);
+            desiredEntities.add(Tags.JUMP_POINT);
+        } else {
+            desiredEntities=entities;
+        }
+        
+        //lets check the system lists in order by prefered distances
+        for(int i=0; i<3; i++){
+            //check if the system list has anything, and shuffle it to ensure proper randomization
+            if(distance_priority.get(i).isEmpty()){
+                continue;
+            } else {
+                Collections.shuffle(distance_priority.get(i));
+            }
+            
+            //now check if any valid system got the required entity in this range band
+            //starting with unexplored systems if required
+            if(prioritizeUnexplored){                
+                for(StarSystemAPI s : distance_priority.get(i)){
+                    //skip visited systems
+                    if(s.isEnteredByPlayer()){
+                        continue;
+                    }
+                    //add all valid entities to the picker
+                    WeightedRandomPicker<SectorEntityToken> validEntities = new WeightedRandomPicker<>();
+                    for(SectorEntityToken e : s.getAllEntities()){
+                        for(String t : desiredEntities){
+                            if(e.hasTag(t)){
+                                validEntities.add(e);
+                            }
+                        }
+                    }
+                    //check it this system contains any target entity
+                    if(!validEntities.isEmpty()){
+                        return validEntities.pick();
+                    }
+                    //otherwise, the loop continues
+                }
+                
+                //unexplored systems failed to offer the required entities, lets try the explored ones now
+                for(StarSystemAPI s : distance_priority.get(i)){
+                    //skip unexplored systems this time
+                    if(!s.isEnteredByPlayer()){
+                        continue;
+                    }
+                    //add all valid entities to the picker
+                    WeightedRandomPicker<SectorEntityToken> validEntities = new WeightedRandomPicker<>();
+                    for(SectorEntityToken e : s.getAllEntities()){
+                        for(String t : desiredEntities){
+                            if(e.hasTag(t)){
+                                validEntities.add(e);
+                            }
+                        }
+                    }
+                    //check it this system contains any target entity
+                    if(!validEntities.isEmpty()){
+                        return validEntities.pick();
+                    }
+                    //otherwise, the loop continues
+                }
+            } else {
+                //unexplored systems isn't required, lets to ALL systems         
+                for(StarSystemAPI s : distance_priority.get(i)){
+                    //add all valid entities to the picker
+                    WeightedRandomPicker<SectorEntityToken> validEntities = new WeightedRandomPicker<>();
+                    for(SectorEntityToken e : s.getAllEntities()){
+                        for(String t : desiredEntities){
+                            if(e.hasTag(t)){
+                                validEntities.add(e);
+                            }
+                        }
+                    }
+                    //check it this system contains any target entity
+                    if(!validEntities.isEmpty()){
+                        return validEntities.pick();
+                    }
+                    //otherwise, the loop continues
+                }
+            }
+                        
+            //we exhausted all valid systems in the desired range band for the desired entities, then we can fallback to any entities
+            if(defaultToAnyEntity){
+                WeightedRandomPicker<StarSystemAPI> randomSystemFallback = new WeightedRandomPicker<>();
+                if(prioritizeUnexplored){
+                    //Lets try for unexplored systems in the desired range band and add the required entity there
+                    for(StarSystemAPI s : distance_priority.get(i)){
+                        if(s.isEnteredByPlayer()){
+                            randomSystemFallback.add(s);
+                        }
+                    }
+                    //no unexplored systems? Let's include ones that have not been visited in a while
+                    if(randomSystemFallback.isEmpty()){
+                        for(StarSystemAPI s : distance_priority.get(i)){
+                            if(s.getDaysSinceLastPlayerVisit()>365){
+                                randomSystemFallback.add(s);
+                            }
+                        }
+                    }
+                }
+                //if there is not unexplored priority or if somehow every system in the required range band has been visited within the year... Somehow...
+                if(randomSystemFallback.isEmpty()){
+                    for(StarSystemAPI s : distance_priority.get(i)){
+                        randomSystemFallback.add(s);
+                    }
+                }
+                //alright, let's pick one system for our target
+                StarSystemAPI selectedSystem = randomSystemFallback.pick();
+                //and pick any entity
+                return selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size()-1));
+            }
+            //and if that wasn't enough to find one single suitable system, use the next range band
+        }
+        //apparently none of the systems had any suitable target for the given filters, looks like this is a fail
+        return null;
     }
 }

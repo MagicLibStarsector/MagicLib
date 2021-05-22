@@ -4,8 +4,8 @@
 package data.scripts.util;
 
 import org.lazywizard.lazylib.FastTrig;
-import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
+
 import java.awt.*;
 
 public class MagicTrailObject {
@@ -25,11 +25,12 @@ public class MagicTrailObject {
     private Vector2f offsetVelocity = new Vector2f(0f, 0f);
     private float sizePulseWidth = 0f;
     private float sizePulseCount = 0;
-
+    
     //Public, non-varying values
     public int blendModeSRC = 0;
     public int blendModeDEST = 0;
     public float textureLoopLength = 0;
+    public float textureOffset = 0;
     public float aggressiveCulling = -1f;
 
     //Public, varying values
@@ -43,10 +44,17 @@ public class MagicTrailObject {
     public float currentOpacity = 0f;
 
     //Main instantiator: generates a full MagicTrailObject with all necessary values
-    public MagicTrailObject (float inDuration, float mainDuration, float outDuration, float startSize, float endSize, float startAngleVelocity,
-                                    float endAngleVelocity, float mainOpacity, int blendModeSRC, int blendModeDEST, float startSpeed, float endSpeed,
-                                    Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength,
-                                    Vector2f offsetVelocity, float sizePulseWidth, float sizePulseCount) {
+    public MagicTrailObject(
+            float inDuration, float mainDuration, float outDuration,
+            float startSize, float endSize,
+            float startAngleVelocity, float endAngleVelocity,
+            float mainOpacity, int blendModeSRC, int blendModeDEST,
+            float startSpeed, float endSpeed,
+            Color startColor, Color endColor, 
+            float angle, Vector2f spawnLocation, 
+            float textureLoopLength, float textureoffset,
+            Vector2f offsetVelocity,
+            float sizePulseWidth, float sizePulseCount) {
         this.inDuration = inDuration;
         this.mainDuration = mainDuration;
         this.outDuration = outDuration;
@@ -65,6 +73,7 @@ public class MagicTrailObject {
         this.currentLocation.x = spawnLocation.x;
         this.currentLocation.y = spawnLocation.y;
         this.textureLoopLength = textureLoopLength;
+        this.textureOffset = textureoffset;
         this.offsetVelocity = offsetVelocity;
         this.sizePulseWidth = sizePulseWidth;
         this.sizePulseCount = sizePulseCount;
@@ -82,7 +91,7 @@ public class MagicTrailObject {
     }
 
     //Modifies lifetime, position and all other things time-related
-    public void tick (float amount) {
+    public void tick(float amount) {
         //Increases lifetime
         spentLifetime += amount;
 
@@ -95,10 +104,14 @@ public class MagicTrailObject {
         //It is "smoothly" transitioned using MagicAnim.smooth(), and repeats itself sizePulseCount times
         //Counts the first "half" of its lifetime as rising, the other as falling. sizePulseCount makes this "internal"
         //lifetime happen multiple times over the trail's true lifetime
-        float thisFramePulseWidth = ((spentLifetime/getTotalLifetime()) * sizePulseCount);
-        while (thisFramePulseWidth > 1f) {thisFramePulseWidth--;}
-        if (thisFramePulseWidth > 0.5f) {thisFramePulseWidth = 1f - thisFramePulseWidth;}
-        thisFramePulseWidth = MagicAnim.smooth(thisFramePulseWidth*2f) * sizePulseWidth;
+        float thisFramePulseWidth = ((spentLifetime / getTotalLifetime()) * sizePulseCount);
+        while (thisFramePulseWidth > 1f) {
+            thisFramePulseWidth--;
+        }
+        if (thisFramePulseWidth > 0.5f) {
+            thisFramePulseWidth = 1f - thisFramePulseWidth;
+        }
+        thisFramePulseWidth = MagicAnim.smooth(thisFramePulseWidth * 2f) * sizePulseWidth;
 
 
         //Slides all values along depending on lifetime
@@ -106,9 +119,9 @@ public class MagicTrailObject {
                 + thisFramePulseWidth;
         currentSpeed = startSpeed * (1 - (spentLifetime / getTotalLifetime())) + endSpeed * (spentLifetime / getTotalLifetime());
         currentAngularVelocity = startAngleVelocity * (1 - (spentLifetime / getTotalLifetime())) + endAngleVelocity * (spentLifetime / getTotalLifetime());
-        int red = ((int)(startColor.getRed() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getRed() * (spentLifetime / getTotalLifetime())));
-        int green = ((int)(startColor.getGreen() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getGreen() * (spentLifetime / getTotalLifetime())));
-        int blue = ((int)(startColor.getBlue() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getBlue() * (spentLifetime / getTotalLifetime())));
+        int red = ((int) (startColor.getRed() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getRed() * (spentLifetime / getTotalLifetime())));
+        int green = ((int) (startColor.getGreen() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getGreen() * (spentLifetime / getTotalLifetime())));
+        int blue = ((int) (startColor.getBlue() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getBlue() * (spentLifetime / getTotalLifetime())));
         currentColor = new Color(red, green, blue);
 
         //Adjusts opacity: slightly differently handled than the otherwise pure linear value sliding
@@ -116,7 +129,7 @@ public class MagicTrailObject {
         if (spentLifetime < inDuration) {
             currentOpacity = mainOpacity * spentLifetime / inDuration;
         } else if (spentLifetime > (inDuration + mainDuration)) {
-            currentOpacity = mainOpacity * (1f - ((spentLifetime - (inDuration + mainDuration))/outDuration));
+            currentOpacity = mainOpacity * (1f - ((spentLifetime - (inDuration + mainDuration)) / outDuration));
         }
 
         //Calculates new position and angle from respective velocities
@@ -125,10 +138,35 @@ public class MagicTrailObject {
         currentLocation.y += (FastTrig.sin(Math.toRadians(angle)) * currentSpeed + offsetVelocity.y) * amount;
     }
 
-    public float getSpentLifetime () {
+    public float getSpentLifetime() {
         return spentLifetime;
     }
-    public float getTotalLifetime () {
+
+    public float getTotalLifetime() {
         return inDuration + mainDuration + outDuration;
+    }
+
+    public MagicTrailObject copy() {
+        return new MagicTrailObject(inDuration,
+                                    mainDuration,
+                                    outDuration,
+                                    startSize,
+                                    endSize,
+                                    startAngleVelocity,
+                                    endAngleVelocity,
+                                    mainOpacity,
+                                    blendModeSRC,
+                                    blendModeDEST,
+                                    startSpeed,
+                                    endSpeed,
+                                    startColor,
+                                    endColor,
+                                    angle,
+                                    currentLocation,
+                                    textureLoopLength,
+                                    textureOffset,
+                                    offsetVelocity,
+                                    sizePulseWidth,
+                                    sizePulseCount);
     }
 }

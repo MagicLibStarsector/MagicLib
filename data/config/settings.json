@@ -5,7 +5,8 @@
         "MagicCampaignTrailPlugin":"data.scripts.plugins.MagicCampaignTrailPlugin",     
         "MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin", 
         "MagicAutoTrails":"data.scripts.plugins.MagicAutoTrails",
-        "MagicModuleRetreatFix":"data.scripts.plugins.MagicModuleRetreatCleaner"
+        #"MagicModuleRetreatFix":"data.scripts.plugins.MagicModuleRetreatCleaner",
+		#"MagicNebula":"data.scripts.plugins.MagicNebula",
     },
 
     "graphics":{

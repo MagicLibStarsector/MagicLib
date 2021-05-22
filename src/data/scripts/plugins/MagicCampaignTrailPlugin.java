@@ -9,18 +9,18 @@ import com.fs.starfarer.api.campaign.CampaignEngineLayers;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.combat.*;
+import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.awt.Color;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -45,7 +45,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
     //Ticks all maps, and ensures only the currently-loaded locationAPI has its maps properly loaded
     @Override
-    public void advance (float amount) {
+    public void advance(float amount) {
         //Returns if we detect a seemingly impossible situation (no player fleet, for example)
         if (Global.getSector() == null || Global.getSector().getPlayerFleet() == null || Global.getSector().getPlayerFleet().getContainingLocation() == null) {
             return;
@@ -57,7 +57,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 associatedEntity.getContainingLocation().removeEntity(associatedEntity);
             }
             associatedEntity = Global.getSector().getPlayerFleet().getContainingLocation().addCustomEntity("nictoy_unique_custom_trail_tracker_object", "YOU SHOULD NOT SEE THIS",
-                    "nictoy_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
+                                                                                                           "nictoy_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
             associatedEntity.setFixedLocation(Global.getSector().getPlayerFleet().getLocation().x, Global.getSector().getPlayerFleet().getLocation().y);
         }
 
@@ -132,42 +132,43 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * need; should you want more configurability, use AddTrailMemberAdvanced
      * instead
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param speed The speed, in SU, this trail piece is moving at
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param color The color of this piece of trail. Can be changed in the middle of a trail, and will blend
-     *              smoothly between pieces. Ignores alpha component entirely
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param duration The duration of the trail, in seconds
-     * @param additive Whether this trail will use additive blending or not. Does not support being changed in
-     *                 the middle of a trail
+     * @param linkedEntity   The entity this trail is attached to, used for cutting trails.
+     *                       Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID             The ID for this specific trail. Preferably get this from getUniqueID,
+     *                       but it's not required: just expect very weird results if you don't
+     * @param sprite         Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                       as that will split it into two trails
+     * @param position       Starting position for this piece of trail
+     * @param speed          The speed, in SU, this trail piece is moving at
+     * @param angle          Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                       and which direction its size is measured over
+     * @param startSize      The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                       smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize        The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                       transitions from its startSize to its endSize over its duration
+     * @param color          The color of this piece of trail. Can be changed in the middle of a trail, and will blend
+     *                       smoothly between pieces. Ignores alpha component entirely
+     * @param opacity        The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                       gradually approaches 0f over the trail's duration
+     * @param duration       The duration of the trail, in seconds
+     * @param additive       Whether this trail will use additive blending or not. Does not support being changed in
+     *                       the middle of a trail
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
      */
-    public static void AddTrailMemberSimple (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
-                                             float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
+    public static void AddTrailMemberSimple(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
+                                            float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
         //Runs the same function, but only on the specific script instead of the static interface
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberSimpleInternal(linkedEntity, ID, sprite, position, speed, angle,
-                        startSize, endSize, color, opacity, duration, additive, offsetVelocity);
+                                                                                           startSize, endSize, color, opacity, duration, additive, offsetVelocity);
             }
         }
     }
-    private void AddTrailMemberSimpleInternal (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
-                                             float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
+
+    private void AddTrailMemberSimpleInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
+                                              float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
         int texID = sprite.getTextureId();
         if (mainMap.get(texID) == null) {
@@ -203,7 +204,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity);
+                                                                                          opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -215,76 +216,77 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * just want to spawn a normal trail without all the extra configuration involved,
      * use AddTrailMemberSimple instead.
      *
-     * @param linkedEntity The campaign entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The campaign entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param locationAPICulling If true, the trail is removed from memory as soon as the player fleet leaves the
-     *                           location the trail is in. If false, the trail is only "frozen" when the player leaves
-     * @param locationAPI Which locationAPI this trail is in; should ideally be in the same as the location the
-     *                    linkedEntity is in.
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param locationAPICulling   If true, the trail is removed from memory as soon as the player fleet leaves the
+     *                             location the trail is in. If false, the trail is only "frozen" when the player leaves
+     * @param locationAPI          Which locationAPI this trail is in; should ideally be in the same as the location the
+     *                             linkedEntity is in.
      */
-    public static void AddTrailMemberAdvanced (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
-                                               float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
-                                               float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
+    public static void AddTrailMemberAdvanced(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+                                              float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
+                                              float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
+                                              Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Runs the same function, but only on the specific script instead of the static interface
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAdvancedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
-                        startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
-                        inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                        offsetVelocity, locationAPICulling, locationAPI);
+                                                                                             startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                                                                                             inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                                                                                             offsetVelocity, locationAPICulling, locationAPI);
             }
         }
     }
-    private void AddTrailMemberAdvancedInternal (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+
+    private void AddTrailMemberAdvancedInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                 float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                 float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
                                                 Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
@@ -317,7 +319,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
+                                                                                          opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -330,77 +332,78 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * always use the texture of the most recently-added member. If the texture is not
      * supposed to be animated, do NOT use this function: it runs notably slower.
      *
-     * @param linkedEntity The campaign entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
-     *               new sprite.
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The campaign entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param locationAPICulling If true, the trail is removed from memory as soon as the player fleet leaves the
-     *                           location the trail is in. If false, the trail is only "frozen" when the player leaves
-     * @param locationAPI Which locationAPI this trail is in; should ideally be in the same as the location the
-     *                    linkedEntity is in.
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param locationAPICulling   If true, the trail is removed from memory as soon as the player fleet leaves the
+     *                             location the trail is in. If false, the trail is only "frozen" when the player leaves
+     * @param locationAPI          Which locationAPI this trail is in; should ideally be in the same as the location the
+     *                             linkedEntity is in.
      */
-    public static void AddTrailMemberAnimated (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
-                                               float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
-                                               float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
-                                               Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
+    public static void AddTrailMemberAnimated(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+                                              float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
+                                              float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
+                                              Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Runs the same function, but only on the specific script instead of the static interface
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
-            if (everyFrameScript instanceof  MagicCampaignTrailPlugin) {
-                ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAnimatedInternal (linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
-                startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
-                inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                offsetVelocity, locationAPICulling, locationAPI) ;
+            if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
+                ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAnimatedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
+                                                                                             startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                                                                                             inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                                                                                             offsetVelocity, locationAPICulling, locationAPI);
                 break;
             }
         }
     }
-    private void AddTrailMemberAnimatedInternal (SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+
+    private void AddTrailMemberAnimatedInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                 float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                 float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
                                                 Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
@@ -431,7 +434,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
+                                                                                          opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         animMap.get(ID).addNewTrailObject(objectToAdd);
@@ -442,7 +445,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * A small function to get a unique ID for the trail member: *must* be saved in the function that generates the
      * trail, since if it changes it counts as a new trail altogether
      */
-    public static float getUniqueID () {
+    public static float getUniqueID() {
         //Gets a value 0.1f higher than the previous maximum ID, and marks that as our previous maximum ID
         float toReturn = usedIDs + 0.1f;
         usedIDs = toReturn;
@@ -450,7 +453,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     }
 
     //Similar to above, but is *explicitly* intended for the cutTrailsOnEntity function, so is private
-    private static float getUniqueCutterID () {
+    private static float getUniqueCutterID() {
 
         //Gets a value 0.1f lower than the previous maximum ID, and marks that as our previous maximum ID
         float toReturn = usedCutterIDs - 0.1f;
@@ -466,16 +469,17 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      *
      * @param entity The entity you want to cut all trails on
      */
-    public static void cutTrailsOnEntity (SectorEntityToken entity) {
+    public static void cutTrailsOnEntity(SectorEntityToken entity) {
         //Runs the same function, but only on the specific script instead of the static interface
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
-            if (everyFrameScript instanceof  MagicCampaignTrailPlugin) {
+            if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).cutTrailsOnEntityInternal(entity);
                 break;
             }
         }
     }
-    private void cutTrailsOnEntityInternal (SectorEntityToken entity) {
+
+    private void cutTrailsOnEntityInternal(SectorEntityToken entity) {
         //Iterate over all textures in the main map...
         for (Integer key : cuttingMap.keySet()) {
             //If our entity has any registered trails, cut them all off by giving them new, unique IDs
@@ -520,14 +524,16 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         private CampaignEngineLayers renderLayer = CampaignEngineLayers.ABOVE;
 
         private List<NicToyCustomCampaignTrailObject> allTrailParts = new ArrayList<>();
+        private NicToyCustomCampaignTrailObject latestTrailObject;
+
 
         //Adds a new object to the trail, at the end (start visually) of our existing ones
-        private void addNewTrailObject (NicToyCustomCampaignTrailObject objectToAdd) {
+        private void addNewTrailObject(NicToyCustomCampaignTrailObject objectToAdd) {
             allTrailParts.add(objectToAdd);
         }
 
         //The heavy, main function: render the entire trail
-        private void renderTrail (int textureID) {
+        private void renderTrail(int textureID) {
             //First, clear all dead objects, as they can be a pain to calculate around
             clearAllDeadObjects();
 
@@ -546,34 +552,34 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             //This part instantiates OpenGL
             glEnable(GL_BLEND);
             glEnable(GL_TEXTURE_2D);
-            glBlendFunc(allTrailParts.get(allTrailParts.size()-1).blendModeSRC, allTrailParts.get(allTrailParts.size()-1).blendModeDEST); //NOTE: uses the most recent blend mode added to the trail
+            glBlendFunc(allTrailParts.get(allTrailParts.size() - 1).blendModeSRC, allTrailParts.get(allTrailParts.size() - 1).blendModeDEST); //NOTE: uses the most recent blend mode added to the trail
             glBindTexture(GL_TEXTURE_2D, trueTextureID);
             glBegin(GL_QUADS);
 
             //Iterate through all trail parts except the most recent one: the idea is that each part renders in relation to the *next* part
             float texDistTracker = 0f;
-            for (int i = 0; i < allTrailParts.size()-1; i++) {
+            for (int i = 0; i < allTrailParts.size() - 1; i++) {
                 //First, get a handle for our parts so we can make the code shorter
                 NicToyCustomCampaignTrailObject part1 = allTrailParts.get(i);   //Current part
-                NicToyCustomCampaignTrailObject part2 = allTrailParts.get(i+1); //Next part
+                NicToyCustomCampaignTrailObject part2 = allTrailParts.get(i + 1); //Next part
 
                 //Then, determine the corner points of both this and the next trail part
-                Vector2f point1Left = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle + 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle + 90))));
-                Vector2f point1Right = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part1.angle - 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part1.angle - 90))));
-                Vector2f point2Left = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle + 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle + 90))));
-                Vector2f point2Right = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float)FastTrig.cos(Math.toRadians(part2.angle - 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float)FastTrig.sin(Math.toRadians(part2.angle - 90))));
+                Vector2f point1Left = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part1.angle + 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part1.angle + 90))));
+                Vector2f point1Right = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part1.angle - 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part1.angle - 90))));
+                Vector2f point2Left = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part2.angle + 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part2.angle + 90))));
+                Vector2f point2Right = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part2.angle - 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part2.angle - 90))));
 
                 //Saves an easy value for the distance between the current two parts
                 float partDistance = MathUtils.getDistance(part1.currentLocation, part2.currentLocation);
 
                 //-------------------------------------------------------------------Actual rendering shenanigans------------------------------------------------------------------------------------------
                 //If we are outside the viewport, don't render at all! Just tick along our texture tracker, and do nothing else
-                if (!Global.getSector().getViewport().isNearViewport(part1.currentLocation, partDistance*3f)) {
+                if (!Global.getSector().getViewport().isNearViewport(part1.currentLocation, partDistance * 3f)) {
                     //Change our texture distance tracker depending on looping mode
                     //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                     //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
                     if (part1.textureLoopLength <= 0f) {
-                        texDistTracker = (float)(i + 1) / (float)allTrailParts.size();
+                        texDistTracker = (float) (i + 1) / (float) allTrailParts.size();
                     } else {
                         texDistTracker += partDistance / part1.textureLoopLength;
                     }
@@ -584,27 +590,27 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
                 float opacityMult = 1f;
                 if (i < 2) {
-                    opacityMult *= ((float)i/2f);
-                } else if (i > allTrailParts.size()-3) {
-                    opacityMult *= ((float)allTrailParts.size()-1f-(float)i)/2f;
+                    opacityMult *= ((float) i / 2f);
+                } else if (i > allTrailParts.size() - 3) {
+                    opacityMult *= ((float) allTrailParts.size() - 1f - (float) i) / 2f;
                 }
 
                 //Sets the current render color
-                glColor4ub((byte)part1.currentColor.getRed(),(byte)part1.currentColor.getGreen(),(byte)part1.currentColor.getBlue(),(byte)(part1.currentOpacity * opacityMult * 255));
+                glColor4ub((byte) part1.currentColor.getRed(), (byte) part1.currentColor.getGreen(), (byte) part1.currentColor.getBlue(), (byte) (part1.currentOpacity * opacityMult * 255));
 
                 //Sets corner 1, or the first left corner
                 glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
-                glVertex2f(point1Left.getX(),point1Left.getY());
+                glVertex2f(point1Left.getX(), point1Left.getY());
 
                 //Sets corner 2, or the first right corner
                 glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
-                glVertex2f(point1Right.getX(),point1Right.getY());
+                glVertex2f(point1Right.getX(), point1Right.getY());
 
                 //Change our texture distance tracker depending on looping mode
                 //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                 //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
                 if (part1.textureLoopLength <= 0f) {
-                    texDistTracker = (float)(i + 1) / (float)allTrailParts.size();
+                    texDistTracker = (float) (i + 1) / (float) allTrailParts.size();
                 } else {
                     texDistTracker += partDistance / part1.textureLoopLength;
                 }
@@ -612,21 +618,21 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
                 opacityMult = 1f;
                 if ((i + 1) < 2) {
-                    opacityMult *= ((float)(i+1)/2f);
-                } else if ((i + 1) > allTrailParts.size()-3) {
-                    opacityMult *= ((float)allTrailParts.size()-2f-(float)i)/2f;
+                    opacityMult *= ((float) (i + 1) / 2f);
+                } else if ((i + 1) > allTrailParts.size() - 3) {
+                    opacityMult *= ((float) allTrailParts.size() - 2f - (float) i) / 2f;
                 }
 
                 //Changes render color to our next segment's opacity
-                glColor4ub((byte)part2.currentColor.getRed(),(byte)part2.currentColor.getGreen(),(byte)part2.currentColor.getBlue(),(byte)(part2.currentOpacity * opacityMult * 255));
+                glColor4ub((byte) part2.currentColor.getRed(), (byte) part2.currentColor.getGreen(), (byte) part2.currentColor.getBlue(), (byte) (part2.currentOpacity * opacityMult * 255));
 
                 //Sets corner 3, or the second right corner
                 glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
-                glVertex2f(point2Right.getX(),point2Right.getY());
+                glVertex2f(point2Right.getX(), point2Right.getY());
 
                 //Sets corner 4, or the second left corner
                 glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
-                glVertex2f(point2Left.getX(),point2Left.getY());
+                glVertex2f(point2Left.getX(), point2Left.getY());
             }
 
             //And finally stops OpenGL
@@ -634,7 +640,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         }
 
         //Quickhand function to tick down all trail objects at once, by an equal amount of time. Also ticks texture scrolling, if we have it
-        private void tickTimersInTrail (float amount) {
+        private void tickTimersInTrail(float amount) {
             for (NicToyCustomCampaignTrailObject part : allTrailParts) {
                 part.tick(amount);
             }
@@ -644,11 +650,24 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         }
 
         //Quickhand function to remove all trail objects which has timed out
-        private void clearAllDeadObjects (){
+        private void clearAllDeadObjects() {
             List<NicToyCustomCampaignTrailObject> toRemove = new ArrayList<NicToyCustomCampaignTrailObject>();
             for (NicToyCustomCampaignTrailObject part : allTrailParts) {
                 if (part.getSpentLifetime() >= part.getTotalLifetime()) {
                     toRemove.add(part);
+                }
+            }
+
+            //If there is a new trail object, the texture will scroll back to make sure they keep in the same place
+            if (allTrailParts.size() > 0) {
+                NicToyCustomCampaignTrailObject currentLatestTrailObject = allTrailParts.get(allTrailParts.size() - 1);
+                if (latestTrailObject == null) {
+                    latestTrailObject = currentLatestTrailObject;
+                } else if (latestTrailObject != currentLatestTrailObject) {
+                    float partDistance = MathUtils.getDistance(latestTrailObject.currentLocation, currentLatestTrailObject.currentLocation);
+                    //scroll back
+                    scrollingTextureOffset -= partDistance / latestTrailObject.textureLoopLength;
+                    latestTrailObject = currentLatestTrailObject;
                 }
             }
 
@@ -657,7 +676,6 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             }
         }
     }
-
 
 
     /*-- Trail object class; very close in nature to the combat-engine version, though with some minor variations and fixes --*/
@@ -693,9 +711,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         public float currentOpacity = 0f;
 
         //Main instantiator: generates a full CustomCampaignTrailObject with all necessary values
-        public NicToyCustomCampaignTrailObject (float inDuration, float mainDuration, float outDuration, float startSize, float endSize, float startAngleVelocity,
-                                                float endAngleVelocity, float mainOpacity, int blendModeSRC, int blendModeDEST, float startSpeed, float endSpeed,
-                                                Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength, Vector2f offsetVelocity) {
+        public NicToyCustomCampaignTrailObject(float inDuration, float mainDuration, float outDuration, float startSize, float endSize, float startAngleVelocity,
+                                               float endAngleVelocity, float mainOpacity, int blendModeSRC, int blendModeDEST, float startSpeed, float endSpeed,
+                                               Color startColor, Color endColor, float angle, Vector2f spawnLocation, float textureLoopLength, Vector2f offsetVelocity) {
             this.inDuration = inDuration;
             this.mainDuration = mainDuration;
             this.outDuration = outDuration;
@@ -731,7 +749,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         }
 
         //Modifies lifetime, position and all other things time-related
-        public void tick (float amount) {
+        public void tick(float amount) {
             //Increases lifetime
             spentLifetime += amount;
 
@@ -744,9 +762,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             currentSize = startSize * (1 - (spentLifetime / getTotalLifetime())) + endSize * (spentLifetime / getTotalLifetime());
             currentSpeed = startSpeed * (1 - (spentLifetime / getTotalLifetime())) + endSpeed * (spentLifetime / getTotalLifetime());
             currentAngularVelocity = startAngleVelocity * (1 - (spentLifetime / getTotalLifetime())) + endAngleVelocity * (spentLifetime / getTotalLifetime());
-            int red = ((int)(startColor.getRed() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getRed() * (spentLifetime / getTotalLifetime())));
-            int green = ((int)(startColor.getGreen() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getGreen() * (spentLifetime / getTotalLifetime())));
-            int blue = ((int)(startColor.getBlue() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getBlue() * (spentLifetime / getTotalLifetime())));
+            int red = ((int) (startColor.getRed() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getRed() * (spentLifetime / getTotalLifetime())));
+            int green = ((int) (startColor.getGreen() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getGreen() * (spentLifetime / getTotalLifetime())));
+            int blue = ((int) (startColor.getBlue() * (1 - (spentLifetime / getTotalLifetime())) + endColor.getBlue() * (spentLifetime / getTotalLifetime())));
             currentColor = new Color(red, green, blue);
 
             //Adjusts opacity: slightly differently handled than the otherwise pure linear value sliding
@@ -754,7 +772,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             if (spentLifetime < inDuration) {
                 currentOpacity = mainOpacity * spentLifetime / inDuration;
             } else if (spentLifetime > (inDuration + mainDuration)) {
-                currentOpacity = mainOpacity * (1f - ((spentLifetime - (inDuration + mainDuration))/outDuration));
+                currentOpacity = mainOpacity * (1f - ((spentLifetime - (inDuration + mainDuration)) / outDuration));
             }
 
             //Calculates new position and angle from respective velocities
@@ -763,10 +781,11 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             currentLocation.y += (FastTrig.sin(Math.toRadians(angle)) * currentSpeed + offsetVelocity.y) * amount;
         }
 
-        public float getSpentLifetime () {
+        public float getSpentLifetime() {
             return spentLifetime;
         }
-        public float getTotalLifetime () {
+
+        public float getTotalLifetime() {
             return inDuration + mainDuration + outDuration;
         }
     }

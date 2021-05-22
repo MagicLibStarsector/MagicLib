@@ -7,6 +7,7 @@ import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
+import com.fs.starfarer.api.util.Misc;
 import java.awt.Color;
 import java.util.HashSet;
 import java.util.List;
@@ -85,13 +86,14 @@ public class MagicUI {
         if (!ship.isAlive() || ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
-
+        
         if (Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
             return;
         }
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
+        
         final float boxWidth = 27f * UIscaling;
         final float boxHeight = 7f * UIscaling;
 
@@ -123,7 +125,7 @@ public class MagicUI {
                 actualColor = lastColor;
                 lastUpdate = elapsed;
             } else {
-                actualColor = interpolateColor(lastColor, targetColor, progress);
+                actualColor = Misc.interpolateColor(lastColor, targetColor, progress);
             }
         } else {
             if (intendedColor == null) {
@@ -160,8 +162,10 @@ public class MagicUI {
                 null
         );
         
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        if(UIscaling!=1){
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+        }
 
         // Render the drop shadow
         GL11.glBegin(GL11.GL_QUADS);
@@ -271,7 +275,7 @@ public class MagicUI {
                 actualColor = lastColor;
                 lastUpdate = elapsed;
             } else {
-                actualColor = interpolateColor(lastColor, targetColor, progress);
+                actualColor = Misc.interpolateColor(lastColor, targetColor, progress);
             }
         } else {
             if (intendedColor == null) {
@@ -302,8 +306,10 @@ public class MagicUI {
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f, 79f),
                 getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
 
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        if(UIscaling!=1){
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+        }
         
         // Render the drop shadow
         GL11.glBegin(GL11.GL_QUADS);
@@ -399,6 +405,7 @@ public class MagicUI {
         }
 
     }
+    
     /**
      * Draw a status bar next to the player ship on the top left corner of the hud
      * Can write two bits of text on its left side
@@ -452,15 +459,15 @@ public class MagicUI {
     
     ///// UTILS /////
 
-    private static Color interpolateColor(Color old, Color dest, float progress) {
-        final float clampedProgress = Math.max(0f, Math.min(1f, progress));
-        final float antiProgress = 1f - clampedProgress;
-        final float[] ccOld = old.getComponents(null), ccNew = dest.getComponents(null);
-        return new Color((ccOld[0] * antiProgress) + (ccNew[0] * clampedProgress),
-                (ccOld[1] * antiProgress) + (ccNew[1] * clampedProgress),
-                (ccOld[2] * antiProgress) + (ccNew[2] * clampedProgress),
-                (ccOld[3] * antiProgress) + (ccNew[3] * clampedProgress));
-    }
+//    private static Color interpolateColor(Color old, Color dest, float progress) {
+//        final float clampedProgress = Math.max(0f, Math.min(1f, progress));
+//        final float antiProgress = 1f - clampedProgress;
+//        final float[] ccOld = old.getComponents(null), ccNew = dest.getComponents(null);
+//        return new Color((ccOld[0] * antiProgress) + (ccNew[0] * clampedProgress),
+//                (ccOld[1] * antiProgress) + (ccNew[1] * clampedProgress),
+//                (ccOld[2] * antiProgress) + (ccNew[2] * clampedProgress),
+//                (ccOld[3] * antiProgress) + (ccNew[3] * clampedProgress));
+//    }
     
         /**
      * Get the UI Element Offset for the Shipsystem bar. (Depends of the group
@@ -470,7 +477,7 @@ public class MagicUI {
      * @param variant The variant of the ship.
      * @return The offset who depends of weapon and wing.
      */
-    private static Vector2f getInterfaceOffsetFromSystemBar(ShipAPI ship, ShipVariantAPI variant) {
+    public static Vector2f getInterfaceOffsetFromSystemBar(ShipAPI ship, ShipVariantAPI variant) {
         return getUIElementOffset(ship, variant, SYSTEMBARVEC1, SYSTEMBARVEC2);
     }
 
@@ -482,7 +489,7 @@ public class MagicUI {
      * @param variant The variant of the ship.
      * @return The offset who depends of weapon and wing.
      */
-    private static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
+    public static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
         return getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
     }
     
@@ -556,8 +563,10 @@ public class MagicUI {
         final Vector2f element = getInterfaceOffsetFromStatusBars(ship, ship.getVariant());
         final Vector2f boxLoc = Vector2f.add(new Vector2f(224f, 120f), element, null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(225f, 119f), element, null);
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        if(UIscaling!=1){
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+        }
 
         // Used to properly interpolate between colors
         float alpha = 1;
@@ -616,11 +625,13 @@ public class MagicUI {
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(177f, 130f),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
         
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        if(UIscaling!=1){
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+            TODRAW14.setFontSize(14*UIscaling);
+        }
 
         openGL11ForText();
-        TODRAW14.setFontSize(14*UIscaling);
         TODRAW14.setText(text);
         TODRAW14.setMaxWidth(46*UIscaling);
         TODRAW14.setMaxHeight(14*UIscaling);
@@ -671,8 +682,11 @@ public class MagicUI {
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(356f, 130f),
                 getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        if(UIscaling!=1){
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+            TODRAW14.setFontSize(14*UIscaling);
+        }
 
         openGL11ForText();
         TODRAW14.setText(numb + "");
@@ -769,14 +783,16 @@ public class MagicUI {
                 getHUDOffset(ship), null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f),
                 getHUDOffset(ship), null);
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        if(UIscaling!=1){
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+            TODRAW10.setFontSize(10*UIscaling);
+        }
 
         // Global.getCombatEngine().getViewport().
         openGL11ForText();
        // TODRAW10.setText(text);
        // TODRAW10.setMaxHeight(26);
-        TODRAW10.setFontSize(10*UIscaling);
         TODRAW10.setColor(shadowcolor);
         TODRAW10.draw(shadowLoc);
         TODRAW10.setColor(color);

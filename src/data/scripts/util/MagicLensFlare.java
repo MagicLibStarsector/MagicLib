@@ -47,15 +47,10 @@ public class MagicLensFlare {
         VectorUtils.rotate(offset, MathUtils.clampAngle(angle), offset);
         Vector2f.add(offset, point, offset);
         
-        engine.spawnEmpArc(
-                    origin,
+        engine.spawnEmpArcVisual(
                     point,
-                    new SimpleEntity(point),
-                    new SimpleEntity(offset),
-                    DamageType.FRAGMENTATION,
-                    0f,
-                    0f,
-                    100f,
+                    null,
+                    offset,
                     null,
                     length,
                     fringeColor,
@@ -64,6 +59,7 @@ public class MagicLensFlare {
     }
     
     /**
+     * @deprecated TEMPORARILY DEPRECATED DUE TO 0.95a CHANGES, USE SHARP FLARES IN THE MEANTIME
      * Creates smooth lensflares, more suited to thick and wide flares
      * Can be CPU intensive for larger flares
      * 
@@ -88,7 +84,7 @@ public class MagicLensFlare {
      * Core color of the flare.
      * Will have an impact on the minimal thickness.
     */
-    
+    @Deprecated
     public static void createSmoothFlare(CombatEngineAPI engine, ShipAPI origin, Vector2f point, float thickness, float length, float angle, Color fringeColor, Color coreColor){
         
         for(int i=1; i<length/50; i++){

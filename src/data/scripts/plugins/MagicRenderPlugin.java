@@ -8,6 +8,7 @@ import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import data.scripts.util.MagicRender;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -145,12 +146,12 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 if(entry.SPIN!=0){
                     entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
                 }
-                
-                float opacity=1;                
+                               
                 //jitter/flickerMedian
                 if(entry.DELAY!=null){
                     entry.DELAY.advance(amount);
                     if(entry.DELAY.intervalElapsed()){
+                        
                         //jitter effect
                         if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
                             float a=0, b=0, c=0;
@@ -172,27 +173,28 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                             entry.JITTER = new Vector3f(a,b,c);
                         }
                         //flicker effect
+                        float opacity=1;
                         if(entry.FLICKER_RANGE>0){
-                            opacity = Math.min(
-                                    1,
-                                    Math.max(
-                                            0,
-                                            MathUtils.getRandomNumberInRange(entry.FLICKER_MEDIAN-entry.FLICKER_RANGE, entry.FLICKER_MEDIAN+entry.FLICKER_RANGE)
-                                    )
-                            );
+                            opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
                         }
+                        
+                        //fading stuff
+                        if(entry.TIME<entry.FADEIN){
+                            opacity*=(entry.TIME/entry.FADEIN);
+                        } else if(entry.TIME>entry.FULL){                    
+                            opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                        }
+                        entry.SPRITE.setAlphaMult(opacity);
                     }
-                }
-                
-                //fading stuff
-                if(entry.TIME<entry.FADEIN){
-                    entry.SPRITE.setAlphaMult(opacity * (entry.TIME/entry.FADEIN));
-                } else if(entry.TIME>entry.FULL){                    
-                    entry.SPRITE.setAlphaMult(opacity * (1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL))));
                 } else {
-                    entry.SPRITE.setAlphaMult(opacity);
+                    //fading stuff
+                    if(entry.TIME<entry.FADEIN){
+                        entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                    } else if(entry.TIME>entry.FULL){                    
+                        entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    }
+                    entry.SPRITE.setAlphaMult(1);
                 }
-                
                 //finally render that stuff
 //                render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
                 render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
@@ -271,8 +273,6 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     }
                 }
                 
-                
-                float opacity=1;                
                 //jitter/flickerMedian
                 if(entry.DELAY!=null){
                     entry.DELAY.advance(amount);
@@ -298,17 +298,28 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                             entry.JITTER = new Vector3f(a,b,c);
                         }
                         //flicker effect
+                        float opacity=1;
                         if(entry.FLICKER_RANGE>0){
-                            opacity = Math.min(
-                                    1,
-                                    Math.max(
-                                            0,
-                                            MathUtils.getRandomNumberInRange(entry.FLICKER_MEDIAN-entry.FLICKER_RANGE, entry.FLICKER_MEDIAN+entry.FLICKER_RANGE)
-                                    )
-                            );
+                            opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
                         }
+                        
+                        //fading stuff
+                        if(entry.TIME<entry.FADEIN){
+                            opacity*=(entry.TIME/entry.FADEIN);
+                        } else if(entry.TIME>entry.FULL){                    
+                            opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                        }
+                        entry.SPRITE.setAlphaMult(opacity);
                     }
-                }                
+                } else {
+                    //fading stuff
+                    if(entry.TIME<entry.FADEIN){
+                        entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                    } else if(entry.TIME>entry.FULL){                    
+                        entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    }
+                    entry.SPRITE.setAlphaMult(1);
+                }               
                 
                 //move the offset on the anchor
                 if(engine.isEntityInPlay(entry.ANCHOR)){
@@ -317,15 +328,6 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     entry.LOCATION=loc;
                 } else {
                     Vector2f.add(location, entry.LOCATION, location);
-                }
-                
-                //fading stuff
-                if(entry.TIME<entry.FADEIN){
-                    entry.SPRITE.setAlphaMult(opacity * (entry.TIME/entry.FADEIN));
-                } else if(entry.TIME>entry.FULL){                    
-                    entry.SPRITE.setAlphaMult(opacity * (1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL))));
-                } else {
-                    entry.SPRITE.setAlphaMult(opacity);
                 }
                 
                 //finally render that stuff
@@ -399,8 +401,6 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         continue;
                     }                
 
-                    
-                    float opacity=1;                
                     //jitter/flickerMedian
                     if(entry.DELAY!=null){
                         entry.DELAY.advance(amount);
@@ -426,17 +426,28 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                                 entry.JITTER = new Vector3f(a,b,c);
                             }
                             //flicker effect
+                            float opacity=1;
                             if(entry.FLICKER_RANGE>0){
-                                opacity = Math.min(
-                                        1,
-                                        Math.max(
-                                                0,
-                                                MathUtils.getRandomNumberInRange(entry.FLICKER_MEDIAN-entry.FLICKER_RANGE, entry.FLICKER_MEDIAN+entry.FLICKER_RANGE)
-                                        )
-                                );
+                                opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
                             }
+
+                            //fading stuff
+                            if(entry.TIME<entry.FADEIN){
+                                opacity*=(entry.TIME/entry.FADEIN);
+                            } else if(entry.TIME>entry.FULL){                    
+                                opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                            }
+                            entry.SPRITE.setAlphaMult(opacity);
                         }
-                    }   
+                    } else {
+                        //fading stuff
+                        if(entry.TIME<entry.FADEIN){
+                            entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                        } else if(entry.TIME>entry.FULL){                    
+                            entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                        }
+                        entry.SPRITE.setAlphaMult(1);
+                    }
                     
                     
                     if(entry.POS == MagicRender.positioning.FULLSCREEN_MAINTAIN_RATIO){                    
@@ -495,16 +506,6 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                             entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
                         }
                     }
-
-                    
-                    //fading stuff
-                    if(entry.TIME<entry.FADEIN){
-                        entry.SPRITE.setAlphaMult(opacity * (entry.TIME/entry.FADEIN));
-                    } else if(entry.TIME>entry.FULL){                    
-                        entry.SPRITE.setAlphaMult(opacity * (1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL))));
-                    } else {
-                        entry.SPRITE.setAlphaMult(opacity);
-                    }
                     
                     //finally render that stuff
                     
@@ -529,7 +530,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     toRemove.add(d);
                 }
             }
-            SINGLEFRAME.removeAll(toRemove);
+            if(!engine.isPaused()){
+                SINGLEFRAME.removeAll(toRemove);
+            }
         }
     }
     

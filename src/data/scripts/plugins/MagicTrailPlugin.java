@@ -1,3 +1,4 @@
+//Optimized by Originem
 //By Nicke535, handles customizable "fake trails" similar to the vanilla QUAD_STRIP smoke implementation.
 //Note that any sprites that use this plugin must have a multiple of 2 as size (so 16, 32, 64, 128 etc.), both in width and height
 package data.scripts.plugins;
@@ -6,6 +7,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.util.IntervalUtil;
 import data.scripts.util.MagicTrailObject;
 import data.scripts.util.MagicTrailTracker;
 import org.jetbrains.annotations.Nullable;
@@ -14,28 +16,94 @@ import org.lwjgl.util.vector.Vector2f;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.Map.Entry;
+import org.lazywizard.lazylib.MathUtils;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
+    public static final String PLUGIN_KEY = "MagicTrailPlugin";
     //Tracker for unique ID getting. Only use for this script, though: it's dangerous to use for other ID purposes, since it is so simple
     //NOTE: IDs should be bigger than 0; lower than 0 IDs are used by the script for "cut" trails
     private static float usedIDs = 1f;
     private static float usedCutterIDs = -1f;
 
-    //Map which handles all the trails: takes in a render layer, an integer (the texture) and a map of MagicTrailTrackers, identified by a unique ID which must be tracked for each source independently
-    protected Map<CombatEngineLayers, Map<Integer, Map<Float, MagicTrailTracker>>> mainMap = new HashMap<>();
+    private static final int ANIM_KEY = -1;
 
-    //Map similar to mainMap, but for animated trails
-    protected Map<CombatEngineLayers, Map<Float, MagicTrailTracker>> animMap = new HashMap<>();
+    //Map which handles all the trails: takes in a render layer, an integer (the texture) and a map of MagicTrailTrackers, identified by a unique ID which must be tracked for each source independently
+    //Also, if tex id =-1, it means it's an animated trail that texture could be changed mid-trail
+    protected Map<CombatEngineLayers, Map<Integer, Map<Float, MagicTrailTracker>>> mainMap = new EnumMap<>(CombatEngineLayers.class);
 
     //Map for "cutting" trails: if a trail belongs to an entity (it hasn't already been cut) its ID is here
-    private Map<CombatEngineLayers, Map<Integer, Map<CombatEntityAPI, List<Float>>>> cuttingMap = new HashMap<>();
-    private Map<CombatEngineLayers, Map<CombatEntityAPI, List<Float>>> cuttingMapAnimated = new HashMap<>();
+    //if tex id =-1, it's animated cutting map
+    private Map<CombatEngineLayers, Map<Integer, Map<CombatEntityAPI, List<Float>>>> cuttingMap = new EnumMap<>(CombatEngineLayers.class);
 
-    
+
+    //clean the main map and cutting map per second
+    private final IntervalUtil cleanTimer = new IntervalUtil(1f, 1f);
+    private CombatEngineAPI engine;
+
+
+    /**
+     * Add trail tracker to target plugin
+     *
+     * @param plugin       MagicTrailPlugin
+     * @param ID           trail id, use Misc.getUniqueID()
+     * @param linkedEntity
+     * @param layer        rendered layer
+     * @param sprite
+     * @param isAnim       if the trail is anim
+     * @return
+     */
+    private static MagicTrailTracker addOrGetTrailTracker(MagicTrailPlugin plugin, Float ID, CombatEntityAPI linkedEntity, CombatEngineLayers layer, SpriteAPI sprite, boolean isAnim) {
+
+        int texID;
+        texID = isAnim ? ANIM_KEY : sprite.getTextureId();
+
+        Map<Float, MagicTrailTracker> trailTrackerMap;
+        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(layer);
+        if (layerMap == null) {
+            layerMap = new HashMap<>();
+            plugin.mainMap.put(layer, layerMap);
+        }
+
+        trailTrackerMap = layerMap.get(texID);
+        if (trailTrackerMap == null) {
+            trailTrackerMap = new HashMap<>();
+            layerMap.put(texID, trailTrackerMap);
+        }
+
+        MagicTrailTracker trailTracker = trailTrackerMap.get(ID);
+        if (trailTracker == null) {
+            trailTracker = new MagicTrailTracker();
+            trailTrackerMap.put(ID, trailTracker);
+        }
+
+        if (linkedEntity != null) {
+            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(layer);
+            if (layerCutMap == null) {
+                layerCutMap = new HashMap<>();
+                plugin.cuttingMap.put(layer, layerCutMap);
+            }
+            Map<CombatEntityAPI, List<Float>> entityCuttingIDMap = layerCutMap.get(texID);
+            if (entityCuttingIDMap == null) {
+                entityCuttingIDMap = new HashMap<>();
+                layerCutMap.put(texID, entityCuttingIDMap);
+            }
+            List<Float> cuttingIDs = entityCuttingIDMap.get(linkedEntity);
+            if (cuttingIDs == null) {
+                cuttingIDs = new ArrayList<>();
+                entityCuttingIDMap.put(linkedEntity, cuttingIDs);
+            }
+            if (!cuttingIDs.contains(ID)) {
+                cuttingIDs.add(ID);
+            }
+        }
+        return trailTracker;
+    }
+
     //SIMPLE DECLARATION
-    
+
     /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function has most of the functionality you
@@ -44,77 +112,48 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *
      * @param linkedEntity The entity this trail is attached to, used for cutting trails.
      *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param speed The speed, in SU, this trail piece is moving at
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param color The color of this piece of trail. Can be changed in the middle of a trail, and will blend
-     *              smoothly between pieces. Ignores alpha component entirely
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
+     * @param ID           The ID for this specific trail. Preferably get this from getUniqueID,
+     *                     but it's not required: just expect very weird results if you don't
+     * @param sprite       Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                     as that will split it into two trails
+     * @param position     Starting position for this piece of trail
+     * @param speed        The speed, in SU, this trail piece is moving at
+     * @param angle        Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                     and which direction its size is measured over
+     * @param startSize    The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                     smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize      The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                     transitions from its startSize to its endSize over its duration
+     * @param color        The color of this piece of trail. Can be changed in the middle of a trail, and will blend
+     *                     smoothly between pieces. Ignores alpha component entirely
+     * @param opacity      The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                     gradually approaches 0f over the trail's duration
+     * @param inDuration   How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                     steadily increases until reaching "opacity". A trail's total duration is
+     *                     inDuration + mainDuration + outDuration
      * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
      *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param additive Whether this trail will use additive blending or not. Does not support being changed in
-     *                 the middle of a trail
+     * @param outDuration  How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                     duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                     inDuration + mainDuration + outDuration
+     * @param additive     Whether this trail will use additive blending or not. Does not support being changed in
+     *                     the middle of a trail
      */
-    public static void AddTrailMemberSimple (
-            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, 
-            Vector2f position, float speed, float angle, 
-            float startSize, float endSize, 
-            Color color, float opacity, 
+    public static void AddTrailMemberSimple(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float speed, float angle,
+            float startSize, float endSize,
+            Color color, float opacity,
             float inDuration, float mainDuration, float outDuration,
             boolean additive) {
         //First, find the plugin
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
+        CombatEngineLayers layer = CombatEngineLayers.CONTRAILS_LAYER;
 
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
-        int texID = sprite.getTextureId();
-        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(CombatEngineLayers.CONTRAILS_LAYER);
-        if (layerMap == null) {
-            layerMap = new HashMap<>();
-            plugin.mainMap.put(CombatEngineLayers.CONTRAILS_LAYER, layerMap);
-        }
-        if (layerMap.get(texID) == null) {
-            layerMap.put(texID, new HashMap<Float, MagicTrailTracker>());
-        }
-        if (layerMap.get(texID).get(ID) == null) {
-            layerMap.get(texID).put(ID, new MagicTrailTracker());
-        }
-        if (linkedEntity != null) {
-            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(CombatEngineLayers.CONTRAILS_LAYER);
-            if (layerCutMap == null) {
-                layerCutMap = new HashMap<>();
-                plugin.cuttingMap.put(CombatEngineLayers.CONTRAILS_LAYER, layerCutMap);
-            }
-            if (layerCutMap.get(texID) == null) {
-                layerCutMap.put(texID, new HashMap<CombatEntityAPI, List<Float>>());
-            }
-            if (layerCutMap.get(texID).get(linkedEntity) == null) {
-                layerCutMap.get(texID).put(linkedEntity, new ArrayList<Float>());
-            }
-            if (!layerCutMap.get(texID).get(linkedEntity).contains(ID)) {
-                layerCutMap.get(texID).get(linkedEntity).add(ID);
-            }
-        }
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layer, sprite, false);
 
         //Converts our additive/non-additive option to true openGL stuff
         int srcBlend = GL_SRC_ALPHA;
@@ -122,133 +161,107 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, new Vector2f(),
-                0f, 0);
+                                                            opacity, srcBlend, destBlend,
+                                                            speed, speed, color, color,
+                                                            angle, position,
+                                                            -1f, 0, new Vector2f(),
+                                                            0f, 0);
 
         //And finally add it to the correct location in our maps
-        layerMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
+        tracker.addNewTrailObject(objectToAdd);
     }
 
-    
+
     // DEPRECATED
-    
+
     /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function has most of the functionality you
      * need; should you want more configurability, use AddTrailMemberAdvanced
      * instead
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param speed The speed, in SU, this trail piece is moving at
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param color The color of this piece of trail. Can be changed in the middle of a trail, and will blend
-     *              smoothly between pieces. Ignores alpha component entirely
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param duration The duration of the trail, in seconds
-     * @param additive Whether this trail will use additive blending or not. Does not support being changed in
-     *                 the middle of a trail
+     * @param linkedEntity   The entity this trail is attached to, used for cutting trails.
+     *                       Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID             The ID for this specific trail. Preferably get this from getUniqueID,
+     *                       but it's not required: just expect very weird results if you don't
+     * @param sprite         Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                       as that will split it into two trails
+     * @param position       Starting position for this piece of trail
+     * @param speed          The speed, in SU, this trail piece is moving at
+     * @param angle          Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                       and which direction its size is measured over
+     * @param startSize      The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                       smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize        The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                       transitions from its startSize to its endSize over its duration
+     * @param color          The color of this piece of trail. Can be changed in the middle of a trail, and will blend
+     *                       smoothly between pieces. Ignores alpha component entirely
+     * @param opacity        The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                       gradually approaches 0f over the trail's duration
+     * @param duration       The duration of the trail, in seconds
+     * @param additive       Whether this trail will use additive blending or not. Does not support being changed in
+     *                       the middle of a trail
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
      */
     @Deprecated
-    public static void AddTrailMemberSimple (
-            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, 
-            Vector2f position, float speed, float angle, 
-            float startSize, float endSize, 
-            Color color, float opacity, 
+    public static void AddTrailMemberSimple(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float speed, float angle,
+            float startSize, float endSize,
+            Color color, float opacity,
             float duration, boolean additive, Vector2f offsetVelocity) {
         AddTrailMemberSimple(linkedEntity, ID, sprite, position, speed, angle, startSize, endSize, color, opacity, duration, additive, offsetVelocity, CombatEngineLayers.CONTRAILS_LAYER);
     }
-        /**
+
+    /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function has most of the functionality you
      * need; should you want more configurability, use AddTrailMemberAdvanced
      * instead
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param speed The speed, in SU, this trail piece is moving at
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param color The color of this piece of trail. Can be changed in the middle of a trail, and will blend
-     *              smoothly between pieces. Ignores alpha component entirely
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param duration The duration of the trail, in seconds
-     * @param additive Whether this trail will use additive blending or not. Does not support being changed in
-     *                 the middle of a trail
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param linkedEntity    The entity this trail is attached to, used for cutting trails.
+     *                        Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID              The ID for this specific trail. Preferably get this from getUniqueID,
+     *                        but it's not required: just expect very weird results if you don't
+     * @param sprite          Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                        as that will split it into two trails
+     * @param position        Starting position for this piece of trail
+     * @param speed           The speed, in SU, this trail piece is moving at
+     * @param angle           Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                        and which direction its size is measured over
+     * @param startSize       The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                        smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize         The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                        transitions from its startSize to its endSize over its duration
+     * @param color           The color of this piece of trail. Can be changed in the middle of a trail, and will blend
+     *                        smoothly between pieces. Ignores alpha component entirely
+     * @param opacity         The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                        gradually approaches 0f over the trail's duration
+     * @param duration        The duration of the trail, in seconds
+     * @param additive        Whether this trail will use additive blending or not. Does not support being changed in
+     *                        the middle of a trail
+     * @param offsetVelocity  The offset velocity of the trail; this is an additional velocity that is
+     *                        unaffected by rotation and facing, and will never change over the trail's lifetime
      * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
      *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
      *                        CANNOT change mid-trail, under any circumstance
      */
     @Deprecated
-    public static void AddTrailMemberSimple (
-            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, 
-            Vector2f position, float speed, float angle, 
-            float startSize, float endSize, 
-            Color color, float opacity, 
+    public static void AddTrailMemberSimple(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float speed, float angle,
+            float startSize, float endSize,
+            Color color, float opacity,
             float duration, boolean additive, Vector2f offsetVelocity,
             CombatEngineLayers layerToRenderOn) {
         //First, find the plugin
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
 
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
-        int texID = sprite.getTextureId();
-        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(layerToRenderOn);
-        if (layerMap == null) {
-            layerMap = new HashMap<>();
-            plugin.mainMap.put(layerToRenderOn, layerMap);
-        }
-        if (layerMap.get(texID) == null) {
-            layerMap.put(texID, new HashMap<Float, MagicTrailTracker>());
-        }
-        if (layerMap.get(texID).get(ID) == null) {
-            layerMap.get(texID).put(ID, new MagicTrailTracker());
-        }
-        if (linkedEntity != null) {
-            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(layerToRenderOn);
-            if (layerCutMap == null) {
-                layerCutMap = new HashMap<>();
-                plugin.cuttingMap.put(layerToRenderOn, layerCutMap);
-            }
-            if (layerCutMap.get(texID) == null) {
-                layerCutMap.put(texID, new HashMap<CombatEntityAPI, List<Float>>());
-            }
-            if (layerCutMap.get(texID).get(linkedEntity) == null) {
-                layerCutMap.get(texID).put(linkedEntity, new ArrayList<Float>());
-            }
-            if (!layerCutMap.get(texID).get(linkedEntity).contains(ID)) {
-                layerCutMap.get(texID).get(linkedEntity).add(ID);
-            }
-        }
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layerToRenderOn, sprite, false);
 
         //Converts our additive/non-additive option to true openGL stuff
         int srcBlend = GL_SRC_ALPHA;
@@ -256,105 +269,111 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity,
-                0f, 0);
+                                                            opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, 0, offsetVelocity,
+                                                            0f, 0);
 
         //And finally add it to the correct location in our maps
-        layerMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
+        tracker.addNewTrailObject(objectToAdd);
     }
 
-    
+
+    // ADVANCED DECLARATION
+    // ADVANCED DECLARATION
+    // ADVANCED DECLARATION
+    // ADVANCED DECLARATION
     // ADVANCED DECLARATION
     
-       /**
+
+    /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function has all available functions; if you
      * just want to spawn a normal trail without all the extra configuration involved,
      * use AddTrailMemberSimple instead.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param additive Whether this trail will use additive blending or not. Does not support being changed in
-     *                 the middle of a trail
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
-     * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
-     *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
-     *                        CANNOT change mid-trail, under any circumstance
-     * @param frameOffsetMult The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
-     *                        adjust trail offset at different speeds. Default: 1f
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param additive             Whether this trail will use additive blending or not. Does not support being changed in
+     *                             the middle of a trail
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param textureOffset        Optional texture offset to prevent repetitions between trails, default:0, fixed random offset: -1;
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAdvanced (
-            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, 
+    public static void AddTrailMemberAdvanced(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
             float startSize, float endSize,
             Color startColor, Color endColor, float opacity,
             float inDuration, float mainDuration, float outDuration,
             boolean additive,
-            float textureLoopLength, float textureScrollSpeed,
-            @Nullable Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
+            float textureLoopLength, float textureScrollSpeed, float textureOffset,
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
             @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
-        
+
         //Converts our additive/non-additive option to true openGL stuff
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
-                
+
         AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
-                startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                offsetVelocity, advancedOptions, layerToRenderOn, frameOffsetMult);
+                               startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, textureOffset,
+                               offsetVelocity, advancedOptions, layerToRenderOn, frameOffsetMult);
     }
 
     /**
@@ -363,148 +382,375 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * just want to spawn a normal trail without all the extra configuration involved,
      * use AddTrailMemberSimple instead.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
-     * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
-     *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
-     *                        CANNOT change mid-trail, under any circumstance
-     * @param frameOffsetMult The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
-     *                        adjust trail offset at different speeds. Default: 1f
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param textureOffset        Optional texture offset to prevent repetitions between trails, default:0, fixed random offset: -1;
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAdvanced (
+    public static void AddTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
-            float angle, float startAngularVelocity, float endAngularVelocity, 
+            float angle, float startAngularVelocity, float endAngularVelocity,
             float startSize, float endSize,
             Color startColor, Color endColor, float opacity,
-            float inDuration, float mainDuration, float outDuration, 
+            float inDuration, float mainDuration, float outDuration,
             int blendModeSRC, int blendModeDEST,
-            float textureLoopLength, float textureScrollSpeed,
-            @Nullable Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
+            float textureLoopLength, float textureScrollSpeed, float textureOffset,
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
             @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
-        
-        //First, find the plugin, and if it doesn't exist do nothing
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
 
-        Vector2f offset = new Vector2f();
-        if(offsetVelocity!=null){
-            offset=offsetVelocity;
+        //First, find the plugin, and if it doesn't exist do nothing
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
+
+        Vector2f offsetVel = new Vector2f();
+        if (offsetVelocity != null) {
+            offsetVel = offsetVelocity;
         }
-        
-        CombatEngineLayers layer=CombatEngineLayers.CONTRAILS_LAYER;
-        if(layerToRenderOn!=null){
-            layer=layerToRenderOn;
+
+        CombatEngineLayers layer = CombatEngineLayers.CONTRAILS_LAYER;
+        if (layerToRenderOn != null) {
+            layer = layerToRenderOn;
         }
-        
-        float mult=1;
-        if(frameOffsetMult!=0){
-            mult=frameOffsetMult;
+
+        float mult = 1;
+        if (frameOffsetMult != 0) {
+            mult = frameOffsetMult;
         }
-        
+
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
-        int texID = sprite.getTextureId();
-        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(layer);
-        if (layerMap == null) {
-            layerMap = new HashMap<>();
-            plugin.mainMap.put(layer, layerMap);
-        }
-        if (layerMap.get(texID) == null) {
-            layerMap.put(texID, new HashMap<Float, MagicTrailTracker>());
-        }
-        if (layerMap.get(texID).get(ID) == null) {
-            layerMap.get(texID).put(ID, new MagicTrailTracker());
-        }
-        if (linkedEntity != null) {
-            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(layer);
-            if (layerCutMap == null) {
-                layerCutMap = new HashMap<>();
-                plugin.cuttingMap.put(layer, layerCutMap);
-            }
-            if (layerCutMap.get(texID) == null) {
-                layerCutMap.put(texID, new HashMap<CombatEntityAPI, List<Float>>());
-            }
-            if (layerCutMap.get(texID).get(linkedEntity) == null) {
-                layerCutMap.get(texID).put(linkedEntity, new ArrayList<Float>());
-            }
-            if (!layerCutMap.get(texID).get(linkedEntity).contains(ID)) {
-                layerCutMap.get(texID).get(linkedEntity).add(ID);
-            }
-        }
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layer, sprite, false);
 
         //Adjusts scroll speed to our most recent trail's value
-        layerMap.get(texID).get(ID).scrollSpeed = textureScrollSpeed;
+        tracker.scrollSpeed = textureScrollSpeed;
 
         //--Reads in our special options, if we have any--
         float sizePulseWidth = 0f;
         int sizePulseCount = 0;
         if (advancedOptions != null) {
-            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
-            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
-            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean)advancedOptions.get("FORWARD_PROPAGATION")) {
-                layerMap.get(texID).get(ID).usesForwardPropagation = true;
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {
+                sizePulseWidth = (Float) advancedOptions.get("SIZE_PULSE_WIDTH");
+            }
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {
+                sizePulseCount = (Integer) advancedOptions.get("SIZE_PULSE_COUNT");
+            }
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean) advancedOptions.get("FORWARD_PROPAGATION")) {
+                tracker.usesForwardPropagation = true;
+            }
+        }
+        //--End of special options--
+
+        //Offset tweaker to fix single frame delay for lateral movement
+        Vector2f correctedPosition = new Vector2f(position);
+        if (linkedEntity instanceof DamagingProjectileAPI) {
+            DamagingProjectileAPI proj = (DamagingProjectileAPI) linkedEntity;
+
+            Vector2f shipVelPerAdvance = (Vector2f) new Vector2f(proj.getSource().getVelocity()).scale(Global.getCombatEngine().getElapsedInLastFrame());
+            shipVelPerAdvance.scale(mult);
+            Vector2f.sub(position, shipVelPerAdvance, correctedPosition);
+        }
+        
+        //check for specific texture offset or a random one
+        float textOffset = 0;
+        if(textureOffset==-1){
+            //the texture tracker keep a fixed random texture offset
+            if(tracker.textureOffset==-1){
+                tracker.textureOffset = MathUtils.getRandomNumberInRange(0, textureLoopLength);
+            }
+            textOffset = tracker.textureOffset;
+        } else if (textureOffset!=0){
+            textOffset = textureOffset;
+        }
+
+        //Creates the custom object we want
+        MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
+                                                            opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, textOffset, offsetVel,
+                                                            sizePulseWidth, sizePulseCount);
+
+        //And finally add it to the correct location in our maps
+        tracker.addNewTrailObject(objectToAdd);
+    }
+
+
+    // DEPRECATED
+
+    /**
+     * Spawns a trail piece, which links up with other pieces with the same ID
+     * to form a smooth trail. This function has all available functions; if you
+     * just want to spawn a normal trail without all the extra configuration involved,
+     * use AddTrailMemberSimple instead.
+     *
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
+     * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
+     *                             of a trail piece smoothly transitions from startAngularVelocity to
+     *                             endAngularVelocity over its duration
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param additive             Whether this trail will use additive blending or not. Does not support being changed in
+     *                             the middle of a trail
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds. Default: 1f
+     */
+    public static void AddTrailMemberAdvanced(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float startSpeed, float endSpeed,
+            float angle, float startAngularVelocity, float endAngularVelocity,
+            float startSize, float endSize,
+            Color startColor, Color endColor, float opacity,
+            float inDuration, float mainDuration, float outDuration,
+            boolean additive,
+            float textureLoopLength, float textureScrollSpeed,
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
+            @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+
+        //Converts our additive/non-additive option to true openGL stuff
+        int blendModeSRC = GL_SRC_ALPHA;
+        int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
+
+        AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
+                               startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                               offsetVelocity, advancedOptions, layerToRenderOn, frameOffsetMult);
+    }
+
+    /**
+     * Spawns a trail piece, which links up with other pieces with the same ID
+     * to form a smooth trail. This function has all available functions; if you
+     * just want to spawn a normal trail without all the extra configuration involved,
+     * use AddTrailMemberSimple instead.
+     *
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
+     * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
+     *                             of a trail piece smoothly transitions from startAngularVelocity to
+     *                             endAngularVelocity over its duration
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds. Default: 1f
+     */
+    @Deprecated
+    public static void AddTrailMemberAdvanced(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float startSpeed, float endSpeed,
+            float angle, float startAngularVelocity, float endAngularVelocity,
+            float startSize, float endSize,
+            Color startColor, Color endColor, float opacity,
+            float inDuration, float mainDuration, float outDuration,
+            int blendModeSRC, int blendModeDEST,
+            float textureLoopLength, float textureScrollSpeed,
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
+            @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+
+        //First, find the plugin, and if it doesn't exist do nothing
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
+
+        Vector2f offset = new Vector2f();
+        if (offsetVelocity != null) {
+            offset = offsetVelocity;
+        }
+
+        CombatEngineLayers layer = CombatEngineLayers.CONTRAILS_LAYER;
+        if (layerToRenderOn != null) {
+            layer = layerToRenderOn;
+        }
+
+        float mult = 1;
+        if (frameOffsetMult != 0) {
+            mult = frameOffsetMult;
+        }
+
+        //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layer, sprite, false);
+
+        //Adjusts scroll speed to our most recent trail's value
+        tracker.scrollSpeed = textureScrollSpeed;
+
+        //--Reads in our special options, if we have any--
+        float sizePulseWidth = 0f;
+        int sizePulseCount = 0;
+        if (advancedOptions != null) {
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {
+                sizePulseWidth = (Float) advancedOptions.get("SIZE_PULSE_WIDTH");
+            }
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {
+                sizePulseCount = (Integer) advancedOptions.get("SIZE_PULSE_COUNT");
+            }
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean) advancedOptions.get("FORWARD_PROPAGATION")) {
+                tracker.usesForwardPropagation = true;
             }
         }
         //--End of special options--
@@ -521,15 +767,12 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, offset,
-                sizePulseWidth, sizePulseCount);
+                                                            opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, 0, offset,
+                                                            sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
-        layerMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
+        tracker.addNewTrailObject(objectToAdd);
     }
-
-    
-    // DEPRECATED
     
     /**
      * Spawns a trail piece, which links up with other pieces with the same ID
@@ -537,70 +780,70 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * just want to spawn a normal trail without all the extra configuration involved,
      * use AddTrailMemberSimple instead.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
      */
     @Deprecated
-    public static void AddTrailMemberAdvanced (
-            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, 
+    public static void AddTrailMemberAdvanced(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
             float startSize, float endSize,
@@ -608,10 +851,10 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             float inDuration, float mainDuration, float outDuration,
             int blendModeSRC, int blendModeDEST,
             float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions) {
         AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
-                startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                offsetVelocity, advancedOptions, CombatEngineLayers.CONTRAILS_LAYER, 1f);
+                               startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                               offsetVelocity, advancedOptions, CombatEngineLayers.CONTRAILS_LAYER, 1f);
     }
 
     /**
@@ -620,73 +863,73 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * just want to spawn a normal trail without all the extra configuration involved,
      * use AddTrailMemberSimple instead.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: do *not* change this halfway through a trail,
-     *               as that will split it into two trails
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: do *not* change this halfway through a trail,
+     *                             as that will split it into two trails
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
-     * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
-     *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
-     *                        CANNOT change mid-trail, under any circumstance
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
      */
     @Deprecated
-    public static void AddTrailMemberAdvanced (
-            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite, 
+    public static void AddTrailMemberAdvanced(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
             float startSize, float endSize,
@@ -694,73 +937,53 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             float inDuration, float mainDuration, float outDuration,
             int blendModeSRC, int blendModeDEST,
             float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions,
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
             CombatEngineLayers layerToRenderOn) {
         //First, find the plugin, and if it doesn't exist do nothing
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
 
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
-        int texID = sprite.getTextureId();
-        Map<Integer, Map<Float, MagicTrailTracker>> layerMap = plugin.mainMap.get(layerToRenderOn);
-        if (layerMap == null) {
-            layerMap = new HashMap<>();
-            plugin.mainMap.put(layerToRenderOn, layerMap);
-        }
-        if (layerMap.get(texID) == null) {
-            layerMap.put(texID, new HashMap<Float, MagicTrailTracker>());
-        }
-        if (layerMap.get(texID).get(ID) == null) {
-            layerMap.get(texID).put(ID, new MagicTrailTracker());
-        }
-        if (linkedEntity != null) {
-            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerCutMap = plugin.cuttingMap.get(layerToRenderOn);
-            if (layerCutMap == null) {
-                layerCutMap = new HashMap<>();
-                plugin.cuttingMap.put(layerToRenderOn, layerCutMap);
-            }
-            if (layerCutMap.get(texID) == null) {
-                layerCutMap.put(texID, new HashMap<CombatEntityAPI, List<Float>>());
-            }
-            if (layerCutMap.get(texID).get(linkedEntity) == null) {
-                layerCutMap.get(texID).put(linkedEntity, new ArrayList<Float>());
-            }
-            if (!layerCutMap.get(texID).get(linkedEntity).contains(ID)) {
-                layerCutMap.get(texID).get(linkedEntity).add(ID);
-            }
-        }
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layerToRenderOn, sprite, false);
 
         //Adjusts scroll speed to our most recent trail's value
-        layerMap.get(texID).get(ID).scrollSpeed = textureScrollSpeed;
+        tracker.scrollSpeed = textureScrollSpeed;
 
         //--Reads in our special options, if we have any--
         float sizePulseWidth = 0f;
         int sizePulseCount = 0;
         if (advancedOptions != null) {
-            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
-            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
-            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean)advancedOptions.get("FORWARD_PROPAGATION")) {
-                layerMap.get(texID).get(ID).usesForwardPropagation = true;
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {
+                sizePulseWidth = (Float) advancedOptions.get("SIZE_PULSE_WIDTH");
+            }
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {
+                sizePulseCount = (Integer) advancedOptions.get("SIZE_PULSE_COUNT");
+            }
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean) advancedOptions.get("FORWARD_PROPAGATION")) {
+                tracker.usesForwardPropagation = true;
             }
         }
         //--End of special options--
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity,
-                sizePulseWidth, sizePulseCount);
+                                                            opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, 0, offsetVelocity,
+                                                            sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
-        layerMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
+        tracker.addNewTrailObject(objectToAdd);
     }
 
-    
+
+    // ANIMATED DECLARATION
+    // ANIMATED DECLARATION
+    // ANIMATED DECLARATION
+    // ANIMATED DECLARATION
+    // ANIMATED DECLARATION
     // ANIMATED DECLARATION
     
+
     /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function is similar to the Advanced function, but
@@ -768,68 +991,72 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * always use the texture of the most recently-added member. If the texture is not
      * supposed to be animated, do NOT use this function: it runs notably slower.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
-     *               new sprite.
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param additive             Whether this trail will use additive blending or not. Does not support being changed in
+     *                             the middle of a trail
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param textureOffset        Optional texture offset to prevent repetitions between trails, default:0, fixed random offset: -1;
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAnimated (
+    public static void AddTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -837,17 +1064,17 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             Color startColor, Color endColor, float opacity,
             float inDuration, float mainDuration, float outDuration,
             boolean additive,
-            float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions,
-            CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
-        
+            float textureLoopLength, float textureScrollSpeed, float textureOffset,
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
+            @Nullable CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+
         //Converts our additive/non-additive option to true openGL stuff
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
         
         AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
-                endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
-                advancedOptions, layerToRenderOn, frameOffsetMult);
+                               endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, textureOffset, offsetVelocity,
+                               advancedOptions, layerToRenderOn, frameOffsetMult);
     }
 
 
@@ -858,73 +1085,74 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * always use the texture of the most recently-added member. If the texture is not
      * supposed to be animated, do NOT use this function: it runs notably slower.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
-     *               new sprite.
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
-     * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
-     *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
-     *                        CANNOT change mid-trail, under any circumstance
-     * @param frameOffsetMult The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
-     *                        adjust trail offset at different speeds
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param textureOffset        Optional texture offset to prevent repetitions between trails, default:0, fixed random offset: -1;
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds
      */
-    public static void AddTrailMemberAnimated (
+    public static void AddTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -932,48 +1160,28 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             Color startColor, Color endColor, float opacity,
             float inDuration, float mainDuration, float outDuration,
             int blendModeSRC, int blendModeDEST,
-            float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions,
+            float textureLoopLength, float textureScrollSpeed, float textureOffset,
+            @Nullable Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
             CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
         //First, find the plugin
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
 
         //Finds the correct maps, and ensures they are actually instantiated
-        Map<Float, MagicTrailTracker> layerMap = plugin.animMap.get(layerToRenderOn);
-        if (layerMap == null) {
-            layerMap = new HashMap<>();
-            plugin.animMap.put(layerToRenderOn, layerMap);
-        }
-        if (layerMap.get(ID) == null) {
-            layerMap.put(ID, new MagicTrailTracker());
-        }
-        if (linkedEntity != null) {
-            Map<CombatEntityAPI, List<Float>> layerCutMap = plugin.cuttingMapAnimated.get(layerToRenderOn);
-            if (layerCutMap == null) {
-                layerCutMap = new HashMap<>();
-                plugin.cuttingMapAnimated.put(layerToRenderOn, layerCutMap);
-            }
-            if (layerCutMap.get(linkedEntity) == null) {
-                layerCutMap.put(linkedEntity, new ArrayList<Float>());
-            }
-            if (!layerCutMap.get(linkedEntity).contains(ID)) {
-                layerCutMap.get(linkedEntity).add(ID);
-            }
-        }
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layerToRenderOn, sprite, true);
 
         //--Reads in our special options, if we have any--
         float sizePulseWidth = 0f;
         int sizePulseCount = 0;
         if (advancedOptions != null) {
-            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
-            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
-            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean)advancedOptions.get("FORWARD_PROPAGATION")) {
-                layerMap.get(ID).usesForwardPropagation = true;
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {
+                sizePulseWidth = (Float) advancedOptions.get("SIZE_PULSE_WIDTH");
+            }
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {
+                sizePulseCount = (Integer) advancedOptions.get("SIZE_PULSE_COUNT");
+            }
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean) advancedOptions.get("FORWARD_PROPAGATION")) {
+                tracker.usesForwardPropagation = true;
             }
         }
         //--End of special options--
@@ -989,25 +1197,42 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         }
 
         //Adjusts scroll speed to our most recent trail's value
-        layerMap.get(ID).scrollSpeed = textureScrollSpeed;
+        tracker.scrollSpeed = textureScrollSpeed;
 
         //Adjusts the texture in the Trail Tracker to our most recently received texture, and flags it as being an Animated trail
         int texID = sprite.getTextureId();
-        layerMap.get(ID).isAnimated = true;
-        layerMap.get(ID).currentAnimRenderTexture = texID;
+        tracker.isAnimated = true;
+        tracker.currentAnimRenderTexture = texID;
+        
+        Vector2f offsetVel = new Vector2f();
+        if(offsetVelocity!=null){
+            offsetVel = offsetVelocity;
+        }
 
+        //check for specific texture offset or a random one
+        float textOffset = 0;
+        if(textureOffset==-1){
+            //the texture tracker keep a fixed random texture offset
+            if(tracker.textureOffset==-1){
+                tracker.textureOffset = MathUtils.getRandomNumberInRange(0, textureLoopLength);
+            }
+            textOffset = tracker.textureOffset;
+        } else if (textureOffset!=0){
+            textOffset = textureOffset;
+        }
+        
+        
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, offsetVelocity,
-                sizePulseWidth, sizePulseCount);
+                                                            opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, textOffset ,offsetVel,
+                                                            sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
-        layerMap.get(ID).addNewTrailObject(objectToAdd);
+        tracker.addNewTrailObject(objectToAdd);
     }
 
-    
+
     // DEPRECATED
-    
     /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function is similar to the Advanced function, but
@@ -1015,83 +1240,86 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * always use the texture of the most recently-added member. If the texture is not
      * supposed to be animated, do NOT use this function: it runs notably slower.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
-     *               new sprite.
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
      */
     @Deprecated
-    public static void AddTrailMemberAnimated (
+    public static void AddTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
             float startSize, float endSize,
             Color startColor, Color endColor, float opacity,
             float inDuration, float mainDuration, float outDuration,
-            int blendModeSRC, int blendModeDEST,
+            boolean additive,
             float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions) {
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
+            CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
+
+        //Converts our additive/non-additive option to true openGL stuff
+        int blendModeSRC = GL_SRC_ALPHA;
+        int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
+
         AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
-                endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
-                advancedOptions, CombatEngineLayers.BELOW_INDICATORS_LAYER, 1f);
+                               endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
+                               advancedOptions, layerToRenderOn, frameOffsetMult);
     }
-    
+
+
     /**
      * Spawns a trail piece, which links up with other pieces with the same ID
      * to form a smooth trail. This function is similar to the Advanced function, but
@@ -1099,72 +1327,74 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * always use the texture of the most recently-added member. If the texture is not
      * supposed to be animated, do NOT use this function: it runs notably slower.
      *
-     * @param linkedEntity The entity this trail is attached to, used for cutting trails.
-     *                     Can be Null, but that should really only be done in weird, edge-case scenarios
-     * @param ID The ID for this specific trail. Preferably get this from getUniqueID,
-     *           but it's not required: just expect very weird results if you don't
-     * @param sprite Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
-     *               new sprite.
-     * @param position Starting position for this piece of trail
-     * @param startSpeed The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                   transitions from its startSpeed to its endSpeed over its duration
-     * @param endSpeed The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
-     *                 transitions from its startSpeed to its endSpeed over its duration
-     * @param angle Which angle this piece of trail has in degrees; determines which direction it moves,
-     *              and which direction its size is measured over
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
      * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
      *                             of a trail piece smoothly transitions from startAngularVelocity to
      *                             endAngularVelocity over its duration
-     * @param endAngularVelocity The angular velocity this trail piece has just before disappearing.
-     *                           The angular velocity of a trail piece smoothly transitions from
-     *                           startAngularVelocity to endAngularVelocity over its duration
-     * @param startSize The starting size (or rather width) this piece of trail has. Measured in SU. A trail
-     *                  smoothly transitions from its startSize to its endSize over its duration
-     * @param endSize The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
-     *                transitions from its startSize to its endSize over its duration
-     * @param startColor The color this piece of trail has when spawned. Can be changed in the middle of a trail,
-     *                   and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                   smoothly transitions from startColor to endColor over its duration
-     * @param endColor The color this piece of trail has just before disappearing. Can be changed in the middle of a
-     *                 trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
-     *                 smoothly transitions from startColor to endColor over its duration
-     * @param opacity The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
-     *                gradually approaches 0f over the trail's duration
-     * @param inDuration How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
-     *                   steadily increases until reaching "opacity". A trail's total duration is
-     *                   inDuration + mainDuration + outDuration
-     * @param mainDuration How long a trail uses its maximum opacity. A trail's total duration is
-     *                     inDuration + mainDuration + outDuration
-     * @param outDuration How long a trail spends "fading out"; over this many seconds at the end of the trail's
-     *                    duration, its opacity goes from "opacity" to 0f. A trail's total duration is
-     *                    inDuration + mainDuration + outDuration
-     * @param blendModeSRC Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
-     *                     put it as GL_SRC_ALPHA
-     * @param blendModeDEST Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
-     *                      put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
-     * @param textureLoopLength How many SU it takes for the texture to loop. Should preferably be non-zero. If the
-     *                          trail is not supposed to loop, put this as -1f
-     * @param textureScrollSpeed How fast, and in which direction, the texture scrolls over the trail. Defined so that
-     *                           1000 means scrolling the entire texture length once per second, and 2000 means
-     *                           scrolling the entire texture length twice per second
-     * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
-     *                       unaffected by rotation and facing, and will never change over the trail's lifetime
-     * @param advancedOptions The most unique and special options go in a special Map<> here. Be careful to input the
-     *                        correct type values and use the right data keys. Any new features will be added here to
-     *                        keep compatibility with old mod versions. Can be null. Currently supported keys:
-     *                        "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
-     *                                              most. Used in conjunction with SIZE_PULSE_COUNT
-     *                        "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
-     *                                              lifetime. Used in conjunction with SIZE_PULSE_WIDTH
-     *                        "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
-     *                                                 "forward propagation". Used to be the default. CANNOT be
-     *                                                 changed mid-trail
-     * @param layerToRenderOn Which combat layer to render the trail on. All available layers are specified in
-     *                        CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
-     *                        CANNOT change mid-trail, under any circumstance
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
+     *                             adjust trail offset at different speeds
      */
     @Deprecated
-    public static void AddTrailMemberAnimated (
+    public static void AddTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -1173,76 +1403,276 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             float inDuration, float mainDuration, float outDuration,
             int blendModeSRC, int blendModeDEST,
             float textureLoopLength, float textureScrollSpeed,
-            Vector2f offsetVelocity, @Nullable Map<String,Object> advancedOptions, 
-            CombatEngineLayers layerToRenderOn) {
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
+            CombatEngineLayers layerToRenderOn, float frameOffsetMult) {
         //First, find the plugin
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
 
         //Finds the correct maps, and ensures they are actually instantiated
-        Map<Float, MagicTrailTracker> layerMap = plugin.animMap.get(layerToRenderOn);
-        if (layerMap == null) {
-            layerMap = new HashMap<>();
-            plugin.animMap.put(layerToRenderOn, layerMap);
-        }
-        if (layerMap.get(ID) == null) {
-            layerMap.put(ID, new MagicTrailTracker());
-        }
-        if (linkedEntity != null) {
-            Map<CombatEntityAPI, List<Float>> layerCutMap = plugin.cuttingMapAnimated.get(layerToRenderOn);
-            if (layerCutMap == null) {
-                layerCutMap = new HashMap<>();
-                plugin.cuttingMapAnimated.put(layerToRenderOn, layerCutMap);
-            }
-            if (layerCutMap.get(linkedEntity) == null) {
-                layerCutMap.put(linkedEntity, new ArrayList<Float>());
-            }
-            if (!layerCutMap.get(linkedEntity).contains(ID)) {
-                layerCutMap.get(linkedEntity).add(ID);
-            }
-        }
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layerToRenderOn, sprite, true);
 
         //--Reads in our special options, if we have any--
         float sizePulseWidth = 0f;
         int sizePulseCount = 0;
         if (advancedOptions != null) {
-            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {sizePulseWidth = (Float)advancedOptions.get("SIZE_PULSE_WIDTH");}
-            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {sizePulseCount = (Integer)advancedOptions.get("SIZE_PULSE_COUNT");}
-            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean)advancedOptions.get("FORWARD_PROPAGATION")) {
-                layerMap.get(ID).usesForwardPropagation = true;
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {
+                sizePulseWidth = (Float) advancedOptions.get("SIZE_PULSE_WIDTH");
+            }
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {
+                sizePulseCount = (Integer) advancedOptions.get("SIZE_PULSE_COUNT");
+            }
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean) advancedOptions.get("FORWARD_PROPAGATION")) {
+                tracker.usesForwardPropagation = true;
+            }
+        }
+        //--End of special options--
+
+        //Offset tweaker to fix single frame delay for lateral movement
+        Vector2f correctedPosition = new Vector2f(position);
+        if (linkedEntity instanceof DamagingProjectileAPI) {
+            DamagingProjectileAPI proj = (DamagingProjectileAPI) linkedEntity;
+
+            Vector2f shipVelPerAdvance = (Vector2f) new Vector2f(proj.getSource().getVelocity()).scale(Global.getCombatEngine().getElapsedInLastFrame());
+            shipVelPerAdvance.scale(frameOffsetMult);
+            Vector2f.sub(position, shipVelPerAdvance, correctedPosition);
+        }
+
+        //Adjusts scroll speed to our most recent trail's value
+        tracker.scrollSpeed = textureScrollSpeed;
+
+        //Adjusts the texture in the Trail Tracker to our most recently received texture, and flags it as being an Animated trail
+        int texID = sprite.getTextureId();
+        tracker.isAnimated = true;
+        tracker.currentAnimRenderTexture = texID;
+
+        //Creates the custom object we want
+        MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
+                                                            opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, correctedPosition, textureLoopLength, 0, offsetVelocity,
+                                                            sizePulseWidth, sizePulseCount);
+
+        //And finally add it to the correct location in our maps
+        tracker.addNewTrailObject(objectToAdd);
+    }
+    
+    /**
+     * Spawns a trail piece, which links up with other pieces with the same ID
+     * to form a smooth trail. This function is similar to the Advanced function, but
+     * allows the trail to change its texture each time a new member is added. It will
+     * always use the texture of the most recently-added member. If the texture is not
+     * supposed to be animated, do NOT use this function: it runs notably slower.
+     *
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
+     * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
+     *                             of a trail piece smoothly transitions from startAngularVelocity to
+     *                             endAngularVelocity over its duration
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     */
+    @Deprecated
+    public static void AddTrailMemberAnimated(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float startSpeed, float endSpeed,
+            float angle, float startAngularVelocity, float endAngularVelocity,
+            float startSize, float endSize,
+            Color startColor, Color endColor, float opacity,
+            float inDuration, float mainDuration, float outDuration,
+            int blendModeSRC, int blendModeDEST,
+            float textureLoopLength, float textureScrollSpeed,
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions) {
+        AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
+                               endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
+                               advancedOptions, CombatEngineLayers.BELOW_INDICATORS_LAYER, 1f);
+    }
+
+    /**
+     * Spawns a trail piece, which links up with other pieces with the same ID
+     * to form a smooth trail. This function is similar to the Advanced function, but
+     * allows the trail to change its texture each time a new member is added. It will
+     * always use the texture of the most recently-added member. If the texture is not
+     * supposed to be animated, do NOT use this function: it runs notably slower.
+     *
+     * @param linkedEntity         The entity this trail is attached to, used for cutting trails.
+     *                             Can be Null, but that should really only be done in weird, edge-case scenarios
+     * @param ID                   The ID for this specific trail. Preferably get this from getUniqueID,
+     *                             but it's not required: just expect very weird results if you don't
+     * @param sprite               Which sprite to draw for this trail: if changed mid-trail, the entire trail uses the
+     *                             new sprite.
+     * @param position             Starting position for this piece of trail
+     * @param startSpeed           The starting speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param endSpeed             The ending speed, in SU, this trail piece is moving at. The trail piece smoothly
+     *                             transitions from its startSpeed to its endSpeed over its duration
+     * @param angle                Which angle this piece of trail has in degrees; determines which direction it moves,
+     *                             and which direction its size is measured over
+     * @param startAngularVelocity The angular velocity this trail piece has when spawned. The angular velocity
+     *                             of a trail piece smoothly transitions from startAngularVelocity to
+     *                             endAngularVelocity over its duration
+     * @param endAngularVelocity   The angular velocity this trail piece has just before disappearing.
+     *                             The angular velocity of a trail piece smoothly transitions from
+     *                             startAngularVelocity to endAngularVelocity over its duration
+     * @param startSize            The starting size (or rather width) this piece of trail has. Measured in SU. A trail
+     *                             smoothly transitions from its startSize to its endSize over its duration
+     * @param endSize              The ending size (or rather width) this trail piece has. Measured in SU. A trail smoothly
+     *                             transitions from its startSize to its endSize over its duration
+     * @param startColor           The color this piece of trail has when spawned. Can be changed in the middle of a trail,
+     *                             and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param endColor             The color this piece of trail has just before disappearing. Can be changed in the middle of a
+     *                             trail, and will blend smoothly between pieces. Ignores alpha component entirely. Each trail piece
+     *                             smoothly transitions from startColor to endColor over its duration
+     * @param opacity              The starting opacity of this piece of trail. Is a value between 0f and 1f. The opacity
+     *                             gradually approaches 0f over the trail's duration
+     * @param inDuration           How long this trail spends "fading in"; for this many seconds, the opacity of the trail piece
+     *                             steadily increases until reaching "opacity". A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param mainDuration         How long a trail uses its maximum opacity. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param outDuration          How long a trail spends "fading out"; over this many seconds at the end of the trail's
+     *                             duration, its opacity goes from "opacity" to 0f. A trail's total duration is
+     *                             inDuration + mainDuration + outDuration
+     * @param blendModeSRC         Which SRD openGL blend mode to use for the trail. If you are unsure of what this means, just
+     *                             put it as GL_SRC_ALPHA
+     * @param blendModeDEST        Which DEST openGL blend mode to use for the trail. If you are unsure of what this means,
+     *                             put it as GL_ONE_MINUS_SRC_ALPHA for normal blending and GL_ONE for additive blending
+     * @param textureLoopLength    How many SU it takes for the texture to loop. Should preferably be non-zero. If the
+     *                             trail is not supposed to loop, put this as -1f
+     * @param textureScrollSpeed   How fast, and in which direction, the texture scrolls over the trail. Defined so that
+     *                             1000 means scrolling the entire texture length once per second, and 2000 means
+     *                             scrolling the entire texture length twice per second
+     * @param offsetVelocity       The offset velocity of the trail; this is an additional velocity that is
+     *                             unaffected by rotation and facing, and will never change over the trail's lifetime
+     * @param advancedOptions      The most unique and special options go in a special Map<> here. Be careful to input the
+     *                             correct type values and use the right data keys. Any new features will be added here to
+     *                             keep compatibility with old mod versions. Can be null. Currently supported keys:
+     *                             "SIZE_PULSE_WIDTH" :  Float - How much additional width the trail gains each "pulse", at
+     *                             most. Used in conjunction with SIZE_PULSE_COUNT
+     *                             "SIZE_PULSE_COUNT" :  Integer - How many times the trail "pulses" its width over its
+     *                             lifetime. Used in conjunction with SIZE_PULSE_WIDTH
+     *                             "FORWARD_PROPAGATION" :  Boolean - If the trail uses the legacy render method of
+     *                             "forward propagation". Used to be the default. CANNOT be
+     *                             changed mid-trail
+     * @param layerToRenderOn      Which combat layer to render the trail on. All available layers are specified in
+     *                             CombatEngineLayers. Old behaviour was CombatEngineLayers.BELOW_INDICATORS_LAYER.
+     *                             CANNOT change mid-trail, under any circumstance
+     */
+    @Deprecated
+    public static void AddTrailMemberAnimated(
+            CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
+            Vector2f position, float startSpeed, float endSpeed,
+            float angle, float startAngularVelocity, float endAngularVelocity,
+            float startSize, float endSize,
+            Color startColor, Color endColor, float opacity,
+            float inDuration, float mainDuration, float outDuration,
+            int blendModeSRC, int blendModeDEST,
+            float textureLoopLength, float textureScrollSpeed,
+            Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions,
+            CombatEngineLayers layerToRenderOn) {
+        //First, find the plugin
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
+
+        //Finds the correct maps, and ensures they are actually instantiated
+
+        MagicTrailTracker tracker = addOrGetTrailTracker(plugin, ID, linkedEntity, layerToRenderOn, sprite, true);
+
+        //--Reads in our special options, if we have any--
+        float sizePulseWidth = 0f;
+        int sizePulseCount = 0;
+        if (advancedOptions != null) {
+            if (advancedOptions.get("SIZE_PULSE_WIDTH") instanceof Float) {
+                sizePulseWidth = (Float) advancedOptions.get("SIZE_PULSE_WIDTH");
+            }
+            if (advancedOptions.get("SIZE_PULSE_COUNT") instanceof Integer) {
+                sizePulseCount = (Integer) advancedOptions.get("SIZE_PULSE_COUNT");
+            }
+            if (advancedOptions.get("FORWARD_PROPAGATION") instanceof Boolean && (boolean) advancedOptions.get("FORWARD_PROPAGATION")) {
+                tracker.usesForwardPropagation = true;
             }
         }
         //--End of special options--
 
         //Adjusts scroll speed to our most recent trail's value
-        layerMap.get(ID).scrollSpeed = textureScrollSpeed;
+        tracker.scrollSpeed = textureScrollSpeed;
 
         //Adjusts the texture in the Trail Tracker to our most recently received texture, and flags it as being an Animated trail
         int texID = sprite.getTextureId();
-        layerMap.get(ID).isAnimated = true;
-        layerMap.get(ID).currentAnimRenderTexture = texID;
+        tracker.isAnimated = true;
+        tracker.currentAnimRenderTexture = texID;
 
         //Creates the custom object we want
         MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity,
-                sizePulseWidth, sizePulseCount);
+                                                            opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, 0, offsetVelocity,
+                                                            sizePulseWidth, sizePulseCount);
 
         //And finally add it to the correct location in our maps
-        layerMap.get(ID).addNewTrailObject(objectToAdd);
+        tracker.addNewTrailObject(objectToAdd);
     }
 
-    
+
     // OTHER TOOLS
-    
+
     /**
      * A small function to get a unique ID for the trail member: *must* be saved in the function that generates the
      * trail, since if it changes it counts as a new trail altogether
+     * @return 
      */
-    public static float getUniqueID () {
+    public static float getUniqueID() {
         //Gets a value 0.1f higher than the previous maximum ID, and marks that as our previous maximum ID
         float toReturn = usedIDs + 0.1f;
         usedIDs = toReturn;
@@ -1250,7 +1680,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
     }
 
     //Similar to above, but is *explicitly* intended for the cutTrailsOnEntity function, and is thus private
-    private static float getUniqueCutterID () {
+    private static float getUniqueCutterID() {
         //Gets a value 0.1f lower than the previous maximum ID, and marks that as our previous maximum ID
         float toReturn = usedCutterIDs - 0.1f;
         usedCutterIDs = toReturn;
@@ -1262,7 +1692,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * "Cuts" all trails on a designated entity, forcing new trail pieces to not link up with old ones. Should
      * be used before teleporting any entity, since it may have trails attached to it which will otherwise stretch
      * in unintended ways.
-     *
+     * <p>
      * This can also be called (with a potential 1-frame delay) by adding an entity to any CustomData in
      * the CombatEngineAPI with a key containing the phrase "MagicTrailPlugin_LIB_FREE_TRAIL_CUT" (note: *containing*.
      * there must be more to the key than this, as it should be unique [optimally, use your modID and the ID of the
@@ -1272,48 +1702,41 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *
      * @param entity The entity you want to cut all trails on
      */
-    public static void cutTrailsOnEntity (CombatEntityAPI entity) {
+    public static void cutTrailsOnEntity(CombatEntityAPI entity) {
         //First, find the plugin
-        if (Global.getCombatEngine() == null) {
-            return;
-        } else if (!(Global.getCombatEngine().getCustomData().get("MagicTrailPlugin") instanceof MagicTrailPlugin)) {
-            return;
-        }
-        MagicTrailPlugin plugin = (MagicTrailPlugin)Global.getCombatEngine().getCustomData().get("MagicTrailPlugin");
+        MagicTrailPlugin plugin = getPlugin();
+        if (plugin == null) return;
 
         //Iterate over all textures in the main map...
-        for (CombatEngineLayers layer : plugin.cuttingMap.keySet()) {
-            Map<Integer, Map<CombatEntityAPI, List<Float>>> layerMap = plugin.cuttingMap.get(layer);
-            for (Integer key : layerMap.keySet()) {
+        for (Entry<CombatEngineLayers, Map<Integer, Map<CombatEntityAPI, List<Float>>>>
+                cuttingLayerEntry : plugin.cuttingMap.entrySet()) {
+            CombatEngineLayers layer = cuttingLayerEntry.getKey();
+            Map<Integer, Map<CombatEntityAPI, List<Float>>> cuttingLayerMap = cuttingLayerEntry.getValue();
+            for (Entry<Integer, Map<CombatEntityAPI, List<Float>>> cuttingEntityEntry : cuttingLayerMap.entrySet()) {
                 //If our entity has any registered trails, cut them all off by giving them new, unique IDs
-                if (layerMap.get(key).get(entity) != null) {
-                    for (float thisID : layerMap.get(key).get(entity)) {
-                        if (plugin.mainMap.get(layer).get(key).get(thisID) != null) {
-                            plugin.mainMap.get(layer).get(key).put(getUniqueCutterID(), plugin.mainMap.get(layer).get(key).get(thisID));
-                            plugin.mainMap.get(layer).get(key).remove(thisID);
+                int texID = cuttingEntityEntry.getKey();
+                Map<CombatEntityAPI, List<Float>> cuttingEntityMap = cuttingEntityEntry.getValue();
+
+                if (cuttingEntityMap.get(entity) != null) {
+                    //Get the trackers from main trail map
+                    Map<Float, MagicTrailTracker> trailTrackerMap = plugin.mainMap.get(layer).get(texID);
+                    if (trailTrackerMap != null) {
+                        for (Float trailID : cuttingEntityMap.get(entity)) {
+                            MagicTrailTracker trailTracker = trailTrackerMap.get(trailID);
+                            if (trailTracker != null) {
+                                trailTrackerMap.put(getUniqueCutterID(), trailTracker);
+                                trailTrackerMap.remove(trailID);
+                            }
                         }
                     }
                 }
             }
         }
-
-        //Then, do something similar for the animated map
-        for (CombatEngineLayers layer : plugin.cuttingMapAnimated.keySet()) {
-            if (plugin.cuttingMapAnimated.get(layer).get(entity) != null) {
-                Map<CombatEntityAPI, List<Float>> layerMap = plugin.cuttingMapAnimated.get(layer);
-                for (float thisID : layerMap.get(entity)) {
-                    if (plugin.animMap.get(layer).get(thisID) != null) {
-                        plugin.animMap.get(layer).put(getUniqueCutterID(), plugin.animMap.get(layer).get(thisID));
-                        plugin.animMap.get(layer).remove(thisID);
-                    }
-                }
-            }
-        }
     }
-    
-    
+
+
     // PLUGIN STUFF
-    
+
     @Override
     public void init(CombatEngineAPI engine) {
         //Creates the render plugin and adds it to the engine
@@ -1321,66 +1744,92 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         engine.addLayeredRenderingPlugin(renderer);
 
         //Stores our plugins in easy-to-reach locations, so we can access it in different places
-        engine.getCustomData().put("MagicTrailPlugin", this);
+        engine.getCustomData().put(PLUGIN_KEY, this);
         engine.getCustomData().put("MagicTrailRenderer", renderer);
 
-        usedIDs = 0f;
+        usedIDs = 1f;
+        usedCutterIDs = -1f;
         mainMap.clear();
-        animMap.clear();
         cuttingMap.clear();
-        cuttingMapAnimated.clear();
+
+        this.engine = engine;
     }
+
+    /**
+     * @return Get trail plugin from current CombatEngine.
+     */
+    public static MagicTrailPlugin getPlugin() {
+        CombatEngineAPI engine = Global.getCombatEngine();
+        if (engine == null) {
+            return null;
+        }
+        return (MagicTrailPlugin) engine.getCustomData().get(PLUGIN_KEY);
+    }
+
 
     //Ticks all maps, and checks for any entity that should recieve library-free cutting
     @Override
-    public void advance (float amount, java.util.List<InputEventAPI> events) {
-        if (Global.getCombatEngine() == null || Global.getCombatEngine().isPaused()) {
+    public void advance(float amount, java.util.List<InputEventAPI> events) {
+        if (engine == null || engine.isPaused()) {
             return;
         }
 
-        //Checks our combat engine's customData and sees if someone has attempted a library-free trail cutting this frame
-        //If they have, cut it properly and store the fact that cutting took place this frame
-        boolean cutSomethingThisFrame = false;
-        for (String key : Global.getCombatEngine().getCustomData().keySet()) {
-            if (key.contains("MagicTrailPlugin_LIB_FREE_TRAIL_CUT")) {
-                if (Global.getCombatEngine().getCustomData().get(key) instanceof CombatEntityAPI) {
-                    cutSomethingThisFrame = true;
-                    cutTrailsOnEntity((CombatEntityAPI)Global.getCombatEngine().getCustomData().get(key));
+        cleanTimer.advance(amount);
+        //Check if it's the clean time
+        boolean shouldClean = cleanTimer.intervalElapsed();
+
+        //Ticks the main map
+        for (Map<Integer, Map<Float, MagicTrailTracker>> layerMap : mainMap.values()) {
+            for (Map<Float, MagicTrailTracker> trailTrackerMap : layerMap.values()) {
+                Iterator<Entry<Float, MagicTrailTracker>> trailTrackerIterator = trailTrackerMap.entrySet().iterator();
+                while (trailTrackerIterator.hasNext()) {
+                    Entry<Float, MagicTrailTracker> entry = trailTrackerIterator.next();
+                    MagicTrailTracker tracker = entry.getValue();
+                    if (shouldClean && tracker.isExpired()) {
+                        trailTrackerIterator.remove();
+                    }
+                    tracker.tickTimersInTrail(amount);
                 }
             }
         }
 
-        //If cutting took place this frame, we remove all CustomData key-data pairs that are used for lib-free cutting
-        if (cutSomethingThisFrame) {
-            Set<String> keySet = Global.getCombatEngine().getCustomData().keySet();
-            for (String key : keySet) {
-                if (key.contains("MagicTrailPlugin_LIB_FREE_TRAIL_CUT")) {
-                    if (Global.getCombatEngine().getCustomData().get(key) instanceof CombatEntityAPI){
-                        Global.getCombatEngine().getCustomData().remove(key);
+        //Clean the cutting map
+        if (shouldClean) {
+            for (Map<Integer, Map<CombatEntityAPI, List<Float>>> texMap : cuttingMap.values()) {
+                for (Map<CombatEntityAPI, List<Float>> entityMap : texMap.values()) {
+                    Iterator<Entry<CombatEntityAPI, List<Float>>> entryIterator = entityMap.entrySet().iterator();
+                    //If the entity is not in the engine, just delete it
+                    while (entryIterator.hasNext()) {
+                        Entry<CombatEntityAPI, List<Float>> entry = entryIterator.next();
+                        CombatEntityAPI entity = entry.getKey();
+                        if (!engine.isEntityInPlay(entity)) {
+                            entryIterator.remove();
+                        }
                     }
                 }
             }
         }
 
-        //Ticks the main map
-        for (CombatEngineLayers layer : mainMap.keySet()) {
-            for (Integer texID : mainMap.get(layer).keySet()) {
-                for (Float ID : mainMap.get(layer).get(texID).keySet()) {
-                    mainMap.get(layer).get(texID).get(ID).tickTimersInTrail(amount);
-                    mainMap.get(layer).get(texID).get(ID).clearAllDeadObjects();
-                }
+        //Checks our combat engine's customData and sees if someone has attempted a library-free trail cutting this frame
+        //If they have, cut it properly and store the fact that cutting took place this frame
+        final Map<String, Object> customData = engine.getCustomData();
+        //Use iterator to remove at the same time
+        Iterator<Entry<String, Object>> dataEntryIterator = customData.entrySet().iterator();
+
+        while (dataEntryIterator.hasNext()) {
+            Entry<String, Object> entry = dataEntryIterator.next();
+            String key = entry.getKey();
+            //If cutting took place this frame, we remove all CustomData key-data pairs that are used for lib-free cutting
+            if (entry.getValue() instanceof CombatEntityAPI
+                    && key.contains("MagicTrailPlugin_LIB_FREE_TRAIL_CUT")) {
+                CombatEntityAPI combatEntity = (CombatEntityAPI) entry.getValue();
+                cutTrailsOnEntity(combatEntity);
+                dataEntryIterator.remove();
             }
         }
 
-        //Ticks the animated map
-        for (CombatEngineLayers layer : animMap.keySet()) {
-            for (Float ID : animMap.get(layer).keySet()) {
-                animMap.get(layer).get(ID).tickTimersInTrail(amount);
-                animMap.get(layer).get(ID).clearAllDeadObjects();
-            }
-        }
+
     }
-
 }
 
 
@@ -1396,34 +1845,23 @@ class MagicTrailRenderer extends BaseCombatLayeredRenderingPlugin {
     }
 
     //Our constructor takes our parent plugin, so we can access the trail data during rendering
-    protected MagicTrailRenderer (MagicTrailPlugin parentPlugin) {
+    protected MagicTrailRenderer(MagicTrailPlugin parentPlugin) {
         this.parentPlugin = parentPlugin;
     }
 
     //Main render function: renders all trails of a given layer
     @Override
-    public void render (CombatEngineLayers layer, ViewportAPI view) {
-        //Initial checks to see if required components exist
-        CombatEngineAPI engine = Global.getCombatEngine();
-        if (engine == null){
-            return;
-        }
-
+    public void render(CombatEngineLayers layer, ViewportAPI view) {
         //Iterates through all normal trails on this layer, and render them one at a time
-        if (parentPlugin.mainMap.get(layer) != null) {
-            Map<Integer, Map<Float, MagicTrailTracker>> layerMap = parentPlugin.mainMap.get(layer);
-            for (Integer texID : layerMap.keySet()) {
-                for (Float ID : layerMap.get(texID).keySet()) {
-                    layerMap.get(texID).get(ID).renderTrail(texID);
+        Map<Integer, Map<Float, MagicTrailTracker>> mainLayerMap = parentPlugin.mainMap.get(layer);
+        if (mainLayerMap != null) {
+            for (Entry<Integer, Map<Float, MagicTrailTracker>> entry : mainLayerMap.entrySet()) {
+                int texID = entry.getKey();
+                Map<Float, MagicTrailTracker> trailTrackerMap = entry.getValue();
+                for (MagicTrailTracker trailTracker : trailTrackerMap.values()) {
+                    // texID may be -1 which means the anime key
+                    trailTracker.renderTrail(texID);
                 }
-            }
-        }
-
-        //If we have any animated trails on this layer, render those too
-        if (parentPlugin.animMap.get(layer) != null) {
-            Map<Float, MagicTrailTracker> layerMap = parentPlugin.animMap.get(layer);
-            for (Float ID : layerMap.keySet()) {
-                layerMap.get(ID).renderTrail(0);
             }
         }
     }
