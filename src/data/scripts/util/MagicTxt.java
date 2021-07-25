@@ -10,5 +10,9 @@ public class MagicTxt {
     
     public static String getString(String id){
         return Global.getSettings().getString(ML, id);
-    }       
+    }   
+    
+    public static String nullStringIfEmpty(String input) {
+        return input != null && !input.isEmpty() ? input : null;
+    }    
 }

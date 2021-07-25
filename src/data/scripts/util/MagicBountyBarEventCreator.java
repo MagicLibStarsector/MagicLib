@@ -13,4 +13,9 @@ public class MagicBountyBarEventCreator extends BaseBarEventCreator {
     public boolean isPriority() {
         return true;
     }
+
+    @Override
+    public float getBarEventFrequencyWeight() {
+        return super.getBarEventFrequencyWeight() * 10;
+    }
 }

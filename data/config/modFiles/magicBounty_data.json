@@ -70,6 +70,7 @@
 		"location_themes":[
 			"theme_core_unpopulated",
 		],
+		#"location_themes_blacklist":[],
 		"location_entities":[
 			"gate",
 			"station",

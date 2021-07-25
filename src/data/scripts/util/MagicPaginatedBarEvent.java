@@ -2,7 +2,6 @@ package data.scripts.util;
 
 import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.rules.MemKeys;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
@@ -21,18 +20,16 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
 
     public static class MagicPaginatedOption {
         public String text;
-        public String id;
+        public Object id;
         public String tooltip;
 
-        public MagicPaginatedOption(String text, String id, String tooltip) {
+        public MagicPaginatedOption(String text, Object id, String tooltip) {
             this.text = text;
             this.id = id;
             this.tooltip = tooltip;
         }
     }
 
-    protected InteractionDialogAPI dialog;
-    protected Map<String, MemoryAPI> memoryMap;
 
     protected List<MagicPaginatedOption> options = new ArrayList<>();
     protected List<MagicPaginatedOption> optionsAllPages = new ArrayList<>();
@@ -40,11 +37,11 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
     protected int currPage = 0;
     protected boolean withSpacers = true;
 
-    public void addOption(String text, String id, String tooltip) {
+    public void addOption(String text, Object id, String tooltip) {
         options.add(new MagicPaginatedOption(text, id, tooltip));
     }
 
-    public void addOptionAllPages(String text, String id, String tooltip) {
+    public void addOptionAllPages(String text, Object id, String tooltip) {
         optionsAllPages.add(new MagicPaginatedOption(text, id, tooltip));
     }
 
@@ -107,16 +104,15 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
             currPage--;
             showOptions();
             return;
-        }
-        if (optionData == OPTION_NEXT_PAGE) {
+        } else if (optionData == OPTION_NEXT_PAGE) {
             currPage++;
             showOptions();
             return;
         }
 
-        if (optionText != null) {
-            dialog.getTextPanel().addParagraph(optionText, Global.getSettings().getColor("buttonText"));
-        }
+//        if (optionText != null) {
+//            dialog.getTextPanel().addParagraph(optionText, Global.getSettings().getColor("buttonText"));
+//        }
 
         if (optionData == DumpMemory.OPTION_ID) {
             new DumpMemory().execute(null, dialog, null, getMemoryMap());
@@ -148,8 +144,5 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
     }
 
     public void optionMousedOver(String optionText, Object optionData) {
-    }
-
-    public void init(InteractionDialogAPI dialog) {
     }
 }

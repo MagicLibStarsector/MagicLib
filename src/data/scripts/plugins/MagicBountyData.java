@@ -179,6 +179,7 @@ public class MagicBountyData {
                         getStringList(bountyId, "location_marketFactions"),
                         getString(bountyId, "location_distance"), 
                         getStringList(bountyId, "location_themes"), 
+                        getStringList(bountyId, "location_themes_blacklist"), 
                         getStringList(bountyId, "location_entities"),
                         getBoolean(bountyId, "location_prioritizeUnexplored"),
                         getBoolean(bountyId, "location_defaultToAnyEntity")
@@ -259,6 +260,7 @@ public class MagicBountyData {
         public List<String> location_marketFactions;                            //takes precedence over all other parameters but market ids
         public String location_distance;                                        //prefered distance, "CORE", "CLOSE" or "FAR". Can be left empty to ignore.
         public List<String> location_themes;                                    //campaign.ids.Tags + "PROCGEN_NO_THEME" + "PROCGEN_NO_THEME_NO_PULSAR_NO_BLACKHOLE"
+        public List<String> location_themes_blacklist;
         public List<String> location_entities;                                  //PLANET, GATE, STATION, STABLE_LOCATION, DEBRIS, WRECK, PROBE.
         public boolean location_prioritizeUnexplored;                           //will pick in priority systems that have not been visited by the player yet, but won't override the distance requirements
         public boolean location_defaultToAnyEntity;                             //if true and no suitable entity is found in systems with required themes and distance, a random entity will be picked instead.
@@ -319,6 +321,7 @@ public class MagicBountyData {
             List<String> location_marketFactions,
             String location_distance,
             List<String> location_themes,
+            List<String> location_themes_blacklist,
             List<String> location_entities,
             boolean location_prioritizeUnexplored,
             boolean location_defaultToAnyEntity            
@@ -378,6 +381,7 @@ public class MagicBountyData {
             this.location_marketFactions = location_marketFactions;
             this.location_distance = location_distance;
             this.location_themes = location_themes;
+            this.location_themes_blacklist = location_themes_blacklist;
             this.location_entities = location_entities;
             this.location_prioritizeUnexplored = location_prioritizeUnexplored;
             this.location_defaultToAnyEntity = location_defaultToAnyEntity;

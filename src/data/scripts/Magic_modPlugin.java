@@ -1,8 +1,11 @@
 package data.scripts;
 
 import com.fs.starfarer.api.BaseModPlugin;
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager;
 import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.plugins.MagicBountyData;
+import data.scripts.util.MagicBountyBarEventCreator;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
@@ -64,7 +67,11 @@ public class Magic_modPlugin extends BaseModPlugin {
         if(!newGame){
             //add new bounties if there are any
             MagicBountyData.loadBountiesFromJSON(true);
+
+            if (!BarEventManager.getInstance().hasEventCreator(MagicBountyBarEventCreator.class)) {
+                BarEventManager.getInstance().addEventCreator(new MagicBountyBarEventCreator());
         }
+    }
     }
     
     @Override
