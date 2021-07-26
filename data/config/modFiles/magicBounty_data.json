@@ -59,7 +59,7 @@
 		},
 		"fleet_scaling_multiplier":0.25,
 		"fleet_min_DP":-1,
-		"fleet_composition_faction":"tri_tachyon",
+		"fleet_composition_faction":"tritachyon",
 		"fleet_composition_quality":2,
 		"fleet_transponder":false,
 		"fleet_behavior":"ROAMING",
