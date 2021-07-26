@@ -10,6 +10,7 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
 
@@ -18,7 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static data.scripts.util.MagicCampaign.*;
+import static data.scripts.util.MagicCampaign.createFleet;
+import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
 /**
@@ -26,8 +28,6 @@ import static data.scripts.util.MagicTxt.nullStringIfEmpty;
  */
 public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
-    protected PersonAPI captain = null;
-    protected CampaignFleetAPI fleet = null;
 
     @Override
     public boolean shouldShowAtMarket(MarketAPI market) {
@@ -134,10 +134,13 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 for (String key : keysOfBountiesToShow) {
                     if (getBountyOptionKey(key).equals(optionData)) {
                         // User has selected to view a bounty
-                        MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
+                        final MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
 
                         if (bounty == null)
                             continue;
+
+                        CampaignFleetAPI fleet = Global.getSector().getMemoryWithoutUpdate().getFleet(getMemKeyForBountyFleet(key));
+                        PersonAPI captain = (PersonAPI) Global.getSector().getMemoryWithoutUpdate().get(getMemKeyForBountyCaptain(key));
 
                         if (fleet == null) {
                             SectorEntityToken suitableTargetLocation = findSuitableTarget(
@@ -174,32 +177,70 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         bounty.target_skill_preference,
                                         bounty.target_skills
                                 );
+                                Global.getSector().getMemoryWithoutUpdate().set(getMemKeyForBountyCaptain(key), captain);
                             }
 
-                            fleet = spawnFleet(
-                                    buildFleet(
-                                            bounty.fleet_name,
-                                            bounty.fleet_faction,
-                                            null, //FleetType, // TODO fleet type not present in bounty data
-                                            bounty.fleet_flagship_name,
-                                            bounty.fleet_flagship_variant,
-                                            captain,
-                                            bounty.fleet_preset_ships, // TODO is this right? should be "support fleet"
-                                            bounty.fleet_min_DP,
-                                            bounty.fleet_faction, // TODO is this right? reinforcement faction
-                                            bounty.fleet_composition_quality
-                                    ),
+                            fleet = createFleet(
+                                    bounty.fleet_name,
+                                    bounty.fleet_faction,
+                                    FleetTypes.PERSON_BOUNTY_FLEET,
+                                    bounty.fleet_flagship_name,
+                                    bounty.fleet_flagship_variant,
+                                    captain,
+                                    bounty.fleet_preset_ships,
+                                    bounty.fleet_min_DP,
+                                    bounty.fleet_composition_faction,
+                                    bounty.fleet_composition_quality,
                                     null,
                                     bounty.fleet_behavior,
                                     suitableTargetLocation,
-                                    false, // todo isImportant
+                                    true,
                                     bounty.fleet_transponder
                             );
+                            Global.getSector().getMemoryWithoutUpdate().set(getMemKeyForBountyFleet(key), fleet);
                             // TODO VERY IMPORTANT - need to despawn the fleet when this bar event is destroyed.
                         }
 
                         if (nullStringIfEmpty(bounty.job_description) != null) {
-                            text.addPara(bounty.job_description.replaceAll("\\$system_name", fleet.getContainingLocation().getNameWithNoType()));
+                            String[] paras = bounty.job_description.split("/n|\\n");
+                            for (String para : paras) {
+                                final CampaignFleetAPI finalFleet = fleet;
+                                final PersonAPI finalCaptain = captain;
+                                String replacedPara = para;
+
+                                replacedPara = replaceAllIfPresent(replacedPara, "\\$system_name", new StringCreator() {
+                                    @Override
+                                    public String create() {
+                                        return finalFleet.getContainingLocation().getNameWithNoType();
+                                    }
+                                });
+                                replacedPara = replaceAllIfPresent(replacedPara, "\\$target", new StringCreator() {
+                                    @Override
+                                    public String create() {
+                                        return finalFleet.getFaction().getDisplayNameWithArticle();
+                                    }
+                                });
+                                replacedPara = replaceAllIfPresent(replacedPara, "\\$reward", new StringCreator() {
+                                    @Override
+                                    public String create() {
+                                        return Misc.getDGSCredits(bounty.job_credits_reward);
+                                    }
+                                });
+                                replacedPara = replaceAllIfPresent(replacedPara, "\\$name", new StringCreator() {
+                                    @Override
+                                    public String create() {
+                                        return finalCaptain.getNameString();
+                                    }
+                                });
+                                replacedPara = replaceAllIfPresent(replacedPara, "\\$constellation", new StringCreator() {
+                                    @Override
+                                    public String create() {
+                                        return finalFleet.getContainingLocation().getConstellation().getName();
+                                    }
+                                });
+
+                                text.addPara(replacedPara);
+                            }
                         }
 
                         if (nullStringIfEmpty(bounty.job_forFaction) != null) {
@@ -254,10 +295,29 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         BACK_TO_BOARD
     }
 
+    /**
+     * Replaces all instances of the given regex with the string returned from stringCreator.
+     * The difference from normal String.replaceAll is that stringCreator is only run if a match is found.
+     */
+    public String replaceAllIfPresent(String stringToReplace, String regex, StringCreator stringCreator) {
+        if (stringToReplace.matches(regex)) {
+            return stringCreator.create();
+        } else {
+            return stringToReplace;
+        }
+    }
 
     @Override
     public boolean isAlwaysShow() {
         return true;
+    }
+
+    public static String getMemKeyForBountyCaptain(String bountyKey) {
+        return "$MagicBounty_" + bountyKey + "_captain";
+    }
+
+    public static String getMemKeyForBountyFleet(String bountyKey) {
+        return "$MagicBounty_" + bountyKey + "_fleet";
     }
 
     private String getBountyOptionKey(String key) {
