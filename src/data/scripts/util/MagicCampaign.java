@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI.SkillLevelAPI;
+import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
@@ -34,6 +35,7 @@ import org.lazywizard.lazylib.MathUtils;
 import java.util.*;
 
 import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.*;
+import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
 public class MagicCampaign {
     
@@ -1114,6 +1116,12 @@ public class MagicCampaign {
         return true;
     }
     
+    public static Float PlayerThreatMultiplier(float enemyBaseFP){ //base FP is the min FP of the enemy fleet with reinforcements.
+        CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
+        float effectiveFP = playerFleet.getEffectiveStrength();
+        return effectiveFP / enemyBaseFP;
+    }
+    
     /**
      * Returns a random target SectorEntityToken given the following parameters:
      * @param marketIDs
@@ -1469,9 +1477,5 @@ public class MagicCampaign {
         }
         //apparently none of the systems had any suitable target for the given filters, looks like this is a fail
         return null;
-    }
-
-    static String nullStringIfEmpty(String input) {
-        return input != null && !input.isEmpty() ? input : null;
     }
 }
