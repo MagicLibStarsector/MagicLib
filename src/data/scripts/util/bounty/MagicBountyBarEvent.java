@@ -3,30 +3,32 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package data.scripts.util;
+package data.scripts.util.bounty;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.campaign.FactionAPI;
+import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
-import com.fs.starfarer.api.characters.PersonAPI;
-import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
+import data.scripts.util.MagicCampaign;
+import data.scripts.util.MagicPaginatedBarEvent;
+import data.scripts.util.StringCreator;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static data.scripts.util.MagicCampaign.createFleet;
-import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
 /**
  * TODO: Add a "Dismiss forever" option in addition to "Accept" and "Not now".
  */
-public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
+class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
 
     @Override
@@ -105,11 +107,11 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             if (bounty.job_name == null) {
                                 name = "Unnamed job"; // TODO default job name
                             }
-                            addOption(name, getBountyOptionKey(key), "Key: " + key);
+                            addOption(name, getBountyOptionKey(key), "Key: " + key, null);
                         }
                     }
 
-                    addOptionAllPages("Close", OptionId.CLOSE, "Close the bounty board.");
+                    addOptionAllPages("Close", OptionId.CLOSE, "Close the bounty board.", Keyboard.KEY_ESCAPE);
 
                     break;
                 case CLOSE:
@@ -139,85 +141,33 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         if (bounty == null)
                             continue;
 
-                        CampaignFleetAPI fleet = Global.getSector().getMemoryWithoutUpdate().getFleet(getMemKeyForBountyFleet(key));
-                        PersonAPI captain = (PersonAPI) Global.getSector().getMemoryWithoutUpdate().get(getMemKeyForBountyCaptain(key));
+                        ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(key);
 
-                        if (fleet == null) {
-                            SectorEntityToken suitableTargetLocation = findSuitableTarget(
-                                    bounty.location_marketIDs,
-                                    bounty.location_marketFactions,
-                                    bounty.location_distance,
-                                    bounty.location_themes,
-                                    bounty.location_themes_blacklist,
-                                    bounty.location_entities,
-                                    bounty.location_defaultToAnyEntity,
-                                    bounty.location_prioritizeUnexplored,
-                                    Global.getSettings().isDevMode()
-                            );
+                        if (activeBounty == null) {
+                            activeBounty = MagicBountyCoordinator.createActiveBounty(key, bounty);
+                            MagicBountyCoordinator.putActiveBounty(key, activeBounty);
 
-                            if (suitableTargetLocation == null) {
-                                Global.getLogger(this.getClass()).error("No suitable spawn location could be found for bounty " + key);
-                                continue;
-                            }
-
-                            if (captain == null) {
-                                captain = MagicCampaign.createCaptain(
-                                        bounty.target_isAI,
-                                        null, // TODO
-                                        nullStringIfEmpty(bounty.target_first_name),
-                                        nullStringIfEmpty(bounty.target_last_name),
-                                        nullStringIfEmpty(bounty.target_portrait),
-                                        bounty.target_gender,
-                                        nullStringIfEmpty(bounty.fleet_faction),
-                                        nullStringIfEmpty(bounty.target_rank),
-                                        nullStringIfEmpty(bounty.target_post),
-                                        nullStringIfEmpty(bounty.target_personality),
-                                        bounty.target_level,
-                                        bounty.target_elite_skills,
-                                        bounty.target_skill_preference,
-                                        bounty.target_skills
-                                );
-                                Global.getSector().getMemoryWithoutUpdate().set(getMemKeyForBountyCaptain(key), captain);
-                            }
-
-                            fleet = createFleet(
-                                    bounty.fleet_name,
-                                    bounty.fleet_faction,
-                                    FleetTypes.PERSON_BOUNTY_FLEET,
-                                    bounty.fleet_flagship_name,
-                                    bounty.fleet_flagship_variant,
-                                    captain,
-                                    bounty.fleet_preset_ships,
-                                    bounty.fleet_min_DP,
-                                    bounty.fleet_composition_faction,
-                                    bounty.fleet_composition_quality,
-                                    null,
-                                    bounty.fleet_behavior,
-                                    suitableTargetLocation,
-                                    true,
-                                    bounty.fleet_transponder
-                            );
-                            Global.getSector().getMemoryWithoutUpdate().set(getMemKeyForBountyFleet(key), fleet);
-                            // TODO VERY IMPORTANT - need to despawn the fleet when this bar event is destroyed.
+                            if (activeBounty == null) continue;
                         }
+
+                        // TODO VERY IMPORTANT - need to despawn the fleet when this bar event is destroyed.
 
                         if (nullStringIfEmpty(bounty.job_description) != null) {
                             String[] paras = bounty.job_description.split("/n|\\n");
                             for (String para : paras) {
-                                final CampaignFleetAPI finalFleet = fleet;
-                                final PersonAPI finalCaptain = captain;
                                 String replacedPara = para;
 
+                                final ActiveBounty finalActiveBounty = activeBounty;
                                 replacedPara = replaceAllIfPresent(replacedPara, "\\$system_name", new StringCreator() {
                                     @Override
                                     public String create() {
-                                        return finalFleet.getContainingLocation().getNameWithNoType();
+                                        return finalActiveBounty.getFleet().getContainingLocation().getNameWithNoType();
                                     }
                                 });
                                 replacedPara = replaceAllIfPresent(replacedPara, "\\$target", new StringCreator() {
                                     @Override
                                     public String create() {
-                                        return finalFleet.getFaction().getDisplayNameWithArticle();
+                                        return finalActiveBounty.getFleet().getFaction().getDisplayNameWithArticle();
                                     }
                                 });
                                 replacedPara = replaceAllIfPresent(replacedPara, "\\$reward", new StringCreator() {
@@ -229,13 +179,13 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 replacedPara = replaceAllIfPresent(replacedPara, "\\$name", new StringCreator() {
                                     @Override
                                     public String create() {
-                                        return finalCaptain.getNameString();
+                                        return finalActiveBounty.getFleet().getCommander().getNameString();
                                     }
                                 });
                                 replacedPara = replaceAllIfPresent(replacedPara, "\\$constellation", new StringCreator() {
                                     @Override
                                     public String create() {
-                                        return finalFleet.getContainingLocation().getConstellation().getName();
+                                        return finalActiveBounty.getFleet().getContainingLocation().getConstellation().getName();
                                     }
                                 });
 
@@ -261,7 +211,9 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         }
 
                         if (bounty.job_show_captain) {
-                            dialog.getVisualPanel().showPersonInfo(captain);
+                            dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
+                        } else if (nullStringIfEmpty(bounty.job_forFaction) != null) {
+                            // TODO: Show faction flag?
                         }
 
                         if (bounty.job_show_fleet) {
@@ -269,9 +221,8 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             int columns = 10;
                             text.beginTooltip()
                                     .addShipList(columns, 2, (dialog.getTextWidth() - 10) / columns,
-                                            fleet.getFaction().getBaseUIColor(),
-                                            fleet.getMembersWithFightersCopy(), 10f);
-//                                    .showShips(fleet.getMembersWithFightersCopy(), 20, false, 10f);
+                                            activeBounty.getFleet().getFaction().getBaseUIColor(),
+                                            activeBounty.getFleet().getMembersWithFightersCopy(), 10f);
                             text.addTooltip();
                         }
 
@@ -279,8 +230,8 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         optionsAllPages.clear();
                         addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
                                 ? bounty.job_pick_option
-                                : "Accept", "accept-" + key, null);
-                        addOption("Back", OptionId.BACK_TO_BOARD, null);
+                                : "Accept", "accept-" + key, null, null);
+                        addOption("Back", OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                     }
                 }
             }
@@ -310,14 +261,6 @@ public class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     @Override
     public boolean isAlwaysShow() {
         return true;
-    }
-
-    public static String getMemKeyForBountyCaptain(String bountyKey) {
-        return "$MagicBounty_" + bountyKey + "_captain";
-    }
-
-    public static String getMemKeyForBountyFleet(String bountyKey) {
-        return "$MagicBounty_" + bountyKey + "_fleet";
     }
 
     private String getBountyOptionKey(String key) {

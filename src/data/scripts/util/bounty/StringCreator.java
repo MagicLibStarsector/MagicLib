@@ -1,4 +1,4 @@
-package data.scripts.util;
+package data.scripts.util.bounty;
 
 interface StringCreator {
     String create();
