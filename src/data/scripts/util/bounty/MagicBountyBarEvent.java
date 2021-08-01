@@ -15,7 +15,6 @@ import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicPaginatedBarEvent;
-import data.scripts.util.StringCreator;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 /**
  * TODO: Add a "Dismiss forever" option in addition to "Accept" and "Not now".
  */
-class MagicBountyBarEvent extends MagicPaginatedBarEvent {
+public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
 
     @Override
@@ -124,9 +123,13 @@ class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             String data = (String) optionData;
             if (data.startsWith("accept-")) {
                 try {
+                    String bountyKey = data.replaceFirst("accept-", "");
                     MagicBountyData.bountyData bounty = MagicBountyData
-                            .getBountyData(data.replaceFirst("accept-", ""));
+                            .getBountyData(bountyKey);
                     text.addPara("%s", Misc.getHighlightColor(), "Accepted job: " + bounty.job_name);
+                    ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
+                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
+                    // TODO remove bounty, send user up one level
                     // TODO Job accepted!
                     // TODO set job_memKey, but on what and to what?
                 } catch (Exception e) {
@@ -152,46 +155,7 @@ class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                         // TODO VERY IMPORTANT - need to despawn the fleet when this bar event is destroyed.
 
-                        if (nullStringIfEmpty(bounty.job_description) != null) {
-                            String[] paras = bounty.job_description.split("/n|\\n");
-                            for (String para : paras) {
-                                String replacedPara = para;
-
-                                final ActiveBounty finalActiveBounty = activeBounty;
-                                replacedPara = replaceAllIfPresent(replacedPara, "\\$system_name", new StringCreator() {
-                                    @Override
-                                    public String create() {
-                                        return finalActiveBounty.getFleet().getContainingLocation().getNameWithNoType();
-                                    }
-                                });
-                                replacedPara = replaceAllIfPresent(replacedPara, "\\$target", new StringCreator() {
-                                    @Override
-                                    public String create() {
-                                        return finalActiveBounty.getFleet().getFaction().getDisplayNameWithArticle();
-                                    }
-                                });
-                                replacedPara = replaceAllIfPresent(replacedPara, "\\$reward", new StringCreator() {
-                                    @Override
-                                    public String create() {
-                                        return Misc.getDGSCredits(bounty.job_credits_reward);
-                                    }
-                                });
-                                replacedPara = replaceAllIfPresent(replacedPara, "\\$name", new StringCreator() {
-                                    @Override
-                                    public String create() {
-                                        return finalActiveBounty.getFleet().getCommander().getNameString();
-                                    }
-                                });
-                                replacedPara = replaceAllIfPresent(replacedPara, "\\$constellation", new StringCreator() {
-                                    @Override
-                                    public String create() {
-                                        return finalActiveBounty.getFleet().getContainingLocation().getConstellation().getName();
-                                    }
-                                });
-
-                                text.addPara(replacedPara);
-                            }
-                        }
+                        activeBounty.addDescriptionToTextPanel(text);
 
                         if (nullStringIfEmpty(bounty.job_forFaction) != null) {
                             FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
@@ -201,9 +165,8 @@ class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
                         }
 
-                        if (bounty.job_credits_reward > 0) {
-                            // TODO: Use the scaled reward
-                            text.addPara("Reward: %s", Misc.getHighlightColor(), Misc.getDGSCredits(bounty.job_credits_reward));
+                        if (activeBounty.calculateCreditReward() != null) {
+                            text.addPara("Reward: %s", Misc.getHighlightColor(), Misc.getDGSCredits(activeBounty.calculateCreditReward()));
                         }
 
                         if (bounty.job_deadline > 0) {
@@ -244,18 +207,6 @@ class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         INIT,
         CLOSE,
         BACK_TO_BOARD
-    }
-
-    /**
-     * Replaces all instances of the given regex with the string returned from stringCreator.
-     * The difference from normal String.replaceAll is that stringCreator is only run if a match is found.
-     */
-    public String replaceAllIfPresent(String stringToReplace, String regex, StringCreator stringCreator) {
-        if (stringToReplace.matches(regex)) {
-            return stringCreator.create();
-        } else {
-            return stringToReplace;
-        }
     }
 
     @Override

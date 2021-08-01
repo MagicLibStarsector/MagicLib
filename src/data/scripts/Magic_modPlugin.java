@@ -2,8 +2,11 @@ package data.scripts;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager;
+import com.thoughtworks.xstream.XStream;
 import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.plugins.MagicBountyData;
+import data.scripts.util.bounty.ActiveBounty;
+import data.scripts.util.bounty.MagicBountyBarEvent;
 import data.scripts.util.bounty.MagicBountyBarEventCreator;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
@@ -78,8 +81,16 @@ public class Magic_modPlugin extends BaseModPlugin {
         //setup the bounties
         MagicBountyData.loadBountiesFromJSON(false);
     }
-    
-//    //debugging magic bounties
+
+    @Override
+    public void configureXStream(XStream x) {
+        super.configureXStream(x);
+        x.alias("MagicBountyBarEventCreator", MagicBountyBarEventCreator.class);
+        x.alias("MagicBountyBarEvent", MagicBountyBarEvent.class);
+        x.alias("ActiveBounty", ActiveBounty.class);
+    }
+
+    //    //debugging magic bounties
 //    
 //    private static final Logger LOG = Global.getLogger(Magic_modPlugin.class);
 //    @Override
