@@ -77,6 +77,10 @@ public final class ActiveBounty {
         stage = Stage.Succeeded;
     }
 
+    public void failBounty() {
+        stage = Stage.Failed;
+    }
+
     /**
      * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
      */
@@ -111,8 +115,11 @@ public final class ActiveBounty {
                 : null;
     }
 
+    /**
+     * The color for the giving faction, or Misc.getTextColor() if none.
+     */
     @NotNull
-    public Color getTextColor() {
+    public Color getGivingFactionTextColor() {
         if (getGivingFaction() != null) {
             return getGivingFaction().getBaseUIColor();
         } else {

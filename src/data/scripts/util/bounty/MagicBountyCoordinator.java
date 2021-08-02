@@ -3,13 +3,16 @@ package data.scripts.util.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
+import data.scripts.util.MagicTxt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static data.scripts.util.MagicCampaign.createFleet;
@@ -22,6 +25,49 @@ class MagicBountyCoordinator {
     @Nullable
     public static ActiveBounty getActiveBounty(String bountyKey) {
         return (ActiveBounty) Global.getSector().getMemoryWithoutUpdate().get("$MagicBounty_" + bountyKey);
+    }
+
+    public static Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
+        Map<String, MagicBountyData.bountyData> available = new HashMap<>();
+
+        for (String key : MagicBountyData.BOUNTIES.keySet()) {
+            MagicBountyData.bountyData bounty = MagicBountyData.BOUNTIES.get(key);
+
+            if (MagicCampaign.isAvailableAtMarket(
+                    market,
+                    bounty.trigger_market_id,
+                    bounty.trigger_marketFaction_any,
+                    bounty.trigger_marketFaction_alliedWith,
+                    bounty.trigger_marketFaction_none,
+                    bounty.trigger_marketFaction_enemyWith,
+                    bounty.trigger_market_minSize)) {
+                available.put(key, bounty);
+            }
+        }
+
+        // Use iterator so we can remove items while looping
+        for (Iterator<String> iterator = available.keySet().iterator(); iterator.hasNext(); ) {
+            String bountyKey = iterator.next();
+
+            MagicBountyData.bountyData bountySpec = available.get(bountyKey);
+
+            // If a memKey is defined and doesn't exist, don't offer the bounty.
+            // TODO might be using this wrong
+            if (MagicTxt.nullStringIfEmpty(bountySpec.job_memKey) != null
+                    && Global.getSector().getMemoryWithoutUpdate().get(bountySpec.job_memKey) == null) {
+                iterator.remove();
+                continue;
+            }
+
+            ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
+
+            // If the bounty has already been created and they've accepted it, don't offer it again
+            if (activeBounty != null && activeBounty.getStage() != ActiveBounty.Stage.NotAccepted) {
+                iterator.remove();
+            }
+        }
+
+        return available;
     }
 
     public static ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {

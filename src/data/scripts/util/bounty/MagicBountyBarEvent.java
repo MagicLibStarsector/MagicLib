@@ -13,11 +13,13 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
-import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicPaginatedBarEvent;
 import org.lwjgl.input.Keyboard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
@@ -36,21 +38,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         refreshBounties(market);
 
         return !keysOfBountiesToShow.isEmpty();
-    }
-
-    private void refreshBounties(MarketAPI market) {
-        Map<String, MagicBountyData.bountyData> qualifyingBounties = getBountiesAtMarketById(market);
-
-        // Use iterator so we can remove items while looping
-        for (Iterator<String> iterator = qualifyingBounties.keySet().iterator(); iterator.hasNext(); ) {
-            String bountyKey = iterator.next();
-            ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
-            if (activeBounty != null && activeBounty.getStage() != ActiveBounty.Stage.NotAccepted) {
-                iterator.remove();
-            }
-        }
-
-        keysOfBountiesToShow = new ArrayList<>(qualifyingBounties.keySet());
     }
 
     @Override
@@ -231,27 +218,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         return true;
     }
 
-    private String getBountyOptionKey(String key) {
-        return "optionkey-" + key;
+    private void refreshBounties(MarketAPI market) {
+        keysOfBountiesToShow = new ArrayList<>(MagicBountyCoordinator.getBountiesAtMarketById(market).keySet());
     }
 
-    private Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
-        Map<String, MagicBountyData.bountyData> available = new HashMap<>();
-        for (String key : MagicBountyData.BOUNTIES.keySet()) {
-            MagicBountyData.bountyData bounty = MagicBountyData.BOUNTIES.get(key);
-
-            if (MagicCampaign.isAvailableAtMarket(
-                    market,
-                    bounty.trigger_market_id,
-                    bounty.trigger_marketFaction_any,
-                    bounty.trigger_marketFaction_alliedWith,
-                    bounty.trigger_marketFaction_none,
-                    bounty.trigger_marketFaction_enemyWith,
-                    bounty.trigger_market_minSize)) {
-                available.put(key, bounty);
-            }
-        }
-        return available;
+    private String getBountyOptionKey(String key) {
+        return "optionkey-" + key;
     }
 
     private Map<String, MagicBountyData.bountyData> getBountiesToShow() {
