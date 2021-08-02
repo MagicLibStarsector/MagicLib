@@ -17,10 +17,7 @@ import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicPaginatedBarEvent;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
@@ -29,16 +26,31 @@ import static data.scripts.util.MagicTxt.nullStringIfEmpty;
  */
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
+    private MarketAPI market;
 
     @Override
     public boolean shouldShowAtMarket(MarketAPI market) {
         //TODO implement blacklists (both faction and individual markets) via modSettings
         //TODO filter: min market size? stability? unrest?
-
-        Map<String, MagicBountyData.bountyData> qualifyingBounties = getBountiesAtMarketById(market);
-        keysOfBountiesToShow = new ArrayList<>(qualifyingBounties.keySet());
+        this.market = market;
+        refreshBounties(market);
 
         return !keysOfBountiesToShow.isEmpty();
+    }
+
+    private void refreshBounties(MarketAPI market) {
+        Map<String, MagicBountyData.bountyData> qualifyingBounties = getBountiesAtMarketById(market);
+
+        // Use iterator so we can remove items while looping
+        for (Iterator<String> iterator = qualifyingBounties.keySet().iterator(); iterator.hasNext(); ) {
+            String bountyKey = iterator.next();
+            ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
+            if (activeBounty != null && activeBounty.getStage() != ActiveBounty.Stage.NotAccepted) {
+                iterator.remove();
+            }
+        }
+
+        keysOfBountiesToShow = new ArrayList<>(qualifyingBounties.keySet());
     }
 
     @Override
@@ -93,6 +105,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     options.clear();
                     dialog.getVisualPanel().restoreSavedVisual();
                     dialog.getVisualPanel().saveCurrentVisual();
+                    refreshBounties(market);
 
                     // TODO text to display when selected
                     text.addPara("%s " + (keysOfBountiesToShow.size() == 1 ? "bounty is" : "bounties are") + " available on the bounty board.",
@@ -101,11 +114,14 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                     for (String key : keysOfBountiesToShow) {
                         MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
+
                         if (bounty != null) {
                             String name = bounty.job_name;
+
                             if (bounty.job_name == null) {
                                 name = "Unnamed job"; // TODO default job name
                             }
+
                             addOption(name, getBountyOptionKey(key), "Key: " + key, null);
                         }
                     }
@@ -129,6 +145,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s", Misc.getHighlightColor(), "Accepted job: " + bounty.job_name);
                     ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
+                    optionSelected(null, OptionId.BACK_TO_BOARD);
                     // TODO remove bounty, send user up one level
                     // TODO Job accepted!
                     // TODO set job_memKey, but on what and to what?

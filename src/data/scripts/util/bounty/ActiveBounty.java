@@ -83,7 +83,7 @@ public final class ActiveBounty {
     @NotNull
     public Float getDaysRemainingToComplete() {
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {
-            return Math.max(0, Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
+            return Math.max(1, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
         } else {
             return Float.POSITIVE_INFINITY;
         }
@@ -130,8 +130,8 @@ public final class ActiveBounty {
      */
     @Nullable
     public Integer calculateCreditReward() {
-        return spec.job_credits_reward > 0
-                ? spec.job_credits_reward // TODO scaling
+        return spec.job_credit_reward > 0
+                ? spec.job_credit_reward // TODO scaling
                 : null;
     }
 
@@ -170,7 +170,7 @@ public final class ActiveBounty {
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$reward", new StringCreator() {
                     @Override
                     public String create() {
-                        return Misc.getDGSCredits(spec.job_credits_reward);
+                        return Misc.getDGSCredits(spec.job_credit_reward);
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$name", new StringCreator() {
@@ -193,6 +193,18 @@ public final class ActiveBounty {
                 }
             }
         }
+    }
+
+    public @NotNull Stage getStage() {
+        return stage;
+    }
+
+    boolean hasCreditReward() {
+        return getRewardCredits() != null && getRewardCredits() > 0;
+    }
+
+    boolean hasExpiration() {
+        return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
     }
 
     enum Stage {

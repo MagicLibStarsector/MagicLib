@@ -138,7 +138,7 @@ public class MagicBountyData {
                         getString(bountyId, "job_description"),  
                         getString(bountyId, "job_forFaction"),
                         getInt(bountyId, "job_deadline"),
-                        getInt(bountyId, "job_credits_reward"),
+                        getInt(bountyId, "job_credit_reward"),
                         getFloat(bountyId, "job_reward_scaling"),
                         getBoolean(bountyId, "job_requireTargetDestruction"),
                         getBoolean(bountyId, "job_show_captain"),
@@ -219,7 +219,7 @@ public class MagicBountyData {
         public String job_description;                                          //not sure how the description will handle text variables and highlights, will it work with variables such as "$he_or_she"?
         public String job_forFaction;                                           //successfully completing this mission with give a small reputation reward with this faction
         public int job_deadline;
-        public int job_credits_reward;        
+        public int job_credit_reward;
         public float job_reward_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
         public boolean job_requireTargetDestruction;                            //salvaging the flagship counts as a failure, no double dipping with both credits and super ship
         public boolean job_show_captain;
@@ -283,7 +283,7 @@ public class MagicBountyData {
             String job_description,        
             String job_forFaction,
             int job_deadline,
-            int job_credits_reward,        
+            int job_credit_reward,
             float job_reward_scaling,    
             boolean job_requireTargetDestruction,
             boolean job_show_captain,
@@ -343,7 +343,7 @@ public class MagicBountyData {
             this.job_description = job_description;  
             this.job_forFaction = job_forFaction;
             this.job_deadline = job_deadline;
-            this.job_credits_reward = job_credits_reward;        
+            this.job_credit_reward = job_credit_reward;
             this.job_reward_scaling = job_reward_scaling;  
             this.job_requireTargetDestruction = job_requireTargetDestruction;
             this.job_show_captain = job_show_captain;

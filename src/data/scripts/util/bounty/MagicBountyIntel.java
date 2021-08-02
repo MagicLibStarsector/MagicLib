@@ -1,5 +1,6 @@
 package data.scripts.util.bounty;
 
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.SectorMapAPI;
@@ -45,42 +46,40 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     }
 
     @Override
+    protected String getName() {
+        return "Bounty Board - " + bounty.getSpec().job_name;
+    }
+
+    @Override
     public void createIntelInfo(TooltipMakerAPI info, ListInfoMode mode) {
         super.createIntelInfo(info, mode);
 
-        info.addPara(bounty.getSpec().job_name, 0f);
-
-        boolean hasCreditReward = bounty.getRewardCredits() != null && bounty.getRewardCredits() > 0;
-        boolean hasExpiration = bounty.getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
-
-        if (hasCreditReward && hasExpiration) {
+        if (bounty.hasCreditReward() && bounty.hasExpiration()) {
             bullet(info);
             info.addPara("%s reward, %s days remaining",
-                    2f,
+                    PADDING_INFO_SUBTITLE,
                     Misc.getGrayColor(),
                     Misc.getHighlightColor(),
                     Misc.getDGSCredits(bounty.getRewardCredits()),
                     Integer.toString(Math.round(bounty.getDaysRemainingToComplete())));
-        } else if (hasCreditReward) {
+            unindent(info);
+        } else if (bounty.hasCreditReward()) {
             bullet(info);
             info.addPara("%s reward",
-                    2f,
+                    PADDING_INFO_SUBTITLE,
                     Misc.getGrayColor(),
                     Misc.getHighlightColor(),
                     Misc.getDGSCredits(bounty.getRewardCredits()));
-        } else if (hasExpiration) {
+            unindent(info);
+        } else if (bounty.hasExpiration()) {
             bullet(info);
             info.addPara("%s days remaining",
-                    2f,
+                    PADDING_INFO_SUBTITLE,
                     Misc.getGrayColor(),
                     Misc.getHighlightColor(),
                     Integer.toString(Math.round(bounty.getDaysRemainingToComplete())));
+            unindent(info);
         }
-    }
-
-    @Override
-    public String getSmallDescriptionTitle() {
-        return bounty.getSpec().job_name;
     }
 
     @Override
@@ -90,6 +89,35 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         }
 
         bounty.addDescriptionToTextPanel(info, PADDING_DESC);
+
+        if (bounty.hasCreditReward()) {
+            bullet(info);
+            info.addPara("%s reward",
+                    PADDING_DESC,
+                    Misc.getTextColor(),
+                    Misc.getHighlightColor(),
+                    Misc.getDGSCredits(bounty.getRewardCredits()));
+            unindent(info);
+        }
+
+        if (bounty.hasExpiration()) {
+            bullet(info);
+            addDays(info, "remaining", Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
+            unindent(info);
+        }
+
+        if (bounty.getSpec().job_show_fleet) {
+            info.addPara("Fleet information is attached to the posting.", PADDING_DESC);
+            int columns = 7;
+            info.addShipList(columns, (int) Math.round(Math.ceil((double) bounty.getFleet().getNumMembersFast() / columns)), (width - 10) / columns,
+                    bounty.getFleet().getFaction().getBaseUIColor(),
+                    bounty.getFleet().getMembersWithFightersCopy(), 10f);
+        }
+    }
+
+    @Override
+    public SectorEntityToken getMapLocation(SectorMapAPI map) {
+        return bounty.getFleet().isInHyperspace() ? bounty.getFleet() : bounty.getFleet().getStarSystem().getCenter();
     }
 
     @Override
