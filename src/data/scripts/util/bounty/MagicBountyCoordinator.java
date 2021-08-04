@@ -4,13 +4,15 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
-import data.scripts.util.MagicTxt;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,15 +21,44 @@ import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
-class MagicBountyCoordinator {
-    private final static transient Map<String, ActiveBounty> activeBountiesByKey = new HashMap<>();
+public final class MagicBountyCoordinator {
+    private static MagicBountyCoordinator instance;
 
-    @Nullable
-    public static ActiveBounty getActiveBounty(String bountyKey) {
-        return (ActiveBounty) Global.getSector().getMemoryWithoutUpdate().get("$MagicBounty_" + bountyKey);
+    @NotNull
+    public static MagicBountyCoordinator getInstance() {
+        return instance;
     }
 
-    public static Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
+    public static void onGameLoad() {
+        instance = new MagicBountyCoordinator();
+    }
+
+    @Nullable
+    private Map<String, ActiveBounty> activeBountiesByKey = null;
+    private final String BOUNTIES_MEMORY_KEY = "$MagicBounties";
+
+    @NotNull
+    public Map<String, ActiveBounty> getActiveBounties() {
+        if (activeBountiesByKey == null) {
+            activeBountiesByKey = (Map<String, ActiveBounty>) Global.getSector().getMemoryWithoutUpdate().get(BOUNTIES_MEMORY_KEY);
+
+            if (activeBountiesByKey == null) {
+                Global.getSector().getMemoryWithoutUpdate().set(BOUNTIES_MEMORY_KEY, new HashMap<>());
+                activeBountiesByKey = (Map<String, ActiveBounty>) Global.getSector().getMemoryWithoutUpdate().get(BOUNTIES_MEMORY_KEY);
+            }
+        }
+
+        return activeBountiesByKey;
+    }
+
+    @Nullable
+    public ActiveBounty getActiveBounty(@NotNull String bountyKey) {
+        return getActiveBounties().get(bountyKey);
+
+    }
+
+    @NotNull
+    public Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
         Map<String, MagicBountyData.bountyData> available = new HashMap<>();
 
         for (String key : MagicBountyData.BOUNTIES.keySet()) {
@@ -53,13 +84,13 @@ class MagicBountyCoordinator {
 
             // If a memKey is defined and doesn't exist, don't offer the bounty.
             // TODO might be using this wrong
-            if (MagicTxt.nullStringIfEmpty(bountySpec.job_memKey) != null
-                    && Global.getSector().getMemoryWithoutUpdate().get(bountySpec.job_memKey) == null) {
-                iterator.remove();
-                continue;
-            }
+//            if (MagicTxt.nullStringIfEmpty(bountySpec.job_memKey) != null
+//                    && Global.getSector().getMemoryWithoutUpdate().get(bountySpec.job_memKey) == null) {
+//                iterator.remove();
+//                continue;
+//            }
 
-            ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
+            ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
             // If the bounty has already been created and they've accepted it, don't offer it again
             if (activeBounty != null && activeBounty.getStage() != ActiveBounty.Stage.NotAccepted) {
@@ -70,7 +101,7 @@ class MagicBountyCoordinator {
         return available;
     }
 
-    public static ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {
+    public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {
         SectorEntityToken suitableTargetLocation = findSuitableTarget(
                 spec.location_marketIDs,
                 spec.location_marketFactions,
@@ -127,10 +158,40 @@ class MagicBountyCoordinator {
             return null;
         }
 
-        return new ActiveBounty(bountyKey, fleet, spec);
+        ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, spec);
+        getActiveBounties().put(bountyKey, newBounty);
+        configureBountyListeners();
+        return newBounty;
     }
 
-    public static void putActiveBounty(String bountyKey, ActiveBounty bounty) {
-        Global.getSector().getMemoryWithoutUpdate().set("$MagicBounty_" + bountyKey, bounty);
+    /**
+     * Idempotently ensures that `MagicBountyScript` exists and is running.
+     */
+    public void configureBountyScript() {
+        if (!Global.getSector().hasScript(MagicBountyScript.class)) {
+            Global.getSector().addScript(new MagicBountyScript());
+        }
+    }
+
+    /**
+     * Idempotently ensures that each `ActiveBounty` has a `MagicBountyBattleListener` running.
+     */
+    public void configureBountyListeners() {
+        Collection<ActiveBounty> bounties = getActiveBounties().values();
+
+        for (ActiveBounty bounty : bounties) {
+            boolean doesBountyHaveListener = false;
+
+            for (FleetEventListener eventListener : bounty.getFleet().getEventListeners()) {
+                if (eventListener instanceof MagicBountyBattleListener) {
+                    doesBountyHaveListener = true;
+                    break;
+                }
+            }
+
+            if (!doesBountyHaveListener) {
+                bounty.getFleet().addEventListener(new MagicBountyBattleListener(bounty.getKey()));
+            }
+        }
     }
 }

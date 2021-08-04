@@ -24,7 +24,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     private static final Float PADDING_INFO_SUBTITLE = 3f;
 
     public MagicBountyIntel(@NotNull String bountyKey) {
-        this.bounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
+        this.bounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
         this.bountyKey = bountyKey;
 
         if (bounty == null) {

@@ -53,9 +53,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
     /**
      * Called when the player chooses this event from the list of options shown when they enter the bar.
-     *
-     * @param dialog
-     * @param memoryMap
      */
     @Override
     public void init(InteractionDialogAPI dialog, Map<String, MemoryAPI> memoryMap) {
@@ -109,7 +106,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 name = "Unnamed job"; // TODO default job name
                             }
 
-                            addOption(name, getBountyOptionKey(key), "Key: " + key, null);
+                            addOption(name, getBountyOptionKey(key), null, null);
                         }
                     }
 
@@ -130,7 +127,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     MagicBountyData.bountyData bounty = MagicBountyData
                             .getBountyData(bountyKey);
                     text.addPara("%s", Misc.getHighlightColor(), "Accepted job: " + bounty.job_name);
-                    ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(bountyKey);
+                    ActiveBounty activeBounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
                     optionSelected(null, OptionId.BACK_TO_BOARD);
                     // TODO remove bounty, send user up one level
@@ -148,11 +145,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         if (bounty == null)
                             continue;
 
-                        ActiveBounty activeBounty = MagicBountyCoordinator.getActiveBounty(key);
+                        ActiveBounty activeBounty = MagicBountyCoordinator.getInstance().getActiveBounty(key);
 
                         if (activeBounty == null) {
-                            activeBounty = MagicBountyCoordinator.createActiveBounty(key, bounty);
-                            MagicBountyCoordinator.putActiveBounty(key, activeBounty);
+                            activeBounty = MagicBountyCoordinator.getInstance().createActiveBounty(key, bounty);
 
                             if (activeBounty == null) continue;
                         }
@@ -219,7 +215,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     }
 
     private void refreshBounties(MarketAPI market) {
-        keysOfBountiesToShow = new ArrayList<>(MagicBountyCoordinator.getBountiesAtMarketById(market).keySet());
+        keysOfBountiesToShow = new ArrayList<>(MagicBountyCoordinator.getInstance().getBountiesAtMarketById(market).keySet());
     }
 
     private String getBountyOptionKey(String key) {

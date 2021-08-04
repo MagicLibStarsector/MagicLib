@@ -23,6 +23,17 @@ import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 public final class ActiveBounty {
     @NotNull
     private final String bountyKey;
+    /**
+     * The bounty fleet. The thing to kill.
+     * <p>
+     * Lifecycle:
+     * Created when an ActiveBounty is created, which happens when the player *views a bounty on the bounty board*,
+     * regardless of whether they accept it.
+     * Destroyed by player/another fleet, or
+     * Auto-destroyed when...never? If the bounty was shown, it means requirements were met,
+     * and it can always be shown again on the same board. No need to despawn the fleet, future bar events will just
+     * reuse the same ActiveBounty with the same fleet.
+     */
     @NotNull
     private final CampaignFleetAPI fleet;
     @NotNull
@@ -30,6 +41,7 @@ public final class ActiveBounty {
 
     @Nullable
     private Long acceptedBountyTimestamp;
+    @Nullable BountyResult bountyResult;
     /**
      * The planet/station/etc from where the bounty was accepted.
      */
@@ -73,12 +85,29 @@ public final class ActiveBounty {
         }
     }
 
-    public void completeBounty() {
-        stage = Stage.Succeeded;
-    }
+    public void endBounty(@NotNull BountyResult result) {
+        if (bountyResult == result) {
+            return;
+        }
 
-    public void failBounty() {
-        stage = Stage.Failed;
+        this.bountyResult = result;
+
+        switch (result) {
+            case Succeeded:
+                stage = Stage.Succeeded;
+
+                if (getRewardCredits() != null) {
+                    Global.getSector().getPlayerFleet().getCargo().getCredits().add(getRewardCredits());
+                }
+
+                break;
+            case EndedWithoutPlayerInvolvement:
+                stage = Stage.EndedWithoutPlayerInvolvement;
+                break;
+            case FailedOutOfTime:
+                stage = Stage.Failed;
+                break;
+        }
     }
 
     /**
@@ -131,6 +160,10 @@ public final class ActiveBounty {
         return startingEntity;
     }
 
+    public @NotNull Stage getStage() {
+        return stage;
+    }
+
     /**
      * Calculates and returns the number of credits that will be awarded upon completion, if any.
      * Includes any scaling factor.
@@ -153,6 +186,14 @@ public final class ActiveBounty {
 
     public void addDescriptionToTextPanel(TooltipMakerAPI text, float padding) {
         addDescriptionToTextPanelInternal(text, padding);
+    }
+
+    public boolean hasCreditReward() {
+        return getRewardCredits() != null && getRewardCredits() > 0;
+    }
+
+    public boolean hasExpiration() {
+        return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
     }
 
     private void addDescriptionToTextPanelInternal(Object text, float padding) {
@@ -202,22 +243,17 @@ public final class ActiveBounty {
         }
     }
 
-    public @NotNull Stage getStage() {
-        return stage;
-    }
-
-    boolean hasCreditReward() {
-        return getRewardCredits() != null && getRewardCredits() > 0;
-    }
-
-    boolean hasExpiration() {
-        return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
-    }
-
     enum Stage {
         NotAccepted,
         Accepted,
         Failed,
+        EndedWithoutPlayerInvolvement,
         Succeeded
+    }
+
+    public enum BountyResult {
+        Succeeded,
+        EndedWithoutPlayerInvolvement,
+        FailedOutOfTime,
     }
 }
