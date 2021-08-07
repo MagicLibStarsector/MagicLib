@@ -73,11 +73,6 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicBountyCoordinator.onGameLoad();
-
-        if (!BarEventManager.getInstance().hasEventCreator(MagicBountyBarEventCreator.class)) {
-            BarEventManager.getInstance().addEventCreator(new MagicBountyBarEventCreator());
-        }
-
         MagicBountyCoordinator.getInstance().configureBountyScript();
         MagicBountyCoordinator.getInstance().configureBountyListeners();
     }

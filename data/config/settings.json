@@ -28,5 +28,8 @@
             "base_trail_zap":"graphics/magic/fx/base_trail_zap.png",
             "base_trail_zapWithCore":"graphics/magic/fx/base_trail_zapWithCore.png",
 		},
-    }
+    },
+    "ruleCommandPackages": [
+        "data.scripts.util.bounty.rulecmd"
+    ]
 }

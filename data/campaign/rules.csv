@@ -1,0 +1,5 @@
+id,trigger,conditions,script,text,options,notes
+"#RULESET_NAME MagicLib (bounties)",,,,,,
+magiclib_bountyboard_addevent,AddBarEvents,"ShouldShowMagicBountyBoard","AddBarEvent magiclib_bountyboard_selected ""Connect to the local unsanctioned bounty board.""  ""A subroutine from your implant informs you that this establishment is broadcasting an informal job board.""",,,
+magiclib_bountyboard_selected,DialogOptionSelected,"$option == magiclib_bountyboard_selected","ShowMagicBountyBoardCmd",,,
+

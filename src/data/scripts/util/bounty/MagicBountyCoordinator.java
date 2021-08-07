@@ -57,6 +57,14 @@ public final class MagicBountyCoordinator {
 
     }
 
+    public boolean shouldShowBountyBoardAt(@Nullable MarketAPI marketAPI) {
+        //TODO implement blacklists (both faction and individual markets) via modSettings
+        //TODO filter: min market size? stability? unrest?
+        if (marketAPI == null) return false;
+
+        return !getBountiesAtMarketById(marketAPI).isEmpty();
+    }
+
     @NotNull
     public Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
         Map<String, MagicBountyData.bountyData> available = new HashMap<>();
@@ -150,7 +158,7 @@ public final class MagicBountyCoordinator {
                 null,
                 spec.fleet_behavior,
                 suitableTargetLocation,
-                true,
+                false,
                 spec.fleet_transponder
         );
 

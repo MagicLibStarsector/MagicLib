@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
@@ -67,6 +68,8 @@ public final class ActiveBounty {
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
         this.startingEntity = startingEntity;
+        // Flag fleet as important so it has a target icon
+        getFleet().getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);

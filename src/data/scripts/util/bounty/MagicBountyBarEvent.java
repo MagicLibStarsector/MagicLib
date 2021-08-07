@@ -30,14 +30,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
     private MarketAPI market;
 
+    /**
+     * This method is not called, as the Bar Event is triggered directly in ShowMagicBountyBoardCmd.
+     */
     @Override
     public boolean shouldShowAtMarket(MarketAPI market) {
-        //TODO implement blacklists (both faction and individual markets) via modSettings
-        //TODO filter: min market size? stability? unrest?
-        this.market = market;
-        refreshBounties(market);
-
-        return !keysOfBountiesToShow.isEmpty();
+        return MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market);
     }
 
     @Override
@@ -57,6 +55,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     @Override
     public void init(InteractionDialogAPI dialog, Map<String, MemoryAPI> memoryMap) {
         super.init(dialog, memoryMap);
+        this.market = dialog.getInteractionTarget().getMarket();
+        refreshBounties(market);
 
         // If player starts our event, then backs out of it, `done` will be set to true.
         // If they then start the event again without leaving the bar, we should reset `done` to false.        
@@ -95,6 +95,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s " + (keysOfBountiesToShow.size() == 1 ? "bounty is" : "bounties are") + " available on the bounty board.",
                             Misc.getHighlightColor(),
                             Integer.toString(keysOfBountiesToShow.size()));
+                    if (!MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market) && Global.getSettings().isDevMode()) {
+                        text.addPara("[Dev mode: Bounty board would not have been displayed normally]",
+                                Misc.getHighlightColor(),
+                                Misc.getHighlightColor());
+                    }
 
                     for (String key : keysOfBountiesToShow) {
                         MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
