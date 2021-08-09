@@ -512,7 +512,7 @@ public class MagicCampaign {
             @Nullable Float qualityOverride,
             @Nullable SectorEntityToken spawnLocation,
             @Nullable FleetAssignment assignment,
-            SectorEntityToken assignementTarget,
+            @Nullable SectorEntityToken assignementTarget,
             boolean isImportant,
             boolean transponderOn
     ) {
@@ -573,7 +573,7 @@ public class MagicCampaign {
         
         FleetParamsV3 params = new FleetParamsV3(
                 null,
-                assignementTarget.getLocationInHyperspace(),
+                assignementTarget != null ? assignementTarget.getLocationInHyperspace() : null,
                 fleetFaction,
                 2f, // qualityOverride
                 type,
@@ -645,10 +645,12 @@ public class MagicCampaign {
         newFleet.setName(fleetName);
 
         //spawn placement and assignement
-        LocationAPI systemLocation = location.getContainingLocation();
-        systemLocation.addEntity(newFleet);
-        newFleet.setLocation(location.getLocation().x, location.getLocation().y);
-        newFleet.getAI().addAssignment(order, assignementTarget, 1000000f, null);
+        if (location != null) {
+            LocationAPI systemLocation = location.getContainingLocation();
+            systemLocation.addEntity(newFleet);
+            newFleet.setLocation(location.getLocation().x, location.getLocation().y);
+            newFleet.getAI().addAssignment(order, assignementTarget, 1000000f, null);
+        }
 
         //set standard 70% CR
         List<FleetMemberAPI> members = newFleet.getFleetData().getMembersListCopy();

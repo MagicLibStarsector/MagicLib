@@ -1,10 +1,7 @@
 package data.scripts.util.bounty;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.FactionAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.TextPanelAPI;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
@@ -38,6 +35,8 @@ public final class ActiveBounty {
     @NotNull
     private final CampaignFleetAPI fleet;
     @NotNull
+    private final SectorEntityToken fleetLocation;
+    @NotNull
     private final MagicBountyData.bountyData spec;
 
     @Nullable
@@ -57,9 +56,17 @@ public final class ActiveBounty {
     @Nullable
     private Integer rewardCredits;
 
-    public ActiveBounty(@NotNull String bountyKey, @NotNull CampaignFleetAPI fleet, @NotNull MagicBountyData.bountyData spec) {
+    /**
+     * @param bountyKey     A unique key for the bounty.
+     * @param fleet         The fleet that, when destroyed, completes the bounty. Should have no location to start with.
+     *                      The location will be set when the bounty is accepted.
+     * @param fleetLocation The location to spawn the fleet when the bounty is accepted.
+     * @param spec          The original bounty spec, a mirror of the json definition.
+     */
+    public ActiveBounty(@NotNull String bountyKey, @NotNull CampaignFleetAPI fleet, @NotNull SectorEntityToken fleetLocation, @NotNull MagicBountyData.bountyData spec) {
         this.bountyKey = bountyKey;
         this.fleet = fleet;
+        this.fleetLocation = fleetLocation;
         this.spec = spec;
     }
 
@@ -68,6 +75,19 @@ public final class ActiveBounty {
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
         this.startingEntity = startingEntity;
+
+
+        LocationAPI systemLocation = fleetLocation.getContainingLocation();
+        systemLocation.addEntity(getFleet());
+        getFleet().setLocation(fleetLocation.getLocation().x, fleetLocation.getLocation().y);
+        getFleet().getAI().addAssignment(
+                getSpec().fleet_behavior == null
+                        ? FleetAssignment.ORBIT_AGGRESSIVE
+                        : getSpec().fleet_behavior,
+                fleetLocation,
+                1000000f,
+                null);
+
         // Flag fleet as important so it has a target icon
         getFleet().getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, true);
 
@@ -103,6 +123,10 @@ public final class ActiveBounty {
                     Global.getSector().getPlayerFleet().getCargo().getCredits().add(getRewardCredits());
                 }
 
+                MagicBountyIntel intel = getIntel();
+                if (intel != null) {
+                    intel.sendUpdateIfPlayerHasIntel(new Object(), false);
+                }
                 break;
             case EndedWithoutPlayerInvolvement:
                 stage = Stage.EndedWithoutPlayerInvolvement;
@@ -183,6 +207,26 @@ public final class ActiveBounty {
         return rewardCredits;
     }
 
+    @NotNull
+    public SectorEntityToken getFleetLocation() {
+        return fleetLocation;
+    }
+
+    @Nullable
+    public MagicBountyIntel getIntel() {
+        List<IntelInfoPlugin> intels = Global.getSector().getIntelManager().getIntel(MagicBountyIntel.class);
+
+        for (IntelInfoPlugin intel : intels) {
+            MagicBountyIntel bountyIntel = (MagicBountyIntel) intel;
+
+            if (bountyIntel.bountyKey.equals(this.bountyKey)) {
+                return bountyIntel;
+            }
+        }
+
+        return null;
+    }
+
     public void addDescriptionToTextPanel(TextPanelAPI text) {
         addDescriptionToTextPanelInternal(text, 0f);
     }
@@ -209,7 +253,7 @@ public final class ActiveBounty {
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$system_name", new StringCreator() {
                     @Override
                     public String create() {
-                        return finalActiveBounty.getFleet().getContainingLocation().getNameWithNoType();
+                        return finalActiveBounty.getFleetLocation().getContainingLocation().getNameWithNoType();
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$target", new StringCreator() {
@@ -233,7 +277,7 @@ public final class ActiveBounty {
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$constellation", new StringCreator() {
                     @Override
                     public String create() {
-                        return finalActiveBounty.getFleet().getContainingLocation().getConstellation().getName();
+                        return finalActiveBounty.getFleetLocation().getContainingLocation().getConstellation().getName();
                     }
                 });
 

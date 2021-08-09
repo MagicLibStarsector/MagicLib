@@ -7,13 +7,13 @@ import com.fs.starfarer.api.Global;
 
 import java.util.regex.Pattern;
 
-public class MagicTxt {   
-    private static final String ML="magicLib";    
-    
+public class MagicTxt {
+    private static final String ML="magicLib";
+
     public static String getString(String id){
         return Global.getSettings().getString(ML, id);
-    }   
-    
+    }
+
     public static String nullStringIfEmpty(String input) {
         return input != null && !input.isEmpty() ? input : null;
     }
@@ -24,7 +24,13 @@ public class MagicTxt {
      */
     public static String replaceAllIfPresent(String stringToReplace, String regex, StringCreator stringCreator) {
         if (stringToReplace.contains(regex)) {
-            return stringToReplace.replaceAll(Pattern.quote(regex), stringCreator.create());
+            try {
+                String replacement = stringCreator.create();
+                return stringToReplace.replaceAll(Pattern.quote(regex), replacement);
+            } catch (Exception e) {
+                Global.getLogger(MagicTxt.class).error("Error thrown while replacing " + stringToReplace, e);
+                return stringToReplace.replaceAll(Pattern.quote(regex), "null");
+            }
         } else {
             return stringToReplace;
         }

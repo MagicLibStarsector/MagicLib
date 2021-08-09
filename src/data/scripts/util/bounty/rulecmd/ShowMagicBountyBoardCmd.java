@@ -14,8 +14,8 @@ import java.util.Map;
 public class ShowMagicBountyBoardCmd extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
-
         MagicBountyBarEvent event = new MagicBountyBarEvent();
+        // This is pretty weird but it's how it's done in vanilla (BarCMD.java:105)
         BarCMD cmd = (BarCMD) getEntityMemory(memoryMap).get("$BarCMD");
         BarEventDialogPlugin plugin = new BarEventDialogPlugin(cmd, dialog.getPlugin(), event, memoryMap);
         dialog.setPlugin(plugin);
