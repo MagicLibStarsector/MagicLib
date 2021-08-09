@@ -19,37 +19,47 @@ import java.util.List;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
 public final class ActiveBounty {
+    /**
+     * A unique key for the bounty, as used by [MagicBountyCoordinator].
+     */
     @NotNull
     private final String bountyKey;
     /**
      * The bounty fleet. The thing to kill.
-     * <p>
-     * Lifecycle:
-     * Created when an ActiveBounty is created, which happens when the player *views a bounty on the bounty board*,
-     * regardless of whether they accept it.
-     * Destroyed by player/another fleet, or
-     * Auto-destroyed when...never? If the bounty was shown, it means requirements were met,
-     * and it can always be shown again on the same board. No need to despawn the fleet, future bar events will just
-     * reuse the same ActiveBounty with the same fleet.
+     * Created without a location initially. A location (from `fleetLocation`) when the bounty is accepted.
      */
     @NotNull
     private final CampaignFleetAPI fleet;
+    /**
+     * The spawn location of the fleet.
+     */
     @NotNull
-    private final SectorEntityToken fleetLocation;
+    private final SectorEntityToken fleetSpawnLocation;
+    /**
+     * The original bounty spec, a mirror of the json definition.
+     */
     @NotNull
     private final MagicBountyData.bountyData spec;
 
+    /**
+     * The timestamp of when the player accepted the bounty, if they have done so.
+     **/
     @Nullable
     private Long acceptedBountyTimestamp;
+    /**
+     * The result of the bounty, if there has been a terminus.
+     */
     @Nullable BountyResult bountyResult;
+
     /**
      * The planet/station/etc from where the bounty was accepted.
      */
     @Nullable
-    private SectorEntityToken startingEntity;
+    private SectorEntityToken bountySource;
 
     @NotNull
     private Stage stage = Stage.NotAccepted;
+
     /**
      * The number of credits that was promised as a reward upon completion. Includes scaling, if applicable.
      */
@@ -57,34 +67,41 @@ public final class ActiveBounty {
     private Integer rewardCredits;
 
     /**
-     * @param bountyKey     A unique key for the bounty.
-     * @param fleet         The fleet that, when destroyed, completes the bounty. Should have no location to start with.
-     *                      The location will be set when the bounty is accepted.
-     * @param fleetLocation The location to spawn the fleet when the bounty is accepted.
-     * @param spec          The original bounty spec, a mirror of the json definition.
+     * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
+     * @param fleet              The fleet that, when destroyed, completes the bounty. Should have no location to start with.
+     *                           The fleet's location will be set when the bounty is accepted (from fleetSpawnLocation).
+     * @param fleetSpawnLocation The location to spawn the fleet when the bounty is accepted.
+     * @param spec               The original bounty spec, a mirror of the json definition.
      */
-    public ActiveBounty(@NotNull String bountyKey, @NotNull CampaignFleetAPI fleet, @NotNull SectorEntityToken fleetLocation, @NotNull MagicBountyData.bountyData spec) {
+    public ActiveBounty(@NotNull String bountyKey, @NotNull CampaignFleetAPI fleet, @NotNull SectorEntityToken fleetSpawnLocation, @NotNull MagicBountyData.bountyData spec) {
         this.bountyKey = bountyKey;
         this.fleet = fleet;
-        this.fleetLocation = fleetLocation;
+        this.fleetSpawnLocation = fleetSpawnLocation;
         this.spec = spec;
     }
 
-    public void acceptBounty(SectorEntityToken startingEntity, Integer rewardCredits) {
+    /**
+     * Call when the player accepts a bounty.
+     * <br /> - Spawns the bounty fleet.
+     * <br /> - Adds Intel to the Intel Manager.
+     *
+     * @param bountySource  From where the bounty was accepted from.
+     * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
+     */
+    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Integer rewardCredits) {
         this.rewardCredits = rewardCredits;
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
-        this.startingEntity = startingEntity;
+        this.bountySource = bountySource;
 
-
-        LocationAPI systemLocation = fleetLocation.getContainingLocation();
+        LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
         systemLocation.addEntity(getFleet());
-        getFleet().setLocation(fleetLocation.getLocation().x, fleetLocation.getLocation().y);
+        getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
         getFleet().getAI().addAssignment(
                 getSpec().fleet_behavior == null
                         ? FleetAssignment.ORBIT_AGGRESSIVE
                         : getSpec().fleet_behavior,
-                fleetLocation,
+                fleetSpawnLocation,
                 1000000f,
                 null);
 
@@ -108,6 +125,13 @@ public final class ActiveBounty {
         }
     }
 
+    /**
+     * Finishes the bounty with the provided result.
+     * Idempotent (if called more than once with the same result, will not trigger again).
+     * <br /> - Updates intel.
+     *
+     * @param result The final result of the bounty.
+     */
     public void endBounty(@NotNull BountyResult result) {
         if (bountyResult == result) {
             return;
@@ -164,6 +188,27 @@ public final class ActiveBounty {
         return spec;
     }
 
+    public @Nullable SectorEntityToken getBountySource() {
+        return bountySource;
+    }
+
+    public @NotNull Stage getStage() {
+        return stage;
+    }
+
+    @Nullable
+    public Integer getRewardCredits() {
+        return rewardCredits;
+    }
+
+    @NotNull
+    public SectorEntityToken getFleetSpawnLocation() {
+        return fleetSpawnLocation;
+    }
+
+    /**
+     * The faction that offered the bounty, if any.
+     */
     @Nullable
     public FactionAPI getGivingFaction() {
         return MagicTxt.nullStringIfEmpty(getSpec().job_forFaction) != null
@@ -183,14 +228,6 @@ public final class ActiveBounty {
         }
     }
 
-    public @Nullable SectorEntityToken getStartingEntity() {
-        return startingEntity;
-    }
-
-    public @NotNull Stage getStage() {
-        return stage;
-    }
-
     /**
      * Calculates and returns the number of credits that will be awarded upon completion, if any.
      * Includes any scaling factor.
@@ -202,16 +239,10 @@ public final class ActiveBounty {
                 : null;
     }
 
-    @Nullable
-    public Integer getRewardCredits() {
-        return rewardCredits;
-    }
-
-    @NotNull
-    public SectorEntityToken getFleetLocation() {
-        return fleetLocation;
-    }
-
+    /**
+     * The [MagicBountyIntel] active for this bounty, if there is any. <br />
+     * There will only be intel if the bounty has been accepted (and isn't long past ended).
+     */
     @Nullable
     public MagicBountyIntel getIntel() {
         List<IntelInfoPlugin> intels = Global.getSector().getIntelManager().getIntel(MagicBountyIntel.class);
@@ -227,18 +258,35 @@ public final class ActiveBounty {
         return null;
     }
 
+    /**
+     * Adds the description for the bounty to a [TextPanelAPI].
+     *
+     * @param text The [TextPanelAPI] to write to.
+     */
     public void addDescriptionToTextPanel(TextPanelAPI text) {
         addDescriptionToTextPanelInternal(text, 0f);
     }
 
+    /**
+     * Adds the description for the bounty to a [TooltipMakerAPI].
+     *
+     * @param text    The [TooltipMakerAPI] to write to.
+     * @param padding The amount of padding to use, in pixels.
+     */
     public void addDescriptionToTextPanel(TooltipMakerAPI text, float padding) {
         addDescriptionToTextPanelInternal(text, padding);
     }
 
+    /**
+     * Whether the bounty has a credit reward or not.
+     */
     public boolean hasCreditReward() {
         return getRewardCredits() != null && getRewardCredits() > 0;
     }
 
+    /**
+     * Whether the bounty expires or not.
+     */
     public boolean hasExpiration() {
         return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
     }
@@ -253,7 +301,7 @@ public final class ActiveBounty {
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$system_name", new StringCreator() {
                     @Override
                     public String create() {
-                        return finalActiveBounty.getFleetLocation().getContainingLocation().getNameWithNoType();
+                        return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getNameWithNoType();
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$target", new StringCreator() {
@@ -277,7 +325,7 @@ public final class ActiveBounty {
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$constellation", new StringCreator() {
                     @Override
                     public String create() {
-                        return finalActiveBounty.getFleetLocation().getContainingLocation().getConstellation().getName();
+                        return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getConstellation().getName();
                     }
                 });
 

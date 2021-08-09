@@ -2,7 +2,6 @@ package data.scripts.util.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
@@ -12,7 +11,6 @@ import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.util.vector.Vector2f;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,8 +35,9 @@ public final class MagicBountyCoordinator {
 
     @Nullable
     private Map<String, ActiveBounty> activeBountiesByKey = null;
-    private final String BOUNTIES_MEMORY_KEY = "$MagicBounties";
+    private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties";
 
+    @SuppressWarnings("unchecked")
     @NotNull
     public Map<String, ActiveBounty> getActiveBounties() {
         if (activeBountiesByKey == null) {

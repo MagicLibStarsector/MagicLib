@@ -201,7 +201,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             return null;
         }
 
-        ArrowData arrowData = new ArrowData(bounty.getStartingEntity(), bounty.getFleet());
+        ArrowData arrowData = new ArrowData(bounty.getBountySource(), bounty.getFleet());
         arrowData.color = bounty.getGivingFactionTextColor();
         return Collections.singletonList(arrowData);
     }
