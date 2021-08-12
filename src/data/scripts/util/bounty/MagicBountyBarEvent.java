@@ -170,8 +170,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
                         }
 
-                        if (activeBounty.calculateCreditReward() != null) {
-                            text.addPara("Reward: %s", Misc.getHighlightColor(), Misc.getDGSCredits(activeBounty.calculateCreditReward()));
+                        Float creditReward = activeBounty.calculateCreditReward();
+
+                        if (creditReward != null) {
+                            text.addPara("Reward: %s", Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));
                         }
 
                         if (bounty.job_deadline > 0) {

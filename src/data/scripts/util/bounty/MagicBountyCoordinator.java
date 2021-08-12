@@ -23,6 +23,7 @@ import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
+    private static final long MILLIS_PER_DAY = 86400000L;
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -36,6 +37,7 @@ public final class MagicBountyCoordinator {
     @Nullable
     private Map<String, ActiveBounty> activeBountiesByKey = null;
     private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties";
+    private final static long UNACCEPTED_BOUNTY_LIFETIME_MILLIS = 90L * MILLIS_PER_DAY;
 
     @SuppressWarnings("unchecked")
     @NotNull
@@ -49,13 +51,29 @@ public final class MagicBountyCoordinator {
             }
         }
 
+
+        for (Iterator<Map.Entry<String, ActiveBounty>> iterator = activeBountiesByKey.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, ActiveBounty> entry = iterator.next();
+            long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - entry.getValue().getBountyCreatedTimestamp());
+
+            // Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
+            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted) {
+                Global.getLogger(MagicBountyCoordinator.class).info(
+                        String.format("Removing expired bounty '%s' (not accepted after %d days), \"%s\"",
+                                entry.getKey(),
+                                timestampSinceBountyCreated / MILLIS_PER_DAY,
+                                entry.getValue().getSpec().job_name));
+                entry.getValue().endBounty(ActiveBounty.BountyResult.ExpiredWithoutAccepting);
+                iterator.remove();
+            }
+        }
+
         return activeBountiesByKey;
     }
 
     @Nullable
     public ActiveBounty getActiveBounty(@NotNull String bountyKey) {
         return getActiveBounties().get(bountyKey);
-
     }
 
     public boolean shouldShowBountyBoardAt(@Nullable MarketAPI marketAPI) {
@@ -153,7 +171,7 @@ public final class MagicBountyCoordinator {
                 spec.fleet_flagship_variant,
                 captain,
                 spec.fleet_preset_ships,
-                spec.fleet_min_DP,
+                calculateDesiredFP(spec),
                 spec.fleet_composition_faction,
                 spec.fleet_composition_quality,
                 null,
@@ -202,5 +220,25 @@ public final class MagicBountyCoordinator {
                 bounty.getFleet().addEventListener(new MagicBountyBattleListener(bounty.getKey()));
             }
         }
+    }
+
+    /**
+     * Per Tartiflette:
+     * ```
+     * For example,
+     * the bounty has a min FP of 100
+     * a reward of 100K
+     * a fleet scaling of 0.75
+     * <p>
+     * if say the player has a fleet worth 200FP
+     * the bounty fleet will be scaled to 175FP (100FP + 0.75 x 100FP of difference)
+     * ```
+     */
+    private static int calculateDesiredFP(MagicBountyData.bountyData spec) {
+        int differenceBetweenBountyMinDPAndPlayerFleetDP = Global.getSector().getPlayerFleet().getFleetPoints() - spec.fleet_min_DP;
+
+        // Math.max so that if the player fleet is super weak and the difference is negative, we don't scale to below
+        // the minimum DP.
+        return Math.round(spec.fleet_min_DP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
     }
 }

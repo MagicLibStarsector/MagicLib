@@ -42,6 +42,12 @@ public final class ActiveBounty {
     private final MagicBountyData.bountyData spec;
 
     /**
+     * The timestamp of when the bounty was first created (not accepted).
+     **/
+    @NotNull
+    private final Long bountyCreatedTimestamp;
+
+    /**
      * The timestamp of when the player accepted the bounty, if they have done so.
      **/
     @Nullable
@@ -64,7 +70,7 @@ public final class ActiveBounty {
      * The number of credits that was promised as a reward upon completion. Includes scaling, if applicable.
      */
     @Nullable
-    private Integer rewardCredits;
+    private Float rewardCredits;
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -78,6 +84,7 @@ public final class ActiveBounty {
         this.fleet = fleet;
         this.fleetSpawnLocation = fleetSpawnLocation;
         this.spec = spec;
+        this.bountyCreatedTimestamp = Global.getSector().getClock().getTimestamp();
     }
 
     /**
@@ -88,7 +95,7 @@ public final class ActiveBounty {
      * @param bountySource  From where the bounty was accepted from.
      * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
      */
-    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Integer rewardCredits) {
+    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardCredits) {
         this.rewardCredits = rewardCredits;
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
@@ -158,6 +165,16 @@ public final class ActiveBounty {
             case FailedOutOfTime:
                 stage = Stage.Failed;
                 break;
+            case ExpiredWithoutAccepting:
+                break;
+        }
+
+        destroy();
+    }
+
+    private void destroy() {
+        if (fleet != null && !fleet.isDespawning()) {
+            fleet.despawn();
         }
     }
 
@@ -197,13 +214,17 @@ public final class ActiveBounty {
     }
 
     @Nullable
-    public Integer getRewardCredits() {
+    public Float getRewardCredits() {
         return rewardCredits;
     }
 
     @NotNull
     public SectorEntityToken getFleetSpawnLocation() {
         return fleetSpawnLocation;
+    }
+
+    public @NotNull Long getBountyCreatedTimestamp() {
+        return bountyCreatedTimestamp;
     }
 
     /**
@@ -233,10 +254,26 @@ public final class ActiveBounty {
      * Includes any scaling factor.
      */
     @Nullable
-    public Integer calculateCreditReward() {
-        return spec.job_credit_reward > 0
-                ? spec.job_credit_reward // TODO scaling
-                : null;
+    Float calculateCreditReward() {
+        if (spec.job_credit_reward <= 0) {
+            return null;
+        }
+
+        int bountyFPIncreaseOverBaseDueToScaling = getFleet().getFleetPoints() - getSpec().fleet_min_DP;
+
+        // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
+        float bonusCreditsFromScaling = Math.max(0, getSpec().job_reward_scaling * bountyFPIncreaseOverBaseDueToScaling);
+        float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
+        float rewardRoundedToNearest100 = Math.round(reward/100.0) * 100;
+        Global.getLogger(ActiveBounty.class).info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s scaling * %s FP diff)",
+                rewardRoundedToNearest100,
+                getKey(),
+                getSpec().job_credit_reward,
+                bonusCreditsFromScaling,
+                getSpec().job_reward_scaling,
+                bountyFPIncreaseOverBaseDueToScaling));
+
+        return rewardRoundedToNearest100;
     }
 
     /**
@@ -350,5 +387,6 @@ public final class ActiveBounty {
         Succeeded,
         EndedWithoutPlayerInvolvement,
         FailedOutOfTime,
+        ExpiredWithoutAccepting
     }
 }

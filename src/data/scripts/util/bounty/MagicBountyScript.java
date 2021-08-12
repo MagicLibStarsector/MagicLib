@@ -27,20 +27,20 @@ public final class MagicBountyScript implements EveryFrameScript {
         if (Global.getSector().getClock().getTimestamp() - lastCheckTimestamp < PERIOD_IN_MILLIS) {
             lastCheckTimestamp = Global.getSector().getClock().getTimestamp();
         } else {
-            Collection<ActiveBounty> activeBounties = MagicBountyCoordinator.getInstance().getActiveBounties().values();
-
-            for (ActiveBounty bounty : activeBounties) {
-                switch (bounty.getStage()) {
-                    case NotAccepted:
-                        break;
-                    case Accepted:
-                        break;
-                    case Failed:
-                        break;
-                    case Succeeded:
-                        break;
-                }
-            }
+//            Collection<ActiveBounty> activeBounties = MagicBountyCoordinator.getInstance().getActiveBounties().values();
+//
+//            for (ActiveBounty bounty : activeBounties) {
+//                switch (bounty.getStage()) {
+//                    case NotAccepted:
+//                        break;
+//                    case Accepted:
+//                        break;
+//                    case Failed:
+//                        break;
+//                    case Succeeded:
+//                        break;
+//                }
+//            }
         }
     }
 
