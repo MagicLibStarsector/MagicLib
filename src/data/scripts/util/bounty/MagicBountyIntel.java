@@ -17,28 +17,31 @@ import java.util.Set;
 public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializable {
     @NotNull
     public final String bountyKey;
-    @NotNull
-    private final transient ActiveBounty bounty;
 
     private static final Float PADDING_DESC = 10f;
     private static final Float PADDING_INFO_SUBTITLE = 3f;
 
     public MagicBountyIntel(@NotNull String bountyKey) {
-        this.bounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
         this.bountyKey = bountyKey;
 
-        if (bounty == null) {
+        if (getBounty() == null) {
             throw new NullPointerException("Expected an active bounty for key " + bountyKey);
         }
     }
 
+    @Override
     public Object readResolve() {
-
         return this;
+    }
+
+    @NotNull
+    private ActiveBounty getBounty() {
+        return MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
     }
 
     @Override
     public String getIcon() {
+        ActiveBounty bounty = getBounty();
         if (bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
             return bounty.getFleet().getCommander().getPortraitSprite();
         } else {
@@ -48,6 +51,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
     @Override
     protected String getName() {
+        ActiveBounty bounty = getBounty();
+
         switch (bounty.getStage()) {
             case Succeeded:
                 return "Bounty Completed - " + bounty.getSpec().job_name;
@@ -62,6 +67,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
     @Override
     public Color getTitleColor(ListInfoMode mode) {
+        ActiveBounty bounty = getBounty();
+
         switch (bounty.getStage()) {
             case Accepted:
             case NotAccepted:
@@ -76,6 +83,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public void createIntelInfo(TooltipMakerAPI info, ListInfoMode mode) {
         super.createIntelInfo(info, mode);
+        ActiveBounty bounty = getBounty();
+
 
         switch (bounty.getStage()) {
             case Succeeded:
@@ -130,12 +139,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Integer.toString(Math.round(bounty.getDaysRemainingToComplete())));
                     unindent(info);
                 }
+
                 break;
         }
     }
 
     @Override
     public void createSmallDescription(TooltipMakerAPI info, float width, float height) {
+        ActiveBounty bounty = getBounty();
+
         if (bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
             info.addImage(bounty.getFleet().getCommander().getPortraitSprite(), width, 128f, PADDING_DESC);
         }
@@ -144,7 +156,9 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         switch (bounty.getStage()) {
             case Succeeded:
-                info.addPara(bounty.getSpec().job_conclusion_script, PADDING_DESC);
+                info.addPara(bounty.getSpec().job_conclusion_script, 0f);
+
+                info.addPara("You have successfully completed this bounty.", 0f);
 
                 if (bounty.hasCreditReward()) {
                     if (bounty.hasCreditReward()) {
@@ -179,6 +193,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
+                if (bounty.getSpec().job_requireTargetDestruction) {
+                    bullet(info);
+                    info.addPara("This bounty requires the %s of the flagship. Flagship recovery will forfeit any rewards.",
+                            0f,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor(),
+                            "destruction");
+                    unindent(info);
+                }
+
                 if (bounty.getSpec().job_show_fleet) {
                     info.addPara("Fleet information is attached to the posting.", PADDING_DESC);
                     int columns = 7;
@@ -192,11 +216,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
     @Override
     public SectorEntityToken getMapLocation(SectorMapAPI map) {
+        ActiveBounty bounty = getBounty();
+
         return bounty.getFleet().isInHyperspace() ? bounty.getFleet() : bounty.getFleet().getStarSystem().getCenter();
     }
 
     @Override
     public List<ArrowData> getArrowData(SectorMapAPI map) {
+        ActiveBounty bounty = getBounty();
+
         if (!bounty.getSpec().job_show_arrow) {
             return null;
         }
@@ -210,6 +238,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     public Set<String> getIntelTags(SectorMapAPI map) {
         Set<String> tags = super.getIntelTags(map);
         Collections.addAll(tags, Tags.INTEL_BOUNTY, Tags.INTEL_ACCEPTED);
+        ActiveBounty bounty = getBounty();
 
         if (bounty.getGivingFaction() != null) {
             tags.add(bounty.getGivingFaction().getDisplayName());

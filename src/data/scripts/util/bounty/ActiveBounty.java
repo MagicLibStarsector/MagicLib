@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
-import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
@@ -22,55 +22,60 @@ public final class ActiveBounty {
     /**
      * A unique key for the bounty, as used by [MagicBountyCoordinator].
      */
-    @NotNull
-    private final String bountyKey;
+    private final @NotNull String bountyKey;
+
     /**
      * The bounty fleet. The thing to kill.
      * Created without a location initially. A location (from `fleetLocation`) when the bounty is accepted.
      */
-    @NotNull
-    private final CampaignFleetAPI fleet;
+    private final @NotNull CampaignFleetAPI fleet;
+
     /**
      * The spawn location of the fleet.
      */
-    @NotNull
-    private final SectorEntityToken fleetSpawnLocation;
+    private final @NotNull SectorEntityToken fleetSpawnLocation;
+
     /**
      * The original bounty spec, a mirror of the json definition.
      */
-    @NotNull
-    private final MagicBountyData.bountyData spec;
+    private final @NotNull MagicBountyData.bountyData spec;
 
     /**
      * The timestamp of when the bounty was first created (not accepted).
      **/
-    @NotNull
-    private final Long bountyCreatedTimestamp;
+    private final @NotNull Long bountyCreatedTimestamp;
+
+    /**
+     * The target captain of the bounty fleet.
+     **/
+    private final @NotNull PersonAPI captain;
+
+    /**
+     * The id of the fleet's flagship. This variable will be set even after the fleet is destroyed.
+     */
+    private final @Nullable String flagshipId;
 
     /**
      * The timestamp of when the player accepted the bounty, if they have done so.
      **/
-    @Nullable
-    private Long acceptedBountyTimestamp;
+    private @Nullable Long acceptedBountyTimestamp;
+
     /**
      * The result of the bounty, if there has been a terminus.
      */
-    @Nullable BountyResult bountyResult;
+    private @Nullable BountyResult bountyResult;
 
     /**
      * The planet/station/etc from where the bounty was accepted.
      */
-    @Nullable
-    private SectorEntityToken bountySource;
+    private @Nullable SectorEntityToken bountySource;
 
-    @NotNull
-    private Stage stage = Stage.NotAccepted;
+    private @NotNull Stage stage = Stage.NotAccepted;
 
     /**
      * The number of credits that was promised as a reward upon completion. Includes scaling, if applicable.
      */
-    @Nullable
-    private Float rewardCredits;
+    private @Nullable Float rewardCredits;
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -85,6 +90,8 @@ public final class ActiveBounty {
         this.fleetSpawnLocation = fleetSpawnLocation;
         this.spec = spec;
         this.bountyCreatedTimestamp = Global.getSector().getClock().getTimestamp();
+        this.flagshipId = fleet.getFlagship() != null ? fleet.getFlagship().getId() : null;
+        this.captain = fleet.getCommander();
     }
 
     /**
@@ -113,7 +120,7 @@ public final class ActiveBounty {
                 null);
 
         // Flag fleet as important so it has a target icon
-        getFleet().getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, true);
+        Misc.makeImportant(getFleet(), "magicbounty");
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
@@ -145,31 +152,28 @@ public final class ActiveBounty {
         }
 
         this.bountyResult = result;
+        Misc.makeUnimportant(getFleet(), "magicbounty");
 
-        switch (result) {
-            case Succeeded:
-                stage = Stage.Succeeded;
+        if (result instanceof BountyResult.Succeeded) {
+            stage = Stage.Succeeded;
 
-                if (getRewardCredits() != null) {
-                    Global.getSector().getPlayerFleet().getCargo().getCredits().add(getRewardCredits());
-                }
-
-                MagicBountyIntel intel = getIntel();
-                if (intel != null) {
-                    intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-                }
-                break;
-            case EndedWithoutPlayerInvolvement:
-                stage = Stage.EndedWithoutPlayerInvolvement;
-                break;
-            case FailedOutOfTime:
-                stage = Stage.Failed;
-                break;
-            case ExpiredWithoutAccepting:
-                break;
+            if (((BountyResult.Succeeded) result).shouldRewardCredits && getRewardCredits() != null) {
+                Global.getSector().getPlayerFleet().getCargo().getCredits().add(getRewardCredits());
+            }
+        } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
+            stage = Stage.EndedWithoutPlayerInvolvement;
+        } else if (result instanceof BountyResult.FailedOutOfTime) {
+            stage = Stage.Failed;
+        } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
         }
 
-        destroy();
+        MagicBountyIntel intel = getIntel();
+
+        if (intel != null) {
+            intel.sendUpdateIfPlayerHasIntel(new Object(), false);
+        }
+
+//        destroy(); // Caused ConcurrentModification crash
     }
 
     private void destroy() {
@@ -181,8 +185,7 @@ public final class ActiveBounty {
     /**
      * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
      */
-    @NotNull
-    public Float getDaysRemainingToComplete() {
+    public @NotNull Float getDaysRemainingToComplete() {
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {
             return Math.max(1, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
         } else {
@@ -190,18 +193,15 @@ public final class ActiveBounty {
         }
     }
 
-    @NotNull
-    public String getKey() {
+    public @NotNull String getKey() {
         return bountyKey;
     }
 
-    @NotNull
-    public CampaignFleetAPI getFleet() {
+    public @NotNull CampaignFleetAPI getFleet() {
         return fleet;
     }
 
-    @NotNull
-    public MagicBountyData.bountyData getSpec() {
+    public @NotNull MagicBountyData.bountyData getSpec() {
         return spec;
     }
 
@@ -213,18 +213,24 @@ public final class ActiveBounty {
         return stage;
     }
 
-    @Nullable
-    public Float getRewardCredits() {
+    public @Nullable Float getRewardCredits() {
         return rewardCredits;
     }
 
-    @NotNull
-    public SectorEntityToken getFleetSpawnLocation() {
+    public @NotNull SectorEntityToken getFleetSpawnLocation() {
         return fleetSpawnLocation;
     }
 
     public @NotNull Long getBountyCreatedTimestamp() {
         return bountyCreatedTimestamp;
+    }
+
+    public @Nullable String getFlagshipId() {
+        return flagshipId;
+    }
+
+    public @NotNull PersonAPI getCaptain() {
+        return captain;
     }
 
     /**
@@ -264,14 +270,15 @@ public final class ActiveBounty {
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
         float bonusCreditsFromScaling = Math.max(0, getSpec().job_reward_scaling * bountyFPIncreaseOverBaseDueToScaling);
         float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
-        float rewardRoundedToNearest100 = Math.round(reward/100.0) * 100;
-        Global.getLogger(ActiveBounty.class).info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s scaling * %s FP diff)",
-                rewardRoundedToNearest100,
-                getKey(),
-                getSpec().job_credit_reward,
-                bonusCreditsFromScaling,
-                getSpec().job_reward_scaling,
-                bountyFPIncreaseOverBaseDueToScaling));
+        float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
+        Global.getLogger(ActiveBounty.class)
+                .info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s scaling * %s FP diff)",
+                        rewardRoundedToNearest100,
+                        getKey(),
+                        getSpec().job_credit_reward,
+                        bonusCreditsFromScaling,
+                        getSpec().job_reward_scaling,
+                        bountyFPIncreaseOverBaseDueToScaling));
 
         return rewardRoundedToNearest100;
     }
@@ -383,10 +390,25 @@ public final class ActiveBounty {
         Succeeded
     }
 
-    public enum BountyResult {
-        Succeeded,
-        EndedWithoutPlayerInvolvement,
-        FailedOutOfTime,
-        ExpiredWithoutAccepting
+    public interface BountyResult {
+        class Succeeded implements BountyResult {
+            public boolean shouldRewardCredits;
+
+            public Succeeded(boolean shouldRewardCredits) {
+                this.shouldRewardCredits = shouldRewardCredits;
+            }
+        }
+
+        class EndedWithoutPlayerInvolvement implements BountyResult {
+        }
+
+        class FailedOutOfTime implements BountyResult {
+        }
+
+        class FailedSalvagedFlagship implements BountyResult {
+        }
+
+        class ExpiredWithoutAccepting implements BountyResult {
+        }
     }
 }

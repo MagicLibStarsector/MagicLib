@@ -24,7 +24,7 @@
 		"job_deadline":45,
 		"job_credit_reward":90000,	
 		"job_reward_scaling":1.0,
-		"job_requireTargetDestruction":false,
+		"job_requireTargetDestruction":true,
 		"job_show_captain":true,
 		"job_show_fleet":true,
 		"job_show_arrow":true,

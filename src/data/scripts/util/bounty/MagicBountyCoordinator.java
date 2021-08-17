@@ -6,7 +6,11 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +67,7 @@ public final class MagicBountyCoordinator {
                                 entry.getKey(),
                                 timestampSinceBountyCreated / MILLIS_PER_DAY,
                                 entry.getValue().getSpec().job_name));
-                entry.getValue().endBounty(ActiveBounty.BountyResult.ExpiredWithoutAccepting);
+                entry.getValue().endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
                 iterator.remove();
             }
         }
@@ -185,6 +189,21 @@ public final class MagicBountyCoordinator {
             return null;
         }
 
+        // Set fleet to max CR
+        for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
+            member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
+        }
+
+        if (spec.fleet_flagship_recoverable) {
+            float weaponProb = Global.getSettings().getFloat("salvageWeaponProb");
+            float wingProb = Global.getSettings().getFloat("salvageWingProb");
+            FleetEncounterContext.prepareShipForRecovery(
+                    fleet.getFlagship(), true, true, false, weaponProb, wingProb, Misc.random
+            );
+        } else {
+            fleet.getFlagship().getVariant().removeTag(Tags.SHIP_RECOVERABLE);
+        }
+
         ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, suitableTargetLocation, spec);
         getActiveBounties().put(bountyKey, newBounty);
         configureBountyListeners();
@@ -239,6 +258,16 @@ public final class MagicBountyCoordinator {
 
         // Math.max so that if the player fleet is super weak and the difference is negative, we don't scale to below
         // the minimum DP.
-        return Math.round(spec.fleet_min_DP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
+        int desiredFP = Math.round(spec.fleet_min_DP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
+
+        Global.getLogger(MagicBountyCoordinator.class)
+                .info(String.format("Bounty '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
+                        spec.job_name,
+                        desiredFP,
+                        spec.fleet_min_DP,
+                        spec.fleet_scaling_multiplier,
+                        differenceBetweenBountyMinDPAndPlayerFleetDP));
+
+        return desiredFP;
     }
 }

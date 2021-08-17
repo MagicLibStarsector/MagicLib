@@ -6,11 +6,13 @@
 package data.scripts.util.bounty;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicPaginatedBarEvent;
@@ -158,8 +160,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             if (activeBounty == null) continue;
                         }
 
-                        // TODO VERY IMPORTANT - need to despawn the fleet when this bar event is destroyed.
-
                         activeBounty.addDescriptionToTextPanel(text);
 
                         if (nullStringIfEmpty(bounty.job_forFaction) != null) {
@@ -180,10 +180,21 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             text.addPara("Time limit: %s days", Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                         }
 
+                        if (bounty.job_requireTargetDestruction) {
+                            text.addPara("This bounty requires the %s of the flagship. Flagship recovery will forfeit any rewards.",
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    "destruction");
+                        }
+
                         if (bounty.job_show_captain) {
                             dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
-                        } else if (nullStringIfEmpty(bounty.job_forFaction) != null) {
-                            // TODO: Show faction flag?
+                        } else if (nullStringIfEmpty(bounty.job_forFaction) != null && activeBounty.getGivingFaction() != null) {
+                            String factionLogoSpriteName = activeBounty.getGivingFaction().getLogo();
+                            SpriteAPI sprite = Global.getSettings().getSprite(factionLogoSpriteName);
+                            InteractionDialogImageVisual visual = new InteractionDialogImageVisual(factionLogoSpriteName, sprite.getWidth(), sprite.getHeight());
+                            visual.setShowRandomSubImage(false);
+                            dialog.getVisualPanel().showImageVisual(visual);
                         }
 
                         if (bounty.job_show_fleet) {

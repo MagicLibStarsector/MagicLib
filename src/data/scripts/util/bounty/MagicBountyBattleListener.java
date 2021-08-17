@@ -6,9 +6,12 @@ import com.fs.starfarer.api.campaign.CampaignEventListener;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.AutoDespawnScript;
 import com.fs.starfarer.api.util.Misc;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * This EveryFrameScript will
@@ -25,6 +28,23 @@ public final class MagicBountyBattleListener implements FleetEventListener {
 
     @Override
     public void reportFleetDespawnedToListener(CampaignFleetAPI fleet, CampaignEventListener.FleetDespawnReason reason, Object param) {
+        if (isDone) {
+            return;
+        }
+
+        ActiveBounty bounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
+
+        if (bounty == null) return;
+
+        if (fleet.getId().equals(bounty.getFleet().getId())) {
+            fleet.setCommander(fleet.getFaction().createRandomPerson());
+            bounty.endBounty(new ActiveBounty.BountyResult.EndedWithoutPlayerInvolvement());
+
+            // Quietly despawn the fleet when player goes away, since they can't complete the bounty.
+            Global.getSector().addScript(new AutoDespawnScript(fleet));
+            return;
+        }
+
         fleet.removeEventListener(this);
     }
 
@@ -35,6 +55,9 @@ public final class MagicBountyBattleListener implements FleetEventListener {
     @Override
     public void reportBattleOccurred(CampaignFleetAPI fleet, CampaignFleetAPI primaryWinner, BattleAPI battle) {
         ActiveBounty bounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
+        CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
+
+        if (bounty == null) return;
 
         /////////// Below is copied (and modified) from PersonBountyIntel.reportBattleOccurred.
         if (isDone) return;
@@ -50,7 +73,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
                 if (fleet.getFlagship() == null || fleet.getFlagship().getCaptain() != person) {
                     fleet.setCommander(fleet.getFaction().createRandomPerson());
                     //Global.getSector().reportEventStage(this, "other_end", market.getPrimaryEntity(), messagePriority);
-                    bounty.endBounty(ActiveBounty.BountyResult.EndedWithoutPlayerInvolvement);
+                    bounty.endBounty(new ActiveBounty.BountyResult.EndedWithoutPlayerInvolvement());
                     // Quietly despawn the fleet when player goes away, since they can't complete the bounty.
                     Global.getSector().addScript(new AutoDespawnScript(fleet));
 //                        result = new PersonBountyIntel.BountyResult(PersonBountyIntel.BountyResultType.END_OTHER, 0, null);
@@ -67,7 +90,31 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             // didn't destroy the original flagship
             if (fleet.getFlagship() != null && fleet.getFlagship().getCaptain() == person) return;
 
-            bounty.endBounty(ActiveBounty.BountyResult.Succeeded);
+            if (bounty.getSpec().job_requireTargetDestruction && bounty.getFlagshipId() != null) {
+                boolean didPlayerSalvageFlagship = false;
+
+                for (FleetMemberAPI fleetMember : playerFleet.getFleetData().getMembersListCopy()) {
+                    List<FleetMemberAPI> bountyFleetBeforeBattle = fleet.getFleetData().getSnapshot();
+
+                    for (FleetMemberAPI ship : bountyFleetBeforeBattle) {
+                        // Look for the flagship of the bounty fleet's presence in the player fleet.
+                        if (fleetMember.getId().equals(bounty.getFlagshipId()) && fleetMember.getId().equals(ship.getId())) {
+                            Global.getLogger(MagicBountyBattleListener.class).info(String.format("Player salvaged flagship %s (%s)", ship.getShipName(), ship.getId()));
+                            didPlayerSalvageFlagship = true;
+                        }
+                    }
+                }
+
+                // If the bounty required destroying the target, but player salvaged their ship, they don't get credits.
+                if (didPlayerSalvageFlagship) {
+                    bounty.endBounty(new ActiveBounty.BountyResult.FailedSalvagedFlagship());
+                } else {
+                    bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+                }
+            } else {
+                bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+            }
+
             isDone = true;
         }
     }
