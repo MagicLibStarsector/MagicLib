@@ -194,16 +194,6 @@ public final class MagicBountyCoordinator {
             member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
         }
 
-        if (spec.fleet_flagship_recoverable) {
-            float weaponProb = Global.getSettings().getFloat("salvageWeaponProb");
-            float wingProb = Global.getSettings().getFloat("salvageWingProb");
-            FleetEncounterContext.prepareShipForRecovery(
-                    fleet.getFlagship(), true, true, false, weaponProb, wingProb, Misc.random
-            );
-        } else {
-            fleet.getFlagship().getVariant().removeTag(Tags.SHIP_RECOVERABLE);
-        }
-
         ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, suitableTargetLocation, spec);
         getActiveBounties().put(bountyKey, newBounty);
         configureBountyListeners();

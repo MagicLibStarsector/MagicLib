@@ -1,6 +1,7 @@
 package data.scripts;
 
 import com.fs.starfarer.api.BaseModPlugin;
+import com.fs.starfarer.api.Global;
 import com.thoughtworks.xstream.XStream;
 import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.plugins.MagicBountyData;
@@ -71,6 +72,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicBountyCoordinator.onGameLoad();
         MagicBountyCoordinator.getInstance().configureBountyScript();
         MagicBountyCoordinator.getInstance().configureBountyListeners();
+
+        Global.getSector().registerPlugin(new MagicCampaignPlugin());
     }
 
     @Override
@@ -91,6 +94,9 @@ public class Magic_modPlugin extends BaseModPlugin {
         x.alias("MagicBountyBattleListener", MagicBountyBattleListener.class);
         x.alias("MagicBountyIntel", MagicBountyIntel.class);
         x.alias("MagicBountyScript", MagicBountyScript.class);
+        x.alias("MagicBountyFleetEncounterContext", MagicBountyFleetEncounterContext.class);
+        x.alias("MagicBountyFleetInteractionDialogPlugin", MagicBountyFleetInteractionDialogPlugin.class);
+        x.alias("MagicCampaignPlugin", MagicCampaignPlugin.class);
     }
 
     //    //debugging magic bounties
