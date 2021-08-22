@@ -137,6 +137,10 @@ public final class ActiveBounty {
             intelForBounty = new MagicBountyIntel(bountyKey);
             intelManager.addIntel(intelForBounty);
         }
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+            Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
+        }
     }
 
     /**
@@ -159,6 +163,10 @@ public final class ActiveBounty {
 
             if (((BountyResult.Succeeded) result).shouldRewardCredits && getRewardCredits() != null) {
                 Global.getSector().getPlayerFleet().getCargo().getCredits().add(getRewardCredits());
+            }
+
+            if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
             }
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
