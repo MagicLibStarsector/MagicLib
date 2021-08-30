@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global;
 import com.thoughtworks.xstream.XStream;
 import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.plugins.MagicBountyData;
+import data.scripts.plugins.MagicCampaignPlugin;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;

@@ -5,6 +5,8 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.DebugFlags;
+import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
@@ -141,6 +143,10 @@ public final class ActiveBounty {
         if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
             Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
         }
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null) {
+            runRuleScript(spec.job_pick_script);
+        }
     }
 
     /**
@@ -168,6 +174,10 @@ public final class ActiveBounty {
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
             }
+
+            if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {
+                runRuleScript(spec.job_conclusion_script);
+            }
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
         } else if (result instanceof BountyResult.FailedOutOfTime) {
@@ -182,6 +192,32 @@ public final class ActiveBounty {
         }
 
 //        destroy(); // Caused ConcurrentModification crash
+    }
+
+    private void runRuleScript(String scriptRuleId) {
+        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+        boolean didCreateDialog = false;
+
+        if (dialog == null) {
+            Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
+            dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+            didCreateDialog = true;
+        }
+
+        boolean flagSetting = DebugFlags.PRINT_RULES_DEBUG_INFO;
+
+        if (Global.getSettings().isDevMode()) {
+            DebugFlags.PRINT_RULES_DEBUG_INFO = true;
+        }
+
+        FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+
+        // Turn it on for FireBest, then set it back to whatever it was.
+        DebugFlags.PRINT_RULES_DEBUG_INFO = flagSetting;
+
+        if (didCreateDialog && Global.getSector().getCampaignUI().getCurrentInteractionDialog() != null) {
+            Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
+        }
     }
 
     private void destroy() {

@@ -7,10 +7,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
-import com.fs.starfarer.api.impl.campaign.ids.Tags;
-import com.fs.starfarer.api.util.Misc;
 import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
 import org.jetbrains.annotations.NotNull;
@@ -92,41 +89,42 @@ public final class MagicBountyCoordinator {
     public Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
         Map<String, MagicBountyData.bountyData> available = new HashMap<>();
 
-        for (String key : MagicBountyData.BOUNTIES.keySet()) {
-            MagicBountyData.bountyData bounty = MagicBountyData.BOUNTIES.get(key);
+        // Run checks on each bounty to see if it should be displayed.
+        for (String bountyKey : MagicBountyData.BOUNTIES.keySet()) {
+            MagicBountyData.bountyData bountySpec = MagicBountyData.BOUNTIES.get(bountyKey);
 
-            if (MagicCampaign.isAvailableAtMarket(
+            // If it's not available at this market, skip over it.
+            if (!MagicCampaign.isAvailableAtMarket(
                     market,
-                    bounty.trigger_market_id,
-                    bounty.trigger_marketFaction_any,
-                    bounty.trigger_marketFaction_alliedWith,
-                    bounty.trigger_marketFaction_none,
-                    bounty.trigger_marketFaction_enemyWith,
-                    bounty.trigger_market_minSize)) {
-                available.put(key, bounty);
+                    bountySpec.trigger_market_id,
+                    bountySpec.trigger_marketFaction_any,
+                    bountySpec.trigger_marketFaction_alliedWith,
+                    bountySpec.trigger_marketFaction_none,
+                    bountySpec.trigger_marketFaction_enemyWith,
+                    bountySpec.trigger_market_minSize)) {
+                continue;
             }
-        }
 
-        // Use iterator so we can remove items while looping
-        for (Iterator<String> iterator = available.keySet().iterator(); iterator.hasNext(); ) {
-            String bountyKey = iterator.next();
-
-            MagicBountyData.bountyData bountySpec = available.get(bountyKey);
-
-            // If a memKey is defined and doesn't exist, don't offer the bounty.
-            // TODO might be using this wrong
-//            if (MagicTxt.nullStringIfEmpty(bountySpec.job_memKey) != null
-//                    && Global.getSector().getMemoryWithoutUpdate().get(bountySpec.job_memKey) == null) {
-//                iterator.remove();
-//                continue;
-//            }
+            if (!MagicCampaign.isAvailableToPlayer(
+                    bountySpec.trigger_player_minLevel,
+                    bountySpec.trigger_min_days_elapsed,
+                    bountySpec.trigger_memKeys_all,
+                    bountySpec.trigger_memKeys_any,
+                    bountySpec.trigger_playerRelationship_atLeast,
+                    bountySpec.trigger_playerRelationship_atMost
+            )) {
+                continue;
+            }
 
             ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
             // If the bounty has already been created and they've accepted it, don't offer it again
             if (activeBounty != null && activeBounty.getStage() != ActiveBounty.Stage.NotAccepted) {
-                iterator.remove();
+                continue;
             }
+
+            // Passed all checks, add to list
+            available.put(bountyKey, bountySpec);
         }
 
         return available;

@@ -31,7 +31,7 @@
 		"job_pick_option":"Accept the job",
 		#"job_pick_script":"",
 		"job_memKey":"$test_bounty",	
-		#"job_conclusion_script":"",
+		#"job_conclusion_script":"magiclib_test_bounty_completed",
 		
 		"target_first_name":"Jonas-August the Third",
 		"target_last_name":"Lindenburg",
