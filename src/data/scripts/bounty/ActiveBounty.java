@@ -1,4 +1,4 @@
-package data.scripts.util.bounty;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
@@ -9,7 +9,6 @@ import com.fs.starfarer.api.impl.campaign.DebugFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicTxt;
 import data.scripts.util.StringCreator;
 import org.jetbrains.annotations.NotNull;

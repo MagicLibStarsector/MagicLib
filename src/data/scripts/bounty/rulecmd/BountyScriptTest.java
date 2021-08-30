@@ -1,4 +1,4 @@
-package data.scripts.util.bounty.rulecmd;
+package data.scripts.bounty.rulecmd;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;

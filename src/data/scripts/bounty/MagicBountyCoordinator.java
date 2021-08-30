@@ -1,4 +1,4 @@
-package data.scripts.util.bounty;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
@@ -8,7 +8,6 @@ import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
-import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicCampaign;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
