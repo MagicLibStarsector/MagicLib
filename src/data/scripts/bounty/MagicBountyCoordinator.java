@@ -5,9 +5,11 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
+import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicCampaign;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +39,7 @@ public final class MagicBountyCoordinator {
     @Nullable
     private Map<String, ActiveBounty> activeBountiesByKey = null;
     private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties";
+    private final static String BOUNTIES_MARKETGEN_MEMORY_KEY = "$MagicBounties_bountyBarGen_";
     private final static long UNACCEPTED_BOUNTY_LIFETIME_MILLIS = 90L * MILLIS_PER_DAY;
 
     @SuppressWarnings("unchecked")
@@ -127,6 +130,21 @@ public final class MagicBountyCoordinator {
         }
 
         return available;
+    }
+
+    /**
+     * Gets the seed used to generate bounties at the given market.
+     * This seed will change every 30 days.
+     */
+    public long getMarketBountyBoardGenSeed(@NotNull MarketAPI marketAPI) {
+        MemoryAPI memoryWithoutUpdate = Global.getSector().getMemoryWithoutUpdate();
+        String key = BOUNTIES_MARKETGEN_MEMORY_KEY + marketAPI.getId();
+
+        if (!memoryWithoutUpdate.contains(key) && memoryWithoutUpdate.getLong(key) != 0L) {
+            memoryWithoutUpdate.set(key, Misc.genRandomSeed(), 30f);
+        }
+
+        return memoryWithoutUpdate.getLong(key);
     }
 
     public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {

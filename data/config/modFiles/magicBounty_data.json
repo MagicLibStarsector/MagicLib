@@ -29,7 +29,7 @@
 		"job_show_fleet":true,
 		"job_show_arrow":true,
 		"job_pick_option":"Accept the job",
-		#"job_pick_script":"",
+		"job_pick_script":"magiclib_test_bounty_completed",
 		"job_memKey":"$test_bounty",	
 		#"job_conclusion_script":"magiclib_test_bounty_completed",
 		

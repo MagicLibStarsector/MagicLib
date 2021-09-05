@@ -209,6 +209,14 @@ public final class ActiveBounty {
             DebugFlags.PRINT_RULES_DEBUG_INFO = true;
         }
 
+        // This does not work.
+//        ScriptEvaluator eval = new ScriptEvaluator();
+//        try {
+//            eval.cook("BountyScriptTest.java", Paths.get("", "data/scripts/bounty/rulecmd").toString());
+//            eval.evaluate(null);
+//        } catch (Exception e) {
+//            Global.getLogger(ActiveBounty.class).error(e);
+//        }
         FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
 
         // Turn it on for FireBest, then set it back to whatever it was.

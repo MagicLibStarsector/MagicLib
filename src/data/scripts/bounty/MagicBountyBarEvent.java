@@ -14,13 +14,12 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
@@ -57,7 +56,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     public void init(InteractionDialogAPI dialog, Map<String, MemoryAPI> memoryMap) {
         super.init(dialog, memoryMap);
         this.market = dialog.getInteractionTarget().getMarket();
-        refreshBounties(market);
 
         // If player starts our event, then backs out of it, `done` will be set to true.
         // If they then start the event again without leaving the bar, we should reset `done` to false.        
@@ -82,7 +80,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         if (optionData instanceof OptionId) {
             TextPanelAPI text = dialog.getTextPanel();
 
-            Map<String, MagicBountyData.bountyData> bountiesToShow = getBountiesToShow();
             OptionId optionId = (OptionId) optionData;
             switch (optionId) {
                 case INIT:
@@ -96,8 +93,14 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s " + (keysOfBountiesToShow.size() == 1 ? "bounty is" : "bounties are") + " available on the bounty board.",
                             Misc.getHighlightColor(),
                             Integer.toString(keysOfBountiesToShow.size()));
-                    if (!MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market) && Global.getSettings().isDevMode()) {
-                        text.addPara("[Dev mode: Bounty board would not have been displayed normally]",
+                    if (Global.getSettings().isDevMode()) {
+                        if (!MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market)) {
+                            text.addPara("[Dev mode: Bounty board would not have been displayed normally]",
+                                    Misc.getHighlightColor(),
+                                    Misc.getHighlightColor());
+                        }
+
+                        text.addPara(String.format("[Dev mode: Based on market size, there are %s bounty slots available]", getNumberOfBountySlots()),
                                 Misc.getHighlightColor(),
                                 Misc.getHighlightColor());
                     }
@@ -231,8 +234,25 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         return true;
     }
 
-    private void refreshBounties(MarketAPI market) {
-        keysOfBountiesToShow = new ArrayList<>(MagicBountyCoordinator.getInstance().getBountiesAtMarketById(market).keySet());
+    private void refreshBounties(@NotNull MarketAPI market) {
+        Map<String, MagicBountyData.bountyData> bountiesAtMarketById = MagicBountyCoordinator.getInstance().getBountiesAtMarketById(market);
+        WeightedRandomPicker<String> picker = new WeightedRandomPicker<>(new Random(MagicBountyCoordinator.getInstance().getMarketBountyBoardGenSeed(market)));
+
+        for (Map.Entry<String, MagicBountyData.bountyData> entry : bountiesAtMarketById.entrySet()) {
+            picker.add(entry.getKey(), entry.getValue().trigger_weight_mult);
+        }
+
+        List<String> keysToReturn = new ArrayList<>();
+
+        for (int i = 0; i < getNumberOfBountySlots(); i++) {
+            String pickedKey = picker.pickAndRemove();
+
+            if (pickedKey != null) {
+                keysToReturn.add(pickedKey);
+            }
+        }
+
+        this.keysOfBountiesToShow = keysToReturn;
     }
 
     private String getBountyOptionKey(String key) {
@@ -247,5 +267,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         }
 
         return ret;
+    }
+
+    /**
+     * The max number of bounties to show at once.
+     */
+    private int getNumberOfBountySlots() {
+        return 100; // TODO base this on market size, config from modSettings
     }
 }
