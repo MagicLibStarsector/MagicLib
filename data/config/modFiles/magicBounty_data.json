@@ -21,6 +21,7 @@
 		"job_name":"Take down a pirate upstart",
 		"job_description":"The son of some TT bigwig has made very public his dislike for a sheltered golden boy lavish life and decided to invest 'his' money to form a merry band of 'pirates' and enjoy a more eventful existence. He even went as far as to make an announcement when entering the $system_name system! This is an outrage, and proof of the utter disregard from the rich aabout the 99% yadda yadda yadda. The part that interests me, and by extension the reader of this note, is that in the Tri-Tachyon influential spheres there is always something to gain from shining a light on the antics of one's troublesome heir. Find the fleet, destroy it. If the son survives is irrelevant, we will have our media coverage ready before the deed is done. Time is of the essence here.",
 		"job_forFaction":"persean",
+		"job_difficultyDescription": "auto",
 		"job_deadline":45,
 		"job_credit_reward":90000,	
 		"job_reward_scaling":1.0,

@@ -16,6 +16,7 @@ import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
+import data.scripts.util.MagicTxt;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
@@ -130,6 +131,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             }
         } else if (optionData instanceof String) {
             String data = (String) optionData;
+
+            // Player accepted a bounty
             if (data.startsWith("accept-")) {
                 try {
                     String bountyKey = data.replaceFirst("accept-", "");
@@ -148,7 +151,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             } else {
                 for (String key : keysOfBountiesToShow) {
                     if (getBountyOptionKey(key).equals(optionData)) {
-                        // User has selected to view a bounty
+                        // Player has selected to view a bounty
                         final MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
 
                         if (bounty == null)
@@ -197,6 +200,36 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             InteractionDialogImageVisual visual = new InteractionDialogImageVisual(factionLogoSpriteName, sprite.getWidth(), sprite.getHeight());
                             visual.setShowRandomSubImage(false);
                             dialog.getVisualPanel().showImageVisual(visual);
+                        }
+
+                        if (bounty.job_difficultyDescription != null && bounty.job_difficultyDescription.equals("auto")) {
+                            int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
+                            float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();
+                            String dangerStringArticle = "a ";
+                            String dangerStringPhrase;
+
+                            if (playerFleetStrength < Math.round(bountyFleetStrength * 0.25f)) {
+                                dangerStringArticle = "an ";
+                                dangerStringPhrase = "extreme";
+                            } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.5f)) {
+                                dangerStringPhrase = "deadly";
+                            } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.75f)) {
+                                dangerStringPhrase = "tough";
+                            } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1f)) {
+                                dangerStringPhrase = "moderate";
+                            } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.5f)) {
+                                dangerStringPhrase = "slight";
+                            } else if (playerFleetStrength < Math.round(bountyFleetStrength * 2f)) {
+                                dangerStringPhrase = "negligible";
+                            } else {
+                                dangerStringArticle = "";
+                                dangerStringPhrase = "no";
+                            }
+
+                            text.addPara("Your intelligence officer informs you that the fleet poses " + dangerStringArticle + "%s.", Misc.getHighlightColor(), dangerStringPhrase + " threat");
+                        } else if (MagicTxt.nullStringIfEmpty(bounty.job_difficultyDescription) != null
+                                && !bounty.job_difficultyDescription.equals("none")) {
+                            text.addPara(bounty.job_difficultyDescription);
                         }
 
                         if (bounty.job_show_fleet) {
