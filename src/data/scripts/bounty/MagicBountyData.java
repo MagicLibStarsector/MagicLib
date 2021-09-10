@@ -144,7 +144,7 @@ public class MagicBountyData {
                         getFloat(bountyId, "job_reward_scaling"),
                         getBoolean(bountyId, "job_requireTargetDestruction"),
                         getBoolean(bountyId, "job_show_captain"),
-                        getBoolean(bountyId, "job_show_fleet"),
+                        getString(bountyId, "job_show_fleet"),
                         getBoolean(bountyId, "job_show_arrow"),
                         getString(bountyId, "job_pick_option"), 
                         getString(bountyId, "job_pick_script"), 
@@ -226,7 +226,7 @@ public class MagicBountyData {
         public float job_reward_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
         public boolean job_requireTargetDestruction;                            //salvaging the flagship counts as a failure, no double dipping with both credits and super ship
         public boolean job_show_captain;
-        public boolean job_show_fleet;
+        public ShowFleet job_show_fleet;                                        // none, preset, or all: how much of the fleet to show on the bounty board. default: none
         public boolean job_show_arrow;
         public String job_pick_option;                                          //dialog text to pick the job
         public String job_pick_script;                                          //optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
@@ -291,7 +291,7 @@ public class MagicBountyData {
             float job_reward_scaling,    
             boolean job_requireTargetDestruction,
             boolean job_show_captain,
-            boolean job_show_fleet,
+            String job_show_fleet,
             boolean job_show_arrow,
             String job_pick_option,                  
             String job_pick_script,                  
@@ -352,7 +352,20 @@ public class MagicBountyData {
             this.job_reward_scaling = job_reward_scaling;  
             this.job_requireTargetDestruction = job_requireTargetDestruction;
             this.job_show_captain = job_show_captain;
-            this.job_show_fleet = job_show_fleet;
+
+            if (job_show_fleet != null) {
+                if (job_show_fleet.equalsIgnoreCase("all")) {
+                    this.job_show_fleet = ShowFleet.All;
+                } else if (job_show_fleet.equalsIgnoreCase("preset")) {
+                    this.job_show_fleet = ShowFleet.Preset;
+                } else {
+                    this.job_show_fleet = ShowFleet.None;
+                }
+            } else {
+                this.job_show_fleet = ShowFleet.None;
+            }
+
+
             this.job_show_arrow = job_show_arrow;
             this.job_pick_option = job_pick_option;                  
             this.job_pick_script = job_pick_script;                  
@@ -598,5 +611,11 @@ public class MagicBountyData {
         } catch (JSONException ex){}
         
         return value;
+    }
+
+    enum ShowFleet {
+        None,
+        Preset,
+        All
     }
 }

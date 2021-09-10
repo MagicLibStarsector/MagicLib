@@ -27,7 +27,7 @@
 		"job_reward_scaling":1.0,
 		"job_requireTargetDestruction":true,
 		"job_show_captain":true,
-		"job_show_fleet":true,
+		"job_show_fleet":"preset",
 		"job_show_arrow":true,
 		"job_pick_option":"Accept the job",
 		"job_pick_script":"magiclib_test_bounty_completed",

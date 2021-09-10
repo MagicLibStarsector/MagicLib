@@ -1,6 +1,7 @@
 package data.scripts.bounty;
 
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.SectorMapAPI;
@@ -203,12 +204,18 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
-                if (bounty.getSpec().job_show_fleet) {
+                if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
                     info.addPara("Fleet information is attached to the posting.", PADDING_DESC);
                     int columns = 7;
-                    info.addShipList(columns, (int) Math.round(Math.ceil((double) bounty.getFleet().getNumMembersFast() / columns)), (width - 10) / columns,
+                    List<FleetMemberAPI> ships = bounty.getFleet().getMembersWithFightersCopy();
+
+                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
+                        ships = bounty.getPresetShipsInFleet();
+                    }
+
+                    info.addShipList(columns, (int) Math.round(Math.ceil((double) ships.size() / columns)), (width - 10) / columns,
                             bounty.getFleet().getFaction().getBaseUIColor(),
-                            bounty.getFleet().getMembersWithFightersCopy(), 10f);
+                            ships, 10f);
                 }
                 break;
         }

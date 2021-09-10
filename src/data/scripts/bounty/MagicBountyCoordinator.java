@@ -14,10 +14,7 @@ import data.scripts.util.MagicCampaign;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
@@ -199,6 +196,7 @@ public final class MagicBountyCoordinator {
                 false,
                 spec.fleet_transponder
         );
+        ArrayList<String> presetShipIds = new ArrayList<>(MagicCampaign.presetShipIdsOfLastCreatedFleet);
 
         if (fleet == null) {
             return null;
@@ -209,7 +207,8 @@ public final class MagicBountyCoordinator {
             member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
         }
 
-        ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, suitableTargetLocation, spec);
+        ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, suitableTargetLocation, presetShipIds, spec);
+
         getActiveBounties().put(bountyKey, newBounty);
         configureBountyListeners();
         return newBounty;

@@ -12,6 +12,7 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
@@ -232,13 +233,19 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             text.addPara(bounty.job_difficultyDescription);
                         }
 
-                        if (bounty.job_show_fleet) {
+                        if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {
                             text.addPara("Fleet information is attached to the posting.");
                             int columns = 10;
+                            List<FleetMemberAPI> ships = activeBounty.getFleet().getMembersWithFightersCopy();
+
+                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
+                                ships = activeBounty.getPresetShipsInFleet();
+                            }
+
                             text.beginTooltip()
                                     .addShipList(columns, 2, (dialog.getTextWidth() - 10) / columns,
                                             activeBounty.getFleet().getFaction().getBaseUIColor(),
-                                            activeBounty.getFleet().getMembersWithFightersCopy(), 10f);
+                                            ships, 10f);
                             text.addTooltip();
                         }
 

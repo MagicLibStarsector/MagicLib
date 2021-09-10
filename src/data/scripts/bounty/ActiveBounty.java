@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DebugFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
@@ -36,6 +38,7 @@ public final class ActiveBounty {
      */
     private final @NotNull SectorEntityToken fleetSpawnLocation;
 
+    private final @NotNull List<String> presetShipIds;
     /**
      * The original bounty spec, a mirror of the json definition.
      */
@@ -83,12 +86,18 @@ public final class ActiveBounty {
      * @param fleet              The fleet that, when destroyed, completes the bounty. Should have no location to start with.
      *                           The fleet's location will be set when the bounty is accepted (from fleetSpawnLocation).
      * @param fleetSpawnLocation The location to spawn the fleet when the bounty is accepted.
+     * @param presetShipIds
      * @param spec               The original bounty spec, a mirror of the json definition.
      */
-    public ActiveBounty(@NotNull String bountyKey, @NotNull CampaignFleetAPI fleet, @NotNull SectorEntityToken fleetSpawnLocation, @NotNull MagicBountyData.bountyData spec) {
+    public ActiveBounty(@NotNull String bountyKey,
+                        @NotNull CampaignFleetAPI fleet,
+                        @NotNull SectorEntityToken fleetSpawnLocation,
+                        @NotNull List<String> presetShipIds,
+                        @NotNull MagicBountyData.bountyData spec) {
         this.bountyKey = bountyKey;
         this.fleet = fleet;
         this.fleetSpawnLocation = fleetSpawnLocation;
+        this.presetShipIds = presetShipIds;
         this.spec = spec;
         this.bountyCreatedTimestamp = Global.getSector().getClock().getTimestamp();
         this.flagshipId = fleet.getFlagship() != null ? fleet.getFlagship().getId() : null;
@@ -384,6 +393,24 @@ public final class ActiveBounty {
      */
     public boolean hasExpiration() {
         return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
+    }
+
+    public @NotNull List<String> getPresetShipIds() {
+        return presetShipIds;
+    }
+
+    public List<FleetMemberAPI> getPresetShipsInFleet() {
+        List<FleetMemberAPI> ships = getFleet().getMembersWithFightersCopy();
+
+        for (Iterator<FleetMemberAPI> iterator = ships.iterator(); iterator.hasNext(); ) {
+            FleetMemberAPI ship = iterator.next();
+
+            if (!getPresetShipIds().contains(ship.getId())) {
+                iterator.remove();
+            }
+        }
+
+        return ships;
     }
 
     private void addDescriptionToTextPanelInternal(Object text, float padding) {

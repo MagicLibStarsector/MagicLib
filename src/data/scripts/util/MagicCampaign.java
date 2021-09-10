@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI.SkillLevelAPI;
-import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
@@ -28,7 +27,6 @@ import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lazywizard.lazylib.MathUtils;
 
@@ -468,6 +466,7 @@ public class MagicCampaign {
     private static FleetMemberAPI theFlagship;
     private static String theFlagshipVariant;
     private static Map<String, Integer> theSupportFleet = new HashMap<>();
+    public static List<String> presetShipIdsOfLastCreatedFleet = new ArrayList<>();
 
 
     /**
@@ -518,6 +517,7 @@ public class MagicCampaign {
     ) {
         //enforce clean generation
         theSupportFleet.clear();
+        presetShipIdsOfLastCreatedFleet.clear();
         theFlagshipVariant=null;
         theFlagship=null;
         theFleet=null;
@@ -926,6 +926,7 @@ public class MagicCampaign {
             return null;
         }
         theFlagship = flag;
+        presetShipIdsOfLastCreatedFleet.add(flag.getId());
         
         // add support
         if (theSupportFleet!=null && !theSupportFleet.isEmpty()) {
@@ -934,6 +935,8 @@ public class MagicCampaign {
                     FleetMemberAPI test = addToFleet(v, newFleet, random);
                     if (test == null && verbose) {
                         log.warn(v + " not found, skipping that variant");
+                    } else if (test != null) {
+                        presetShipIdsOfLastCreatedFleet.add(test.getId());
                     }
                 }
             }
