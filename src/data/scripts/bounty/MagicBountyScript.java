@@ -1,9 +1,7 @@
-package data.scripts.util.bounty;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
-
-import java.util.Collection;
 
 /**
  * This EveryFrameScript will

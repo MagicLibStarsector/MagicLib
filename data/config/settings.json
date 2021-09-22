@@ -30,6 +30,6 @@
 		},
     },
     "ruleCommandPackages": [
-        "data.scripts.util.bounty.rulecmd"
+        "data.scripts.bounty.rulecmd"
     ]
 }

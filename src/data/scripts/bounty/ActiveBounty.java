@@ -1,19 +1,22 @@
-package data.scripts.util.bounty;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.DebugFlags;
+import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.plugins.MagicBountyData;
 import data.scripts.util.MagicTxt;
 import data.scripts.util.StringCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
@@ -35,6 +38,7 @@ public final class ActiveBounty {
      */
     private final @NotNull SectorEntityToken fleetSpawnLocation;
 
+    private final @NotNull List<String> presetShipIds;
     /**
      * The original bounty spec, a mirror of the json definition.
      */
@@ -82,12 +86,18 @@ public final class ActiveBounty {
      * @param fleet              The fleet that, when destroyed, completes the bounty. Should have no location to start with.
      *                           The fleet's location will be set when the bounty is accepted (from fleetSpawnLocation).
      * @param fleetSpawnLocation The location to spawn the fleet when the bounty is accepted.
+     * @param presetShipIds
      * @param spec               The original bounty spec, a mirror of the json definition.
      */
-    public ActiveBounty(@NotNull String bountyKey, @NotNull CampaignFleetAPI fleet, @NotNull SectorEntityToken fleetSpawnLocation, @NotNull MagicBountyData.bountyData spec) {
+    public ActiveBounty(@NotNull String bountyKey,
+                        @NotNull CampaignFleetAPI fleet,
+                        @NotNull SectorEntityToken fleetSpawnLocation,
+                        @NotNull List<String> presetShipIds,
+                        @NotNull MagicBountyData.bountyData spec) {
         this.bountyKey = bountyKey;
         this.fleet = fleet;
         this.fleetSpawnLocation = fleetSpawnLocation;
+        this.presetShipIds = presetShipIds;
         this.spec = spec;
         this.bountyCreatedTimestamp = Global.getSector().getClock().getTimestamp();
         this.flagshipId = fleet.getFlagship() != null ? fleet.getFlagship().getId() : null;
@@ -141,6 +151,10 @@ public final class ActiveBounty {
         if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
             Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
         }
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null) {
+            runRuleScript(spec.job_pick_script);
+        }
     }
 
     /**
@@ -168,6 +182,10 @@ public final class ActiveBounty {
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
             }
+
+            if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {
+                runRuleScript(spec.job_conclusion_script);
+            }
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
         } else if (result instanceof BountyResult.FailedOutOfTime) {
@@ -182,6 +200,40 @@ public final class ActiveBounty {
         }
 
 //        destroy(); // Caused ConcurrentModification crash
+    }
+
+    private void runRuleScript(String scriptRuleId) {
+        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+        boolean didCreateDialog = false;
+
+        if (dialog == null) {
+            Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
+            dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+            didCreateDialog = true;
+        }
+
+        boolean flagSetting = DebugFlags.PRINT_RULES_DEBUG_INFO;
+
+        if (Global.getSettings().isDevMode()) {
+            DebugFlags.PRINT_RULES_DEBUG_INFO = true;
+        }
+
+        // This does not work.
+//        ScriptEvaluator eval = new ScriptEvaluator();
+//        try {
+//            eval.cook("BountyScriptTest.java", Paths.get("", "data/scripts/bounty/rulecmd").toString());
+//            eval.evaluate(null);
+//        } catch (Exception e) {
+//            Global.getLogger(ActiveBounty.class).error(e);
+//        }
+        FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+
+        // Turn it on for FireBest, then set it back to whatever it was.
+        DebugFlags.PRINT_RULES_DEBUG_INFO = flagSetting;
+
+        if (didCreateDialog && Global.getSector().getCampaignUI().getCurrentInteractionDialog() != null) {
+            Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
+        }
     }
 
     private void destroy() {
@@ -341,6 +393,24 @@ public final class ActiveBounty {
      */
     public boolean hasExpiration() {
         return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
+    }
+
+    public @NotNull List<String> getPresetShipIds() {
+        return presetShipIds;
+    }
+
+    public List<FleetMemberAPI> getPresetShipsInFleet() {
+        List<FleetMemberAPI> ships = getFleet().getMembersWithFightersCopy();
+
+        for (Iterator<FleetMemberAPI> iterator = ships.iterator(); iterator.hasNext(); ) {
+            FleetMemberAPI ship = iterator.next();
+
+            if (!getPresetShipIds().contains(ship.getId())) {
+                iterator.remove();
+            }
+        }
+
+        return ships;
     }
 
     private void addDescriptionToTextPanelInternal(Object text, float padding) {

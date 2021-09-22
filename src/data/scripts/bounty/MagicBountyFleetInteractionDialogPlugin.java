@@ -1,4 +1,4 @@
-package data.scripts.util.bounty;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 

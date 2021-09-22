@@ -4,6 +4,7 @@ By Tartiflette
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
@@ -14,7 +15,7 @@ public class MagicTxt {
         return Global.getSettings().getString(ML, id);
     }
 
-    public static String nullStringIfEmpty(String input) {
+    public static String nullStringIfEmpty(@Nullable String input) {
         return input != null && !input.isEmpty() ? input : null;
     }
 
