@@ -11,10 +11,12 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicCampaign;
+import data.scripts.util.MagicSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
@@ -36,9 +38,14 @@ public final class MagicBountyCoordinator {
     @Nullable
     private Map<String, ActiveBounty> activeBountiesByKey = null;
     private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties";
-    private final static String BOUNTIES_MARKETGEN_MEMORY_KEY = "$MagicBounties_bountyBarGen_";
+    private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
+    private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
     private final static long UNACCEPTED_BOUNTY_LIFETIME_MILLIS = 90L * MILLIS_PER_DAY;
 
+    /**
+     * Returns a map (bounty key, bounty) of all active bounties. Note that this does not necessarily mean that they have
+     * been accepted, just that they've been inflated from json (like being instantiated).
+     */
     @SuppressWarnings("unchecked")
     @NotNull
     public Map<String, ActiveBounty> getActiveBounties() {
@@ -71,21 +78,27 @@ public final class MagicBountyCoordinator {
         return activeBountiesByKey;
     }
 
+    /**
+     * Gets a single active bounty by key.
+     */
     @Nullable
     public ActiveBounty getActiveBounty(@NotNull String bountyKey) {
         return getActiveBounties().get(bountyKey);
     }
 
+    /**
+     * Whether or not a market is a viable candidate for showing the bounty board.
+     * Takes into account blacklisting of locations.
+     */
     public boolean shouldShowBountyBoardAt(@Nullable MarketAPI marketAPI) {
-        //TODO implement blacklists (both faction and individual markets) via modSettings
         //TODO filter: min market size? stability? unrest?
         if (marketAPI == null) return false;
 
-        return !getBountiesAtMarketById(marketAPI).isEmpty();
+        return !getBountiesWithChanceToSpawnAtMarketById(marketAPI).isEmpty();
     }
 
     @NotNull
-    public Map<String, MagicBountyData.bountyData> getBountiesAtMarketById(MarketAPI market) {
+    public Map<String, MagicBountyData.bountyData> getBountiesWithChanceToSpawnAtMarketById(@NotNull MarketAPI market) {
         Map<String, MagicBountyData.bountyData> available = new HashMap<>();
 
         // Run checks on each bounty to see if it should be displayed.
@@ -129,19 +142,53 @@ public final class MagicBountyCoordinator {
         return available;
     }
 
+    public int getBountySlotsAtMarket(MarketAPI marketAPI) {
+        int offersAtSizeThree = MagicSettings.getInteger("MagicLib", "bounty_offersAtSizeThree");
+        return Math.max(0, marketAPI.getSize() - 3 + offersAtSizeThree);
+    }
+
+    @Nullable
+    public List<String> getBountiesAcceptedAtMarket(@NotNull MarketAPI marketAPI) {
+        MemoryAPI memoryAPI = marketAPI.getMemory();
+        String key = BOUNTIES_MARKETBOUNTIES_KEY;
+
+        if (memoryAPI.contains(key) && memoryAPI.get(key) != null) {
+            try {
+                return (List<String>) memoryAPI.get(key);
+            } catch (Exception e) {
+                Logger.getLogger(MagicBountyCoordinator.class.getName()).warning(e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    public void setAcceptedBountyForMarket(@NotNull MarketAPI marketAPI, @NotNull String bountyId) {
+        MemoryAPI memoryAPI = marketAPI.getMemoryWithoutUpdate();
+        List<String> bountiesAcceptedFromMarket = memoryAPI.get(BOUNTIES_MARKETBOUNTIES_KEY) != null
+                ? (List<String>) memoryAPI.get(BOUNTIES_MARKETBOUNTIES_KEY)
+                : new ArrayList<String>();
+
+        if (!bountiesAcceptedFromMarket.contains(bountyId)) {
+            bountiesAcceptedFromMarket.add(bountyId);
+            memoryAPI.set(BOUNTIES_MARKETBOUNTIES_KEY, bountiesAcceptedFromMarket, 30f);
+        }
+    }
+
     /**
      * Gets the seed used to generate bounties at the given market.
      * This seed will change every 30 days.
+     * Unless the player times it to save scum just as the seed changes, this should prevent it.
      */
-    public long getMarketBountyBoardGenSeed(@NotNull MarketAPI marketAPI) {
+    public int getMarketBountyBoardGenSeed(@NotNull MarketAPI marketAPI) {
         MemoryAPI memoryWithoutUpdate = Global.getSector().getMemoryWithoutUpdate();
-        String key = BOUNTIES_MARKETGEN_MEMORY_KEY + marketAPI.getId();
+        String key = BOUNTIES_SEED_KEY;
 
         if (!memoryWithoutUpdate.contains(key) && memoryWithoutUpdate.getLong(key) != 0L) {
             memoryWithoutUpdate.set(key, Misc.genRandomSeed(), 30f);
         }
 
-        return memoryWithoutUpdate.getLong(key);
+        return Objects.hash(memoryWithoutUpdate.getLong(key) + marketAPI.getId());
     }
 
     public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {

@@ -86,7 +86,7 @@ public final class ActiveBounty {
      * @param fleet              The fleet that, when destroyed, completes the bounty. Should have no location to start with.
      *                           The fleet's location will be set when the bounty is accepted (from fleetSpawnLocation).
      * @param fleetSpawnLocation The location to spawn the fleet when the bounty is accepted.
-     * @param presetShipIds
+     * @param presetShipIds      Ships that should always be added, if fleet DP allows.
      * @param spec               The original bounty spec, a mirror of the json definition.
      */
     public ActiveBounty(@NotNull String bountyKey,
@@ -368,7 +368,7 @@ public final class ActiveBounty {
      * @param text The [TextPanelAPI] to write to.
      */
     public void addDescriptionToTextPanel(TextPanelAPI text) {
-        addDescriptionToTextPanelInternal(text, 0f);
+        addDescriptionToTextPanelInternal(text, Misc.getTextColor(), 0f);
     }
 
     /**
@@ -377,8 +377,8 @@ public final class ActiveBounty {
      * @param text    The [TooltipMakerAPI] to write to.
      * @param padding The amount of padding to use, in pixels.
      */
-    public void addDescriptionToTextPanel(TooltipMakerAPI text, float padding) {
-        addDescriptionToTextPanelInternal(text, padding);
+    public void addDescriptionToTextPanel(TooltipMakerAPI text, Color color, float padding) {
+        addDescriptionToTextPanelInternal(text, color, padding);
     }
 
     /**
@@ -413,7 +413,7 @@ public final class ActiveBounty {
         return ships;
     }
 
-    private void addDescriptionToTextPanelInternal(Object text, float padding) {
+    private void addDescriptionToTextPanelInternal(Object text, Color color, float padding) {
         if (nullStringIfEmpty(spec.job_description) != null) {
             String[] paras = spec.job_description.split("/n|\\n");
             for (String para : paras) {
@@ -452,9 +452,9 @@ public final class ActiveBounty {
                 });
 
                 if (text instanceof TextPanelAPI) {
-                    ((TextPanelAPI) text).addPara(replacedPara);
+                    ((TextPanelAPI) text).addPara(replacedPara, color);
                 } else if (text instanceof TooltipMakerAPI) {
-                    ((TooltipMakerAPI) text).addPara(replacedPara, padding);
+                    ((TooltipMakerAPI) text).addPara(replacedPara, color, padding);
                 }
             }
         }

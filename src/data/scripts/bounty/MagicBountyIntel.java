@@ -153,7 +153,11 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             info.addImage(bounty.getFleet().getCommander().getPortraitSprite(), width, 128f, PADDING_DESC);
         }
 
-        bounty.addDescriptionToTextPanel(info, PADDING_DESC);
+        bounty.addDescriptionToTextPanel(info,
+                bounty.getStage().ordinal() > ActiveBounty.Stage.Accepted.ordinal()
+                        ? Misc.getGrayColor()
+                        : Misc.getTextColor(),
+                PADDING_DESC);
 
         switch (bounty.getStage()) {
             case Succeeded:
