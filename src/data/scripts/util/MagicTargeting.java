@@ -10,6 +10,7 @@ import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.MissileAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
+import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import java.util.HashMap;
 import java.util.List;
@@ -247,7 +248,7 @@ public class MagicTargeting {
         
         //no candidate, try to pick random
         if(!missilePicker.isEmpty()){
-            return missilePicker.pick();
+            return missilePicker.pick(Misc.random);
         }
         //nothing? return null
         return null;

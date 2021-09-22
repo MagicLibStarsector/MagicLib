@@ -210,7 +210,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 if (layer != entry.LAYER) {continue;}
                 
                 //check for possible removal when the anchor isn't in game
-                if(!entry.DEATHFADE && !engine.isEntityInPlay(entry.ANCHOR)){
+                if(entry.DEATHFADE && !engine.isEntityInPlay(entry.ANCHOR)){
                     iter.remove();
                     continue;
                 }
