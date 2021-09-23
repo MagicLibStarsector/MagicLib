@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -242,6 +243,7 @@ public class MagicSettings {
      * @param id name of the variable to look for
      * @return List< String > from modSettings.json. Default to an empty list in case of failure.
      */
+    @NotNull
     public static List<String> getList(String modId, String id) {
         if(modSettings==null){
             loadModSettings();

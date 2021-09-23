@@ -161,6 +161,7 @@ public class MagicCampaign {
             float orbitRadius,
             float orbitDays
     ){
+
         float theDuration;
         if(duration<=0){
             theDuration=999999;
@@ -1004,6 +1005,12 @@ public class MagicCampaign {
             boolean marketFaction_enemyWith,
             int market_minSize
             ){
+
+        List<String> marketBlacklist = MagicSettings.getList("MagicLib", "bounty_market_blacklist");
+
+        if (marketBlacklist.contains(market.getId())) {
+            return false;
+        }
         
         //exact id match beats everything
         if(market_id!=null && !market_id.isEmpty()){

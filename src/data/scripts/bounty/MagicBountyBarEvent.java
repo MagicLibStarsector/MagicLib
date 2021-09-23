@@ -79,6 +79,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     public void optionSelected(String optionText, Object optionData) {
         super.optionSelected(optionText, optionData);
 
+        MagicBountyCoordinator instance = MagicBountyCoordinator.getInstance();
         if (optionData instanceof OptionId) {
             TextPanelAPI text = dialog.getTextPanel();
 
@@ -96,13 +97,19 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             Misc.getHighlightColor(),
                             Integer.toString(keysOfBountiesToShow.size()));
                     if (Global.getSettings().isDevMode()) {
-                        if (!MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market)) {
+                        if (!instance.shouldShowBountyBoardAt(market)) {
                             text.addPara("[Dev mode: Bounty board would not have been displayed normally]",
                                     Misc.getHighlightColor(),
                                     Misc.getHighlightColor());
                         }
 
-                        text.addPara(String.format("[Dev mode: Based on market size, there are %s bounty slots available]", getNumberOfBountySlots()),
+                        text.addPara(String.format("[Dev mode: Based on market size (%s), there are %s bounty slots available (%s slots on cooldown from being used)]",
+                                        market.getSize(),
+                                        getNumberOfBountySlots(market),
+                                        instance.getBountiesAcceptedAtMarket(market) != null
+                                                ? instance.getBountiesAcceptedAtMarket(market).size()
+                                                : 0
+                                ),
                                 Misc.getHighlightColor(),
                                 Misc.getHighlightColor());
                     }
@@ -140,8 +147,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     MagicBountyData.bountyData bounty = MagicBountyData
                             .getBountyData(bountyKey);
                     text.addPara("%s", Misc.getHighlightColor(), "Accepted job: " + bounty.job_name);
-                    ActiveBounty activeBounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
+
+                    ActiveBounty activeBounty = instance.getActiveBounty(bountyKey);
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
+                    boolean newList = keysOfBountiesToShow.remove(bountyKey);
+                    instance.setAcceptedBountyForMarket(market, bountyKey);
+
                     optionSelected(null, OptionId.BACK_TO_BOARD);
                     // TODO remove bounty, send user up one level
                     // TODO Job accepted!
@@ -158,10 +169,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         if (bounty == null)
                             continue;
 
-                        ActiveBounty activeBounty = MagicBountyCoordinator.getInstance().getActiveBounty(key);
+                        ActiveBounty activeBounty = instance.getActiveBounty(key);
 
                         if (activeBounty == null) {
-                            activeBounty = MagicBountyCoordinator.getInstance().createActiveBounty(key, bounty);
+                            activeBounty = instance.createActiveBounty(key, bounty);
 
                             if (activeBounty == null) continue;
                         }
@@ -275,16 +286,22 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     }
 
     private void refreshBounties(@NotNull MarketAPI market) {
-        Map<String, MagicBountyData.bountyData> bountiesAtMarketById = MagicBountyCoordinator.getInstance().getBountiesAtMarketById(market);
-        WeightedRandomPicker<String> picker = new WeightedRandomPicker<>(new Random(MagicBountyCoordinator.getInstance().getMarketBountyBoardGenSeed(market)));
+        MagicBountyCoordinator instance = MagicBountyCoordinator.getInstance();
+        List<String> keysToReturn = new ArrayList<>();
+
+        List<String> bountiesAcceptedAtMarket = instance.getBountiesAcceptedAtMarket(market);
+        int numberOfBountySlots = Math.max(0, getNumberOfBountySlots(market) - (bountiesAcceptedAtMarket != null
+                ? bountiesAcceptedAtMarket.size()
+                : 0));
+
+        Map<String, MagicBountyData.bountyData> bountiesAtMarketById = instance.getBountiesWithChanceToSpawnAtMarketById(market);
+        WeightedRandomPicker<String> picker = new WeightedRandomPicker<>(new Random(instance.getMarketBountyBoardGenSeed(market)));
 
         for (Map.Entry<String, MagicBountyData.bountyData> entry : bountiesAtMarketById.entrySet()) {
             picker.add(entry.getKey(), entry.getValue().trigger_weight_mult);
         }
 
-        List<String> keysToReturn = new ArrayList<>();
-
-        for (int i = 0; i < getNumberOfBountySlots(); i++) {
+        for (int i = keysToReturn.size(); i < numberOfBountySlots; i++) {
             String pickedKey = picker.pickAndRemove();
 
             if (pickedKey != null) {
@@ -312,7 +329,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     /**
      * The max number of bounties to show at once.
      */
-    private int getNumberOfBountySlots() {
-        return 100; // TODO base this on market size, config from modSettings
+    private int getNumberOfBountySlots(MarketAPI market) {
+        return MagicBountyCoordinator.getInstance().getBountySlotsAtMarket(market);
     }
 }
