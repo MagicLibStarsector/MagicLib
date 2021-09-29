@@ -130,7 +130,7 @@ public final class MagicBountyCoordinator {
 
             ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
-            // If the bounty has already been created and they've accepted it, don't offer it again
+            // If the bounty has already been created and it's not not-accepted, don't offer it (it's been accepted, failed, timed out, etc).
             if (activeBounty != null && activeBounty.getStage() != ActiveBounty.Stage.NotAccepted) {
                 continue;
             }
@@ -163,15 +163,19 @@ public final class MagicBountyCoordinator {
         return null;
     }
 
-    public void setAcceptedBountyForMarket(@NotNull MarketAPI marketAPI, @NotNull String bountyId) {
+    /**
+     * Marks the bounty as blocking a slot on the market until expiration (default 30 days).
+     * Until expiration, another bounty cannot take that slot. This prevents accepting all bounties from a market at once.
+     */
+    public void setBlockBountyAtMarket(@NotNull MarketAPI marketAPI, @NotNull String bountyId) {
         MemoryAPI memoryAPI = marketAPI.getMemoryWithoutUpdate();
-        List<String> bountiesAcceptedFromMarket = memoryAPI.get(BOUNTIES_MARKETBOUNTIES_KEY) != null
+        List<String> bountiesBlockedAtMarket = memoryAPI.get(BOUNTIES_MARKETBOUNTIES_KEY) != null
                 ? (List<String>) memoryAPI.get(BOUNTIES_MARKETBOUNTIES_KEY)
                 : new ArrayList<String>();
 
-        if (!bountiesAcceptedFromMarket.contains(bountyId)) {
-            bountiesAcceptedFromMarket.add(bountyId);
-            memoryAPI.set(BOUNTIES_MARKETBOUNTIES_KEY, bountiesAcceptedFromMarket, 30f);
+        if (!bountiesBlockedAtMarket.contains(bountyId)) {
+            bountiesBlockedAtMarket.add(bountyId);
+            memoryAPI.set(BOUNTIES_MARKETBOUNTIES_KEY, bountiesBlockedAtMarket, 30f);
         }
     }
 

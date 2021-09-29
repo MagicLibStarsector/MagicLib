@@ -191,6 +191,9 @@ public final class ActiveBounty {
         } else if (result instanceof BountyResult.FailedOutOfTime) {
             stage = Stage.Failed;
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
+            stage = Stage.ExpiredWithoutAccepting;
+        } else if (result instanceof BountyResult.DismissedPermanently) {
+            stage = Stage.Dismissed;
         }
 
         MagicBountyIntel intel = getIntel();
@@ -464,11 +467,16 @@ public final class ActiveBounty {
         NotAccepted,
         Accepted,
         Failed,
+        Dismissed,
+        ExpiredWithoutAccepting,
         EndedWithoutPlayerInvolvement,
         Succeeded
     }
 
     public interface BountyResult {
+        class DismissedPermanently implements BountyResult {
+        }
+
         class Succeeded implements BountyResult {
             public boolean shouldRewardCredits;
 

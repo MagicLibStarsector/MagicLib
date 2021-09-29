@@ -25,9 +25,6 @@ import java.util.*;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
-/**
- * TODO: Add a "Dismiss forever" option in addition to "Accept" and "Not now".
- */
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
     private MarketAPI market;
@@ -78,6 +75,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     @Override
     public void optionSelected(String optionText, Object optionData) {
         super.optionSelected(optionText, optionData);
+        String acceptJobKeyPrefix = "accept--";
+        String dismissJobKeyPrefix = "dismiss--";
+        String confirmDismissJobKeyPrefix = "confirm-dismiss--";
 
         MagicBountyCoordinator instance = MagicBountyCoordinator.getInstance();
         if (optionData instanceof OptionId) {
@@ -141,22 +141,41 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             String data = (String) optionData;
 
             // Player accepted a bounty
-            if (data.startsWith("accept-")) {
+            if (data.startsWith(acceptJobKeyPrefix)) {
                 try {
-                    String bountyKey = data.replaceFirst("accept-", "");
+                    String bountyKey = data.replaceFirst(acceptJobKeyPrefix, "");
                     MagicBountyData.bountyData bounty = MagicBountyData
                             .getBountyData(bountyKey);
                     text.addPara("%s", Misc.getHighlightColor(), "Accepted job: " + bounty.job_name);
 
                     ActiveBounty activeBounty = instance.getActiveBounty(bountyKey);
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
-                    boolean newList = keysOfBountiesToShow.remove(bountyKey);
-                    instance.setAcceptedBountyForMarket(market, bountyKey);
+                    removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
-                    // TODO remove bounty, send user up one level
-                    // TODO Job accepted!
-                    // TODO set job_memKey, but on what and to what?
+                } catch (Exception e) {
+                    Global.getLogger(this.getClass()).error(e.getMessage(), e);
+                }
+            } else if (data.startsWith(dismissJobKeyPrefix)) {
+                try {
+                    String bountyKey = data.replaceFirst(dismissJobKeyPrefix, "");
+                    text.addPara("%s", Misc.getHighlightColor(), "Are you sure you want to permanently dismiss this bounty? It will not appear in bounty boards in the future.");
+                    options.clear();
+                    optionsAllPages.clear();
+                    addOption("Permanently dismiss bounty", confirmDismissJobKeyPrefix + bountyKey, null, null);
+                    addOption("Back", getBountyOptionKey(bountyKey), null, Keyboard.KEY_ESCAPE);
+                } catch (Exception e) {
+                    Global.getLogger(this.getClass()).error(e.getMessage(), e);
+                }
+            } else if (data.startsWith(confirmDismissJobKeyPrefix)) {
+                try {
+                    String bountyKey = data.replaceFirst(confirmDismissJobKeyPrefix, "");
+                    MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey).endBounty(new ActiveBounty.BountyResult.DismissedPermanently());
+                    removeBountyFromBoard(bountyKey);
+                    text.addPara("%s", Misc.getHighlightColor(), "Bounty dismissed.");
+                    options.clear();
+                    optionsAllPages.clear();
+                    optionSelected(null, OptionId.BACK_TO_BOARD);
                 } catch (Exception e) {
                     Global.getLogger(this.getClass()).error(e.getMessage(), e);
                 }
@@ -264,7 +283,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         optionsAllPages.clear();
                         addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
                                 ? bounty.job_pick_option
-                                : "Accept", "accept-" + key, null, null);
+                                : "Accept", acceptJobKeyPrefix + key, null, null);
+                        addOption("Dismiss this bounty...", dismissJobKeyPrefix + key, null, null);
                         addOption("Back", OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                     }
                 }
@@ -272,6 +292,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         }
 
         showOptions();
+    }
+
+    private void removeBountyFromBoard(String bountyKey) {
+        keysOfBountiesToShow.remove(bountyKey);
+        MagicBountyCoordinator.getInstance().setBlockBountyAtMarket(market, bountyKey);
     }
 
     enum OptionId {
