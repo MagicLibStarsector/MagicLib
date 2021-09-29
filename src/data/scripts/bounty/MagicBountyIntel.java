@@ -8,6 +8,7 @@ import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicDeserializable;
+import static data.scripts.util.MagicTxt.getString;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -91,7 +92,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case Succeeded:
                 if (bounty.hasCreditReward()) {
                     bullet(info);
-                    info.addPara("%s received",
+                    //"%s credits received"
+                    info.addPara(getString("mb_intelRewarded"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -106,7 +108,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             default:
                 if (bounty.getGivingFaction() != null) {
                     bullet(info);
-                    info.addPara("Faction: %s",
+                    //"Faction: %s"
+                    info.addPara(getString("mb_intelFaction"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             bounty.getGivingFactionTextColor(),
@@ -116,7 +119,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 if (bounty.hasCreditReward() && bounty.hasExpiration()) {
                     bullet(info);
-                    info.addPara("%s reward, %s days remaining",
+                    //"%s reward, %s days remaining"
+                    info.addPara(getString("mb_intelRewardRemaining"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -125,7 +129,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 } else if (bounty.hasCreditReward()) {
                     bullet(info);
-                    info.addPara("%s reward",
+                    //"%s reward"
+                    info.addPara(getString("mb_intelReward"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -133,7 +138,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 } else if (bounty.hasExpiration()) {
                     bullet(info);
-                    info.addPara("%s days remaining",
+                    //"%s days remaining"
+                    info.addPara(getString("mb_intelRemaining"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -162,13 +168,14 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         switch (bounty.getStage()) {
             case Succeeded:
                 info.addPara(bounty.getSpec().job_conclusion_script, 0f);
-
-                info.addPara("You have successfully completed this bounty.", 0f);
+                //"You have successfully completed this bounty."
+                info.addPara(getString("mb_descSuccess"), 0f);
 
                 if (bounty.hasCreditReward()) {
                     if (bounty.hasCreditReward()) {
                         bullet(info);
-                        info.addPara("%s received",
+                        //"%s credits received"
+                        info.addPara(getString("mb_descRewarded"),
                                 PADDING_DESC,
                                 Misc.getTextColor(),
                                 Misc.getHighlightColor(),
@@ -184,7 +191,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             default:
                 if (bounty.hasCreditReward()) {
                     bullet(info);
-                    info.addPara("%s reward",
+                    //"%s reward"
+                    info.addPara(getString("mb_descReward"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
@@ -194,22 +202,25 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 if (bounty.hasExpiration()) {
                     bullet(info);
-                    addDays(info, "remaining", Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
+                    //"remaining"
+                    addDays(info, getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
                     unindent(info);
                 }
 
                 if (bounty.getSpec().job_requireTargetDestruction) {
                     bullet(info);
-                    info.addPara("This bounty requires the %s of the flagship. Flagship recovery will forfeit any rewards.",
+                    //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
+                    info.addPara(getString("mb_descDestruction1"),
                             0f,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
-                            "destruction");
+                            getString("mb_descDestruction2"));
                     unindent(info);
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
-                    info.addPara("Fleet information is attached to the posting.", PADDING_DESC);
+                    //"Fleet information is attached to the posting."
+                    info.addPara(getString("mb_descFleet"), PADDING_DESC);
                     int columns = 7;
                     List<FleetMemberAPI> ships = bounty.getFleet().getMembersWithFightersCopy();
 

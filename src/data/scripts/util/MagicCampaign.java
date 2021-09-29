@@ -701,14 +701,14 @@ public class MagicCampaign {
     public static PersonAPI createCaptain(
             boolean isAI,
             @Nullable String AICoreType,
-            String firstName,
-            String lastName,
-            String portraitId,
-            FullName.Gender gender,
+            @Nullable String firstName,
+            @Nullable String lastName,
+            @Nullable String portraitId,
+            @Nullable FullName.Gender gender,
             String factionId,
-            String rankId,
-            String postId,
-            String personality,
+            @Nullable String rankId,
+            @Nullable String postId,
+            @Nullable String personality,
             Integer level,
             Integer eliteSkillsOverride,
             @Nullable OfficerManagerEvent.SkillPickPreference skillPreference,
@@ -717,48 +717,61 @@ public class MagicCampaign {
         
         boolean verbose = Global.getSettings().isDevMode();
         
-        if(verbose){
-            log.error(" ");
-            log.error(" Creating captain " + firstName + " " + lastName);
-            log.error(" ");
-        }
-        
-//        PersonAPI person = Global.getFactory().createPerson();
-        PersonAPI person =
-//                OfficerManagerEvent.createOfficer(Global.getSector().getFaction(factionId), level, false);
-        OfficerManagerEvent.createOfficer(
+        PersonAPI person = OfficerManagerEvent.createOfficer(
                 Global.getSector().getFaction(factionId),
                 level,
                 skillPreference,
-                true, 
+                false, 
                 null,
                 true,
                 true,
                 eliteSkillsOverride,
-                null
+                Misc.random
         );
         
         if(isAI){
             person.setAICoreId(AICoreType);  
-            person.getName().setFirst(firstName); 
-            person.getName().setLast(lastName);
             person.setGender(FullName.Gender.ANY);
-        } else{
-            person.getName().setFirst(firstName);
-            person.getName().setLast(lastName);
+        } else if(gender!=null){
             person.setGender(gender);
         }
+        
+        if(nullStringIfEmpty(firstName)!=null){
+            person.getName().setFirst(firstName);
+        }
+        
+        if(nullStringIfEmpty(lastName)!=null){
+            person.getName().setLast(lastName);
+        }
+        
+        if(verbose){
+            log.error(" ");
+            log.error(" Creating captain " + person.getNameString());
+            log.error(" ");
+        }
+        
         if (nullStringIfEmpty(portraitId) != null){
             person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
         }
-        person.setFaction(factionId);
-        person.setPersonality(personality);
+//        person.setFaction(factionId);
+        if(nullStringIfEmpty(personality)!=null){
+            person.setPersonality(personality);
+        }
         if(verbose){
             log.error("     They are " + personality);
         }
         
-        person.setRankId(rankId);
-        person.setPostId(postId);
+        if(nullStringIfEmpty(rankId)!=null){
+            person.setRankId(rankId);
+        } else {
+            person.setRankId(Ranks.CITIZEN);
+        }
+        
+        if(nullStringIfEmpty(postId)!=null){
+            person.setPostId(postId);
+        } else {
+            person.setPostId(Ranks.POST_SPACER);
+        }
         
         //reset and reatribute skills if needed
         if(skillLevels!=null && !skillLevels.keySet().isEmpty()){
@@ -787,110 +800,6 @@ public class MagicCampaign {
         return person;
     }
     
-    /**
-     * @deprecation THIS DECLARATION IS MISSING AN AI CORE TYPE FOR AI CAPTAINS
-     * Creates a captain PersonAPI
-     * 
-     * @param isAI
-     * @param firstName
-     * @param lastName
-     * @param portraitId
-     * id of the sprite in settings.json/graphics/characters
-     * @param gender
-     * @param factionId
-     * @param rankId
-     * rank from campaign.ids.Ranks
-     * @param postId
-     * post from campaign.ids.Ranks
-     * @param personality
-     * personality from campaign.ids.Personalities
-     * @param level
-     * Captain level, pick random skills according to the faction's doctrine
-     * @param skillLevels
-     * Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
-     * @return 
-     */
-    /*
-    @Deprecated
-    public static PersonAPI createCaptain(
-            boolean isAI,
-            String firstName,
-            String lastName,
-            String portraitId,
-            FullName.Gender gender,
-            String factionId,
-            String rankId,
-            String postId,
-            String personality,
-            Integer level,
-            @Nullable Map<String, Integer> skillLevels
-    ){
-        log.error("DEPRECATION WARNING!");
-        log.error("DEPRECATION WARNING!");
-        log.error(" ");
-        log.error("OBSOLETE DECLARATION OF MagicCampaign.createCaptain()");
-        log.error(" ");
-        log.error("DEPRECATION WARNING!");
-        log.error("DEPRECATION WARNING!");
-        
-        boolean verbose = Global.getSettings().isDevMode();
-        
-        if(verbose){
-            log.error(" ");
-            log.error(" Creating captain " + firstName + " " + lastName);
-            log.error(" ");
-        }
-        
-//        PersonAPI person = Global.getFactory().createPerson();
-        PersonAPI person = OfficerManagerEvent.createOfficer(Global.getSector().getFaction(factionId), level, false);
-        
-        if(isAI){
-            person.setAICoreId(Commodities.ALPHA_CORE);  
-            person.getName().setFirst(firstName); 
-            person.getName().setLast(lastName);
-            person.setGender(FullName.Gender.ANY);
-        } else{
-            person.getName().setFirst(firstName);
-            person.getName().setLast(lastName);
-            person.setGender(gender);
-        }
-        person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
-        person.setFaction(factionId);
-        person.setPersonality(personality);
-        if(verbose){
-            log.error("     They are " + personality);
-        }
-        
-        person.setRankId(rankId);
-        person.setPostId(postId);
-        
-        //reset and reatribute skills if needed
-        if(skillLevels!=null && !skillLevels.keySet().isEmpty()){
-            if(verbose){
-                for (SkillLevelAPI skill : person.getStats().getSkillsCopy()){
-                    if(skillLevels.keySet().contains(skill.getSkill().getId())){
-                        person.getStats().setSkillLevel(skill.getSkill().getId(),skillLevels.get(skill.getSkill().getId()));
-                        log.error("     "+ skill.getSkill().getName() +" : "+ skillLevels.get(skill.getSkill().getId()));
-                    } else {
-                        person.getStats().setSkillLevel(skill.getSkill().getId(),0);                        
-                        log.error("     "+ skill.getSkill().getName() +" : 0");
-                    }
-                }
-            } else {
-                for (SkillLevelAPI skill : person.getStats().getSkillsCopy()){
-                    if(skillLevels.keySet().contains(skill.getSkill().getId())){
-                        person.getStats().setSkillLevel(skill.getSkill().getId(),skillLevels.get(skill.getSkill().getId()));
-                    } else {
-                        person.getStats().setSkillLevel(skill.getSkill().getId(),0);
-                    }
-                }
-            }
-            person.getStats().refreshCharacterStatsEffects();
-        }
-        
-        return person;
-    }
-    */
     private static CampaignFleetAPI createFleet(FleetParamsV3 params) {
 
         boolean verbose = Global.getSettings().isDevMode();
