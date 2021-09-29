@@ -217,11 +217,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         if (bounty.job_difficultyDescription != null && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))) {
                             int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
                             float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();
-                            String dangerStringArticle = getString("mb_threatArticle1");
+//                            String dangerStringArticle = getString("mb_threatArticle1");
                             String dangerStringPhrase;
 
                             if (playerFleetStrength < Math.round(bountyFleetStrength * 0.25f)) {
-                                dangerStringArticle = getString("mb_threatArticle2");
+//                                dangerStringArticle = getString("mb_threatArticle2");
                                 dangerStringPhrase = getString("mb_threatLevel6");
                             } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.5f)) {
                                 dangerStringPhrase = getString("mb_threatLevel5");
@@ -234,21 +234,35 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             } else if (playerFleetStrength < Math.round(bountyFleetStrength * 2f)) {
                                 dangerStringPhrase = getString("mb_threatLevel1");
                             } else {
-                                dangerStringArticle = getString("mb_threatArticle0");
+//                                dangerStringArticle = getString("mb_threatArticle0");
                                 dangerStringPhrase = getString("mb_threatLevel0");
                             }
                             //"Your intelligence officer informs you that the target poses "
-                            text.addPara(getString("mb_threat1") + dangerStringArticle + getString("mb_threat3"), Misc.getHighlightColor(), dangerStringPhrase + getString("mb_threat2"));
+//                            text.addPara(getString("mb_threat1") + dangerStringArticle + getString("mb_threat3"), Misc.getHighlightColor(), dangerStringPhrase + getString("mb_threat2"));
+                            text.addPara(getString("mb_threat1") + getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);
                         } else if (nullStringIfEmpty(bounty.job_difficultyDescription) != null
                                 && !bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentNone"))) {
                             text.addPara(bounty.job_difficultyDescription);
                         }
 
                         if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {
-                            text.addPara(getString("mb_fleet"));
+                            String info = getString("mb_fleet2");
+                            if(bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship){
+                                info = getString("mb_fleet0");
+                            }
+                            if(bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset){
+                                info = getString("mb_fleet1");
+                            }
+                            text.addPara(getString("mb_fleet"),
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    info);
                             int columns = 10;
                             List<FleetMemberAPI> ships = activeBounty.getFleet().getMembersWithFightersCopy();
-
+                            
+                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
+                                ships = activeBounty.getFlagshipInFleet();
+                            } else
                             if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                                 ships = activeBounty.getPresetShipsInFleet();
                             }

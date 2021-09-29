@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import java.util.ArrayList;
 
 public final class ActiveBounty {
     /**
@@ -409,6 +410,13 @@ public final class ActiveBounty {
                 iterator.remove();
             }
         }
+
+        return ships;
+    }
+    
+    public List<FleetMemberAPI> getFlagshipInFleet() {
+        List<FleetMemberAPI> ships = new ArrayList<>();
+        ships.add(getFleet().getFlagship());
 
         return ships;
     }

@@ -1,0 +1,138 @@
+{
+	"bountyID":{
+	
+		#TRIGGERS (ALL OPTIONAL)
+		
+		"trigger_market_id":["market_name"], #can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
+		"trigger_marketFaction_any":["faction"],
+		"trigger_marketFaction_alliedWith":true, #market faction is at least FAVORABLE to ANYONE of the factions above
+		"trigger_marketFaction_none":["other_faction"],
+		"trigger_marketFaction_enemyWith":false, #market faction is HOSTILE to EVERYONE of the factions above. Beware when using this parameter with multiple excluded factions
+		"trigger_market_minSize":3,
+		"trigger_player_minLevel":15,
+		"trigger_min_days_elapsed":360,
+		"trigger_weight_mult":0.25, #simple frequency multiplier
+		"trigger_memKeys_all":{
+			"$triggerKey":true,
+		},
+		"trigger_memKeys_any":{
+			"$triggerKey":true,
+		},
+		"trigger_playerRelationship_atLeast":{
+			"factionLikedId":0.25,
+		},
+		"trigger_playerRelationship_atMost":{
+			"factionDislikedId":-0.5,
+		},		
+		
+		#BOUNTY DESCRIPTION
+		
+		"job_name":"job name", #job name in the dialog pick list
+		"job_description":"Long form description of the job",
+		"job_forFaction":"faction_offering_the_job",
+		"job_deadline":360,
+		"job_credit_reward":9000,	
+		"job_reward_scaling":1.0,
+		"job_requireTargetDestruction":true, #no double dipping with both the credit reward and the flagship salvage
+		"job_show_captain":false,
+		"job_show_fleet":preset, #"none", "flagship", "preset", or "all": how much of the fleet to show on the bounty board. default: none
+		"job_show_arrow":false,
+		"job_difficultyDescription":auto,  #"none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
+		"job_pick_option":"Accept the job",
+		"job_pick_script":"data.script.FancyScriptThatDoStuff", #optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
+		"job_memKey":"$jobMemKey",	#memKeys always start with $
+		"job_conclusion_script":"data.script.FancyScriptThatDoStuff", #optional, can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
+		
+		#TARGET COMMANDER (OPTIONAL)
+		
+		"target_first_name":"Firstname",
+		"target_last_name":"Lastname",
+		"target_portrait":"portraitId", #id of the sprite in settings.json/graphics/characters
+		"target_gender":"ANY", #MALE, FEMALE, ANY
+		"target_rank":"Captain", #rank from campaign.ids.Ranks
+		"target_post":"Fleet Commander", #post from campaign.ids.Ranks
+		"target_personality":"aggressive", #personality from campaign.ids.Personalities
+		"target_isAI":false,
+		"target_level":1,
+		"target_elite_skills":2, #Overrides the regular number of elite skills, set to -1 to ignore.
+		"target_skill_preference":"GENERIC", #GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
+		"target_skills":{
+			"skillname":2,
+		}, #OVERRIDES ALL RANDOM SKILLS
+	
+	
+		#TARGET FLEET
+		
+		"fleet_name":"Fleet Name",
+		"fleet_faction":"pirates",
+		"fleet_flagship_variant":"buffalo2_FS",
+		"fleet_flagship_name":"Flagship",
+		"fleet_flagship_recoverable":true,
+		"fleet_preset_ships":{
+			"ship_variant1":1,
+			"ship_variant2":3,			
+		}, # optional preset fleet generated with the flagship
+		"fleet_scaling_multiplier":1, #dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore
+		"fleet_min_DP":100, #minimal total fleet size, set to -1 to ignore
+		"fleet_composition_faction":"pirates", #used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment
+		"fleet_composition_quality":1, #default to 2 for no Dmods
+		"fleet_transponder":false, #default to true
+		"fleet_behavior":"PASSIVE", #PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED
+	
+	
+		#LOCATION
+		
+		"location_marketIDs":[
+			"location"
+		], #preset locations, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode
+		"location_marketFactions":[
+			"faction" 
+		], #requiring a faction market superseeds all other parameters except location_id.
+		"location_distance":"CLOSE", # can be CORE, CLOSE, FAR or just left empty to ignore
+		"location_themes":[
+			"theme_hidden",
+			"theme_core_unpopulated",
+			"theme_core_populated",
+			"theme_core",
+			"theme_interesting",
+			"theme_interesting_minor",	
+			"theme_ruins",
+			"theme_ruins_main",
+			"theme_ruins_secondary",
+			"theme_derelict",
+			"theme_derelict_mothership",
+			"theme_derelict_cryosleeper",
+			"theme_derelict_survey_ship",
+			"theme_derelict_probes",
+			"theme_unsafe",
+			"theme_remnant",
+			"theme_remnant_main",
+			"theme_remnant_secondary",
+			"theme_remnant_no_fleets",
+			"theme_remnant_destroyed",
+			"theme_remnant_suppressed",
+			"theme_remnant_resurgent",
+			
+			"procgen_no_theme", #not so special bounties should add this attribute
+			"procgen_no_theme_pulsar_blackhole", #or this one
+		],
+		"location_themes_blacklist":[
+			"theme_already_occupied",
+		],
+		"location_entities":[
+			"gate",
+			"station",
+			"wreck",
+			"debris",
+			"stable_location",
+			"comm_relay",
+			"nav_buoy",
+			"sensor_array",
+            "gas_giant",
+			"planet",
+			"jump_point",
+		], #Default to PLANET+JUMP_POINT+STABLE_LOCATION if left empty
+		"location_prioritizeUnexplored":true, #will pick in priority systems that have not been visited by the player yet, but won't override the distance requirements
+		"location_defaultToAnyEntity":true,	#if true and no suitable entity is found in any systems with the required Theme and distance, a random entity will be picked instead. Otherwise the script will ignore the distance requirements
+	},
+}

@@ -210,20 +210,32 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_requireTargetDestruction) {
                     bullet(info);
                     //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
-                    info.addPara(getString("mb_descDestruction1"),
+                    info.addPara(getString("mb_noRecovery1"),
                             0f,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
-                            getString("mb_descDestruction2"));
+                            getString("mb_noRecovery2"));
                     unindent(info);
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
+                    
                     //"Fleet information is attached to the posting."
-                    info.addPara(getString("mb_descFleet"), PADDING_DESC);
+                    String fleetInfo = getString("mb_fleet2");
+                    if(bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship){
+                        fleetInfo = getString("mb_fleet0");
+                    }
+                    if(bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset){
+                        fleetInfo = getString("mb_fleet1");
+                    }
+                    info.addPara(fleetInfo+getString("mb_descFleet"), PADDING_DESC);
+                    
                     int columns = 7;
                     List<FleetMemberAPI> ships = bounty.getFleet().getMembersWithFightersCopy();
-
+                    
+                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
+                                ships = bounty.getFlagshipInFleet();
+                            } else
                     if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                         ships = bounty.getPresetShipsInFleet();
                     }

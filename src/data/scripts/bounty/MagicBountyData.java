@@ -358,6 +358,8 @@ public class MagicBountyData {
                     this.job_show_fleet = ShowFleet.All;
                 } else if (job_show_fleet.equalsIgnoreCase("preset")) {
                     this.job_show_fleet = ShowFleet.Preset;
+                } else if (job_show_fleet.equalsIgnoreCase("flagship")) {
+                    this.job_show_fleet = ShowFleet.Flagship;
                 } else {
                     this.job_show_fleet = ShowFleet.None;
                 }
@@ -615,6 +617,7 @@ public class MagicBountyData {
 
     enum ShowFleet {
         None,
+        Flagship,
         Preset,
         All
     }

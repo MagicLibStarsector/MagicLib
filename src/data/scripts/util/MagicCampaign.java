@@ -698,6 +698,7 @@ public class MagicCampaign {
      * Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
      * @return 
      */
+    
     public static PersonAPI createCaptain(
             boolean isAI,
             @Nullable String AICoreType,
@@ -729,11 +730,27 @@ public class MagicCampaign {
                 Misc.random
         );
         
+        //try to create a default character of the proper gender if needed
+        if(gender!=null && gender!=FullName.Gender.ANY && person.getGender()!=gender){
+            for(int i=0;i<10;i++){
+                person = OfficerManagerEvent.createOfficer(
+                        Global.getSector().getFaction(factionId),
+                        level,
+                        skillPreference,
+                        false, 
+                        null,
+                        true,
+                        true,
+                        eliteSkillsOverride,
+                        Misc.random
+                );
+                if(person.getGender()==gender)break;
+            }
+        }
+        
         if(isAI){
             person.setAICoreId(AICoreType);  
             person.setGender(FullName.Gender.ANY);
-        } else if(gender!=null){
-            person.setGender(gender);
         }
         
         if(nullStringIfEmpty(firstName)!=null){
