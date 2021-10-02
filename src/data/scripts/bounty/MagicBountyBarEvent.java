@@ -12,12 +12,12 @@ import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
-import static data.scripts.util.MagicTxt.getString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
 import java.util.*;
 
+import static data.scripts.util.MagicTxt.getString;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
@@ -156,11 +156,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             } else if (data.startsWith(dismissJobKeyPrefix)) {
                 try {
                     String bountyKey = data.replaceFirst(dismissJobKeyPrefix, "");
-                    text.addPara("%s", Misc.getHighlightColor(), "Are you sure you want to permanently dismiss this bounty? It will not appear in bounty boards in the future.");
+                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_permDismissConfirm"));
                     options.clear();
                     optionsAllPages.clear();
-                    addOption("Permanently dismiss bounty", confirmDismissJobKeyPrefix + bountyKey, null, null);
-                    addOption("Back", getBountyOptionKey(bountyKey), null, Keyboard.KEY_ESCAPE);
+                    addOption(getString("mb_permDismissConfirmOpt"), confirmDismissJobKeyPrefix + bountyKey, null, null);
+                    addOption(getString("mb_return"), getBountyOptionKey(bountyKey), null, Keyboard.KEY_ESCAPE);
                 } catch (Exception e) {
                     Global.getLogger(this.getClass()).error(e.getMessage(), e);
                 }
@@ -169,7 +169,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     String bountyKey = data.replaceFirst(confirmDismissJobKeyPrefix, "");
                     MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey).endBounty(new ActiveBounty.BountyResult.DismissedPermanently());
                     removeBountyFromBoard(bountyKey);
-                    text.addPara("%s", Misc.getHighlightColor(), "Bounty dismissed.");
+                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_permDismissConfirmed"));
                     options.clear();
                     optionsAllPages.clear();
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -204,17 +204,17 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         }
 
                         Float creditReward = activeBounty.calculateCreditReward();
-                        
+
                         if (creditReward != null) {
                             //"Reward: %s"
                             text.addPara(getString("mb_credits"), Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));
                         }
-                        
+
                         if (bounty.job_deadline > 0) {
                             //"Time limit: %s days"
                             text.addPara(getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                         }
-                        
+
                         if (bounty.job_requireTargetDestruction) {
                             //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
                             text.addPara(getString("mb_noRecovery1"),
@@ -266,10 +266,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                         if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {
                             String info = getString("mb_fleet2");
-                            if(bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship){
+                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
                                 info = getString("mb_fleet0");
                             }
-                            if(bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset){
+                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                                 info = getString("mb_fleet1");
                             }
                             text.addPara(getString("mb_fleet"),
@@ -278,11 +278,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     info);
                             int columns = 10;
                             List<FleetMemberAPI> ships = activeBounty.getFleet().getMembersWithFightersCopy();
-                            
+
                             if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
                                 ships = activeBounty.getFlagshipInFleet();
-                            } else
-                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
+                            } else if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                                 ships = activeBounty.getPresetShipsInFleet();
                             }
 
@@ -298,7 +297,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
                                 ? bounty.job_pick_option
                                 : getString("mb_accept"), "accept-" + key, null, null);
-                        addOption("Dismiss this bounty...", dismissJobKeyPrefix + key, null, null);
+                        addOption(getString("mb_permDismissOpt"), dismissJobKeyPrefix + key, null, null);
                         addOption(getString("mb_return"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                     }
                 }
