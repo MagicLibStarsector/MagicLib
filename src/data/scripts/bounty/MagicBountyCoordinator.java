@@ -40,7 +40,8 @@ public final class MagicBountyCoordinator {
     private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties";
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
-    private final static long UNACCEPTED_BOUNTY_LIFETIME_MILLIS = 90L * MILLIS_PER_DAY;
+    private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
+            MagicSettings.getInteger("MagicLib", "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
     /**
      * Returns a map (bounty key, bounty) of all active bounties. Note that this does not necessarily mean that they have

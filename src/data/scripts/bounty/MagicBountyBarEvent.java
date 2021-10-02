@@ -296,7 +296,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         optionsAllPages.clear();
                         addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
                                 ? bounty.job_pick_option
-                                : getString("mb_accept"), "accept-" + key, null, null);
+                                : getString("mb_accept"), acceptJobKeyPrefix + key, null, null);
                         addOption(getString("mb_permDismissOpt"), dismissJobKeyPrefix + key, null, null);
                         addOption(getString("mb_return"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                     }
