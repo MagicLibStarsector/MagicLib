@@ -4,11 +4,14 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
@@ -262,6 +265,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         } else if (nullStringIfEmpty(bounty.job_difficultyDescription) != null
                                 && !bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentNone"))) {
                             text.addPara(bounty.job_difficultyDescription);
+                        }
+
+                        if (true) { // todo
+                            text.addPara(activeBounty.createLocationEstimateText());
                         }
 
                         if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {

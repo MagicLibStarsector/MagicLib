@@ -4,10 +4,12 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DebugFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicTxt;
@@ -422,6 +424,21 @@ public final class ActiveBounty {
         ships.add(getFleet().getFlagship());
 
         return ships;
+    }
+
+    public String createLocationEstimateText() {
+        SectorEntityToken hideoutLocation = getFleetSpawnLocation();
+        SectorEntityToken fake = hideoutLocation.getContainingLocation().createToken(0, 0);
+        fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
+
+        String loc = BreadcrumbSpecial.getLocatedString(fake);
+        loc = loc.replaceAll("orbiting", "hiding out near");
+        loc = loc.replaceAll("located in", "hiding out in");
+        String sheIs = "She is";
+        if (getCaptain().getGender() == FullName.Gender.MALE) sheIs = "He is";
+        loc = sheIs + " rumored to be " + loc + ".";
+
+        return loc;
     }
 
     private void addDescriptionToTextPanelInternal(Object text, Color color, float padding) {

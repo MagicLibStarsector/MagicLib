@@ -92,7 +92,6 @@ public final class MagicBountyCoordinator {
      * Takes into account blacklisting of locations.
      */
     public boolean shouldShowBountyBoardAt(@Nullable MarketAPI marketAPI) {
-        //TODO filter: min market size? stability? unrest?
         if (marketAPI == null) return false;
 
         return !getBountiesWithChanceToSpawnAtMarketById(marketAPI).isEmpty();
