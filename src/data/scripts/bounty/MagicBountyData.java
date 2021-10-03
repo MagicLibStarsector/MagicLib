@@ -390,8 +390,12 @@ public class MagicBountyData {
             if (job_show_distance != null) {
                 if (job_show_distance.equalsIgnoreCase("vague")) {
                     this.job_show_distance = ShowDistance.Vague;
-                } else if (job_show_distance.equalsIgnoreCase("exact")) {
-                    this.job_show_distance = ShowDistance.Exact;
+                } else if (job_show_distance.equalsIgnoreCase("distance")) {
+                    this.job_show_distance = ShowDistance.Distance;
+                } else if (job_show_distance.equalsIgnoreCase("vanilla")) {
+                    this.job_show_distance = ShowDistance.Vanilla;
+                } else if (job_show_distance.equalsIgnoreCase("vanillaDistance")) {
+                    this.job_show_distance = ShowDistance.VanillaDistance;
                 } else {
                     this.job_show_distance = ShowDistance.None;
                 }
@@ -659,6 +663,8 @@ public class MagicBountyData {
     public enum ShowDistance {
         None,
         Vague,
-        Exact
+        Vanilla,
+        Distance,
+        VanillaDistance
     }
 }

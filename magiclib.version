@@ -1,5 +1,5 @@
 {
-    "masterVersionFile":"https://bitbucket.org/CodingTartiflette/magiclib/downloads/magiclib.version",
+    "masterVersionFile":"https://www.dropbox.com/s/jvh8oimjkrlz47b/magiclib.version?dl=1",
     "modName":"MagicLib",
     "modThreadId":"13718",
     "modNexusId":"10",
@@ -7,6 +7,6 @@
     {
         "major":0,
         "minor":3,
-        "patch":0
+        "patch":"5rc1"
     }
 }

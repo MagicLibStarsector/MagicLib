@@ -42,7 +42,7 @@
 		mb_from:"Posted by %s.",
 		mb_credits:"Reward: %s",
 		mb_time:"Time limit: %s days",
-		mb_distance:"Distance: %s LY.",
+		mb_distance:"It is loacted roughtly %s LY away from your current position.",
 		mb_distance_vague:"The target is located somewhere %s.",
 		mb_distance_core:"in the core worlds",
 		mb_distance_close:"in the vincinity of the core worlds",
@@ -70,6 +70,8 @@
 		mb_fleet2:"Full fleet",
 		mb_accept:"Accept",
 		mb_return:"Back",
+		mb_returnBounty:"Back to the bounty",
+		mb_returnBoard:"Back to the board",
 		mb_intelRewarded:"%s credits received",
 		mb_intelFaction:"Faction: %s",
 		mb_intelRewardRemaining:"%s reward, %s days remaining",
@@ -82,5 +84,9 @@
 		#mb_descDestruction1:"This bounty requires the %s of the flagship. Flagship recovery will forfeit any rewards.",
 		#mb_descDestruction2:"destruction",
 		mb_descFleet:" information is attached to the posting.",
+		"mb_permDismissOpt": "Dismiss this bounty...",
+		"mb_permDismissConfirm": "Are you sure you want to permanently dismiss this bounty? It will not appear in bounty boards in the future.",
+		"mb_permDismissConfirmOpt": "Permanently dismiss bounty",
+		"mb_permDismissConfirmed": "Bounty dismissed.",
 	}
 }

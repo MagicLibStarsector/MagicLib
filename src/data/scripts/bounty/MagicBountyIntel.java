@@ -218,6 +218,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
+                if (true) { // todo
+                    info.addPara(bounty.createLocationEstimateText(), 10f);
+                }
+
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
                     
                     //"Fleet information is attached to the posting."

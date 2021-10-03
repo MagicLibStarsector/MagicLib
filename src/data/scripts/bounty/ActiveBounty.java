@@ -4,10 +4,12 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DebugFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicTxt;
@@ -192,6 +194,9 @@ public final class ActiveBounty {
         } else if (result instanceof BountyResult.FailedOutOfTime) {
             stage = Stage.Failed;
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
+            stage = Stage.ExpiredWithoutAccepting;
+        } else if (result instanceof BountyResult.DismissedPermanently) {
+            stage = Stage.Dismissed;
         }
 
         MagicBountyIntel intel = getIntel();
@@ -421,6 +426,21 @@ public final class ActiveBounty {
         return ships;
     }
 
+    public String createLocationEstimateText() {
+        SectorEntityToken hideoutLocation = getFleetSpawnLocation();
+        SectorEntityToken fake = hideoutLocation.getContainingLocation().createToken(0, 0);
+        fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
+
+        String loc = BreadcrumbSpecial.getLocatedString(fake);
+        loc = loc.replaceAll("orbiting", "hiding out near");
+        loc = loc.replaceAll("located in", "hiding out in");
+        String sheIs = "She is";
+        if (getCaptain().getGender() == FullName.Gender.MALE) sheIs = "He is";
+        loc = sheIs + " rumored to be " + loc + ".";
+
+        return loc;
+    }
+
     private void addDescriptionToTextPanelInternal(Object text, Color color, float padding) {
         if (nullStringIfEmpty(spec.job_description) != null) {
             String[] paras = spec.job_description.split("/n|\\n");
@@ -472,11 +492,16 @@ public final class ActiveBounty {
         NotAccepted,
         Accepted,
         Failed,
+        Dismissed,
+        ExpiredWithoutAccepting,
         EndedWithoutPlayerInvolvement,
         Succeeded
     }
 
     public interface BountyResult {
+        class DismissedPermanently implements BountyResult {
+        }
+
         class Succeeded implements BountyResult {
             public boolean shouldRewardCredits;
 

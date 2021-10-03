@@ -4,26 +4,26 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+//import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+//import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
+//import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
-import static data.scripts.util.MagicTxt.getString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
 import java.util.*;
 
+import static data.scripts.util.MagicTxt.getString;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import data.scripts.util.MagicVariables;
 
-/**
- * TODO: Add a "Dismiss forever" option in addition to "Accept" and "Not now".
- */
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
     private MarketAPI market;
@@ -74,6 +74,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     @Override
     public void optionSelected(String optionText, Object optionData) {
         super.optionSelected(optionText, optionData);
+        String acceptJobKeyPrefix = "accept--";
+        String dismissJobKeyPrefix = "dismiss--";
+        String confirmDismissJobKeyPrefix = "confirm-dismiss--";
 
         MagicBountyCoordinator instance = MagicBountyCoordinator.getInstance();
         if (optionData instanceof OptionId) {
@@ -138,9 +141,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             String data = (String) optionData;
 
             // Player accepted a bounty
-            if (data.startsWith("accept-")) {
+            if (data.startsWith(acceptJobKeyPrefix)) {
                 try {
-                    String bountyKey = data.replaceFirst("accept-", "");
+                    String bountyKey = data.replaceFirst(acceptJobKeyPrefix, "");
                     MagicBountyData.bountyData bounty = MagicBountyData
                             .getBountyData(bountyKey);
                     //"Accepted job: "
@@ -148,13 +151,33 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                     ActiveBounty activeBounty = instance.getActiveBounty(bountyKey);
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
-                    boolean newList = keysOfBountiesToShow.remove(bountyKey);
-                    instance.setAcceptedBountyForMarket(market, bountyKey);
+                    removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
-                    // TODO remove bounty, send user up one level
-                    // TODO Job accepted!
-                    // TODO set job_memKey, but on what and to what?
+                } catch (Exception e) {
+                    Global.getLogger(this.getClass()).error(e.getMessage(), e);
+                }
+            } else if (data.startsWith(dismissJobKeyPrefix)) {
+                try {
+                    String bountyKey = data.replaceFirst(dismissJobKeyPrefix, "");
+                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_permDismissConfirm"));
+                    options.clear();
+                    optionsAllPages.clear();
+                    addOption(getString("mb_permDismissConfirmOpt"), confirmDismissJobKeyPrefix + bountyKey, null, null);
+                    addOption(getString("mb_returnBounty"), getBountyOptionKey(bountyKey), null, null);
+                    addOption(getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
+                } catch (Exception e) {
+                    Global.getLogger(this.getClass()).error(e.getMessage(), e);
+                }
+            } else if (data.startsWith(confirmDismissJobKeyPrefix)) {
+                try {
+                    String bountyKey = data.replaceFirst(confirmDismissJobKeyPrefix, "");
+                    MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey).endBounty(new ActiveBounty.BountyResult.DismissedPermanently());
+                    removeBountyFromBoard(bountyKey);
+                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_permDismissConfirmed"));
+                    options.clear();
+                    optionsAllPages.clear();
+                    optionSelected(null, OptionId.BACK_TO_BOARD);
                 } catch (Exception e) {
                     Global.getLogger(this.getClass()).error(e.getMessage(), e);
                 }
@@ -186,36 +209,52 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         }
 
                         Float creditReward = activeBounty.calculateCreditReward();
-                        
+
                         if (creditReward != null) {
                             //"Reward: %s"
                             text.addPara(getString("mb_credits"), Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));
                         }
-                        
+
                         if (bounty.job_deadline > 0) {
                             //"Time limit: %s days"
                             text.addPara(getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                         }
                         
                         if(bounty.job_show_distance!= MagicBountyData.ShowDistance.None){
-                            int distance = Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation()));
-                            
-                            if(bounty.job_show_distance== MagicBountyData.ShowDistance.Vague){
-                                String vague = getString("mb_distance_core");
-                                if(distance>MagicVariables.getSectorSizeLY()/0.66f){
-                                    vague = getString("mb_distance_far");
-                                } else if(distance>MagicVariables.getSectorSizeLY()/0.33f){
-                                    vague = getString("mb_distance_close");
-                                }
-                                text.addPara(getString("mb_distance_vague"),
-                                        Misc.getTextColor(),
-                                        Misc.getHighlightColor(),
-                                        vague);
-                            } else {
-                                text.addPara(getString("mb_distance"),
-                                        Misc.getTextColor(),
-                                        Misc.getHighlightColor(),
-                                        distance+"");
+                            switch (bounty.job_show_distance) {
+                                case Vague:
+                                    float distance = activeBounty.getFleetSpawnLocation().getLocation().length();
+                                    String vague = getString("mb_distance_core");
+                                    if(distance>MagicVariables.getSectorSize()/0.66f){
+                                        vague = getString("mb_distance_far");
+                                    } else if(distance>MagicVariables.getSectorSize()/0.33f){
+                                        vague = getString("mb_distance_close");
+                                    }   text.addPara(getString("mb_distance_vague"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            vague);
+                                    break;
+
+                                case Distance:
+                                    text.addPara(getString("mb_distance"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation()))+"");
+                                    break;
+
+                                case Vanilla:
+                                    text.addPara(activeBounty.createLocationEstimateText());
+                                    break;   
+
+                                case VanillaDistance:
+                                    text.addPara(activeBounty.createLocationEstimateText()+" "+getString("mb_distance"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation()))+"");
+                                    break;
+
+                                default:
+                                    break;
                             }
                         }
                         
@@ -270,10 +309,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                         if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {
                             String info = getString("mb_fleet2");
-                            if(bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship){
+                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
                                 info = getString("mb_fleet0");
                             }
-                            if(bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset){
+                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                                 info = getString("mb_fleet1");
                             }
                             text.addPara(getString("mb_fleet"),
@@ -282,11 +321,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     info);
                             int columns = 10;
                             List<FleetMemberAPI> ships = activeBounty.getFleet().getMembersWithFightersCopy();
-                            
+
                             if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
                                 ships = activeBounty.getFlagshipInFleet();
-                            } else
-                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
+                            } else if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                                 ships = activeBounty.getPresetShipsInFleet();
                             }
 
@@ -301,7 +339,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         optionsAllPages.clear();
                         addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
                                 ? bounty.job_pick_option
-                                : getString("mb_accept"), "accept-" + key, null, null);
+                                : getString("mb_accept"), acceptJobKeyPrefix + key, null, null);
+                        addOption(getString("mb_permDismissOpt"), dismissJobKeyPrefix + key, null, null);
                         addOption(getString("mb_return"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                     }
                 }
@@ -309,6 +348,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         }
 
         showOptions();
+    }
+
+    private void removeBountyFromBoard(String bountyKey) {
+        keysOfBountiesToShow.remove(bountyKey);
+        MagicBountyCoordinator.getInstance().setBlockBountyAtMarket(market, bountyKey);
     }
 
     enum OptionId {

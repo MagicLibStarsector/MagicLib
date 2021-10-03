@@ -2,39 +2,75 @@
 	#MODS INTEGRATION
 	
 	"diableavionics":{	
-		"missile_resist_derecho": [
-			# Lists missiles id that should loose guidance but not get flamed out by the Derecho ECM system
-		],
-		"missile_immune_derecho": [
-			# Lists missiles id that should not get affected at all by the Derecho ECM system
-			# Please be mindful to not break player expectations, only very special projectiles should be immune
-			# Such as phased missiles or "smart" bullets
-		],
+		#"missile_resist_derecho": [
+		#	# Lists missiles id that should loose guidance but not get flamed out by the Derecho ECM system
+		#],
+		#"missile_immune_derecho": [
+		#	# Lists missiles id that should not get affected at all by the Derecho ECM system
+		#	# Please be mindful to not break player expectations, only very special projectiles should be immune
+		#	# Such as phased missiles
+		#],
     },
 	
 	"MagicLib":{
-		"magicTrail_files":[
-			# The default trail data file is "data/config/modFiles/magicTrail_data.csv"
-			# Mods that do not want to use the shared modFiles folder can point to their own file here
-		],
-		"interferences_weapons":{
-			# List weapons that can "interfere" with each-other, reducing the ship's dissipation when several are mounted on the same hull.
-			# "id" : "intensity",
-			# id = weapon.csv id
-			# intensity = interferences_rates id in MagicLib's settings. By default it can be WEAK, MILD, STRONG.
-			# "sample_weapon1":"WEAK",
-			# "sample_weapon2":"MILD",
-			# "sample_weapon3":"STRONG",
-		},
+		#"magicTrail_files":[
+		#	# The default trail data file is "data/config/modFiles/magicTrail_data.csv"
+		#	# Mods that do not want to use the shared modFiles folder can point to their own file here
+		#],
+		#"interferences_weapons":{
+		#	# List weapons that can "interfere" with each-other, reducing the ship's dissipation when several are mounted on the same hull.
+		#	# "id" : "intensity",
+		#	# id = weapon.csv id
+		#	# intensity = interferences_rates id in MagicLib's settings. By default it can be WEAK, MILD, STRONG.
+		#	# "sample_weapon1":"WEAK",
+		#	# "sample_weapon2":"MILD",
+		#	# "sample_weapon3":"STRONG",
+		#},
 	},
 	
+	"PerseanChronicles": {
+		# Controls what systems/markets may be used as quest starting/mid/ending locations.
+		# Valid for v1.0.1 and later
+		#"entity_tags_to_blacklist": [
+		#	# SectorEntityTokens containing a tag listed here will be blacklisted.
+		#],
+		#"system_ids_to_blacklist": [
+		#	# Star systems with an id listed here will be blacklisted.
+		#],
+		#"market_ids_to_blacklist": [
+		#	# Markets with an id listed here will be blacklisted.
+		#],
+		#"faction_ids_to_whitelist": [
+		#	# Markets whose controlling faction's id is listed here will be *whitelisted*.
+		#	# Vanilla factions are whitelisted by default.
+		#]
+	}
+	
 	"SCY":{
-		"amity_factionWhitelist":[
-			# Lists factions that should have their known ships and weapons sold in Amity's Freeport discount trader.
-		],
-		"amity_blacklist":[
-			# Lists ships, weapons and wing ids that should be culled from Amity's Freeport discount trader.
-			# Consider that tier 3 weapons/wings and ships above 5/10/14/23 FP are already culled from that store.
-		],
+		#"amity_factionWhitelist":[
+		#	# Lists factions that should have their known ships and weapons sold in Amity's Freeport discount trader.
+		#],
+		#"amity_blacklist":[
+		#	# Lists ships, weapons and wing ids that should be culled from Amity's Freeport discount trader.
+		#	# Consider that tier 3 weapons/wings and ships above 5/10/14/23 FP are already culled from that store.
+		#],
 	},
+	
+    "vass":{
+		#"do_not_clone_projs":[
+		#	# A list of projectiles which will not be cloned by the Isochronal Field under any circumstances
+		#	# Can be practical for some very-heavily scripted weapons, but do check if it works without this 
+		#	# setting first; the code has some built-in attempts to be compatible with many scripted projectiles
+		#	#   Example:
+		#   # mySuperCoolScriptedMissile,
+		#],
+		#"clone_despite_nonoriginal_projs": {
+		#	# A map of projectiles which will be cloned despite being the non-original projectile of a weapon (this
+		#	# could for example be shrapnel from a shotgun). To work, the projectile needs to list the "fake" weapon
+		#	# that spawns the projectile to be cloned. Be careful about adding stuff here, your script needs to make 
+		#	# sure no infinite looping happens (such as only ever splitting the original projectile, for a shotgun)
+		#	#   Example:
+		#   # myShotgunProj1 : myShotGunFakeWeapon1,
+		#},
+    },
 }
