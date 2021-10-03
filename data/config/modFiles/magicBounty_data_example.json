@@ -36,7 +36,7 @@
 		"job_requireTargetDestruction":true, #no double dipping with both the credit reward and the flagship salvage
 		"job_show_captain":false,
 		"job_show_fleet":preset, #"none", "flagship", "preset", or "all": how much of the fleet to show on the bounty board. default: none
-		"job_show_distance":vague, #"none", "vague" or "exact": how precisely the distance to the target is shown on the bounty board. default: none
+		"job_show_distance":vague, #"none", "vague", "distance", "vanilla", "vanillaDistance": how precisely the distance to the target is shown on the bounty board. default: none
 		"job_show_arrow":false,
 		"job_difficultyDescription":auto,  #"none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
 		"job_pick_option":"Accept the job",

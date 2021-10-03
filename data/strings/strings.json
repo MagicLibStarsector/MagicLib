@@ -86,7 +86,7 @@
 		mb_descFleet:" information is attached to the posting.",
 		"mb_permDismissOpt": "Dismiss this bounty...",
 		"mb_permDismissConfirm": "Are you sure you want to permanently dismiss this bounty? It will not appear in bounty boards in the future.",
-		"mb_permDismissConfirmOpt": "Permanently dismiss bounty",
+		"mb_permDismissConfirmOpt": "Permanently dismiss this bounty",
 		"mb_permDismissConfirmed": "Bounty dismissed.",
 	}
 }
