@@ -60,20 +60,32 @@ public class MagicBountyData {
     public static void loadBountiesFromJSON(boolean appendOnly){
         
         if(Global.getSettings().isDevMode())verbose=true;
+        if(verbose){
+            LOG.info("\n ######################\n\n MAGIC BOUNTIES LOADING\n\n ######################");
+        }
         
         //this will be a long one
         if(!appendOnly){
             BOUNTIES.clear();
+            if(verbose){
+                LOG.info("Clearing bounty board");
+            }
         }
         
-        //get the list of bounties that need to be created from modSettings.json
+        //get the list of bounties that need to be created from modSettings.json        
         List<String> bountiesToLoad = readBountyList(verbose);
+        if(verbose){
+            LOG.info("      Loading " + bountiesToLoad.size() + " bounties.");
+        }
         //load MagicBounty_data.json
         bounty_data = loadBountyData();
         
         int x=0;
         //time to sort that stuff
         for(String bountyId : bountiesToLoad){
+            if(verbose){
+                LOG.info("Reading "+bountyId+" from file ");
+            }
             if(bounty_data.has(bountyId)){
                 
                 String genderString = getString(bountyId, "target_gender");
@@ -145,6 +157,7 @@ public class MagicBountyData {
                         getBoolean(bountyId, "job_requireTargetDestruction"),
                         getBoolean(bountyId, "job_show_captain"),
                         getString(bountyId, "job_show_fleet"),
+                        getString(bountyId, "job_show_distance"),
                         getBoolean(bountyId, "job_show_arrow"),
                         getString(bountyId, "job_pick_option"), 
                         getString(bountyId, "job_pick_script"), 
@@ -190,13 +203,18 @@ public class MagicBountyData {
                 //add the bounty if it doesn't exist and hasn't been taken already or if the script is redoing the whole thing
                 if(!appendOnly || (!BOUNTIES.containsKey(bountyId) && !Global.getSector().getMemoryWithoutUpdate().contains(this_bounty.job_memKey))){
                     BOUNTIES.put(bountyId, this_bounty);
+                    if(verbose){
+                        LOG.info("SUCCESS");
+                    }
                     x++;
+                } else if(verbose){
+                    LOG.info("SKIPPED");
                 }
             }
         }
         
         if(verbose){
-            LOG.info("Loaded "+x+" bounties");
+            LOG.info("Successfully loaded "+x+" bounties");
         }
     }
     
@@ -226,7 +244,8 @@ public class MagicBountyData {
         public float job_reward_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
         public boolean job_requireTargetDestruction;                            //salvaging the flagship counts as a failure, no double dipping with both credits and super ship
         public boolean job_show_captain;
-        public ShowFleet job_show_fleet;                                        // none, preset, or all: how much of the fleet to show on the bounty board. default: none
+        public ShowFleet job_show_fleet;                                        // none, flagship, preset, or all: how much of the fleet to show on the bounty board. default: none
+        public ShowDistance job_show_distance;                                  // none, vague or exact: how precisely the distance to the target is shown on the bounty board. default: none
         public boolean job_show_arrow;
         public String job_pick_option;                                          //dialog text to pick the job
         public String job_pick_script;                                          //optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
@@ -292,6 +311,7 @@ public class MagicBountyData {
             boolean job_requireTargetDestruction,
             boolean job_show_captain,
             String job_show_fleet,
+            String job_show_distance,
             boolean job_show_arrow,
             String job_pick_option,                  
             String job_pick_script,                  
@@ -366,7 +386,18 @@ public class MagicBountyData {
             } else {
                 this.job_show_fleet = ShowFleet.None;
             }
-
+            
+            if (job_show_distance != null) {
+                if (job_show_distance.equalsIgnoreCase("vague")) {
+                    this.job_show_distance = ShowDistance.Vague;
+                } else if (job_show_distance.equalsIgnoreCase("exact")) {
+                    this.job_show_distance = ShowDistance.Exact;
+                } else {
+                    this.job_show_distance = ShowDistance.None;
+                }
+            } else {
+                this.job_show_distance = ShowDistance.None;
+            }
 
             this.job_show_arrow = job_show_arrow;
             this.job_pick_option = job_pick_option;                  
@@ -437,10 +468,10 @@ public class MagicBountyData {
                     }
                 }
             } else {
-                LOG.error("unable to find "+BOUNTY_BOARD+" within " +MOD+ " in modSettings.json");
+                LOG.error("MagicBountyData is unable to find "+BOUNTY_BOARD+" within " +MOD+ " in modSettings.json");
             }
         } catch (JSONException ex){
-            LOG.error("unable to read content of "+MOD+" in modSettings.json");
+            LOG.error("MagicBountyData is unable to read the content of "+MOD+" in modSettings.json");
         }
         
         List<String> bountiesAvailable = new ArrayList<>();
@@ -449,6 +480,9 @@ public class MagicBountyData {
             if(bountiesWithRequirements.get(id).isEmpty()){
                 //no requirement
                 bountiesAvailable.add(id);
+                if(verbose){
+                    LOG.info("Bounty " +id+ " will be loaded.");
+                }
             } else {
                 //check if all the required mods are active
                 boolean missingRequirement=false;
@@ -456,15 +490,16 @@ public class MagicBountyData {
                     if(!Global.getSettings().getModManager().isModEnabled(required)){
                         missingRequirement=true;
                         if(verbose){
-                            LOG.info(MOD+ " , " +BOUNTY_BOARD+ " : bounty " +id+ " is unavailable, missing " +required);
+                            LOG.info("Bounty " +id+ " is unavailable, missing " +required);
                         }
                         break;
                     }
                 }
-                if(!missingRequirement){ bountiesAvailable.add(id);
+                if(!missingRequirement){ 
+                    bountiesAvailable.add(id);
                     //log if devMode is active
                     if(verbose){
-                        LOG.info(MOD+ " , " +BOUNTY_BOARD+ " : bounty " +id+ " is available.");
+                        LOG.info("Bounty " +id+ " will be loaded.");
                     }
                 }
             }
@@ -479,7 +514,7 @@ public class MagicBountyData {
         try{
             this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH,MOD);    
         } catch (IOException | JSONException ex) {
-            LOG.fatal("unable to read magicBounty_data.json");
+            LOG.fatal("MagicBountyData is unable to read magicBounty_data.json");
             JSONfailed=true;
         }
         return this_bounty_data;
@@ -615,10 +650,15 @@ public class MagicBountyData {
         return value;
     }
 
-    enum ShowFleet {
+    public enum ShowFleet {
         None,
         Flagship,
         Preset,
         All
+    }
+    public enum ShowDistance {
+        None,
+        Vague,
+        Exact
     }
 }

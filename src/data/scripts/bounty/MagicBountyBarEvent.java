@@ -19,6 +19,7 @@ import org.lwjgl.input.Keyboard;
 import java.util.*;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import data.scripts.util.MagicVariables;
 
 /**
  * TODO: Add a "Dismiss forever" option in addition to "Accept" and "Not now".
@@ -194,6 +195,28 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         if (bounty.job_deadline > 0) {
                             //"Time limit: %s days"
                             text.addPara(getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
+                        }
+                        
+                        if(bounty.job_show_distance!= MagicBountyData.ShowDistance.None){
+                            int distance = Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation()));
+                            
+                            if(bounty.job_show_distance== MagicBountyData.ShowDistance.Vague){
+                                String vague = getString("mb_distance_core");
+                                if(distance>MagicVariables.getSectorSizeLY()/0.66f){
+                                    vague = getString("mb_distance_far");
+                                } else if(distance>MagicVariables.getSectorSizeLY()/0.33f){
+                                    vague = getString("mb_distance_close");
+                                }
+                                text.addPara(getString("mb_distance_vague"),
+                                        Misc.getTextColor(),
+                                        Misc.getHighlightColor(),
+                                        vague);
+                            } else {
+                                text.addPara(getString("mb_distance"),
+                                        Misc.getTextColor(),
+                                        Misc.getHighlightColor(),
+                                        distance+"");
+                            }
                         }
                         
                         if (bounty.job_requireTargetDestruction) {

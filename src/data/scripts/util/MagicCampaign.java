@@ -1153,9 +1153,9 @@ public class MagicCampaign {
         //time for some pain
         
         //calculate the sector size to define range bands
-        final HyperspaceTerrainPlugin hyper = (HyperspaceTerrainPlugin) Misc.getHyperspaceTerrain().getPlugin();
-        final int[][] cells = hyper.getTiles();
-        float sector_width = Math.min(cells.length,cells[0].length) * hyper.getTileSize();
+//        final HyperspaceTerrainPlugin hyper = (HyperspaceTerrainPlugin) Misc.getHyperspaceTerrain().getPlugin();
+//        final int[][] cells = hyper.getTiles();
+        float sector_width = MagicVariables.getSectorSize();
         
         if(verbose){
             log.error("Checking preferences");
