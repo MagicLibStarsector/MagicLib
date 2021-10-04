@@ -8,6 +8,7 @@ import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicDeserializable;
+import data.scripts.util.MagicSettings;
 import static data.scripts.util.MagicTxt.getString;
 import org.jetbrains.annotations.NotNull;
 
@@ -207,6 +208,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
+                /*
                 if (bounty.getSpec().job_requireTargetDestruction) {
                     bullet(info);
                     //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
@@ -215,6 +217,45 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
                             getString("mb_noRecovery2"));
+                    unindent(info);
+                }
+                */
+                 //This is an %s mission, to get the reward you will need to %s.
+                if(bounty.getSpec().job_show_type){
+                    switch (bounty.getSpec().job_type) {
+                        case Assassination: 
+                            info.addPara(getString("mb_intelType"),
+                                    0f,
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    getString("mb_type_assassination1")
+                            );
+                            break;
+                        case Destruction: 
+                            info.addPara(getString("mb_intelType"),
+                                    0f,
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    getString("mb_type_destruction1")
+                            );
+                            break;
+                        case Obliteration: 
+                            info.addPara(getString("mb_intelType"),
+                                    0f,
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    getString("mb_type_obliteration1")
+                            );
+                            break;
+                        case Neutralisation: 
+                            info.addPara(getString("mb_intelType"),
+                                    0f,
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    getString("mb_type_neutralisation1")
+                            );
+                            break;
+                    }
                     unindent(info);
                 }
 

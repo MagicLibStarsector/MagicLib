@@ -33,7 +33,13 @@
 		"job_deadline":360,
 		"job_credit_reward":9000,	
 		"job_reward_scaling":1.0,
-		"job_requireTargetDestruction":true, #no double dipping with both the credit reward and the flagship salvage
+		"job_type":"assassination", #assassination, destruction, obliteration, neutralisation
+				# assassination: requires only to disable the flagship
+				# destruction: requires the complete destruction of the flagship without recovery
+				# obliteration: requires the complete elimination of the enemy fleet
+				# incapacitation: requires the destruction of 2/3rd of the enemy fleet
+				# default: assassination
+		"job_show_type":true, #default: true, make sure to explain the mission objective in the bounty description if you choose to not use the default display
 		"job_show_captain":false,
 		"job_show_fleet":preset, #"none", "flagship", "preset", or "all": how much of the fleet to show on the bounty board. default: none
 		"job_show_distance":vague, #"none", "vague", "distance", "vanilla", "vanillaDistance": how precisely the distance to the target is shown on the bounty board. default: none

@@ -90,30 +90,32 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             // didn't destroy the original flagship
             if (fleet.getFlagship() != null && fleet.getFlagship().getCaptain() == person) return;
 
-            if (bounty.getSpec().job_requireTargetDestruction && bounty.getFlagshipId() != null) {
-                boolean didPlayerSalvageFlagship = false;
-
-                for (FleetMemberAPI fleetMember : playerFleet.getFleetData().getMembersListCopy()) {
-                    List<FleetMemberAPI> bountyFleetBeforeBattle = fleet.getFleetData().getSnapshot();
-
-                    for (FleetMemberAPI ship : bountyFleetBeforeBattle) {
-                        // Look for the flagship of the bounty fleet's presence in the player fleet.
-                        if (fleetMember.getId().equals(bounty.getFlagshipId()) && fleetMember.getId().equals(ship.getId())) {
-                            Global.getLogger(MagicBountyBattleListener.class).info(String.format("Player salvaged flagship %s (%s)", ship.getShipName(), ship.getId()));
-                            didPlayerSalvageFlagship = true;
-                        }
-                    }
-                }
-
-                // If the bounty required destroying the target, but player salvaged their ship, they don't get credits.
-                if (didPlayerSalvageFlagship) {
-                    bounty.endBounty(new ActiveBounty.BountyResult.FailedSalvagedFlagship());
-                } else {
-                    bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
-                }
-            } else {
+            //TEMPORARILY DISABLED TO TEST THE BAR TEXT
+            
+//            if (bounty.getSpec().job_requireTargetDestruction && bounty.getFlagshipId() != null) {
+//                boolean didPlayerSalvageFlagship = false;
+//
+//                for (FleetMemberAPI fleetMember : playerFleet.getFleetData().getMembersListCopy()) {
+//                    List<FleetMemberAPI> bountyFleetBeforeBattle = fleet.getFleetData().getSnapshot();
+//
+//                    for (FleetMemberAPI ship : bountyFleetBeforeBattle) {
+//                        // Look for the flagship of the bounty fleet's presence in the player fleet.
+//                        if (fleetMember.getId().equals(bounty.getFlagshipId()) && fleetMember.getId().equals(ship.getId())) {
+//                            Global.getLogger(MagicBountyBattleListener.class).info(String.format("Player salvaged flagship %s (%s)", ship.getShipName(), ship.getId()));
+//                            didPlayerSalvageFlagship = true;
+//                        }
+//                    }
+//                }
+//
+//                // If the bounty required destroying the target, but player salvaged their ship, they don't get credits.
+//                if (didPlayerSalvageFlagship) {
+//                    bounty.endBounty(new ActiveBounty.BountyResult.FailedSalvagedFlagship());
+//                } else {
+//                    bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+//                }
+//            } else {
                 bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
-            }
+//            }
 
             isDone = true;
         }

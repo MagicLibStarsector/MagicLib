@@ -160,7 +160,8 @@ public class MagicBountyData {
                         getInt(bountyId, "job_deadline"),
                         getInt(bountyId, "job_credit_reward"),
                         getFloat(bountyId, "job_reward_scaling"),
-                        getBoolean(bountyId, "job_requireTargetDestruction"),
+                        getString(bountyId, "job_type"),
+                        getBooleanDefaultTrue(bountyId, "job_show_type"),
                         getBoolean(bountyId, "job_show_captain"),
                         getString(bountyId, "job_show_fleet"),
                         getString(bountyId, "job_show_distance"),
@@ -244,11 +245,12 @@ public class MagicBountyData {
         public String job_name;                                                 //job name in the dialog pick list
         public String job_description;                                          //not sure how the description will handle text variables and highlights, will it work with variables such as "$he_or_she"?
         public String job_forFaction;                                           //successfully completing this mission with give a small reputation reward with this faction
-        @Nullable public String job_difficultyDescription;                                // "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
+        @Nullable public String job_difficultyDescription;                      // "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
         public int job_deadline;
         public int job_credit_reward;
         public float job_reward_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
-        public boolean job_requireTargetDestruction;                            //salvaging the flagship counts as a failure, no double dipping with both credits and super ship
+        public JobType job_type;                                                //assassination, destruction, obliteration, neutralisation. see magicBounty_data_example.json 
+        public boolean job_show_type;
         public boolean job_show_captain;
         public ShowFleet job_show_fleet;                                        // none, flagship, preset, or all: how much of the fleet to show on the bounty board. default: none
         public ShowDistance job_show_distance;                                  // none, vague or exact: how precisely the distance to the target is shown on the bounty board. default: none
@@ -314,7 +316,8 @@ public class MagicBountyData {
             int job_deadline,
             int job_credit_reward,
             float job_reward_scaling,    
-            boolean job_requireTargetDestruction,
+            String job_type,
+            boolean job_show_type,
             boolean job_show_captain,
             String job_show_fleet,
             String job_show_distance,
@@ -376,7 +379,22 @@ public class MagicBountyData {
             this.job_deadline = job_deadline;
             this.job_credit_reward = job_credit_reward;
             this.job_reward_scaling = job_reward_scaling;  
-            this.job_requireTargetDestruction = job_requireTargetDestruction;
+            if(job_type !=null){
+                if (job_type.equalsIgnoreCase("assassination")) {
+                    this.job_type = JobType.Assassination;
+                } else if (job_type.equalsIgnoreCase("destruction")) {
+                    this.job_type = JobType.Destruction;
+                } else if (job_type.equalsIgnoreCase("obliteration")) {
+                    this.job_type = JobType.Obliteration;
+                } else if (job_type.equalsIgnoreCase("neutralisation")) {
+                    this.job_type = JobType.Neutralisation;
+                } else {
+                    this.job_type = JobType.Assassination;
+                }
+            } else {
+                this.job_type = JobType.Assassination;
+            }
+            this.job_show_type = job_show_type;
             this.job_show_captain = job_show_captain;
 
             if (job_show_fleet != null) {
@@ -679,6 +697,12 @@ public class MagicBountyData {
         return value;
     }
 
+    public enum JobType {
+        Assassination,
+        Destruction,
+        Obliteration,
+        Neutralisation,
+    }
     public enum ShowFleet {
         None,
         Flagship,

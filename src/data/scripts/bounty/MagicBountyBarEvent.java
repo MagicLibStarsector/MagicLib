@@ -15,6 +15,7 @@ import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
+import data.scripts.util.MagicSettings;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
@@ -258,6 +259,42 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
                         }
                         
+                        
+                        //This is an %s mission, to get the reward you will need to %s.
+                        if(bounty.job_show_type){
+                            switch (bounty.job_type) {
+                                case Assassination: 
+                                    text.addPara(getString("mb_type"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            getString("mb_type_assassination1"),getString("mb_type_assassination2")
+                                    );
+                                    break;
+                                case Destruction: 
+                                    text.addPara(getString("mb_type"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            getString("mb_type_destruction1"),getString("mb_type_destruction2")
+                                    );
+                                    break;
+                                case Obliteration: 
+                                    text.addPara(getString("mb_type"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            getString("mb_type_obliteration1"),getString("mb_type_obliteration2")
+                                    );
+                                    break;
+                                case Neutralisation: 
+                                    text.addPara(getString("mb_type"),
+                                            Misc.getTextColor(),
+                                            Misc.getHighlightColor(),
+                                            getString("mb_type_neutralisation1"),getString("mb_type_neutralisation2")+Math.round(100*MagicSettings.getFloat("MagicLib", "bounty_neutralisationThreshold"))+getString("mb_type_neutralisation3")
+                                    );
+                                    break;
+                            }
+                        }
+                        
+                        /*
                         if (bounty.job_requireTargetDestruction) {
                             //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
                             text.addPara(getString("mb_noRecovery1"),
@@ -265,7 +302,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     Misc.getHighlightColor(),
                                     getString("mb_noRecovery2"));
                         }
-
+                        */
                         if (bounty.job_show_captain) {
                             dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
                         } else if (nullStringIfEmpty(bounty.job_forFaction) != null && activeBounty.getGivingFaction() != null) {

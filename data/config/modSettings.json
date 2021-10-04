@@ -52,5 +52,6 @@
 		},
 		"bounty_offersAtSizeThree":1, #default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
         "bounty_boardRefreshTimePerMarketInDays": 90,
+		"bounty_neutralisationThreshold": 0.66,
     }
 }
