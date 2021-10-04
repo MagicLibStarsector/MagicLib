@@ -35,12 +35,16 @@ public class Magic_modPlugin extends BaseModPlugin {
         //check for IBBs presence
         if(Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties==true){
             Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", true);
+        } else {
+            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
         }
         //check for HVBs presence
         if(Global.getSettings().getModManager().isModEnabled("vayrasector") && VayraModPlugin.UNIQUE_BOUNTIES==true){
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
+        } else {
+            Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
         }
-        
+         
         //pre-loading the bounties to throw a crash if the JSON is messed up on merge
         MagicBountyData.loadBountiesFromJSON(false);
 

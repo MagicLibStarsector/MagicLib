@@ -38,6 +38,7 @@
 		mb_unnamed:"Unnamed job",
 		mb_close:"Close",
 		mb_closed:"Close the board.",
+		mb_accept:"Accept job",
 		mb_accepted:"Accepted job: ",
 		mb_from:"Posted by %s.",
 		mb_credits:"Reward: %s",

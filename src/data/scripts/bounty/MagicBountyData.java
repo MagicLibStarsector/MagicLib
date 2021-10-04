@@ -6,6 +6,7 @@ import com.fs.starfarer.api.characters.FullName;
 //import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
 import data.scripts.util.MagicSettings;
+import data.scripts.util.MagicTxt;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,6 +133,11 @@ public class MagicBountyData {
                     }
                 }
                 
+                String memKey = "$"+bountyId;
+                if(getString(bountyId, "job_memKey")!=null && !getString(bountyId, "job_memKey").equals("")){
+                    memKey = getString(bountyId, "job_memKey");
+                }
+                
                 bountyData this_bounty = new bountyData(
                         getStringList(bountyId, "trigger_market_id"),
                         getStringList(bountyId, "trigger_marketFaction_any"),
@@ -158,10 +164,10 @@ public class MagicBountyData {
                         getBoolean(bountyId, "job_show_captain"),
                         getString(bountyId, "job_show_fleet"),
                         getString(bountyId, "job_show_distance"),
-                        getBoolean(bountyId, "job_show_arrow"),
+                        getBooleanDefaultTrue(bountyId, "job_show_arrow"),
                         getString(bountyId, "job_pick_option"), 
                         getString(bountyId, "job_pick_script"), 
-                        getString(bountyId, "job_memKey"),
+                        memKey,
                         getString(bountyId, "job_conclusion_script"), 
                         
                         getString(bountyId, "target_first_name"), 
@@ -404,7 +410,13 @@ public class MagicBountyData {
             }
 
             this.job_show_arrow = job_show_arrow;
-            this.job_pick_option = job_pick_option;                  
+            
+            if(job_pick_option!=null && !job_pick_option.equals("")){
+                this.job_pick_option = job_pick_option;   
+            } else {
+                this.job_pick_option = MagicTxt.getString("mb_accept");
+            }
+            
             this.job_pick_script = job_pick_script;                  
             this.job_memKey = job_memKey;
             this.job_conclusion_script = job_conclusion_script;            
@@ -426,7 +438,7 @@ public class MagicBountyData {
             this.fleet_flagship_name = fleet_flagship_name;              
             this.fleet_flagship_recoverable = fleet_flagship_recoverable;
             this.fleet_preset_ships = fleet_preset_ships; 
-            this.fleet_scaling_multiplier = fleet_scaling_multiplier;          
+            this.fleet_scaling_multiplier = fleet_scaling_multiplier;  
             this.fleet_min_DP = fleet_min_DP;
             this.fleet_composition_faction = fleet_composition_faction;        
             this.fleet_composition_quality = fleet_composition_quality;         
@@ -526,6 +538,19 @@ public class MagicBountyData {
     
     private static boolean getBoolean(String bountyId, String key){
         boolean value=false;   
+        
+        try {
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            if(reqSettings.has(key)){
+                value = reqSettings.getBoolean(key);
+            }
+        } catch (JSONException ex){}
+        
+        return value;
+    }
+    
+    private static boolean getBooleanDefaultTrue(String bountyId, String key){
+        boolean value=true;   
         
         try {
             JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
