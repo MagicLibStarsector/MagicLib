@@ -3,12 +3,11 @@ package data.scripts;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.thoughtworks.xstream.XStream;
+import data.scripts.bounty.*;
 import data.scripts.plugins.MagicAutoTrails;
-import data.scripts.plugins.MagicCampaignPlugin;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
-import data.scripts.bounty.*;
 
 public class Magic_modPlugin extends BaseModPlugin {
 
@@ -31,7 +30,7 @@ public class Magic_modPlugin extends BaseModPlugin {
                     + System.lineSeparator() + System.lineSeparator();
             throw new ClassNotFoundException(message);
         }
-         
+
         //pre-loading the bounties to throw a crash if the JSON is messed up on merge
         MagicBountyData.loadBountiesFromJSON(false);
 
@@ -64,35 +63,39 @@ public class Magic_modPlugin extends BaseModPlugin {
     public void onGameLoad(boolean newGame) {
 //        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
-        if (!newGame) {
-            //add new bounties if there are any
-            MagicBountyData.loadBountiesFromJSON(true);
-        }
 
-        MagicBountyCoordinator.onGameLoad();
-        MagicBountyCoordinator.getInstance().configureBountyScript();
-        MagicBountyCoordinator.getInstance().configureBountyListeners();
+        if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
+            if (!newGame) {
+                //add new bounties if there are any
+                MagicBountyData.loadBountiesFromJSON(true);
+            }
 
-        Global.getSector().registerPlugin(new MagicCampaignPlugin());
-        
-        //check for IBBs presence
-        if(Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties==true){
-            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", true);
-        } else {
-            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
-        }
-        //check for HVBs presence
-        if(Global.getSettings().getModManager().isModEnabled("vayrasector") && VayraModPlugin.UNIQUE_BOUNTIES==true){
-            Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
-        } else {
-            Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
+            MagicBountyCoordinator.onGameLoad();
+            MagicBountyCoordinator.getInstance().configureBountyListeners();
+
+            Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
+
+            //check for IBBs presence
+            if (Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties == true) {
+                Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", true);
+            } else {
+                Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
+            }
+            //check for HVBs presence
+            if (Global.getSettings().getModManager().isModEnabled("vayrasector") && VayraModPlugin.UNIQUE_BOUNTIES == true) {
+                Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
+            } else {
+                Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
+            }
         }
     }
 
     @Override
     public void onNewGame() {
-        //setup the bounties
-        MagicBountyData.loadBountiesFromJSON(false);
+        if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
+            //setup the bounties
+            MagicBountyData.loadBountiesFromJSON(false);
+        }
     }
 
     /**
@@ -106,10 +109,9 @@ public class Magic_modPlugin extends BaseModPlugin {
         x.alias("MagicBountyActiveBounty", ActiveBounty.class);
         x.alias("MagicBountyBattleListener", MagicBountyBattleListener.class);
         x.alias("MagicBountyIntel", MagicBountyIntel.class);
-        x.alias("MagicBountyScript", MagicBountyScript.class);
         x.alias("MagicBountyFleetEncounterContext", MagicBountyFleetEncounterContext.class);
         x.alias("MagicBountyFleetInteractionDialogPlugin", MagicBountyFleetInteractionDialogPlugin.class);
-        x.alias("MagicCampaignPlugin", MagicCampaignPlugin.class);
+        x.alias("MagicCampaignPlugin", MagicBountyCampaignPlugin.class);
     }
 
     //    //debugging magic bounties

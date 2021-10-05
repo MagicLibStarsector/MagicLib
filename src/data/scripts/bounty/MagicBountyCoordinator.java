@@ -266,15 +266,6 @@ public final class MagicBountyCoordinator {
     }
 
     /**
-     * Idempotently ensures that `MagicBountyScript` exists and is running.
-     */
-    public void configureBountyScript() {
-        if (!Global.getSector().hasScript(MagicBountyScript.class)) {
-            Global.getSector().addScript(new MagicBountyScript());
-        }
-    }
-
-    /**
      * Idempotently ensures that each `ActiveBounty` has a `MagicBountyBattleListener` running.
      */
     public void configureBountyListeners() {

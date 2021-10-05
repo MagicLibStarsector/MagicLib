@@ -5,9 +5,9 @@
 		
 		"trigger_market_id":["market_name"], #can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
 		"trigger_marketFaction_any":["faction"],
-		"trigger_marketFaction_alliedWith":true, #market faction is at least FAVORABLE to ANYONE of the factions above
+		"trigger_marketFaction_alliedWith":true, #market faction is at least FAVORABLE to ANY ONE of the factions above
 		"trigger_marketFaction_none":["other_faction"],
-		"trigger_marketFaction_enemyWith":false, #market faction is HOSTILE to EVERYONE of the factions above. Beware when using this parameter with multiple excluded factions
+		"trigger_marketFaction_enemyWith":false, #market faction is HOSTILE to EVERY ONE of the factions above. Beware when using this parameter with multiple excluded factions
 		"trigger_market_minSize":3,
 		"trigger_player_minLevel":15,
 		"trigger_min_days_elapsed":360,
@@ -94,7 +94,7 @@
 		], #preset locations, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode
 		"location_marketFactions":[
 			"faction" 
-		], #requiring a faction market superseeds all other parameters except location_id.
+		], #requiring a faction market supersedes all other parameters except location_id.
 		"location_distance":"CLOSE", # can be CORE, CLOSE, FAR or just left empty to ignore
 		"location_themes":[
 			"theme_hidden",

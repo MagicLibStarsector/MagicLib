@@ -1,4 +1,4 @@
-package data.scripts.plugins;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.BaseCampaignPlugin;
@@ -11,10 +11,10 @@ import data.scripts.bounty.MagicBountyFleetInteractionDialogPlugin;
 
 import java.util.Collection;
 
-public class MagicCampaignPlugin extends BaseCampaignPlugin {
+public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
     @Override
     public String getId() {
-        return "Magic_CampaignPlugin";
+        return "Magic_BountyCampaignPlugin";
     }
 
     @Override
