@@ -27,6 +27,7 @@ public class MagicBountyData {
     
     public static Map<String,bountyData> BOUNTIES = new HashMap<>();
     public static boolean JSONfailed=false;
+    public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
     private static JSONObject bounty_data;
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
     private static boolean verbose=false;

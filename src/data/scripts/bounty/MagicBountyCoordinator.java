@@ -253,6 +253,10 @@ public final class MagicBountyCoordinator {
             return null;
         }
 
+        // Add both a constant tag to the fleet as well as the bounty key that it is for.
+        fleet.addTag(MagicBountyData.BOUNTY_FLEET_TAG);
+        fleet.addTag(bountyKey);
+
         // Set fleet to max CR
         for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
             member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());

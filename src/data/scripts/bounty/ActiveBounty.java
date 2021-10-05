@@ -185,10 +185,6 @@ public final class ActiveBounty {
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
             }
-
-            if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {
-                runRuleScript(spec.job_conclusion_script);
-            }
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
         } else if (result instanceof BountyResult.FailedOutOfTime) {
@@ -197,6 +193,10 @@ public final class ActiveBounty {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
+        }
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {
+            runRuleScript(spec.job_conclusion_script);
         }
 
         MagicBountyIntel intel = getIntel();
@@ -224,14 +224,6 @@ public final class ActiveBounty {
             DebugFlags.PRINT_RULES_DEBUG_INFO = true;
         }
 
-        // This does not work.
-//        ScriptEvaluator eval = new ScriptEvaluator();
-//        try {
-//            eval.cook("BountyScriptTest.java", Paths.get("", "data/scripts/bounty/rulecmd").toString());
-//            eval.evaluate(null);
-//        } catch (Exception e) {
-//            Global.getLogger(ActiveBounty.class).error(e);
-//        }
         FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
 
         // Turn it on for FireBest, then set it back to whatever it was.
@@ -488,7 +480,7 @@ public final class ActiveBounty {
         }
     }
 
-    enum Stage {
+    public enum Stage {
         NotAccepted,
         Accepted,
         Failed,
