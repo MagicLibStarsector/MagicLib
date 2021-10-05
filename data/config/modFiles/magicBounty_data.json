@@ -25,7 +25,7 @@
 		"job_deadline":45,
 		"job_credit_reward":90000,	
 		"job_reward_scaling":1.0,
-		"job_type":assassination,
+		"job_type":"assassination",
 		"job_show_type":true,
 		"job_show_captain":true,
 		"job_show_fleet":"preset",
