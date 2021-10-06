@@ -24,6 +24,10 @@ import java.util.List;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import java.util.ArrayList;
 
+/**
+ * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
+ * @author Wisp
+ */
 public final class ActiveBounty {
     /**
      * A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -109,8 +113,8 @@ public final class ActiveBounty {
 
     /**
      * Call when the player accepts a bounty.
-     * <br /> - Spawns the bounty fleet.
-     * <br /> - Adds Intel to the Intel Manager.
+     * <br>- Spawns the bounty fleet.
+     * <br>- Adds Intel to the Intel Manager.
      *
      * @param bountySource  From where the bounty was accepted from.
      * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
@@ -163,7 +167,7 @@ public final class ActiveBounty {
     /**
      * Finishes the bounty with the provided result.
      * Idempotent (if called more than once with the same result, will not trigger again).
-     * <br /> - Updates intel.
+     * <br> - Updates intel.
      *
      * @param result The final result of the bounty.
      */
@@ -342,8 +346,8 @@ public final class ActiveBounty {
     }
 
     /**
-     * The [MagicBountyIntel] active for this bounty, if there is any. <br />
-     * There will only be intel if the bounty has been accepted (and isn't long past ended).
+     * The [MagicBountyIntel] active for this bounty, if there is any.
+     * <br>There will only be intel if the bounty has been accepted (and isn't long past ended).
      */
     @Nullable
     public MagicBountyIntel getIntel() {
@@ -490,7 +494,7 @@ public final class ActiveBounty {
         Succeeded
     }
 
-    public interface BountyResult {
+    interface BountyResult {
         class DismissedPermanently implements BountyResult {
         }
 

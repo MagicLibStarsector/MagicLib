@@ -15,6 +15,8 @@ import java.util.Map;
 /**
  * Not used. This is an example of a bounty script that can run on accept and on completion.
  * This is triggered by a trigger defined in rules.csv.
+ *
+ * @author Wisp
  */
 class BountyScriptExample extends BaseCommandPlugin {
 

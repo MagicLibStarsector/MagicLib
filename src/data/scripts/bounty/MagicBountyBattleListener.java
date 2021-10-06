@@ -6,15 +6,14 @@ import com.fs.starfarer.api.campaign.CampaignEventListener;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
-import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.AutoDespawnScript;
 import com.fs.starfarer.api.util.Misc;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
- * This EveryFrameScript will
+ * Ends bounties based on battle results.
+ *
+ * @author Wisp
  */
 public final class MagicBountyBattleListener implements FleetEventListener {
     private boolean isDone = false;
@@ -91,7 +90,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             if (fleet.getFlagship() != null && fleet.getFlagship().getCaptain() == person) return;
 
             //TEMPORARILY DISABLED TO TEST THE BAR TEXT
-            
+
 //            if (bounty.getSpec().job_requireTargetDestruction && bounty.getFlagshipId() != null) {
 //                boolean didPlayerSalvageFlagship = false;
 //
@@ -114,7 +113,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
 //                    bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
 //                }
 //            } else {
-                bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+            bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
 //            }
 
             isDone = true;

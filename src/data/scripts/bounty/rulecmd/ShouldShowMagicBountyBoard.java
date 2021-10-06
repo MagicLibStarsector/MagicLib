@@ -14,6 +14,8 @@ import java.util.Map;
 
 /**
  * Returns true iff there are available bounties at the current market.
+ *
+ * @author Wisp
  */
 public class ShouldShowMagicBountyBoard extends BaseCommandPlugin {
     @Override

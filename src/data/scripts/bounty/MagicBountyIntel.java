@@ -8,8 +8,6 @@ import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicDeserializable;
-import data.scripts.util.MagicSettings;
-import static data.scripts.util.MagicTxt.getString;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -17,6 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static data.scripts.util.MagicTxt.getString;
+
+/**
+ * Displays MagicLib Bounties to the player.
+ *
+ * @author Wisp, Tartiflette
+ */
 public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializable {
     @NotNull
     public final String bountyKey;
@@ -220,10 +225,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
                 */
-                 //This is an %s mission, to get the reward you will need to %s.
-                if(bounty.getSpec().job_show_type){
+                //This is an %s mission, to get the reward you will need to %s.
+                if (bounty.getSpec().job_show_type) {
                     switch (bounty.getSpec().job_type) {
-                        case Assassination: 
+                        case Assassination:
                             info.addPara(getString("mb_intelType"),
                                     0f,
                                     Misc.getTextColor(),
@@ -231,7 +236,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                     getString("mb_type_assassination1")
                             );
                             break;
-                        case Destruction: 
+                        case Destruction:
                             info.addPara(getString("mb_intelType"),
                                     0f,
                                     Misc.getTextColor(),
@@ -239,7 +244,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                     getString("mb_type_destruction1")
                             );
                             break;
-                        case Obliteration: 
+                        case Obliteration:
                             info.addPara(getString("mb_intelType"),
                                     0f,
                                     Misc.getTextColor(),
@@ -247,7 +252,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                     getString("mb_type_obliteration1")
                             );
                             break;
-                        case Neutralisation: 
+                        case Neutralisation:
                             info.addPara(getString("mb_intelType"),
                                     0f,
                                     Misc.getTextColor(),
@@ -264,24 +269,23 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
-                    
+
                     //"Fleet information is attached to the posting."
                     String fleetInfo = getString("mb_fleet2");
-                    if(bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship){
+                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
                         fleetInfo = getString("mb_fleet0");
                     }
-                    if(bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset){
+                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                         fleetInfo = getString("mb_fleet1");
                     }
-                    info.addPara(fleetInfo+getString("mb_descFleet"), PADDING_DESC);
-                    
+                    info.addPara(fleetInfo + getString("mb_descFleet"), PADDING_DESC);
+
                     int columns = 7;
                     List<FleetMemberAPI> ships = bounty.getFleet().getMembersWithFightersCopy();
-                    
+
                     if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
-                                ships = bounty.getFlagshipInFleet();
-                            } else
-                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
+                        ships = bounty.getFlagshipInFleet();
+                    } else if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                         ships = bounty.getPresetShipsInFleet();
                     }
 

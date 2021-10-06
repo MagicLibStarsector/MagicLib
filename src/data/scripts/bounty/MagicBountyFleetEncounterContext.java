@@ -17,7 +17,10 @@ import java.util.Random;
 public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
 
     /**
+     * Ensures that recoverable ships are recoverable.
      * Mostly copied from SWP (0.95a Tournament edition), which in turn is mostly copied from vanilla FleetEncounterContext.
+     *
+     * @author Wisp
      */
     @Override
     public List<FleetMemberAPI> getRecoverableShips(BattleAPI battle, CampaignFleetAPI winningFleet, CampaignFleetAPI otherFleet) {

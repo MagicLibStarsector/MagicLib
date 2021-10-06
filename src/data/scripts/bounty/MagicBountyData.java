@@ -225,7 +225,10 @@ public class MagicBountyData {
             LOG.info("Successfully loaded "+x+" bounties");
         }
     }
-    
+
+    /**
+     * The code representation of a bounty json definition.
+     */
     public static class bountyData {
         
         //trigger parameters                                                    //ALL OPTIONAL

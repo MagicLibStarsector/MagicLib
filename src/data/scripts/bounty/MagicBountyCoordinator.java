@@ -22,6 +22,16 @@ import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
+/**
+ * The point of entry into MagicBounty scripting.
+ * Contains methods for getting all or specific {@link ActiveBounty}s, as well as general bounty management logic.
+ *
+ * <pre>
+ * Usage: MagicBountyCoordinator.getInstance()
+ * </pre>
+ *
+ * @author Wisp
+ */
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
