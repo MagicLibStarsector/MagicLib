@@ -10,7 +10,7 @@ import com.fs.starfarer.api.impl.campaign.DModManager;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.loading.VariantSource;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.util.MagicTxt;
+//import data.scripts.util.MagicTxt;
 
 import java.util.Collection;
 import java.util.List;
@@ -117,9 +117,10 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
             return;
         }
 
-//        if (MagicTxt.nullStringIfEmpty(bounty.getSpec().job_customItem) != null) {
-        if (true) {
-//            loot.addItems(CargoAPI.CargoItemType.SPECIAL, );
+        if (bounty.getSpec().job_item_reward!=null && !bounty.getSpec().job_item_reward.isEmpty()) {
+            for(String item : bounty.getSpec().job_item_reward.keySet()){
+                loot.addItems(CargoAPI.CargoItemType.SPECIAL, item, bounty.getSpec().job_item_reward.get(item));
+            }
         }
     }
 }
