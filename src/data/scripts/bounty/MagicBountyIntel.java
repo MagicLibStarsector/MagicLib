@@ -178,17 +178,32 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 info.addPara(getString("mb_descSuccess"), 0f);
 
                 if (bounty.hasCreditReward()) {
-                    if (bounty.hasCreditReward()) {
-                        bullet(info);
-                        //"%s credits received"
-                        info.addPara(getString("mb_descRewarded"),
-                                PADDING_DESC,
-                                Misc.getTextColor(),
-                                Misc.getHighlightColor(),
-                                Misc.getDGSCredits(bounty.getRewardCredits()));
-                        unindent(info);
-                    }
+                    bullet(info);
+                    //"%s credits received"
+                    info.addPara(
+                            getString("mb_descRewarded"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor(),
+                            Misc.getDGSCredits(bounty.getRewardCredits())
+                    );
+                    unindent(info);
                 }
+                
+                if (bounty.hasReputationReward()){
+                    bullet(info);
+                    //"Your reputation with %s has improved by %s."
+                    info.addPara(
+                            getString("mb_descReputation"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor(),
+                            bounty.getGivingFaction().getDisplayNameWithArticle(),
+                            Math.round(bounty.getRewardReputation())+""
+                    );
+                    unindent(info);
+                }
+                
                 break;
             case Failed:
                 break;
@@ -212,25 +227,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     addDays(info, getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
                     unindent(info);
                 }
-
-                /*
-                if (bounty.getSpec().job_requireTargetDestruction) {
-                    bullet(info);
-                    //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
-                    info.addPara(getString("mb_noRecovery1"),
-                            0f,
-                            Misc.getTextColor(),
-                            Misc.getHighlightColor(),
-                            getString("mb_noRecovery2"));
-                    unindent(info);
-                }
-                */
+                
                 //This is an %s mission, to get the reward you will need to %s.
                 if (bounty.getSpec().job_show_type) {
                     switch (bounty.getSpec().job_type) {
                         case Assassination:
                             info.addPara(getString("mb_intelType"),
-                                    0f,
+                                    PADDING_DESC,
                                     Misc.getTextColor(),
                                     Misc.getHighlightColor(),
                                     getString("mb_type_assassination1")
@@ -238,7 +241,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             break;
                         case Destruction:
                             info.addPara(getString("mb_intelType"),
-                                    0f,
+                                    PADDING_DESC,
                                     Misc.getTextColor(),
                                     Misc.getHighlightColor(),
                                     getString("mb_type_destruction1")
@@ -246,7 +249,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             break;
                         case Obliteration:
                             info.addPara(getString("mb_intelType"),
-                                    0f,
+                                    PADDING_DESC,
                                     Misc.getTextColor(),
                                     Misc.getHighlightColor(),
                                     getString("mb_type_obliteration1")
@@ -254,7 +257,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             break;
                         case Neutralisation:
                             info.addPara(getString("mb_intelType"),
-                                    0f,
+                                    PADDING_DESC,
                                     Misc.getTextColor(),
                                     Misc.getHighlightColor(),
                                     getString("mb_type_neutralisation1")

@@ -88,6 +88,8 @@ public final class ActiveBounty {
      * The number of credits that was promised as a reward upon completion. Includes scaling, if applicable.
      */
     private @Nullable Float rewardCredits;
+    private @Nullable Float rewardReputation;
+    private @Nullable String rewardFaction;
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -120,8 +122,10 @@ public final class ActiveBounty {
      * @param bountySource  From where the bounty was accepted from.
      * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
      */
-    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardCredits) {
+    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardCredits, @Nullable Float rewardReputation, @Nullable String rewardFaction) {
         this.rewardCredits = rewardCredits;
+        this.rewardReputation = rewardReputation;
+        this.rewardFaction = rewardFaction;
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
         this.bountySource = bountySource;
@@ -185,6 +189,13 @@ public final class ActiveBounty {
 
             if (((BountyResult.Succeeded) result).shouldRewardCredits && getRewardCredits() != null) {
                 Global.getSector().getPlayerFleet().getCargo().getCredits().add(getRewardCredits());
+            }
+            //reputation reward
+            if (
+                    ((BountyResult.Succeeded) result).shouldRewardCredits
+                    && hasReputationReward()
+                    ) {
+                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), getRewardReputation());
             }
 
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -279,7 +290,13 @@ public final class ActiveBounty {
     public @Nullable Float getRewardCredits() {
         return rewardCredits;
     }
-
+    public @Nullable Float getRewardReputation() {
+        return rewardReputation;
+    }
+    public @Nullable String getRewardFaction() {
+        return rewardFaction;
+    }
+    
     public @NotNull SectorEntityToken getFleetSpawnLocation() {
         return fleetSpawnLocation;
     }
@@ -389,6 +406,14 @@ public final class ActiveBounty {
      */
     public boolean hasCreditReward() {
         return getRewardCredits() != null && getRewardCredits() > 0;
+    }
+    
+    public boolean hasReputationReward(){
+        return getRewardReputation() != null
+                && getRewardReputation() > 0
+                && getRewardFaction() != null
+                && !getRewardFaction().isEmpty()
+                && Global.getSector().getFaction(getRewardFaction())!=null;
     }
 
     /**

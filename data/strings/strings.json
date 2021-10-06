@@ -91,6 +91,7 @@
 		mb_intelType:"This mission has for objective the %s of the target.",
 		mb_descSuccess:"You have successfully completed this bounty.",
 		mb_descRewarded:"%s credits received",
+		mb_descReputation:"Your reputation with %s has improved by %s",
 		mb_descReward:"%s reward",
 		mb_descRemaining:"remaining",
 		#mb_descDestruction1:"This bounty requires the %s of the flagship. Flagship recovery will forfeit any rewards.",

@@ -139,9 +139,9 @@ public class MagicBountyData {
                     memKey = getString(bountyId, "job_memKey");
                 }
                 
-                int reputation = 5;
+                float reputation = 0.05f;
                 if(getInt(bountyId, "job_reputation_reward")!=null){
-                    reputation = getInt(bountyId, "job_reputation_reward");
+                    reputation = (float)getInt(bountyId, "job_reputation_reward")/100f;
                 }
                 
                 String reply = MagicTxt.getString("mb_comm_reply");
@@ -267,7 +267,7 @@ public class MagicBountyData {
         public int job_deadline;
         public int job_credit_reward;
         public float job_credit_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
-        public int job_reputation_reward;
+        public float job_reputation_reward;
         public Map <String,Integer> job_item_reward;
         public JobType job_type;                                                //assassination, destruction, obliteration, neutralisation. see magicBounty_data_example.json 
         public boolean job_show_type;
@@ -337,7 +337,7 @@ public class MagicBountyData {
             int job_deadline,
             int job_credit_reward,
             float job_credit_scaling,    
-            int job_reputation_reward,
+            float job_reputation_reward,
             Map <String,Integer> job_item_reward,
             String job_type,
             boolean job_show_type,

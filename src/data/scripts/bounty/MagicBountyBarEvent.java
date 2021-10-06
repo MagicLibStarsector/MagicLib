@@ -153,7 +153,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s", Misc.getHighlightColor(), getString("mb_accepted") + bounty.job_name);
 
                     ActiveBounty activeBounty = instance.getActiveBounty(bountyKey);
-                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward());
+                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), (float)bounty.job_reputation_reward, bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
