@@ -11,6 +11,11 @@ import data.scripts.bounty.MagicBountyBarEvent;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Part of the logic to show the bounty board in every single market.
+ *
+ * @author Wisp
+ */
 public class ShowMagicBountyBoardCmd extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {

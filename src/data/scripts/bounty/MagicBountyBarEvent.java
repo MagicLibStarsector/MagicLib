@@ -4,18 +4,16 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
-//import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
-//import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
-//import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
 import data.scripts.util.MagicSettings;
+import data.scripts.util.MagicVariables;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
@@ -23,8 +21,12 @@ import java.util.*;
 
 import static data.scripts.util.MagicTxt.getString;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import data.scripts.util.MagicVariables;
 
+/**
+ * Displays the bounty board and all associated bounties.
+ *
+ * @author Wisp, Tartiflette
+ */
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
     private MarketAPI market;
@@ -220,17 +222,18 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             //"Time limit: %s days"
                             text.addPara(getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                         }
-                        
-                        if(bounty.job_show_distance!= MagicBountyData.ShowDistance.None){
+
+                        if (bounty.job_show_distance != MagicBountyData.ShowDistance.None) {
                             switch (bounty.job_show_distance) {
                                 case Vague:
                                     float distance = activeBounty.getFleetSpawnLocation().getLocation().length();
                                     String vague = getString("mb_distance_core");
-                                    if(distance>MagicVariables.getSectorSize()/0.66f){
+                                    if (distance > MagicVariables.getSectorSize() / 0.66f) {
                                         vague = getString("mb_distance_far");
-                                    } else if(distance>MagicVariables.getSectorSize()/0.33f){
+                                    } else if (distance > MagicVariables.getSectorSize() / 0.33f) {
                                         vague = getString("mb_distance_close");
-                                    }   text.addPara(getString("mb_distance_vague"),
+                                    }
+                                    text.addPara(getString("mb_distance_vague"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
                                             vague);
@@ -240,55 +243,55 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     text.addPara(getString("mb_distance"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
-                                            Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation()))+"");
+                                            Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                     break;
 
                                 case Vanilla:
                                     text.addPara(activeBounty.createLocationEstimateText());
-                                    break;   
+                                    break;
 
                                 case VanillaDistance:
-                                    text.addPara(activeBounty.createLocationEstimateText()+" "+getString("mb_distance"),
+                                    text.addPara(activeBounty.createLocationEstimateText() + " " + getString("mb_distance"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
-                                            Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation()))+"");
+                                            Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                     break;
 
                                 default:
                                     break;
                             }
                         }
-                        
-                        
+
+
                         //This is an %s mission, to get the reward you will need to %s.
-                        if(bounty.job_show_type){
+                        if (bounty.job_show_type) {
                             switch (bounty.job_type) {
-                                case Assassination: 
+                                case Assassination:
                                     text.addPara(getString("mb_type"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
-                                            getString("mb_type_assassination1"),getString("mb_type_assassination2")
+                                            getString("mb_type_assassination1"), getString("mb_type_assassination2")
                                     );
                                     break;
-                                case Destruction: 
+                                case Destruction:
                                     text.addPara(getString("mb_type"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
-                                            getString("mb_type_destruction1"),getString("mb_type_destruction2")
+                                            getString("mb_type_destruction1"), getString("mb_type_destruction2")
                                     );
                                     break;
-                                case Obliteration: 
+                                case Obliteration:
                                     text.addPara(getString("mb_type"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
-                                            getString("mb_type_obliteration1"),getString("mb_type_obliteration2")
+                                            getString("mb_type_obliteration1"), getString("mb_type_obliteration2")
                                     );
                                     break;
-                                case Neutralisation: 
+                                case Neutralisation:
                                     text.addPara(getString("mb_type"),
                                             Misc.getTextColor(),
                                             Misc.getHighlightColor(),
-                                            getString("mb_type_neutralisation1"),getString("mb_type_neutralisation2")+Math.round(100*MagicSettings.getFloat("MagicLib", "bounty_neutralisationThreshold"))+getString("mb_type_neutralisation3")
+                                            getString("mb_type_neutralisation1"), getString("mb_type_neutralisation2") + Math.round(100 * MagicSettings.getFloat("MagicLib", "bounty_neutralisationThreshold")) + getString("mb_type_neutralisation3")
                                     );
                                     break;
                             }

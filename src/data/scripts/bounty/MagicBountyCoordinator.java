@@ -22,6 +22,16 @@ import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 
+/**
+ * The point of entry into MagicBounty scripting.
+ * Contains methods for getting all or specific {@link ActiveBounty}s, as well as general bounty management logic.
+ *
+ * <pre>
+ * Usage: MagicBountyCoordinator.getInstance()
+ * </pre>
+ *
+ * @author Wisp
+ */
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
@@ -253,6 +263,10 @@ public final class MagicBountyCoordinator {
             return null;
         }
 
+        // Add both a constant tag to the fleet as well as the bounty key that it is for.
+        fleet.addTag(MagicBountyData.BOUNTY_FLEET_TAG);
+        fleet.addTag(bountyKey);
+
         // Set fleet to max CR
         for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
             member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
@@ -263,15 +277,6 @@ public final class MagicBountyCoordinator {
         getActiveBounties().put(bountyKey, newBounty);
         configureBountyListeners();
         return newBounty;
-    }
-
-    /**
-     * Idempotently ensures that `MagicBountyScript` exists and is running.
-     */
-    public void configureBountyScript() {
-        if (!Global.getSector().hasScript(MagicBountyScript.class)) {
-            Global.getSector().addScript(new MagicBountyScript());
-        }
     }
 
     /**

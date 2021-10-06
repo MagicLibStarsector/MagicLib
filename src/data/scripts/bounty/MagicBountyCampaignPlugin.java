@@ -1,20 +1,20 @@
-package data.scripts.plugins;
+package data.scripts.bounty;
 
 import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.BaseCampaignPlugin;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import data.scripts.bounty.ActiveBounty;
-import data.scripts.bounty.MagicBountyCoordinator;
-import data.scripts.bounty.MagicBountyFleetInteractionDialogPlugin;
 
 import java.util.Collection;
 
-public class MagicCampaignPlugin extends BaseCampaignPlugin {
+/**
+ * Tells the game engine to use {@link MagicBountyFleetInteractionDialogPlugin} for battles with bounty fleets.
+ */
+public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
     @Override
     public String getId() {
-        return "Magic_CampaignPlugin";
+        return "Magic_BountyCampaignPlugin";
     }
 
     @Override

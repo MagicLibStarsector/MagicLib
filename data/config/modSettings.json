@@ -40,7 +40,7 @@
             "SKR_kaleidoscope":"WEAK",
             "SKR_gatlingLance":"MILD",
         },
-
+        "bounty_board_enabled": true, # whether bounties are enabled in MagicLib or not
 		"bounty_board":{
 			#List bounties that will be loaded from data/config/modFiles/MagicBounty_data.json
 			#"id" : bounty id
