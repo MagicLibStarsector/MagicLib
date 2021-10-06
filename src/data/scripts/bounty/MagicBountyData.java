@@ -120,7 +120,7 @@ public class MagicBountyData {
                 
                 String target_skill_pref = getString(bountyId, "target_skill_preference");
                 SkillPickPreference skillPref = SkillPickPreference.GENERIC;
-                if(target_skill_pref!=null && !target_skill_pref.equals("")){
+                if(target_skill_pref!=null && !target_skill_pref.isEmpty()){
                     switch (target_skill_pref){
                         case "CARRIER" :{
                             skillPref=SkillPickPreference.CARRIER;
@@ -134,8 +134,18 @@ public class MagicBountyData {
                 }
                 
                 String memKey = "$"+bountyId;
-                if(getString(bountyId, "job_memKey")!=null && !getString(bountyId, "job_memKey").equals("")){
+                if(getString(bountyId, "job_memKey")!=null && !getString(bountyId, "job_memKey").isEmpty()){
                     memKey = getString(bountyId, "job_memKey");
+                }
+                
+                int reputation = 5;
+                if(getInt(bountyId, "job_reputation_reward")!=null){
+                    reputation = getInt(bountyId, "job_reputation_reward");
+                }
+                
+                String reply = MagicTxt.getString("mb_comm_reply");
+                if(getString(bountyId,"job_comm_reply")!=null && !getString(bountyId,"job_comm_reply").isEmpty()){
+                    reply = getString(bountyId,"job_comm_reply");
                 }
                 
                 bountyData this_bounty = new bountyData(
@@ -154,12 +164,15 @@ public class MagicBountyData {
                         getFloatMap(bountyId, "trigger_playerRelationship_atMost"),
                                                 
                         getString(bountyId, "job_name"),
-                        getString(bountyId, "job_description"),  
+                        getString(bountyId, "job_description"), 
+                        reply,
                         getString(bountyId, "job_forFaction"),
                         getString(bountyId, "job_difficultyDescription"),
                         getInt(bountyId, "job_deadline"),
                         getInt(bountyId, "job_credit_reward"),
                         getFloat(bountyId, "job_reward_scaling"),
+                        reputation,
+                        getIntMap(bountyId, "job_item_reward"),
                         getString(bountyId, "job_type"),
                         getBooleanDefaultTrue(bountyId, "job_show_type"),
                         getBoolean(bountyId, "job_show_captain"),
@@ -243,12 +256,15 @@ public class MagicBountyData {
         public Map <String,Float> trigger_playerRelationship_atMost;            //maximum player relationship with those factions
         //job description
         public String job_name;                                                 //job name in the dialog pick list
-        public String job_description;                                          //not sure how the description will handle text variables and highlights, will it work with variables such as "$he_or_she"?
+        public String job_description;                                          //full text of the bounty offer, the description will handle some text variables such as "$he_or_she". See documentation for more details
+        public String job_comm_reply;                                           //Reply of the enemy to your hail, default to "The other $shipOrFleet does not answer to you hails."
         public String job_forFaction;                                           //successfully completing this mission with give a small reputation reward with this faction
         @Nullable public String job_difficultyDescription;                      // "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
         public int job_deadline;
         public int job_credit_reward;
-        public float job_reward_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
+        public float job_credit_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
+        public int job_reputation_reward;
+        public Map <String,Integer> job_item_reward;
         public JobType job_type;                                                //assassination, destruction, obliteration, neutralisation. see magicBounty_data_example.json 
         public boolean job_show_type;
         public boolean job_show_captain;
@@ -310,12 +326,15 @@ public class MagicBountyData {
             Map <String,Float> trigger_playerRelationship_atLeast,  
             Map <String,Float> trigger_playerRelationship_atMost,  
             String job_name,                         
-            String job_description,        
+            String job_description, 
+            String job_comm_reply,
             String job_forFaction,
             String job_difficultyDescription,
             int job_deadline,
             int job_credit_reward,
-            float job_reward_scaling,    
+            float job_credit_scaling,    
+            int job_reputation_reward,
+            Map <String,Integer> job_item_reward,
             String job_type,
             boolean job_show_type,
             boolean job_show_captain,
@@ -374,11 +393,14 @@ public class MagicBountyData {
             this.trigger_playerRelationship_atMost = trigger_playerRelationship_atMost;
             this.job_name = job_name;                         
             this.job_description = job_description;  
+            this.job_comm_reply = job_comm_reply;
             this.job_forFaction = job_forFaction;
             this.job_difficultyDescription = job_difficultyDescription;
             this.job_deadline = job_deadline;
             this.job_credit_reward = job_credit_reward;
-            this.job_reward_scaling = job_reward_scaling;  
+            this.job_credit_scaling = job_credit_scaling;
+            this.job_reputation_reward = job_reputation_reward;
+            this.job_item_reward = job_item_reward;
             if(job_type !=null){
                 if (job_type.equalsIgnoreCase("assassination")) {
                     this.job_type = JobType.Assassination;

@@ -29,16 +29,21 @@
 		
 		"job_name":"job name", #job name in the dialog pick list
 		"job_description":"Long form description of the job",
-		"job_forFaction":"faction_offering_the_job",
+		"job_comm_reply":"Reply of the enemy to your hail", #default to "The other $shipOrFleet does not answer to you hails."
+		"job_forFaction":"faction_offering_the_job", #optional, note that unless set otherwise, successfully completing a bounty will improve relations by 5 points
 		"job_deadline":360,
 		"job_credit_reward":9000,	
-		"job_reward_scaling":1.0,
+		"job_reward_scaling":1.0, #optional, only affects the credit reward
+		"job_reputation_reward":5, #reputation benefit with the faction posting the bounty, if any, in case of success. default 5, set to 0 or less to disable, does not scale
+		"job_item_reward":{
+			"item_A":1,
+		},
 		"job_type":"assassination", #assassination, destruction, obliteration, neutralisation
 				# assassination: requires only to disable the flagship
 				# destruction: requires the complete destruction of the flagship without recovery
 				# obliteration: requires the complete elimination of the enemy fleet
-				# incapacitation: requires the destruction of 2/3rd of the enemy fleet
-				# default: assassination
+				# neutralisation: requires the destruction of 2/3rd of the enemy fleet
+				# default to assassination
 		"job_show_type":true, #default: true, make sure to explain the mission objective in the bounty description if you choose to not use the default display
 		"job_show_captain":false,
 		"job_show_fleet":preset, #"none", "flagship", "preset", or "all": how much of the fleet to show on the bounty board. default: none
@@ -47,7 +52,7 @@
 		"job_difficultyDescription":auto,  #"none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
 		"job_pick_option":"Accept the job",
 		"job_pick_script":"data.script.FancyScriptThatDoStuff", #optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
-		"job_memKey":"$jobMemKey",	#memKeys always start with $
+		"job_memKey":"$jobMemKey",	#default to "$bountyId", memKeys always start with "$"
 		"job_conclusion_script":"data.script.FancyScriptThatDoStuff", #optional, can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
 		
 		#TARGET COMMANDER (OPTIONAL)

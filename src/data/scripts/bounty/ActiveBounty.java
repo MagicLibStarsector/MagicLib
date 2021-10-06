@@ -334,7 +334,7 @@ public final class ActiveBounty {
         int bountyFPIncreaseOverBaseDueToScaling = getFleet().getFleetPoints() - getSpec().fleet_min_DP;
 
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
-        float bonusCreditsFromScaling = Math.max(0, getSpec().job_reward_scaling * bountyFPIncreaseOverBaseDueToScaling);
+        float bonusCreditsFromScaling = Math.max(0, getSpec().job_credit_scaling * bountyFPIncreaseOverBaseDueToScaling);
         float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
         float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
         Global.getLogger(ActiveBounty.class)
@@ -343,7 +343,7 @@ public final class ActiveBounty {
                         getKey(),
                         getSpec().job_credit_reward,
                         bonusCreditsFromScaling,
-                        getSpec().job_reward_scaling,
+                        getSpec().job_credit_scaling,
                         bountyFPIncreaseOverBaseDueToScaling));
 
         return rewardRoundedToNearest100;
