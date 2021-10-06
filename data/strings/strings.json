@@ -101,5 +101,9 @@
 		"mb_permDismissConfirmOpt": "Permanently dismiss this bounty",
 		"mb_permDismissConfirmed": "Bounty dismissed.",
 		"mb_comm_reply": "The other $shipOrFleet does not answer to you hails.",
+		"mb_son":"son",
+		"mb_daughter":"daughter",
+		"mb_father":"father",
+		"mb_mother":"mother",
 	}
 }

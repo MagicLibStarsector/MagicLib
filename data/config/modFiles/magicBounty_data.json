@@ -11,18 +11,21 @@
 		"trigger_weight_mult":1,
 		#"trigger_memKeys_all":{},
 		#"trigger_memKeys_any":{},
-		"trigger_playerRelationship_atLeast":{
-			"hegemony":0.1,
-		},
+		#"trigger_playerRelationship_atLeast":{"hegemony":0.1,},
 		"trigger_playerRelationship_atMost":{
 			"pirates":-0.25,
 		},
 		
 		"job_name":"Take down a pirate upstart",
 		"job_description":"The child of some TT bigwig has made very public their dislike for a sheltered lavish life and decided to invest 'their' money to form a merry band of 'pirates' and enjoy a more eventful existence. They even went as far as to make an announcement when entering the $system_name system! This is an outrage, and proof of the utter disregard from the rich about the 99% yadda yadda yadda.\nThe part that interests me, and by extension the reader of this note, is that in the Tri-Tachyon influential spheres there is always something to gain from shining a light on the antics of one's troublesome heir. Find the fleet, destroy it. The $sonOrDaugther survival is irrelevant, we will have our media coverage ready before the deed is done.\nTime is of the essence here.",
+		"job_comm_reply":"Yes, time for some action! Come at me $manOrWoman, I'll show you what this baby can do!",
 		"job_forFaction":"persean",
 		"job_difficultyDescription": "auto",
 		"job_deadline":45,
+		"job_reputation_reward":10,
+		"job_item_reward":{
+			"pristine_nanoforge":2,
+		},
 		"job_credit_reward":90000,	
 		"job_reward_scaling":1.0,
 		"job_type":"assassination",

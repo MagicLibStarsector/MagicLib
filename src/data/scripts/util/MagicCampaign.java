@@ -213,6 +213,7 @@ public class MagicCampaign {
         WEAPON,
         FIGHTER,
         HULLMOD,
+        SPECIAL,
     }
     
     /**
@@ -241,6 +242,9 @@ public class MagicCampaign {
             theCargo = cargo;
         }
         switch(type){
+            case SPECIAL:
+                theCargo.addItems(CargoAPI.CargoItemType.SPECIAL, lootID, amount);
+                break;
             case COMMODITY:
                 theCargo.addCommodity(lootID, amount);
                 break;

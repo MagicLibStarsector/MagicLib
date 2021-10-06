@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.characters.FullName;
+import com.fs.starfarer.api.characters.FullName.Gender;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DebugFlags;
@@ -444,10 +445,28 @@ public final class ActiveBounty {
                 String replacedPara = para;
 
                 final ActiveBounty finalActiveBounty = this;
+                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$sonOrDaughter", new StringCreator() {
+                    @Override
+                    public String create() {
+                        return finalActiveBounty.getFleet().getCommander().getGender()==Gender.MALE ? MagicTxt.getString("mb_son") : MagicTxt.getString("daughter");
+                    }
+                });
+                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$fatherOrMother", new StringCreator() {
+                    @Override
+                    public String create() {
+                        return finalActiveBounty.getFleet().getCommander().getGender()==Gender.MALE ? MagicTxt.getString("mb_father") : MagicTxt.getString("mb_mother");
+                    }
+                });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$system_name", new StringCreator() {
                     @Override
                     public String create() {
                         return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getNameWithNoType();
+                    }
+                });
+                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$shipName", new StringCreator() {
+                    @Override
+                    public String create() {
+                        return finalActiveBounty.getFleet().getFlagship().getShipName();
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$target", new StringCreator() {
@@ -466,6 +485,18 @@ public final class ActiveBounty {
                     @Override
                     public String create() {
                         return finalActiveBounty.getFleet().getCommander().getNameString();
+                    }
+                });
+                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$firstName", new StringCreator() {
+                    @Override
+                    public String create() {
+                        return finalActiveBounty.getFleet().getCommander().getName().getFirst();
+                    }
+                });
+                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$lastName", new StringCreator() {
+                    @Override
+                    public String create() {
+                        return finalActiveBounty.getFleet().getCommander().getName().getLast();
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$constellation", new StringCreator() {
