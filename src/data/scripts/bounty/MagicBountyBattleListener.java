@@ -10,6 +10,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.AutoDespawnScript;
 import com.fs.starfarer.api.util.Misc;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,12 +21,18 @@ import java.util.List;
  */
 public final class MagicBountyBattleListener implements FleetEventListener {
     /**
-     * Whether this listener is finished listening to the single battle event.
+     * Whether this listener is finished listening to battles that this bounty fleet gets into.
      */
     private boolean isDone = false;
 
     @NotNull
     private final String bountyKey;
+
+    /**
+     * The original size of the bounty fleet in FP, before any battles.
+     */
+    @Nullable
+    private Integer initialBountyFleetPoints = null;
 
     public MagicBountyBattleListener(@NotNull String bountyKey) {
         this.bountyKey = bountyKey;
@@ -73,7 +80,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
         boolean playerInvolved = battle.isPlayerInvolved() || (bountyFleet.isInCurrentLocation() && distToPlayer < 2000f);
 
         if (bountyFleet.getId().equals(bounty.getFleet().getId())) {
-            PersonAPI bountyCommander = bounty.getFleet().getCommander();
+            PersonAPI bountyCommander = bounty.getCaptain();
 
             if (battle.isInvolved(bountyFleet) && !playerInvolved) {
                 if (bountyFleet.getFlagship() == null || bountyFleet.getFlagship().getCaptain() != bountyCommander) {
@@ -97,6 +104,16 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             boolean didPlayerSalvageFlagship = false;
             List<FleetMemberAPI> bountyFleetBeforeBattle = bountyFleet.getFleetData().getSnapshot();
 
+            // Save the initial FP of the bounty fleet before any battles.
+            // Only do this after the first of the fleet's battles, otherwise multiple battles would overwrite the value.
+            if (initialBountyFleetPoints == null) {
+                initialBountyFleetPoints = 0;
+
+                for (FleetMemberAPI member : bountyFleetBeforeBattle) {
+                    initialBountyFleetPoints += member.getFleetPointCost();
+                }
+            }
+
             if (bounty.getFlagshipId() != null) {
                 for (FleetMemberAPI fleetMember : playerFleet.getFleetData().getMembersListCopy()) {
 
@@ -110,13 +127,11 @@ public final class MagicBountyBattleListener implements FleetEventListener {
                 }
             }
 
-            boolean didPlayerSucceed = false;
-            boolean didPlayerFail = false;
-
             switch (bounty.getSpec().job_type) {
                 case Assassination:
                     if (didDisableOrDestroyOriginalFlagship) {
                         bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+                        isDone = true;
                     }
 
                     break;
@@ -124,35 +139,32 @@ public final class MagicBountyBattleListener implements FleetEventListener {
                     if (didDisableOrDestroyOriginalFlagship)
                         if (!didPlayerSalvageFlagship) {
                             bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+                            isDone = true;
                         } else {
                             // If the bounty required destroying the target, but player salvaged their ship, they don't get credits.
                             bounty.endBounty(new ActiveBounty.BountyResult.FailedSalvagedFlagship());
+                            isDone = true;
                         }
 
                     break;
                 case Obliteration:
                     if (bountyFleet.getFleetSizeCount() <= 0) {
                         bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+                        isDone = true;
                     }
 
                     break;
                 case Neutralisation:
                     float fpPostFight = bountyFleet.getFleetPoints();
-                    float fpPreFight = 0f;
 
-                    for (FleetMemberAPI member : bountyFleetBeforeBattle) {
-                        fpPreFight += member.getFleetPointCost();
-                    }
-
-                    // Repeating, of course
-                    if ((fpPostFight / fpPreFight) <= (1f / 3f)) {
+                    if ((fpPostFight / initialBountyFleetPoints) <= (1f / 3f)) {
                         bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
+                        isDone = true;
                     }
 
                     break;
             }
 
-            isDone = true;
         }
     }
 }

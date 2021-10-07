@@ -212,6 +212,8 @@ public final class ActiveBounty {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
+        } else if (result instanceof BountyResult.FailedSalvagedFlagship) {
+            stage = Stage.Failed;
         }
 
         if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {

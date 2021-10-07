@@ -736,11 +736,11 @@ public class MagicBountyData {
          */
         Destruction,
         /**
-         * Requires the complete elimination of the enemy fleet
+         * Requires the complete destruction or disabling of the enemy fleet
          */
         Obliteration,
         /**
-         * Requires the destruction of 2/3rd of the enemy fleet.
+         * Requires the destruction or disabling of 2/3rd of the enemy fleet.
          */
         Neutralisation,
     }

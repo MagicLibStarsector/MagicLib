@@ -41,8 +41,8 @@
 		"job_type":"assassination", #assassination, destruction, obliteration, neutralisation
 				# assassination: requires only to disable the flagship
 				# destruction: requires the complete destruction of the flagship without recovery
-				# obliteration: requires the complete elimination of the enemy fleet
-				# neutralisation: requires the destruction of 2/3rd of the enemy fleet
+				# obliteration: requires the complete destruction or disabling of the enemy fleet
+				# neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet
 				# default to assassination
 		"job_show_type":true, #default: true, make sure to explain the mission objective in the bounty description if you choose to not use the default display
 		"job_show_captain":false,
