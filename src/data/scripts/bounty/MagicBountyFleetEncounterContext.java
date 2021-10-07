@@ -3,17 +3,17 @@ package data.scripts.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DModManager;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.loading.VariantSource;
 import com.fs.starfarer.api.util.Misc;
-//import data.scripts.util.MagicTxt;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
@@ -117,9 +117,16 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
             return;
         }
 
-        if (bounty.getSpec().job_item_reward!=null && !bounty.getSpec().job_item_reward.isEmpty()) {
-            for(String item : bounty.getSpec().job_item_reward.keySet()){
-                loot.addItems(CargoAPI.CargoItemType.SPECIAL, item, bounty.getSpec().job_item_reward.get(item));
+        // Add special items
+        if (bounty.getSpec().job_item_reward != null) {
+            for (Map.Entry<String, Integer> entry : bounty.getSpec().job_item_reward.entrySet()) {
+                String itemId = entry.getKey();
+                Integer count = entry.getValue();
+                try {
+                    loot.addSpecial(new SpecialItemData(itemId, null), count);
+                } catch (Exception ex) {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add special loot: " + itemId, ex);
+                }
             }
         }
     }

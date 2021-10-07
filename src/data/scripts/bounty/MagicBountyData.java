@@ -723,12 +723,28 @@ public class MagicBountyData {
         return value;
     }
 
+    /**
+     * The type of bounty; defines criteria for successful completion.
+     */
     public enum JobType {
+        /**
+         * Required only to disable the flagship.
+         */
         Assassination,
+        /**
+         * Requires the complete destruction of the flagship without recovery.
+         */
         Destruction,
+        /**
+         * Requires the complete elimination of the enemy fleet
+         */
         Obliteration,
+        /**
+         * Requires the destruction of 2/3rd of the enemy fleet.
+         */
         Neutralisation,
     }
+
     public enum ShowFleet {
         None,
         Flagship,
