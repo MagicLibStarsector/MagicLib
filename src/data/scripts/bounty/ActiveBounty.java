@@ -143,6 +143,9 @@ public final class ActiveBounty {
 
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
+        // Add comm reply
+        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", spec.job_comm_reply);
+        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
