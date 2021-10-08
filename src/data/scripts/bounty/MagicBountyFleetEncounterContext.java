@@ -107,8 +107,10 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
         MagicBountyCoordinator magicBountyCoordinator = MagicBountyCoordinator.getInstance();
 
         for (String key : magicBountyCoordinator.getActiveBounties().keySet()) {
-            if (getLoser().hasTag(key)) {
-                bounty = magicBountyCoordinator.getActiveBounty(key);
+            for (CampaignFleetAPI losingFleet : getBattle().getSnapshotSideFor(getLoser())) {
+                if (losingFleet.hasTag(key)) {
+                    bounty = magicBountyCoordinator.getActiveBounty(key);
+                }
             }
         }
 
