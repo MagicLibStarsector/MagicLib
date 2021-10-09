@@ -28,6 +28,10 @@
             "base_trail_zap":"graphics/magic/fx/base_trail_zap.png",
             "base_trail_zapWithCore":"graphics/magic/fx/base_trail_zapWithCore.png",
 		},
+		"intel":{
+			"magicBounties":"graphics/magic/icons/ml_bounty.png",
+			"magicBoard":"graphics/magic/icons/ml_bountyBoard.png",
+		},
     },
     "ruleCommandPackages": [
         "data.scripts.bounty.rulecmd"

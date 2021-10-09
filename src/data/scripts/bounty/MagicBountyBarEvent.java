@@ -9,7 +9,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
-import com.fs.starfarer.api.ui.TooltipMakerAPI;
+//import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import static com.fs.starfarer.api.util.Misc.random;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
@@ -315,6 +315,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             String factionLogoSpriteName = activeBounty.getGivingFaction().getLogo();
                             SpriteAPI sprite = Global.getSettings().getSprite(factionLogoSpriteName);
                             InteractionDialogImageVisual visual = new InteractionDialogImageVisual(factionLogoSpriteName, sprite.getWidth(), sprite.getHeight());
+                            visual.setShowRandomSubImage(false);
+                            dialog.getVisualPanel().showImageVisual(visual);
+                        } else {
+                            InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128,128);
                             visual.setShowRandomSubImage(false);
                             dialog.getVisualPanel().showImageVisual(visual);
                         }

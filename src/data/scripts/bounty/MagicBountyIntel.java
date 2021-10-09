@@ -52,12 +52,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
     @Override
     public String getIcon() {
+        /*
         ActiveBounty bounty = getBounty();
         if (bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
             return bounty.getFleet().getCommander().getPortraitSprite();
         } else {
             return null; // TODO special bounty board icon?
         }
+        */
+        return "graphics/magic/icons/ml_bounty.png";
     }
 
     @Override
@@ -164,8 +167,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     public void createSmallDescription(TooltipMakerAPI info, float width, float height) {
         ActiveBounty bounty = getBounty();
 
-        if (bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
+        if (bounty.getSpec().job_show_captain && bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
             info.addImage(bounty.getFleet().getCommander().getPortraitSprite(), width, 128f, PADDING_DESC);
+        } else {
+            info.addImage("graphics/magic/icons/ml_bountyBoard.png", width, 128f, PADDING_DESC);
         }
         
         //I'm removing the whole description from the small description because it's just too much text
