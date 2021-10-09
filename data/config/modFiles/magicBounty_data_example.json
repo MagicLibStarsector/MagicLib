@@ -38,7 +38,7 @@
 		"job_item_reward":{
 			"item_A":1,
 		},
-		"job_type":"assassination", #assassination, destruction, obliteration, neutralisation
+		"job_type":"assassination", # assassination, destruction, obliteration, neutralisation
 				# assassination: requires only to disable the flagship
 				# destruction: requires the complete destruction of the flagship without recovery
 				# obliteration: requires the complete destruction or disabling of the enemy fleet
@@ -46,7 +46,15 @@
 				# default to assassination
 		"job_show_type":true, #default: true, make sure to explain the mission objective in the bounty description if you choose to not use the default display
 		"job_show_captain":false,
-		"job_show_fleet":preset, #"none", "flagship", "preset", or "all": how much of the fleet to show on the bounty board. default: none
+		"job_show_fleet":preset, # "none", "text",  "flagship", "flagshipText", "preset", "presetText", "vanilla" or "all"
+				# how much of the fleet to show on the bounty board. default: none
+				# text: "the target has a massive fleet comprised of around 15 ships."
+				# flagship: only shows an image of the flagship
+				# flagshipText: shows an image of the flagships and a text with the number of other ships
+				# preset: only show an image of the Flagship and the preset fleet
+				# presetText: show an image of the Flagship and the preset fleet, plus a text with the number of other ships
+				# vanilla: shows the Flagship and the 6 biggest ships of the fleet, plus a text with the number of other ships
+				# all: show an image of all the ships in the fleet.
 		"job_show_distance":vague, #"none", "vague", "distance", "vanilla", "vanillaDistance": how precisely the distance to the target is shown on the bounty board. default: none
 		"job_show_arrow":false,
 		"job_difficultyDescription":auto,  #"none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text

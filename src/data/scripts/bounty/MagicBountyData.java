@@ -269,10 +269,23 @@ public class MagicBountyData {
         public float job_credit_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
         public float job_reputation_reward;
         public Map <String,Integer> job_item_reward;
-        public JobType job_type;                                                //assassination, destruction, obliteration, neutralisation. see magicBounty_data_example.json 
+        public JobType job_type;                                                // assassination, destruction, obliteration, neutralisation
+                                                                                // assassination: requires only to disable the flagship
+                                                                                // destruction: requires the complete destruction of the flagship without recovery
+                                                                                // obliteration: requires the complete destruction or disabling of the enemy fleet
+                                                                                // neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet
+                                                                                // default to assassination
         public boolean job_show_type;
         public boolean job_show_captain;
-        public ShowFleet job_show_fleet;                                        // none, flagship, preset, or all: how much of the fleet to show on the bounty board. default: none
+        public ShowFleet job_show_fleet;                                        // "none", "text",  "flagship", "flagshipText", "preset", "presetText", "vanilla" or "all"
+                                                                                // how much of the fleet to show on the bounty board. default: none
+                                                                                // text: "the target has a massive fleet comprised of around 15 ships."
+                                                                                // flagship: only shows an image of the flagship
+                                                                                // flagshipText: shows an image of the flagships and a text with the number of other ships
+                                                                                // preset: only show an image of the Flagship and the preset fleet
+                                                                                // presetText: show an image of the Flagship and the preset fleet, plus a text with the number of other ships
+                                                                                // vanilla: shows the Flagship and the 9 biggest ships of the fleet, plus a text with the number of other ships
+                                                                                // all: show an image of all the ships in the fleet.
         public ShowDistance job_show_distance;                                  // none, vague or exact: how precisely the distance to the target is shown on the bounty board. default: none
         public boolean job_show_arrow;
         public String job_pick_option;                                          //dialog text to pick the job
@@ -428,8 +441,14 @@ public class MagicBountyData {
                     this.job_show_fleet = ShowFleet.All;
                 } else if (job_show_fleet.equalsIgnoreCase("preset")) {
                     this.job_show_fleet = ShowFleet.Preset;
+                } else if (job_show_fleet.equalsIgnoreCase("presetText")) {
+                    this.job_show_fleet = ShowFleet.PresetText;
                 } else if (job_show_fleet.equalsIgnoreCase("flagship")) {
                     this.job_show_fleet = ShowFleet.Flagship;
+                } else if (job_show_fleet.equalsIgnoreCase("flagshipText")) {
+                    this.job_show_fleet = ShowFleet.FlagshipText;
+                } else if (job_show_fleet.equalsIgnoreCase("vanilla")) {
+                    this.job_show_fleet = ShowFleet.Vanilla;
                 } else {
                     this.job_show_fleet = ShowFleet.None;
                 }
@@ -747,8 +766,12 @@ public class MagicBountyData {
 
     public enum ShowFleet {
         None,
+        Text,
         Flagship,
+        FlagshipText,
         Preset,
+        PresetText,
+        Vanilla,
         All
     }
     public enum ShowDistance {

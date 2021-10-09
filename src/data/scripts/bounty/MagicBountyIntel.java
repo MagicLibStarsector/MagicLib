@@ -2,11 +2,14 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+//import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import static com.fs.starfarer.api.util.Misc.random;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicDeserializable;
 import org.jetbrains.annotations.NotNull;
 
@@ -164,13 +167,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         if (bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
             info.addImage(bounty.getFleet().getCommander().getPortraitSprite(), width, 128f, PADDING_DESC);
         }
-
+        
+        //I'm removing the whole description from the small description because it's just too much text
+        /*
         bounty.addDescriptionToTextPanel(info,
                 bounty.getStage().ordinal() > ActiveBounty.Stage.Accepted.ordinal()
                         ? Misc.getGrayColor()
                         : Misc.getTextColor(),
                 PADDING_DESC);
-
+        */
+        
         switch (bounty.getStage()) {
             case Succeeded:
                 info.addPara(bounty.getSpec().job_conclusion_script, 0f);
@@ -191,6 +197,20 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
                 
                 if (bounty.hasReputationReward()){
+                    //TO DO: VANILLA STYLE REPUTATION MESSAGE
+                    /*
+                    CoreReputationPlugin.addAdjustmentMessage(
+                            bounty.getRewardReputation(),
+                            bounty.getGivingFaction(),
+                            null,
+                            null,
+                            null,
+                            info, 
+                            bulletColor,
+                            isUpdate,
+                            initPad
+                    );
+                    */
                     bullet(info);
                     //"Your reputation with %s has improved by %s."
                     info.addPara(
@@ -202,31 +222,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Math.round(bounty.getRewardReputation())+""
                     );
                     unindent(info);
+                    
                 }
                 
                 break;
             case Failed:
+                //TO DO: VANILLA STYLE REPUTATION MESSAGE
                 break;
             case Accepted:
             case NotAccepted:
             default:
-                if (bounty.hasCreditReward()) {
-                    bullet(info);
-                    //"%s reward"
-                    info.addPara(getString("mb_descReward"),
-                            PADDING_DESC,
-                            Misc.getTextColor(),
-                            Misc.getHighlightColor(),
-                            Misc.getDGSCredits(bounty.getRewardCredits()));
-                    unindent(info);
-                }
-
-                if (bounty.hasExpiration()) {
-                    bullet(info);
-                    //"remaining"
-                    addDays(info, getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
-                    unindent(info);
-                }
                 
                 //This is an %s mission, to get the reward you will need to %s.
                 if (bounty.getSpec().job_show_type) {
@@ -267,12 +272,30 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
+                if (bounty.hasCreditReward()) {
+                    bullet(info);
+                    //"%s reward"
+                    info.addPara(getString("mb_descReward"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor(),
+                            Misc.getDGSCredits(bounty.getRewardCredits()));
+                    unindent(info);
+                }
+
+                if (bounty.hasExpiration()) {
+                    bullet(info);
+                    //"remaining"
+                    addDays(info, getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
+                    unindent(info);
+                }
+                
                 if (true) { // todo
                     info.addPara(bounty.createLocationEstimateText(), 10f);
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
-
+                    /*
                     //"Fleet information is attached to the posting."
                     String fleetInfo = getString("mb_fleet2");
                     if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
@@ -281,11 +304,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
                         fleetInfo = getString("mb_fleet1");
                     }
-                    info.addPara(fleetInfo + getString("mb_descFleet"), PADDING_DESC);
+                    info.addPara(fleetInfo + getString("mb_fleet"), PADDING_DESC);
 
                     int columns = 7;
                     List<FleetMemberAPI> ships = bounty.getFleet().getMembersWithFightersCopy();
-
                     if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
                         ships = bounty.getFlagshipInFleet();
                     } else if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
@@ -295,6 +317,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     info.addShipList(columns, (int) Math.round(Math.ceil((double) ships.size() / columns)), (width - 10) / columns,
                             bounty.getFleet().getFaction().getBaseUIColor(),
                             ships, 10f);
+                    */
+                    showFleet(
+                           info,
+                           width,
+                           bounty.getFleet().getFaction().getBaseUIColor(),
+                           bounty.getSpec().job_show_fleet,
+                           bounty.getFleet().getMembersWithFightersCopy(),
+                           bounty.getFlagshipInFleet(),
+                           bounty.getPresetShipsInFleet()
+                    );
                 }
                 break;
         }
@@ -331,5 +363,207 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         }
 
         return tags;
+    }
+    
+    private void showFleet(TooltipMakerAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset){
+
+        int columns = 7;
+        switch (setting){
+            case Text:
+                //write the number of ships
+                int num = ships.size();
+                if(num<5){
+                    num = 5;
+                    info.addPara(getString("mb_fleet6"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor(),
+                            ""+num
+                    );
+                    break;
+                }
+                else if (num < 10) num = 5;
+                else if (num < 20) num = 10;
+                else if (num < 30) num = 20;
+                else num = 30;
+                info.addPara(getString("mb_fleet5"),
+                        PADDING_DESC,
+                        Misc.getTextColor(),
+                        Misc.getHighlightColor(),
+                        ""+num
+                );
+            case Flagship:
+                //show the flagship
+                info.addPara(getString("mb_fleet0") + getString("mb_fleet"), PADDING_DESC);
+                info.addShipList(
+                        columns,
+                        1,
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        ships,
+                        10f
+                );
+                break;
+            case FlagshipText:
+                //show the flagship
+                info.addPara(getString("mb_fleet0") + getString("mb_fleet"), PADDING_DESC);
+                info.addShipList(
+                        columns,
+                        1,
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        ships,
+                        10f
+                );
+                //write the number of other ships
+                num = ships.size()-1;
+                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
+                if(num<5){
+                    info.addPara(getString("mb_fleet4"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor()
+                    );
+                    break;
+                }
+                else if (num < 10) num = 5;
+                else if (num < 20) num = 10;
+                else if (num < 30) num = 20;
+                else num = 30;
+                info.addPara(getString("mb_fleet3"),
+                        PADDING_DESC,
+                        Misc.getTextColor(),
+                        Misc.getHighlightColor(),
+                        ""+num
+                );
+                break;
+            case Preset:
+                //show the preset fleet
+                info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
+                info.addShipList(
+                        columns,
+                        (int) Math.round(Math.ceil((double) preset.size() / columns)),
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        preset,
+                        10f
+                );
+                break;
+            case PresetText:
+                //show the preset fleet
+                info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
+                List<FleetMemberAPI>toShow = preset;
+//                toShow.addAll(preset);
+                info.addShipList(
+                        columns,
+                        (int) Math.round(Math.ceil((double) preset.size() / columns)),
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        toShow,
+                        10f
+                );
+                //write the number of other ships
+                num = ships.size()-toShow.size();
+                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
+                if(num<5){
+                    info.addPara(getString("mb_fleet4"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor()
+                    );
+                    break;
+                }
+                else if (num < 10) num = 5;
+                else if (num < 20) num = 10;
+                else if (num < 30) num = 20;
+                else num = 30;
+                info.addPara(getString("mb_fleet3"),
+                        PADDING_DESC,
+                        Misc.getTextColor(),
+                        Misc.getHighlightColor(),
+                        ""+num
+                );
+                break;
+            case Vanilla:
+                //show the Flagship and the 6 biggest ships in the fleet
+                info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
+                
+                //there are less than 7 ships total, all will be shown
+                if(ships.size()<=columns){
+                    toShow = ships;
+                    info.addShipList(
+                        columns,
+                        1,
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        toShow,
+                        10f
+                    );
+                    info.addPara(getString("mb_fleet4"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor()
+                    );
+                    break;
+                } 
+                //If there are more than 7 ships, pick the largest 7
+                //make a random picker with squared FP weight to heavily trend toward bigger ships
+                WeightedRandomPicker <FleetMemberAPI> picker = new WeightedRandomPicker<>();
+                for(FleetMemberAPI m : ships){
+                    if(m==flagship.get(0))continue;
+                    if(m.isFighterWing())continue;
+                    picker.add(m, (float)Math.pow(m.getFleetPointCost(),2));
+                }
+                //make a pick list starting with the flagship 
+                toShow = flagship;
+                for(int i=1; i<columns; i++){
+                    toShow.add(picker.pickAndRemove());
+                }
+                //make the ship list
+                info.addShipList(
+                    columns,
+                    1,
+                    (width - 10) / columns,
+                    factionBaseUIColor,
+                    toShow,
+                    10f
+                );
+                
+                //write the number of other ships
+                num = ships.size()-columns;
+                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
+                if(num<5){
+                    info.addPara(getString("mb_fleet4"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor()
+                    );
+                    break;
+                }
+                else if (num < 10) num = 5;
+                else if (num < 20) num = 10;
+                else if (num < 30) num = 20;
+                else num = 30;
+                info.addPara(getString("mb_fleet3"),
+                        PADDING_DESC,
+                        Misc.getTextColor(),
+                        Misc.getHighlightColor(),
+                        ""+num
+                );
+                break;
+            case All: 
+                //show the full fleet
+                info.addPara(getString("mb_fleet2") + getString("mb_fleet"), PADDING_DESC);
+                info.addShipList(
+                        columns,
+                        (int) Math.round(Math.ceil((double) ships.size() / columns)),
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        ships,
+                        10f
+                );
+            default: 
+                break;
+        }
     }
 }
