@@ -57,7 +57,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -91,7 +91,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -125,7 +125,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -159,7 +159,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -194,7 +194,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -229,7 +229,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -269,7 +269,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -310,7 +310,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -351,7 +351,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");

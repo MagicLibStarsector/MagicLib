@@ -245,8 +245,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 try {
                     trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, "MagicLib");
                 } catch (IOException | JSONException | RuntimeException ex) {
-                    LOG.error("unable to read " + path);
-                    LOG.error(ex);
+                    LOG.error("unable to read " + path,ex);
                 }
 
                 for (int i = 0; i < trailData.length(); i++) {
@@ -275,7 +274,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                         float frameOffsetMult = 1f;
                         try {
                             frameOffsetMult = (float) row.getDouble("frameOffsetMult");
-                        } catch (JSONException e) {
+                        } catch (JSONException ex) {
 //                            LOG.error("missing frame offset mult override for " + thisProj);
                         }
                         
@@ -372,8 +371,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 try {
                     trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, "MagicLib");
                 } catch (IOException | JSONException | RuntimeException ex) {
-                    LOG.error("unable to read " + path);
-                    LOG.error(ex);
+                    LOG.error("unable to read " + path,ex);
                 }
 
                 for (int i = 0; i < trailData.length(); i++) {

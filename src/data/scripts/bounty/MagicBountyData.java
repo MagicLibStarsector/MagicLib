@@ -550,7 +550,7 @@ public class MagicBountyData {
                 LOG.error("MagicBountyData is unable to find "+BOUNTY_BOARD+" within " +MOD+ " in modSettings.json");
             }
         } catch (JSONException ex){
-            LOG.error("MagicBountyData is unable to read the content of "+MOD+" in modSettings.json");
+            LOG.error("MagicBountyData is unable to read the content of "+MOD+" in modSettings.json",ex);
         }
         
         List<String> bountiesAvailable = new ArrayList<>();
@@ -593,7 +593,7 @@ public class MagicBountyData {
         try{
             this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH,MOD);    
         } catch (IOException | JSONException ex) {
-            LOG.fatal("MagicBountyData is unable to read magicBounty_data.json");
+            LOG.fatal("MagicBountyData is unable to read magicBounty_data.json",ex);
             JSONfailed=true;
         }
         return this_bounty_data;
