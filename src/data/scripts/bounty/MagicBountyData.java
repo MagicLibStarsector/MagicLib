@@ -286,7 +286,12 @@ public class MagicBountyData {
                                                                                 // presetText: show an image of the Flagship and the preset fleet, plus a text with the number of other ships
                                                                                 // vanilla: shows the Flagship and the 9 biggest ships of the fleet, plus a text with the number of other ships
                                                                                 // all: show an image of all the ships in the fleet.
-        public ShowDistance job_show_distance;                                  // none, vague or exact: how precisely the distance to the target is shown on the bounty board. default: none
+        public ShowDistance job_show_distance;                                  // "none", "vague", "distance", "vanilla", "vanillaDistance"
+                                                                                // how precisely the distance to the target is shown on the bounty board. default: none
+                                                                                // vague: "The target is located somewhere in the vicinity of the core worlds."
+                                                                                // distance: "It is located roughly %s LY away from your current position."
+                                                                                // vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation."
+                                                                                // vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position."
         public boolean job_show_arrow;
         public String job_pick_option;                                          //dialog text to pick the job
         public String job_pick_script;                                          //optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters

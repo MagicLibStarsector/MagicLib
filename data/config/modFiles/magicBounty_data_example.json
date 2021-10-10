@@ -30,17 +30,17 @@
 		"job_name":"job name", #job name in the dialog pick list
 		"job_description":"Long form description of the job",
 		"job_comm_reply":"Reply of the enemy to your hail", #default to "The other $shipOrFleet does not answer to you hails."
-		"job_forFaction":"faction_offering_the_job", #optional, note that unless set otherwise, successfully completing a bounty will improve relations by 5 points
+		"job_forFaction":"faction_offering_the_job", #optional, note that unless "job_reputation_reward" is set otherwise, successfully completing a bounty will improve relations by 5 points.
 		"job_deadline":360,
 		"job_credit_reward":9000,	
-		"job_reward_scaling":1.0, #optional, only affects the credit reward
+		"job_reward_scaling":1.0, #optional, only affects the credit reward.
 		"job_reputation_reward":5, #reputation benefit with the faction posting the bounty, if any, in case of success. default 5, set to 0 or less to disable, does not scale
 		"job_item_reward":{
 			"item_A":1,
-		},
+		}, #lists special items that will be added to the post-battle loot
 		"job_type":"assassination", # assassination, destruction, obliteration, neutralisation
 				# assassination: requires only to disable the flagship
-				# destruction: requires the complete destruction of the flagship without recovery
+				# destruction: requires the destruction of the flagship without recovery
 				# obliteration: requires the complete destruction or disabling of the enemy fleet
 				# neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet
 				# default to assassination
@@ -48,14 +48,19 @@
 		"job_show_captain":false,
 		"job_show_fleet":preset, # "none", "text",  "flagship", "flagshipText", "preset", "presetText", "vanilla" or "all"
 				# how much of the fleet to show on the bounty board. default: none
-				# text: "the target has a massive fleet comprised of around 15 ships."
+				# text: "The intel assessment notes the target fleet may contain upwards of %s ships."
 				# flagship: only shows an image of the flagship
 				# flagshipText: shows an image of the flagships and a text with the number of other ships
 				# preset: only show an image of the Flagship and the preset fleet
 				# presetText: show an image of the Flagship and the preset fleet, plus a text with the number of other ships
-				# vanilla: shows the Flagship and the 6 biggest ships of the fleet, plus a text with the number of other ships
+				# vanilla: shows the Flagship and the 9 biggest ships of the fleet, plus a text with the number of other ships
 				# all: show an image of all the ships in the fleet.
-		"job_show_distance":vague, #"none", "vague", "distance", "vanilla", "vanillaDistance": how precisely the distance to the target is shown on the bounty board. default: none
+		"job_show_distance":vague, #"none", "vague", "distance", "vanilla", "vanillaDistance"
+				# how precisely the distance to the target is shown on the bounty board. default: none
+				# vague: "The target is located somewhere in the vicinity of the core worlds."
+				# distance: "It is located roughly %s LY away from your current position."
+				# vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation."
+				# vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position."
 		"job_show_arrow":false,
 		"job_difficultyDescription":auto,  #"none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
 		"job_pick_option":"Accept the job",

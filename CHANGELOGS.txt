@@ -4,6 +4,7 @@ MagicLib
 
 MagicRender: Fixed issue where sprite flickering was applied incorrectly.
 MagicLensFlare: Now uses the "visual only" API.
+MagicSettings: Improved error messages with the lines where the issue is if possible.
 
 0.34
 

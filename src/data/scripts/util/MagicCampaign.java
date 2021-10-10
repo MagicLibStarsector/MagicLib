@@ -961,8 +961,8 @@ public class MagicCampaign {
                 FactionAPI this_faction = Global.getSector().getFaction(f);
                 if(market.getFaction()==this_faction){
                     return false; //is one of the excluded factions
-                } else if(marketFaction_alliedWith && market.getFaction().isAtBest(this_faction, RepLevel.INHOSPITABLE)){
-                    return false; //is not hostile with one of the excluded factions
+                } else if(marketFaction_enemyWith && market.getFaction().isAtBest(this_faction, RepLevel.HOSTILE)){
+                    return true; //is hostile with one of the excluded factions
                 }
             }
         }
