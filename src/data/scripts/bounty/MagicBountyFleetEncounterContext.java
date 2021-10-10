@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
+import com.fs.starfarer.api.campaign.econ.CommoditySpecAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DModManager;
@@ -11,10 +12,7 @@ import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.loading.VariantSource;
 import com.fs.starfarer.api.util.Misc;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
 
@@ -106,6 +104,8 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
         ActiveBounty bounty = null;
         MagicBountyCoordinator magicBountyCoordinator = MagicBountyCoordinator.getInstance();
 
+        if (getLoser() == null) return;
+
         for (String key : magicBountyCoordinator.getActiveBounties().keySet()) {
             for (CampaignFleetAPI losingFleet : getBattle().getSnapshotSideFor(getLoser())) {
                 if (losingFleet.hasTag(key)) {
@@ -119,6 +119,19 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
             return;
         }
 
+        FleetMemberAPI bountyFlagship = null;
+
+        for (FleetMemberAPI member : getLoser().getFleetData().getMembersListCopy()) {
+            if (Objects.equals(member.getId(), bounty.getFlagshipId())) {
+                bountyFlagship = member;
+            }
+        }
+
+        if (bountyFlagship != null) {
+            Global.getLogger(MagicBountyFleetEncounterContext.class).debug("MagicBounty battle happened but flagship wasn't disabled, not giving loot.");
+            return;
+        }
+
         // Add special items
         if (bounty.getSpec().job_item_reward != null) {
             for (Map.Entry<String, Integer> entry : bounty.getSpec().job_item_reward.entrySet()) {
@@ -129,6 +142,14 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 } catch (Exception ex) {
                     Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add special loot: " + itemId, ex);
                 }
+            }
+        }
+
+        if (bounty.getSpec().target_aiCoreId != null) {
+            CommoditySpecAPI core = Global.getSector().getEconomy().getCommoditySpec(bounty.getSpec().target_aiCoreId);
+
+            if (core != null) {
+                loot.addCommodity(core.getId(), 1);
             }
         }
     }

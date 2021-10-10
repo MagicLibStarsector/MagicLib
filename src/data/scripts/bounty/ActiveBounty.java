@@ -19,14 +19,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import java.util.ArrayList;
 
 /**
  * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
+ *
  * @author Wisp
  */
 public final class ActiveBounty {
@@ -66,6 +67,11 @@ public final class ActiveBounty {
      * The id of the fleet's flagship. This variable will be set even after the fleet is destroyed.
      */
     private final @Nullable String flagshipId;
+
+    /**
+     * The original size of the bounty fleet in FP, before any battles.
+     */
+    private int initialBountyFleetPoints;
 
     /**
      * The timestamp of when the player accepted the bounty, if they have done so.
@@ -112,6 +118,10 @@ public final class ActiveBounty {
         this.bountyCreatedTimestamp = Global.getSector().getClock().getTimestamp();
         this.flagshipId = fleet.getFlagship() != null ? fleet.getFlagship().getId() : null;
         this.captain = fleet.getCommander();
+
+        for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
+            this.initialBountyFleetPoints += member.getFleetPointCost();
+        }
     }
 
     /**
@@ -196,8 +206,8 @@ public final class ActiveBounty {
             //reputation reward
             if (
                     ((BountyResult.Succeeded) result).shouldRewardCredits
-                    && hasReputationReward()
-                    ) {
+                            && hasReputationReward()
+            ) {
                 Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), getRewardReputation());
             }
 
@@ -207,13 +217,13 @@ public final class ActiveBounty {
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
         } else if (result instanceof BountyResult.FailedOutOfTime) {
-            stage = Stage.Failed;
+            stage = Stage.ExpiredAfterAccepting;
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
         } else if (result instanceof BountyResult.FailedSalvagedFlagship) {
-            stage = Stage.Failed;
+            stage = Stage.FailedSalvagedFlagship;
         }
 
         if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {
@@ -295,13 +305,15 @@ public final class ActiveBounty {
     public @Nullable Float getRewardCredits() {
         return rewardCredits;
     }
+
     public @Nullable Float getRewardReputation() {
         return rewardReputation;
     }
+
     public @Nullable String getRewardFaction() {
         return rewardFaction;
     }
-    
+
     public @NotNull SectorEntityToken getFleetSpawnLocation() {
         return fleetSpawnLocation;
     }
@@ -317,6 +329,11 @@ public final class ActiveBounty {
     public @NotNull PersonAPI getCaptain() {
         return captain;
     }
+
+    public int getInitialBountyFleetPoints() {
+        return initialBountyFleetPoints;
+    }
+
 
     /**
      * The faction that offered the bounty, if any.
@@ -412,13 +429,13 @@ public final class ActiveBounty {
     public boolean hasCreditReward() {
         return getRewardCredits() != null && getRewardCredits() > 0;
     }
-    
-    public boolean hasReputationReward(){
+
+    public boolean hasReputationReward() {
         return getRewardReputation() != null
                 && getRewardReputation() > 0
                 && getRewardFaction() != null
                 && !getRewardFaction().isEmpty()
-                && Global.getSector().getFaction(getRewardFaction())!=null;
+                && Global.getSector().getFaction(getRewardFaction()) != null;
     }
 
     /**
@@ -445,7 +462,7 @@ public final class ActiveBounty {
 
         return ships;
     }
-    
+
     public List<FleetMemberAPI> getFlagshipInFleet() {
         List<FleetMemberAPI> ships = new ArrayList<>();
         ships.add(getFleet().getFlagship());
@@ -478,13 +495,13 @@ public final class ActiveBounty {
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$sonOrDaughter", new StringCreator() {
                     @Override
                     public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getGender()==Gender.MALE ? MagicTxt.getString("mb_son") : MagicTxt.getString("daughter");
+                        return finalActiveBounty.getFleet().getCommander().getGender() == Gender.MALE ? MagicTxt.getString("mb_son") : MagicTxt.getString("daughter");
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$fatherOrMother", new StringCreator() {
                     @Override
                     public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getGender()==Gender.MALE ? MagicTxt.getString("mb_father") : MagicTxt.getString("mb_mother");
+                        return finalActiveBounty.getFleet().getCommander().getGender() == Gender.MALE ? MagicTxt.getString("mb_father") : MagicTxt.getString("mb_mother");
                     }
                 });
                 replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$system_name", new StringCreator() {
@@ -545,13 +562,41 @@ public final class ActiveBounty {
         }
     }
 
+    /**
+     * The current stage of the bounty.
+     */
     public enum Stage {
+        /**
+         * Not yet accepted.
+         */
         NotAccepted,
+        /**
+         * Player has accepted the bounty but not done anything else yet.
+         */
         Accepted,
-        Failed,
+        /**
+         * The player failed the bounty because they salvaged the flagship and weren't allowed to.
+         */
+        FailedSalvagedFlagship,
+        /**
+         * The bounty expired because the player accepted it but didn't complete it in time.
+         */
+        ExpiredAfterAccepting,
+        /**
+         * The player dismissed the bounty permanently (and they never accepted it).
+         */
         Dismissed,
+        /**
+         * The bounty expired and the player never accepted it. It will be regenerated.
+         */
         ExpiredWithoutAccepting,
+        /**
+         * The bounty ended, probably due to another fleet destroying the bounty fleet.
+         */
         EndedWithoutPlayerInvolvement,
+        /**
+         * The player successfully completed the bounty!
+         */
         Succeeded
     }
 

@@ -2,13 +2,11 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-//import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import static com.fs.starfarer.api.util.Misc.random;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicDeserializable;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static com.fs.starfarer.api.util.Misc.random;
 import static data.scripts.util.MagicTxt.getString;
 
 /**
@@ -69,13 +68,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         switch (bounty.getStage()) {
             case Succeeded:
-                return "Bounty Completed - " + bounty.getSpec().job_name;
-            case Failed:
-                return "Bounty Failed - " + bounty.getSpec().job_name;
+                return String.format(getString("mb_intelTitleCompleted"), bounty.getSpec().job_name);
+            case FailedSalvagedFlagship:
+                return String.format(getString("mb_intelTitleFailed"), bounty.getSpec().job_name);
             case Accepted:
             case NotAccepted:
             default:
-                return "Bounty Board - " + bounty.getSpec().job_name;
+                return String.format(getString("mb_intelTitleInProgress"), bounty.getSpec().job_name);
         }
     }
 
@@ -88,7 +87,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case NotAccepted:
                 return super.getTitleColor(mode);
             case Succeeded:
-            case Failed:
+            case FailedSalvagedFlagship:
             default:
                 return Misc.getGrayColor();
         }
@@ -113,7 +112,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
                 break;
-            case Failed:
+            case FailedSalvagedFlagship:
                 break;
             case Accepted:
             case NotAccepted:
@@ -172,7 +171,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         } else {
             info.addImage("graphics/magic/icons/ml_bountyBoard.png", width, 128f, PADDING_DESC);
         }
-        
+
         //I'm removing the whole description from the small description because it's just too much text
         /*
         bounty.addDescriptionToTextPanel(info,
@@ -181,7 +180,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         : Misc.getTextColor(),
                 PADDING_DESC);
         */
-        
+
         switch (bounty.getStage()) {
             case Succeeded:
                 info.addPara(bounty.getSpec().job_conclusion_script, 0f);
@@ -200,8 +199,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     );
                     unindent(info);
                 }
-                
-                if (bounty.hasReputationReward()){
+
+                if (bounty.hasReputationReward()) {
                     //TO DO: VANILLA STYLE REPUTATION MESSAGE
                     /*
                     CoreReputationPlugin.addAdjustmentMessage(
@@ -224,20 +223,20 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
                             bounty.getGivingFaction().getDisplayNameWithArticle(),
-                            Math.round(bounty.getRewardReputation())+""
+                            Math.round(bounty.getRewardReputation() * 100) + ""
                     );
                     unindent(info);
-                    
+
                 }
-                
+
                 break;
-            case Failed:
+            case FailedSalvagedFlagship:
                 //TO DO: VANILLA STYLE REPUTATION MESSAGE
                 break;
             case Accepted:
             case NotAccepted:
             default:
-                
+
                 //This is an %s mission, to get the reward you will need to %s.
                 if (bounty.getSpec().job_show_type) {
                     switch (bounty.getSpec().job_type) {
@@ -294,7 +293,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     addDays(info, getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
                     unindent(info);
                 }
-                
+
                 if (true) { // todo
                     info.addPara(bounty.createLocationEstimateText(), 10f);
                 }
@@ -324,13 +323,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             ships, 10f);
                     */
                     showFleet(
-                           info,
-                           width,
-                           bounty.getFleet().getFaction().getBaseUIColor(),
-                           bounty.getSpec().job_show_fleet,
-                           bounty.getFleet().getMembersWithFightersCopy(),
-                           bounty.getFlagshipInFleet(),
-                           bounty.getPresetShipsInFleet()
+                            info,
+                            width,
+                            bounty.getFleet().getFaction().getBaseUIColor(),
+                            bounty.getSpec().job_show_fleet,
+                            bounty.getFleet().getMembersWithFightersCopy(),
+                            bounty.getFlagshipInFleet(),
+                            bounty.getPresetShipsInFleet()
                     );
                 }
                 break;
@@ -369,25 +368,24 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         return tags;
     }
-    
-    private void showFleet(TooltipMakerAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset){
+
+    private void showFleet(TooltipMakerAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset) {
 
         int columns = 7;
-        switch (setting){
+        switch (setting) {
             case Text:
                 //write the number of ships
                 int num = ships.size();
-                if(num<5){
+                if (num < 5) {
                     num = 5;
                     info.addPara(getString("mb_fleet6"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
-                            ""+num
+                            "" + num
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
@@ -395,7 +393,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
             case Flagship:
                 //show the flagship
@@ -421,17 +419,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         10f
                 );
                 //write the number of other ships
-                num = ships.size()-1;
-                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
-                if(num<5){
+                num = ships.size() - 1;
+                num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
+                if (num < 5) {
                     info.addPara(getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
@@ -439,7 +436,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
                 break;
             case Preset:
@@ -457,7 +454,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case PresetText:
                 //show the preset fleet
                 info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
-                List<FleetMemberAPI>toShow = preset;
+                List<FleetMemberAPI> toShow = preset;
 //                toShow.addAll(preset);
                 info.addShipList(
                         columns,
@@ -468,17 +465,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         10f
                 );
                 //write the number of other ships
-                num = ships.size()-toShow.size();
-                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
-                if(num<5){
+                num = ships.size() - toShow.size();
+                num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
+                if (num < 5) {
                     info.addPara(getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
@@ -486,66 +482,65 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
                 break;
             case Vanilla:
                 //show the Flagship and the 6 biggest ships in the fleet
                 info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
-                
+
                 //there are less than 7 ships total, all will be shown
-                if(ships.size()<=columns){
+                if (ships.size() <= columns) {
                     toShow = ships;
                     info.addShipList(
+                            columns,
+                            1,
+                            (width - 10) / columns,
+                            factionBaseUIColor,
+                            toShow,
+                            10f
+                    );
+                    info.addPara(getString("mb_fleet4"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getHighlightColor()
+                    );
+                    break;
+                }
+                //If there are more than 7 ships, pick the largest 7
+                //make a random picker with squared FP weight to heavily trend toward bigger ships
+                WeightedRandomPicker<FleetMemberAPI> picker = new WeightedRandomPicker<>();
+                for (FleetMemberAPI m : ships) {
+                    if (m == flagship.get(0)) continue;
+                    if (m.isFighterWing()) continue;
+                    picker.add(m, (float) Math.pow(m.getFleetPointCost(), 2));
+                }
+                //make a pick list starting with the flagship 
+                toShow = flagship;
+                for (int i = 1; i < columns; i++) {
+                    toShow.add(picker.pickAndRemove());
+                }
+                //make the ship list
+                info.addShipList(
                         columns,
                         1,
                         (width - 10) / columns,
                         factionBaseUIColor,
                         toShow,
                         10f
-                    );
-                    info.addPara(getString("mb_fleet4"),
-                            PADDING_DESC,
-                            Misc.getTextColor(),
-                            Misc.getHighlightColor()
-                    );
-                    break;
-                } 
-                //If there are more than 7 ships, pick the largest 7
-                //make a random picker with squared FP weight to heavily trend toward bigger ships
-                WeightedRandomPicker <FleetMemberAPI> picker = new WeightedRandomPicker<>();
-                for(FleetMemberAPI m : ships){
-                    if(m==flagship.get(0))continue;
-                    if(m.isFighterWing())continue;
-                    picker.add(m, (float)Math.pow(m.getFleetPointCost(),2));
-                }
-                //make a pick list starting with the flagship 
-                toShow = flagship;
-                for(int i=1; i<columns; i++){
-                    toShow.add(picker.pickAndRemove());
-                }
-                //make the ship list
-                info.addShipList(
-                    columns,
-                    1,
-                    (width - 10) / columns,
-                    factionBaseUIColor,
-                    toShow,
-                    10f
                 );
-                
+
                 //write the number of other ships
-                num = ships.size()-columns;
-                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
-                if(num<5){
+                num = ships.size() - columns;
+                num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
+                if (num < 5) {
                     info.addPara(getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
@@ -553,10 +548,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
                 break;
-            case All: 
+            case All:
                 //show the full fleet
                 info.addPara(getString("mb_fleet2") + getString("mb_fleet"), PADDING_DESC);
                 info.addShipList(
@@ -567,7 +562,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         ships,
                         10f
                 );
-            default: 
+            default:
                 break;
         }
     }

@@ -46,7 +46,7 @@
 		"target_rank":"citizen",
 		"target_post":"aristocrat",
 		"target_personality":"reckless",
-		"target_isAI":false,
+		"target_aiCoreId": null,
 		"target_level":1,
 		"target_elite_skills":-1,
 		"target_skill_preference":"GENERIC",
