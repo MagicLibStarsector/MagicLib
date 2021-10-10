@@ -3,50 +3,62 @@
 	
 		#TRIGGERS (ALL OPTIONAL)
 		
-		"trigger_market_id":["market_name"], #can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
-		"trigger_marketFaction_any":["faction"],
-		"trigger_marketFaction_alliedWith":true, #market faction is at least FAVORABLE to ANY ONE of the factions above
-		"trigger_marketFaction_none":["other_faction"],
-		"trigger_marketFaction_enemyWith":false, #market faction is HOSTILE to EVERY ONE of the factions above. Beware when using this parameter with multiple excluded factions
-		"trigger_market_minSize":3,
-		"trigger_player_minLevel":15,
-		"trigger_min_days_elapsed":360,
-		"trigger_weight_mult":0.25, #simple frequency multiplier
-		"trigger_memKeys_all":{
+		"trigger_market_id": ["market_name"], # Can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode. 
+                                              # This beats all other conditions; a job will ALWAYS show in this market, even if other conditions fail.
+		"trigger_marketFaction_any": ["faction"], # markets of these factions will show the bounty (if other conditions are met).
+		"trigger_marketFaction_alliedWith": true, # if true, markets of all factions whose relationship is at least FAVORABLE to ANY ONE of the factions above will show the bounty (if other conditions are met).
+		"trigger_marketFaction_none": ["other_faction"], # markets of factions listed here will never carry the bounty, regardless of other conditions.
+		"trigger_marketFaction_enemyWith": false, # if true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
+		"trigger_market_minSize": 3, # The minimum size of the market.
+		"trigger_player_minLevel": 15, # The minimum level of the player.
+		"trigger_min_days_elapsed": 360, # The minimum number of days that must have elapsed.
+		"trigger_weight_mult": 0.25, # Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance.
+		"trigger_memKeys_all": { # The job will only show if ALL of the listed memKeys exist with the specified boolean value.
 			"$triggerKey":true,
 		},
-		"trigger_memKeys_any":{
+		"trigger_memKeys_any": { # The job will show if ANY of the listed memKeys exist with the specified boolean value.
 			"$triggerKey":true,
 		},
-		"trigger_playerRelationship_atLeast":{
+		"trigger_playerRelationship_atLeast": { # This job will require the player to have the specified relationship or HIGHER with the specified faction(s).
 			"factionLikedId":0.25,
 		},
-		"trigger_playerRelationship_atMost":{
+		"trigger_playerRelationship_atMost": { # This job will require the player to have the specified relationship or LOWER with the specified faction(s).
 			"factionDislikedId":-0.5,
 		},		
 		
 		#BOUNTY DESCRIPTION
 		
-		"job_name":"job name", #job name in the dialog pick list
-		"job_description":"Long form description of the job",
-		"job_comm_reply":"Reply of the enemy to your hail", #default to "The other $shipOrFleet does not answer to you hails."
-		"job_forFaction":"faction_offering_the_job", #optional, note that unless set otherwise, successfully completing a bounty will improve relations by 5 points
-		"job_deadline":360,
-		"job_credit_reward":9000,	
-		"job_reward_scaling":1.0, #optional, only affects the credit reward
+		"job_name": "job name", # job name shown in the dialog pick list
+		"job_description": "Long form description of the job", # The description shown upon selecting the job.
+        # \n creates a line break, for example "Line one.\nLine two."
+        # $sonOrDaughter "son" if target is male, "daughter" otherwise.
+        # $fatherOrMother "father" if target is male, "mother" otherwise.
+        # $system_name The star system that the bounty fleet is in.
+        # $shipName The name of the bounty flagship.
+        # $target The name of the faction (with article) of the bounty fleet.
+        # $reward The amount of credits being given as a reward.
+        # $name The name of the bounty commander.
+        # $firstName The first name of the bounty commander.
+        # $lastName The last name of the bounty commander.
+        # $constellation The constellation that the bounty fleet is in.
+		"job_comm_reply": "Reply of the enemy to your hail", # The text shown if the player opens comms with the bounty fleet, defaults to "The other $shipOrFleet does not answer to your hails."
+		"job_forFaction": "faction_offering_the_job", # optional; note that unless "job_reputation_reward" is set, successfully completing a bounty will improve relations by 5 points.
+		"job_deadline": 360, # The number of days to complete the bounty.
+		"job_credit_reward": 9000, # Number of credits to award the player on successful completion.
+		"job_reward_scaling": 1.0, # optional; only affects the credit reward, multiplied by how many FP the bounty fleet was over their base FP.
 		"job_reputation_reward":5, #reputation benefit with the faction posting the bounty, if any, in case of success. default 5, set to 0 or less to disable, does not scale
-		"job_item_reward":{
+		"job_item_reward": { # Lists special items that will be added to the post-battle loot. First value is the item id, second is the number to give the player.
 			"item_A":1,
 		},
 		"job_type":"assassination", # assassination, destruction, obliteration, neutralisation
-				# assassination: requires only to disable the flagship
-				# destruction: requires the complete destruction of the flagship without recovery
-				# obliteration: requires the complete destruction or disabling of the enemy fleet
-				# neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet
+				# assassination: required only to disable the flagship, may recover it.
+				# destruction: requires the complete destruction of the flagship without recovery.
+				# obliteration: requires the complete destruction or disabling of the enemy fleet, may recover.
+				# neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet, may recover.
 				# default to assassination
 		"job_show_type":true, #default: true, make sure to explain the mission objective in the bounty description if you choose to not use the default display
-		"job_show_captain":false,
-		"job_show_fleet":preset, # "none", "text",  "flagship", "flagshipText", "preset", "presetText", "vanilla" or "all"
+		"job_show_captain": false, # Whether to show the bounty fleet captain on the job board. If false, shows the flag of the giving faction.
+		"job_show_fleet": "preset", # "none", "text", "flagship", "flagshipText", "preset", "presetText", "vanilla" or "all"
 				# how much of the fleet to show on the bounty board. default: none
 				# text: "the target has a massive fleet comprised of around 15 ships."
 				# flagship: only shows an image of the flagship
@@ -55,11 +67,16 @@
 				# presetText: show an image of the Flagship and the preset fleet, plus a text with the number of other ships
 				# vanilla: shows the Flagship and the 6 biggest ships of the fleet, plus a text with the number of other ships
 				# all: show an image of all the ships in the fleet.
-		"job_show_distance":vague, #"none", "vague", "distance", "vanilla", "vanillaDistance": how precisely the distance to the target is shown on the bounty board. default: none
-		"job_show_arrow":false,
-		"job_difficultyDescription":auto,  #"none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
-		"job_pick_option":"Accept the job",
-		"job_pick_script":"data.script.FancyScriptThatDoStuff", #optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
+		"job_show_distance": "vague", # "none", "vague", "distance", "vanilla", "vanillaDistance"
+				# how precisely the distance to the target is shown on the bounty board. default: none
+				# vague: "The target is located somewhere in the vicinity of the core worlds."
+				# distance: "It is located roughly %s LY away from your current position."
+				# vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation."
+				# vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position."
+		"job_show_arrow": false, # Whether to show an arrow on the Intel map pointing from the start to the bounty target location
+		"job_difficultyDescription": "auto",  # "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
+		"job_pick_option": "Accept the job", # The text option that, when selected, accepts the bounty job.
+		"job_pick_script": "data.script.FancyScriptThatDoStuff", #optional, triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
 		"job_memKey":"$jobMemKey",	#default to "$bountyId", memKeys always start with "$"
 		"job_conclusion_script":"data.script.FancyScriptThatDoStuff", #optional, can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
 		
@@ -69,47 +86,47 @@
 		"target_last_name":"Lastname",
 		"target_portrait":"portraitId", #id of the sprite in settings.json/graphics/characters
 		"target_gender":"ANY", #MALE, FEMALE, ANY
-		"target_rank":"Captain", #rank from campaign.ids.Ranks
-		"target_post":"Fleet Commander", #post from campaign.ids.Ranks
-		"target_personality":"aggressive", #personality from campaign.ids.Personalities
-		"target_isAI":false,
-		"target_level":1,
+		"target_rank": "Captain", # Rank from campaign.ids.Ranks [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
+		"target_post": "Fleet Commander", # Post from campaign.ids.Ranks (yes, Ranks, posts are the bottom half). [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
+		"target_personality": "aggressive", # personality from campaign.ids.Personalities ("timid", "cautious", "steady", "aggressive", "reckless")
+		"target_isAI": false, # Not yet implemented, leave false
+		"target_level": 1, # The level of the bounty commander
 		"target_elite_skills":2, #Overrides the regular number of elite skills, set to -1 to ignore.
-		"target_skill_preference":"GENERIC", #GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
-		"target_skills":{
+		"target_skill_preference": "GENERIC", # "GENERIC", "PHASE", "CARRIER", "ANY" (from OfficerManagerEvent.SkillPickPreference)
+		"target_skills": { # OVERRIDES ALL RANDOM SKILLS
 			"skillname":2,
-		}, #OVERRIDES ALL RANDOM SKILLS
+		}, 
 	
 	
 		#TARGET FLEET
 		
 		"fleet_name":"Fleet Name",
-		"fleet_faction":"pirates",
+		"fleet_faction": "pirates", # The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
 		"fleet_flagship_variant":"buffalo2_FS",
 		"fleet_flagship_name":"Flagship",
-		"fleet_flagship_recoverable":true,
-		"fleet_preset_ships":{
+		"fleet_flagship_recoverable": true, # Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
+		"fleet_preset_ships": { # optional; preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
 			"ship_variant1":1,
 			"ship_variant2":3,			
-		}, # optional preset fleet generated with the flagship
-		"fleet_scaling_multiplier":1, #dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore
-		"fleet_min_DP":100, #minimal total fleet size, set to -1 to ignore
-		"fleet_composition_faction":"pirates", #used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment
-		"fleet_composition_quality":1, #default to 2 for no Dmods
-		"fleet_transponder":false, #default to true
-		"fleet_behavior":"PASSIVE", #PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED
+		},
+		"fleet_scaling_multiplier": 1, # dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
+		"fleet_min_DP": 100, # minimal total fleet size, set to -1 to ignore.
+		"fleet_composition_faction": "pirates", # used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
+		"fleet_composition_quality": 1, # default to 2 for no Dmods.
+		"fleet_transponder": false, # default to true.
+		"fleet_behavior": "PASSIVE", # The fleet's behavior on the campaign layer. Options: "PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING", default to "GUARDED".
 	
 	
 		#LOCATION
 		
-		"location_marketIDs":[
+		"location_marketIDs": [  # Preset locations to spawn the bounty fleet, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
 			"location"
-		], #preset locations, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode
-		"location_marketFactions":[
+		],
+		"location_marketFactions": [  # Markets of specified faction for the fleet to spawn at. Adding a faction market supersedes all other parameters except location_id.
 			"faction" 
-		], #requiring a faction market supersedes all other parameters except location_id.
-		"location_distance":"CLOSE", # can be CORE, CLOSE, FAR or just left empty to ignore
-		"location_themes":[
+		],
+		"location_distance": "CLOSE", # How far from the center to spawn the bounty fleet. Options: "CORE", "CLOSE", "FAR" or just left empty to ignore.
+		"location_themes": [ # System themes that are valid to spawn the fleet at.
 			"theme_hidden",
 			"theme_core_unpopulated",
 			"theme_core_populated",
@@ -136,10 +153,10 @@
 			"procgen_no_theme", #not so special bounties should add this attribute
 			"procgen_no_theme_pulsar_blackhole", #or this one
 		],
-		"location_themes_blacklist":[
+		"location_themes_blacklist": [ # System themes to never spawn the fleet at.
 			"theme_already_occupied",
 		],
-		"location_entities":[
+		"location_entities": [ # Possible entities to spawn the fleet around. Default to PLANET + JUMP_POINT + STABLE_LOCATION if left empty
 			"gate",
 			"station",
 			"wreck",
@@ -151,8 +168,8 @@
             "gas_giant",
 			"planet",
 			"jump_point",
-		], #Default to PLANET+JUMP_POINT+STABLE_LOCATION if left empty
-		"location_prioritizeUnexplored":true, #will pick in priority systems that have not been visited by the player yet, but won't override the distance requirements
-		"location_defaultToAnyEntity":true,	#if true and no suitable entity is found in any systems with the required Theme and distance, a random entity will be picked instead. Otherwise the script will ignore the distance requirements
+		],
+		"location_prioritizeUnexplored": true, # Will pick in priority systems that have not been visited by the player yet, but won't override the distance requirements.
+		"location_defaultToAnyEntity": true, # If true and no suitable entity is found in any systems with the required Theme and distance, a random entity will be picked instead. Otherwise the script will ignore the distance requirements.
 	},
 }
