@@ -47,9 +47,9 @@
 			#["required_mod"] : list mods that are required to load that bounty, can be used to make cross mod bounties. Can be left empty.
 			"test_bounty":[],
 		},
-		"bounty_market_blacklist":{
+		"bounty_market_blacklist":[
 			#Markets that for some reason have a regular bar but should NOT offer any job
-		},
+		],
 		"bounty_offersAtSizeThree":1, #default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
         "bounty_boardRefreshTimePerMarketInDays": 90,
 		"bounty_neutralisationThreshold": 0.66,
