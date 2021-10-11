@@ -34,6 +34,8 @@ import java.util.*;
 
 import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.*;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import org.lazywizard.lazylib.VectorUtils;
+import org.lwjgl.util.vector.Vector2f;
 
 public class MagicCampaign {
     
@@ -53,6 +55,54 @@ public class MagicCampaign {
         float radius = system.getMaxRadiusInHyperspace();
         editor.clearArc(system.getLocation().x, system.getLocation().y, 0, radius + minRadius * 0.5f, 0, 360f);
         editor.clearArc(system.getLocation().x, system.getLocation().y, 0, radius + minRadius, 0, 360f, 0.25f);	     
+    }
+    
+    public void placeOnStableOrbit(SectorEntityToken object, boolean spin){
+        
+        StarSystemAPI system = object.getStarSystem();
+        Vector2f location = object.getLocation();
+        
+        //find a reference for the orbit
+        SectorEntityToken referenceObject=null;
+        float closestOrbit = 999999999;
+        //find nearest orbit to match
+        for(SectorEntityToken e : system.getAllEntities()){
+            
+            //skip non orpiting objects
+            if(e.getOrbit()==null || e.getOrbitFocus()==null || e.getCircularOrbitRadius()<=0 || e.getCircularOrbitPeriod()<=0)continue;
+
+            //skip stars
+            if(e.isStar())continue;
+
+            //find closest point on orbit for the tested object
+            Vector2f closestPoint = MathUtils.getPoint(
+                    e.getOrbitFocus().getLocation(),
+                    e.getCircularOrbitRadius(),
+                    VectorUtils.getAngle(e.getOrbitFocus().getLocation(), location)
+            );
+
+            //closest orbit becomes the reference
+            if(MathUtils.getDistanceSquared(closestPoint, location)<closestOrbit){
+                referenceObject=e;
+            }
+        }
+
+        SectorEntityToken orbitCenter;
+        Float angle,radius,period;
+        
+        if(referenceObject!=null){
+            orbitCenter=referenceObject.getOrbitFocus();
+            angle=VectorUtils.getAngle(referenceObject.getOrbitFocus().getLocation(),location);
+            radius=MathUtils.getDistance(referenceObject.getOrbitFocus().getLocation(),location);
+            period=referenceObject.getCircularOrbitPeriod()*(MathUtils.getDistance(referenceObject.getOrbitFocus().getLocation(),location)/referenceObject.getCircularOrbitRadius());                   
+        } else {
+            orbitCenter=system.getCenter();
+            angle=VectorUtils.getAngle(system.getCenter().getLocation(),location);
+            radius=MathUtils.getDistance(system.getCenter(),location);
+            period=MathUtils.getDistance(system.getCenter(),location)/2;
+        }
+        
+        object.setCircularOrbitWithSpin(orbitCenter,angle,period,radius,-10,10);
     }
     
     /**

@@ -30,17 +30,17 @@
 		
 		"job_name": "job name", # job name shown in the dialog pick list
 		"job_description": "Long form description of the job", # The description shown upon selecting the job.
-        # \n creates a line break, for example "Line one.\nLine two."
-        # $sonOrDaughter "son" if target is male, "daughter" otherwise.
-        # $fatherOrMother "father" if target is male, "mother" otherwise.
-        # $system_name The star system that the bounty fleet is in.
-        # $shipName The name of the bounty flagship.
-        # $target The name of the faction (with article) of the bounty fleet.
-        # $reward The amount of credits being given as a reward.
-        # $name The name of the bounty commander.
-        # $firstName The first name of the bounty commander.
-        # $lastName The last name of the bounty commander.
-        # $constellation The constellation that the bounty fleet is in.
+                                # \n creates a line break, for example "Line one.\nLine two."
+                                # $sonOrDaughter "son" if target is male, "daughter" otherwise.
+                                # $fatherOrMother "father" if target is male, "mother" otherwise.
+                                # $system_name The star system that the bounty fleet is in.
+                                # $shipName The name of the bounty flagship.
+                                # $target The name of the faction (with article) of the bounty fleet.
+                                # $reward The amount of credits being given as a reward.
+                                # $name The name of the bounty commander.
+                                # $firstName The first name of the bounty commander.
+                                # $lastName The last name of the bounty commander.
+                                # $constellation The constellation that the bounty fleet is in.
 		"job_comm_reply": "Reply of the enemy to your hail", # The text shown if the player opens comms with the bounty fleet, defaults to "The other $shipOrFleet does not answer to your hails."
 		"job_forFaction": "faction_offering_the_job", # optional; note that unless "job_reputation_reward" is set, successfully completing a bounty will improve relations by 5 points.
 		"job_deadline": 360, # The number of days to complete the bounty.
