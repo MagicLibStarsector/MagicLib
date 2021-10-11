@@ -167,6 +167,9 @@ public class MagicBountyData {
                         getString(bountyId, "job_name"),
                         getString(bountyId, "job_description"), 
                         reply,
+                        getString(bountyId, "job_intel_success"),
+                        getString(bountyId, "job_intel_failure"),
+                        getString(bountyId, "job_intel_expired"),
                         getString(bountyId, "job_forFaction"),
                         getString(bountyId, "job_difficultyDescription"),
                         getInt(bountyId, "job_deadline"),
@@ -262,6 +265,9 @@ public class MagicBountyData {
         public String job_name;                                                 //job name in the dialog pick list
         public String job_description;                                          //full text of the bounty offer, the description will handle some text variables such as "$he_or_she". See documentation for more details
         public String job_comm_reply;                                           //Reply of the enemy to your hail, default to "The other $shipOrFleet does not answer to you hails."
+        public String job_intel_success;                                        //short text added to the Intel object after the job has been successfully completed
+        public String job_intel_failure;                                        //short text added to the Intel object after the job has been failed
+        public String job_intel_expired;                                        //short text added to the Intel object after the job has been left to expire
         public String job_forFaction;                                           //successfully completing this mission with give a small reputation reward with this faction
         @Nullable public String job_difficultyDescription;                      // "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
         public int job_deadline;
@@ -295,7 +301,7 @@ public class MagicBountyData {
         public boolean job_show_arrow;
         public String job_pick_option;                                          //dialog text to pick the job
         public String job_pick_script;                                          //optional, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
-        public String job_memKey;                                               //MemKey set to false is added when accepting the job, set to true if the job is sucessful
+        public String job_memKey;                                               //optional, MemKey set to false is added when accepting the job, set to true if the job is sucessful
         public String job_conclusion_script;                                    //optional, can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
         //bounty target                                                         //ALL OPTIONAL
         public String target_first_name;
@@ -305,7 +311,7 @@ public class MagicBountyData {
         public String target_rank;                                              //rank from campaign.ids.Ranks
         public String target_post;                                              //post from campaign.ids.Ranks
         public String target_personality;                                       //personality from campaign.ids.Personalities
-        public String target_aiCoreId;                                         // Makes the target drop AI cores
+        public String target_aiCoreId;                                          //if properly set, turn the target into a AI, makes it drop AI cores
         public int target_level;
         public int target_elite_skills;                                         //Overrides the regular number of elite skills, set to -1 to ignore.
         public SkillPickPreference target_skill_preference;                     //GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
@@ -350,6 +356,9 @@ public class MagicBountyData {
             String job_name,                         
             String job_description, 
             String job_comm_reply,
+            String job_intel_success,
+            String job_intel_failure,
+            String job_intel_expired,
             String job_forFaction,
             String job_difficultyDescription,
             int job_deadline,
@@ -416,6 +425,9 @@ public class MagicBountyData {
             this.job_name = job_name;                         
             this.job_description = job_description;  
             this.job_comm_reply = job_comm_reply;
+            this.job_intel_success = job_intel_success;
+            this.job_intel_failure = job_intel_failure;
+            this.job_intel_expired = job_intel_expired;
             this.job_forFaction = job_forFaction;
             this.job_difficultyDescription = job_difficultyDescription;
             this.job_deadline = job_deadline;

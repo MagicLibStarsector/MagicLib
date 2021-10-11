@@ -183,10 +183,20 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         switch (bounty.getStage()) {
             case Succeeded:
+                
                 info.addPara(bounty.getSpec().job_conclusion_script, 0f);
                 //"You have successfully completed this bounty."
                 info.addPara(getString("mb_descSuccess"), 0f);
-
+                
+                //adding optional success text:
+                if(bounty.getSpec().job_intel_success!=null && !bounty.getSpec().job_intel_success.isEmpty() ){
+                    info.addPara(
+                            bounty.getSpec().job_intel_success,
+                            Misc.getGrayColor(),
+                            PADDING_DESC
+                    );
+                }
+                
                 if (bounty.hasCreditReward()) {
                     bullet(info);
                     //"%s credits received"
@@ -228,10 +238,85 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
 
                 }
-
                 break;
+                
             case FailedSalvagedFlagship:
                 //TO DO: VANILLA STYLE REPUTATION MESSAGE
+                
+                //"You have failed this bounty."
+                info.addPara(getString("mb_descFailure"), 0f);
+                
+                //adding optional failure text:
+                if(bounty.getSpec().job_intel_failure!=null && !bounty.getSpec().job_intel_failure.isEmpty() ){
+                    info.addPara(
+                            bounty.getSpec().job_intel_failure,
+                            Misc.getGrayColor(),
+                            PADDING_DESC
+                    );
+                }
+                
+                if(bounty.hasReputationReward()){                    
+                    bullet(info);
+                    //"Your reputation with %s has been reduced by %s."
+                    info.addPara(
+                            getString("mb_descReputationBad"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getNegativeHighlightColor(),
+                            bounty.getGivingFaction().getDisplayNameWithArticle(),
+                            Math.max(5, Math.round(bounty.getRewardReputation() * 100)) + ""
+                    );
+                    unindent(info);
+                }
+                break;
+                
+            case ExpiredAfterAccepting:
+                //TO DO: VANILLA STYLE REPUTATION MESSAGE
+                
+                //"You have failed this bounty."
+                info.addPara(getString("mb_descExpired"), 0f);
+                
+                //adding optional failure text:
+                if(bounty.getSpec().job_intel_expired!=null && !bounty.getSpec().job_intel_expired.isEmpty() ){
+                    info.addPara(
+                            bounty.getSpec().job_intel_expired,
+                            Misc.getGrayColor(),
+                            PADDING_DESC
+                    );
+                }
+                
+                if(bounty.hasReputationReward()){      
+                    bullet(info);
+                    //"Your reputation with %s has been reduced by %s."
+                    info.addPara(
+                            getString("mb_descReputationBad"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getNegativeHighlightColor(),
+                            bounty.getGivingFaction().getDisplayNameWithArticle(),
+                            Math.min(5, Math.round(bounty.getRewardReputation() * 100)) + ""
+                    );
+                    unindent(info);
+                }
+                break;
+                
+            case EndedWithoutPlayerInvolvement:
+                
+                //"Someone else completed this mission."
+                info.addPara(getString("mb_descUninvolved"), 0f);
+                
+                if(bounty.hasReputationReward()){   
+                    bullet(info);
+                    //"Your reputation with was unafected."
+                    info.addPara(
+                            getString("mb_descReputationNothing"),
+                            PADDING_DESC,
+                            Misc.getTextColor(),
+                            Misc.getNegativeHighlightColor(),
+                            bounty.getGivingFaction().getDisplayNameWithArticle()
+                    );
+                    unindent(info);
+                }
                 break;
             case Accepted:
             case NotAccepted:

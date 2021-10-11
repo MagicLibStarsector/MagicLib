@@ -218,12 +218,20 @@ public final class ActiveBounty {
             stage = Stage.EndedWithoutPlayerInvolvement;
         } else if (result instanceof BountyResult.FailedOutOfTime) {
             stage = Stage.ExpiredAfterAccepting;
+            //reputation penalty
+            if (hasReputationReward()) {
+                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.min(5, getRewardReputation()));
+            }
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
         } else if (result instanceof BountyResult.FailedSalvagedFlagship) {
             stage = Stage.FailedSalvagedFlagship;
+            //reputation penalty
+            if (hasReputationReward()) {
+                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.max(5, getRewardReputation()));
+            }
         }
 
         if (MagicTxt.nullStringIfEmpty(spec.job_conclusion_script) != null) {
