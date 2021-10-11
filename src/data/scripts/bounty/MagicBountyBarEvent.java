@@ -9,21 +9,21 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
-//import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import static com.fs.starfarer.api.util.Misc.random;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicPaginatedBarEvent;
 import data.scripts.util.MagicSettings;
-import static data.scripts.util.MagicTxt.getString;
 import data.scripts.util.MagicVariables;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
+import static com.fs.starfarer.api.util.Misc.random;
+import static data.scripts.util.MagicTxt.getString;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import java.awt.Color;
 
 /**
  * Displays the bounty board and all associated bounties.
@@ -123,14 +123,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
 
                         if (bounty != null) {
-                            String name = bounty.job_name;
-
-                            if (bounty.job_name == null) {
-                                //"Unnamed job"
-                                name = getString("mb_unnamed"); // TODO default job name
-                            }
-
-                            addOption(name, getBountyOptionKey(key), null, null);
+                            addOption(bounty.job_name, getBountyOptionKey(key), null, null);
                         }
                     }
                     //"Close the board."
@@ -156,7 +149,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s", Misc.getHighlightColor(), getString("mb_accepted") + bounty.job_name);
 
                     ActiveBounty activeBounty = instance.getActiveBounty(bountyKey);
-                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), (float)bounty.job_reputation_reward, bounty.job_forFaction);
+                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), (float) bounty.job_reputation_reward, bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -318,7 +311,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             visual.setShowRandomSubImage(false);
                             dialog.getVisualPanel().showImageVisual(visual);
                         } else {
-                            InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128,128);
+                            InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128, 128);
                             visual.setShowRandomSubImage(false);
                             dialog.getVisualPanel().showImageVisual(visual);
                         }
@@ -381,21 +374,21 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                             activeBounty.getFleet().getFaction().getBaseUIColor(),
                                             ships, 10f);
                             */
-                            
-                            
+
+
                             showFleet(
-                                   text,
-                                   dialog.getTextWidth(),
-                                   activeBounty.getFleet().getFaction().getBaseUIColor(),
-                                   activeBounty.getSpec().job_show_fleet,
-                                   activeBounty.getFleet().getMembersWithFightersCopy(),
-                                   activeBounty.getFlagshipInFleet(),
-                                   activeBounty.getPresetShipsInFleet()
+                                    text,
+                                    dialog.getTextWidth(),
+                                    activeBounty.getFleet().getFaction().getBaseUIColor(),
+                                    activeBounty.getSpec().job_show_fleet,
+                                    activeBounty.getFleet().getMembersWithFightersCopy(),
+                                    activeBounty.getFlagshipInFleet(),
+                                    activeBounty.getPresetShipsInFleet()
                             );
-                            
+
 //                            text.addTooltip();
                         }
-                        
+
                         options.clear();
                         optionsAllPages.clear();
                         addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
@@ -474,31 +467,30 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private int getNumberOfBountySlots(MarketAPI market) {
         return MagicBountyCoordinator.getInstance().getBountySlotsAtMarket(market);
     }
-    
-    private void showFleet(TextPanelAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset){
+
+    private void showFleet(TextPanelAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset) {
 
         int columns = 10;
-        switch (setting){
+        switch (setting) {
             case Text:
                 //write the number of ships
                 int num = ships.size();
-                if(num<5){
+                if (num < 5) {
                     num = 5;
                     info.addPara(getString("mb_fleet6"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
-                            ""+num
+                            "" + num
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
                 info.addPara(getString("mb_fleet5"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
             case Flagship:
                 //show the flagship
@@ -525,28 +517,27 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         10f
                 );
                 info.addTooltip();
-                
+
                 //write the number of other ships
-                num = ships.size()-1;
-                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
-                if(num<5){
+                num = ships.size() - 1;
+                num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
+                if (num < 5) {
                     info.addPara(getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
                 info.addPara(getString("mb_fleet3"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
                 break;
-                
+
             case Preset:
                 //show the preset fleet
                 info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
@@ -560,11 +551,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 );
                 info.addTooltip();
                 break;
-                
+
             case PresetText:
                 //show the preset fleet
                 info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
-                List<FleetMemberAPI>toShow = preset;
+                List<FleetMemberAPI> toShow = preset;
 //                toShow.addAll(preset);
                 info.beginTooltip().addShipList(
                         columns,
@@ -576,40 +567,39 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 );
                 info.addTooltip();
                 //write the number of other ships
-                num = ships.size()-toShow.size();
-                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
-                if(num<5){
+                num = ships.size() - toShow.size();
+                num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
+                if (num < 5) {
                     info.addPara(getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
                 info.addPara(getString("mb_fleet3"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
                 break;
-                
+
             case Vanilla:
                 //show the Flagship and the 6 biggest ships in the fleet
                 info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
-                
+
                 //there are less than 7 ships total, all will be shown
-                if(ships.size()<=columns){
+                if (ships.size() <= columns) {
                     toShow = ships;
                     info.beginTooltip().addShipList(
-                        columns,
-                        1,
-                        (width - 10) / columns,
-                        factionBaseUIColor,
-                        toShow,
-                        10f
+                            columns,
+                            1,
+                            (width - 10) / columns,
+                            factionBaseUIColor,
+                            toShow,
+                            10f
                     );
                     info.addTooltip();
                     info.addPara(getString("mb_fleet4"),
@@ -617,52 +607,51 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             Misc.getHighlightColor()
                     );
                     break;
-                } 
+                }
                 //If there are more than 7 ships, pick the largest 7
                 //make a random picker with squared FP weight to heavily trend toward bigger ships
-                WeightedRandomPicker <FleetMemberAPI> picker = new WeightedRandomPicker<>();
-                for(FleetMemberAPI m : ships){
-                    if(m==flagship.get(0))continue;
-                    if(m.isFighterWing())continue;
-                    picker.add(m, (float)Math.pow(m.getFleetPointCost(),2));
+                WeightedRandomPicker<FleetMemberAPI> picker = new WeightedRandomPicker<>();
+                for (FleetMemberAPI m : ships) {
+                    if (m == flagship.get(0)) continue;
+                    if (m.isFighterWing()) continue;
+                    picker.add(m, (float) Math.pow(m.getFleetPointCost(), 2));
                 }
                 //make a pick list starting with the flagship 
                 toShow = flagship;
-                for(int i=1; i<columns; i++){
+                for (int i = 1; i < columns; i++) {
                     toShow.add(picker.pickAndRemove());
                 }
                 //make the ship list
                 info.beginTooltip().addShipList(
-                    columns,
-                    1,
-                    (width - 10) / columns,
-                    factionBaseUIColor,
-                    toShow,
-                    10f
+                        columns,
+                        1,
+                        (width - 10) / columns,
+                        factionBaseUIColor,
+                        toShow,
+                        10f
                 );
                 info.addTooltip();
-                
+
                 //write the number of other ships
-                num = ships.size()-columns;
-                num = Math.round((float)num * (1f + random.nextFloat() * 0.5f));
-                if(num<5){
+                num = ships.size() - columns;
+                num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
+                if (num < 5) {
                     info.addPara(getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                     break;
-                }
-                else if (num < 10) num = 5;
+                } else if (num < 10) num = 5;
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
                 info.addPara(getString("mb_fleet3"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
-                        ""+num
+                        "" + num
                 );
                 break;
-            case All: 
+            case All:
                 //show the full fleet
                 info.addPara(getString("mb_fleet2") + getString("mb_fleet"));
                 info.beginTooltip().addShipList(
@@ -674,7 +663,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         10f
                 );
                 info.addTooltip();
-            default: 
+            default:
                 break;
         }
     }

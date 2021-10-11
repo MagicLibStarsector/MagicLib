@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -158,13 +159,13 @@ public class MagicBountyData {
                         getInt(bountyId, "trigger_market_minSize"),
                         getInt(bountyId, "trigger_player_minLevel"),
                         getInt(bountyId, "trigger_min_days_elapsed"),
-                        getFloat(bountyId, "trigger_weight_mult"),
+                        getFloat(bountyId, "trigger_weight_mult", 1f),
                         getBooleanMap(bountyId, "trigger_memKeys_all"),
                         getBooleanMap(bountyId, "trigger_memKeys_any"),
                         getFloatMap(bountyId, "trigger_playerRelationship_atLeast"),
                         getFloatMap(bountyId, "trigger_playerRelationship_atMost"),
                                                 
-                        getString(bountyId, "job_name"),
+                        getString(bountyId, "job_name", MagicTxt.getString("mb_unnamed")), //"Unnamed job"
                         getString(bountyId, "job_description"), 
                         reply,
                         getString(bountyId, "job_forFaction"),
@@ -194,7 +195,7 @@ public class MagicBountyData {
                         getString(bountyId, "target_personality"), 
                         getString(bountyId, "target_aiCoreId"),
                         getInt(bountyId, "target_level"),
-                        getInt(bountyId, "target_elite_skills"),
+                        getInt(bountyId, "target_elite_skills", 0),
                         skillPref, 
                         getIntMap(bountyId, "target_skills"),
                         
@@ -245,30 +246,30 @@ public class MagicBountyData {
     public static class bountyData {
         
         //trigger parameters                                                    //ALL OPTIONAL
-        public List <String> trigger_market_id;                                 //will default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
-        public List <String> trigger_marketFaction_any;
+        @NotNull public List <String> trigger_market_id;                                 //will default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
+        @NotNull public List <String> trigger_marketFaction_any;
         public boolean trigger_marketFaction_alliedWith;                        //visited market is at least neutral with one those factions
-        public List <String> trigger_marketFaction_none;
+        @NotNull public List <String> trigger_marketFaction_none;
         public boolean trigger_marketFaction_enemyWith;                         //visited market is at best inhospitable with all those factions
         public int trigger_market_minSize;
         public int trigger_player_minLevel;
         public int trigger_min_days_elapsed;
         public float trigger_weight_mult;                                       //simple frequency multiplier
-        public Map <String,Boolean> trigger_memKeys_all;       
-        public Map <String,Boolean> trigger_memKeys_any;    
-        public Map <String,Float> trigger_playerRelationship_atLeast;           //minimal player relationship with those factions
-        public Map <String,Float> trigger_playerRelationship_atMost;            //maximum player relationship with those factions
+        @NotNull public Map <String,Boolean> trigger_memKeys_all;
+        @NotNull public Map <String,Boolean> trigger_memKeys_any;
+        @NotNull public Map <String,Float> trigger_playerRelationship_atLeast;           //minimal player relationship with those factions
+        @NotNull public Map <String,Float> trigger_playerRelationship_atMost;            //maximum player relationship with those factions
         //job description
-        public String job_name;                                                 //job name in the dialog pick list
-        public String job_description;                                          //full text of the bounty offer, the description will handle some text variables such as "$he_or_she". See documentation for more details
-        public String job_comm_reply;                                           //Reply of the enemy to your hail, default to "The other $shipOrFleet does not answer to you hails."
-        public String job_forFaction;                                           //successfully completing this mission with give a small reputation reward with this faction
+        @Nullable public String job_name;                                                 //job name in the dialog pick list
+        @Nullable public String job_description;                                          //full text of the bounty offer, the description will handle some text variables such as "$he_or_she". See documentation for more details
+        @Nullable public String job_comm_reply;                                           //Reply of the enemy to your hail, default to "The other $shipOrFleet does not answer to you hails."
+        @Nullable public String job_forFaction;                                           //successfully completing this mission with give a small reputation reward with this faction
         @Nullable public String job_difficultyDescription;                      // "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text
         public int job_deadline;
         public int job_credit_reward;
         public float job_credit_scaling;                                        //only used with fleet scaling: total reward = job_credits_reward * (job_reward_scaling * (bounty fleet DP / fleet_minimal_DP) )
         public float job_reputation_reward;
-        public Map <String,Integer> job_item_reward;
+        @NotNull public Map <String,Integer> job_item_reward;
         public JobType job_type;                                                // assassination, destruction, obliteration, neutralisation
                                                                                 // assassination: requires only to disable the flagship
                                                                                 // destruction: requires the complete destruction of the flagship without recovery
@@ -631,41 +632,53 @@ public class MagicBountyData {
     }
     
     private static String getString(String bountyId, String key){
-        String value=null;
-          
+        return getString(bountyId, key, null);
+    }
+
+    private static String getString(String bountyId, String key, String defaultValue){
+        String value=defaultValue;
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 value = reqSettings.getString(key);
             }
         } catch (JSONException ex){}
-                
+
         return value;
     }
     
     private static Integer getInt(String bountyId, String key){
-        int value=-1;
-          
+        return getInt(bountyId, key, -1);
+    }
+
+    private static Integer getInt(String bountyId, String key, int defaultValue){
+        int value = defaultValue;
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 value = reqSettings.getInt(key);
             }
         } catch (JSONException ex){}
-                 
+
         return value;
     }
     
     private static Float getFloat(String bountyId, String key){
-        float value=-1;
-          
+        return getFloat(bountyId, key, -1);
+    }
+
+    private static Float getFloat(String bountyId, String key, float defaultValue){
+        float value= defaultValue;
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 value = (float)reqSettings.getDouble(key);
             }
         } catch (JSONException ex){}
-                 
+
         return value;
     }
     
