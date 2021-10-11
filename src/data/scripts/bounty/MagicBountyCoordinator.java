@@ -224,6 +224,7 @@ public final class MagicBountyCoordinator {
         }
 
         PersonAPI captain = MagicCampaign.createCaptain(
+                spec.target_aiCoreId != null,
                 spec.target_aiCoreId,
                 nullStringIfEmpty(spec.target_first_name),
                 nullStringIfEmpty(spec.target_last_name),
