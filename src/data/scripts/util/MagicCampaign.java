@@ -754,7 +754,6 @@ public class MagicCampaign {
      */
     
     public static PersonAPI createCaptain(
-            boolean isAI,
             @Nullable String AICoreType,
             @Nullable String firstName,
             @Nullable String lastName,
@@ -802,7 +801,7 @@ public class MagicCampaign {
             }
         }
         
-        if(isAI){
+        if(AICoreType != null){
             person.setAICoreId(AICoreType);  
             person.setGender(FullName.Gender.ANY);
         }

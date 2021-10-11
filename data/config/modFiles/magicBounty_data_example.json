@@ -89,7 +89,7 @@
 		"target_rank": "Captain", # Rank from campaign.ids.Ranks [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
 		"target_post": "Fleet Commander", # Post from campaign.ids.Ranks (yes, Ranks, posts are the bottom half). [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
 		"target_personality": "aggressive", # personality from campaign.ids.Personalities ("timid", "cautious", "steady", "aggressive", "reckless")
-		"target_isAI": false, # Not yet implemented, leave false
+		"target_aiCoreId": null, # Optional; the AI Core id of the bounty commander. Core will be dropped as loot. Options: [ null, "gamma_core", "beta_core", "alpha_core" ]
 		"target_level": 1, # The level of the bounty commander
 		"target_elite_skills":2, #Overrides the regular number of elite skills, set to -1 to ignore.
 		"target_skill_preference": "GENERIC", # "GENERIC", "PHASE", "CARRIER", "ANY" (from OfficerManagerEvent.SkillPickPreference)

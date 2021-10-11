@@ -28,12 +28,6 @@ public final class MagicBountyBattleListener implements FleetEventListener {
     @NotNull
     private final String bountyKey;
 
-    /**
-     * The original size of the bounty fleet in FP, before any battles.
-     */
-    @Nullable
-    private Integer initialBountyFleetPoints = null;
-
     public MagicBountyBattleListener(@NotNull String bountyKey) {
         this.bountyKey = bountyKey;
     }
@@ -104,16 +98,6 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             boolean didPlayerSalvageFlagship = false;
             List<FleetMemberAPI> bountyFleetBeforeBattle = bountyFleet.getFleetData().getSnapshot();
 
-            // Save the initial FP of the bounty fleet before any battles.
-            // Only do this after the first of the fleet's battles, otherwise multiple battles would overwrite the value.
-            if (initialBountyFleetPoints == null) {
-                initialBountyFleetPoints = 0;
-
-                for (FleetMemberAPI member : bountyFleetBeforeBattle) {
-                    initialBountyFleetPoints += member.getFleetPointCost();
-                }
-            }
-
             if (bounty.getFlagshipId() != null) {
                 for (FleetMemberAPI fleetMember : playerFleet.getFleetData().getMembersListCopy()) {
 
@@ -157,7 +141,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
                 case Neutralisation:
                     float fpPostFight = bountyFleet.getFleetPoints();
 
-                    if ((fpPostFight / initialBountyFleetPoints) <= (1f / 3f)) {
+                    if ((fpPostFight / bounty.getInitialBountyFleetPoints()) <= (1f / 3f)) {
                         bounty.endBounty(new ActiveBounty.BountyResult.Succeeded(true));
                         isDone = true;
                     }

@@ -192,7 +192,7 @@ public class MagicBountyData {
                         getString(bountyId, "target_rank"), 
                         getString(bountyId, "target_post"), 
                         getString(bountyId, "target_personality"), 
-                        getBoolean(bountyId, "target_isAI"),
+                        getString(bountyId, "target_aiCoreId"),
                         getInt(bountyId, "target_level"),
                         getInt(bountyId, "target_elite_skills"),
                         skillPref, 
@@ -305,7 +305,7 @@ public class MagicBountyData {
         public String target_rank;                                              //rank from campaign.ids.Ranks
         public String target_post;                                              //post from campaign.ids.Ranks
         public String target_personality;                                       //personality from campaign.ids.Personalities
-        public boolean target_isAI;                                             //Makes the target drop AI cores
+        public String target_aiCoreId;                                         // Makes the target drop AI cores
         public int target_level;
         public int target_elite_skills;                                         //Overrides the regular number of elite skills, set to -1 to ignore.
         public SkillPickPreference target_skill_preference;                     //GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
@@ -374,7 +374,7 @@ public class MagicBountyData {
             String target_rank,                      
             String target_post,                      
             String target_personality,               
-            boolean target_isAI,                     
+            String target_aiCoreId,
             int target_level,
             int target_elite_skills,                 
             SkillPickPreference target_skill_preference,          
@@ -495,7 +495,7 @@ public class MagicBountyData {
             this.target_rank = target_rank;                      
             this.target_post = target_post;                      
             this.target_personality = target_personality;               
-            this.target_isAI = target_isAI;                     
+            this.target_aiCoreId = target_aiCoreId;
             this.target_level = target_level;
             this.target_elite_skills = target_elite_skills;                 
             this.target_skill_preference = target_skill_preference;          
