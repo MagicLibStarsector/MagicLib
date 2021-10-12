@@ -48,7 +48,7 @@
 		"mb_distance_core":"in the core worlds",
 		"mb_distance_close":"in the vicinity of the core worlds",
 		"mb_distance_far":"away to the outer edges of the sector",
-		"mb_type":"This mission has for objective the %s of the target. To get the reward, you will need to %s.",
+		"mb_type":"This mission requires the %s of the target. To get the reward, you will need to %s.",
 		"mb_type_assassination1":"assassination",
 		"mb_type_assassination2":"disable the target's flagship",
 		"mb_type_destruction1":"destruction",

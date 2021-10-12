@@ -1006,7 +1006,10 @@ public class MagicCampaign {
         if(marketFaction_none!=null && !marketFaction_none.isEmpty()){
             for(String f : marketFaction_none){
                 //skip non existing factions
-                if(Global.getSector().getFaction(f)==null)continue;
+                if(Global.getSector().getFaction(f)==null) {
+                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    continue;
+                }
                 
                 FactionAPI this_faction = Global.getSector().getFaction(f);
                 if(market.getFaction()==this_faction){
@@ -1022,7 +1025,10 @@ public class MagicCampaign {
             
             for(String f : marketFaction_any){
                 //skip non existing factions
-                if(Global.getSector().getFaction(f)==null)continue; 
+                if(Global.getSector().getFaction(f)==null) {
+                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    continue;
+                }
                 
                 FactionAPI this_faction = Global.getSector().getFaction(f);
                 if(market.getFaction()==this_faction){
@@ -1067,7 +1073,10 @@ public class MagicCampaign {
         if(playerRelationship_atLeast!=null && !playerRelationship_atLeast.isEmpty()){
             for(String f : playerRelationship_atLeast.keySet()){
                 //skip non existing factions
-                if(Global.getSector().getFaction(f)!=null)continue;
+                if(Global.getSector().getFaction(f)!=null) {
+                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    continue;
+                }
                 if(!Global.getSector().getPlayerFaction().isAtWorst(f, RepLevel.getLevelFor(playerRelationship_atLeast.get(f))))return false;
             }
         }
@@ -1076,7 +1085,10 @@ public class MagicCampaign {
         if(playerRelationship_atMost!=null && !playerRelationship_atMost.isEmpty()){
             for(String f : playerRelationship_atMost.keySet()){
                 //skip non existing factions
-                if(Global.getSector().getFaction(f)!=null)continue;
+                if(Global.getSector().getFaction(f)!=null) {
+                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    continue;
+                }
                 if(!Global.getSector().getPlayerFaction().isAtBest(f, RepLevel.getLevelFor(playerRelationship_atMost.get(f))))return false;
             }
         }
