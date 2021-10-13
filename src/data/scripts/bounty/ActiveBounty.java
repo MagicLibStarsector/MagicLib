@@ -154,7 +154,7 @@ public final class ActiveBounty {
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
         // Add comm reply
-        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", spec.job_comm_reply);
+        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", replaceStringVariables(spec.job_comm_reply));
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
@@ -493,74 +493,83 @@ public final class ActiveBounty {
         return loc;
     }
 
+    /**
+     * Replaces variables in the given string with data from the bounty and splits it into paragraphs using `\n`.
+     */
+    public String replaceStringVariables(String text) {
+        String replaced = text;
+
+        final ActiveBounty finalActiveBounty = this;
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$sonOrDaughter", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getCommander().getGender() == Gender.MALE ? MagicTxt.getString("mb_son") : MagicTxt.getString("mb_daughter");
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$fatherOrMother", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getCommander().getGender() == Gender.MALE ? MagicTxt.getString("mb_father") : MagicTxt.getString("mb_mother");
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$system_name", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getNameWithNoType();
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$shipName", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getFlagship().getShipName();
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$target", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getFaction().getDisplayNameWithArticle();
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$reward", new StringCreator() {
+            @Override
+            public String create() {
+                return Misc.getDGSCredits(spec.job_credit_reward);
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$name", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getCommander().getNameString();
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$firstName", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getCommander().getName().getFirst();
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$lastName", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleet().getCommander().getName().getLast();
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$constellation", new StringCreator() {
+            @Override
+            public String create() {
+                return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getConstellation().getName();
+            }
+        });
+
+        return replaced;
+    }
+
     private void addDescriptionToTextPanelInternal(Object text, Color color, float padding) {
         if (nullStringIfEmpty(spec.job_description) != null) {
-            String[] paras = spec.job_description.split("/n|\\n");
-            for (String para : paras) {
-                String replacedPara = para;
+            String replacedString = replaceStringVariables(spec.job_description);
+            String[] replacedParas = replacedString.split("/n|\\n");
 
-                final ActiveBounty finalActiveBounty = this;
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$sonOrDaughter", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getGender() == Gender.MALE ? MagicTxt.getString("mb_son") : MagicTxt.getString("daughter");
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$fatherOrMother", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getGender() == Gender.MALE ? MagicTxt.getString("mb_father") : MagicTxt.getString("mb_mother");
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$system_name", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getNameWithNoType();
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$shipName", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getFlagship().getShipName();
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$target", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getFaction().getDisplayNameWithArticle();
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$reward", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return Misc.getDGSCredits(spec.job_credit_reward);
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$name", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getNameString();
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$firstName", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getName().getFirst();
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$lastName", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleet().getCommander().getName().getLast();
-                    }
-                });
-                replacedPara = MagicTxt.replaceAllIfPresent(replacedPara, "$constellation", new StringCreator() {
-                    @Override
-                    public String create() {
-                        return finalActiveBounty.getFleetSpawnLocation().getContainingLocation().getConstellation().getName();
-                    }
-                });
-
+            for (String replacedPara : replacedParas) {
                 if (text instanceof TextPanelAPI) {
                     ((TextPanelAPI) text).addPara(replacedPara, color);
                 } else if (text instanceof TooltipMakerAPI) {
@@ -631,5 +640,28 @@ public final class ActiveBounty {
 
         class ExpiredWithoutAccepting implements BountyResult {
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ActiveBounty{");
+        sb.append("bountyKey='").append(bountyKey).append('\'');
+        sb.append(", fleet=").append(fleet);
+        sb.append(", fleetSpawnLocation=").append(fleetSpawnLocation);
+        sb.append(", presetShipIds=").append(presetShipIds);
+        sb.append(", spec=").append(spec);
+        sb.append(", bountyCreatedTimestamp=").append(bountyCreatedTimestamp);
+        sb.append(", captain=").append(captain);
+        sb.append(", flagshipId='").append(flagshipId).append('\'');
+        sb.append(", initialBountyFleetPoints=").append(initialBountyFleetPoints);
+        sb.append(", acceptedBountyTimestamp=").append(acceptedBountyTimestamp);
+        sb.append(", bountyResult=").append(bountyResult);
+        sb.append(", bountySource=").append(bountySource);
+        sb.append(", stage=").append(stage);
+        sb.append(", rewardCredits=").append(rewardCredits);
+        sb.append(", rewardReputation=").append(rewardReputation);
+        sb.append(", rewardFaction='").append(rewardFaction).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

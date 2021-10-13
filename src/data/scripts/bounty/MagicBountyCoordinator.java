@@ -224,7 +224,8 @@ public final class MagicBountyCoordinator {
         }
 
         PersonAPI captain = MagicCampaign.createCaptain(
-                spec.target_aiCoreId != null,
+                // because apparently putting null in the json shows up as "null", a string...
+                spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"),
                 spec.target_aiCoreId,
                 nullStringIfEmpty(spec.target_first_name),
                 nullStringIfEmpty(spec.target_last_name),

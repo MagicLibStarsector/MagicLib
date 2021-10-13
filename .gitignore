@@ -99,3 +99,4 @@ gradle.properties
 /build/
 /jars/
 /out/
+.idea/csv-plugin.xml

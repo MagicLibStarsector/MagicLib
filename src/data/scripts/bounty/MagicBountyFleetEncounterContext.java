@@ -1,9 +1,7 @@
 package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.BattleAPI;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.SpecialItemData;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.CommoditySpecAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
@@ -98,6 +96,9 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
         return recoverableShips;
     }
 
+    /**
+     * Adds specified loot to the drop when player defeats the flagship.
+     */
     @Override
     protected void generatePlayerLoot(List<FleetMemberAPI> recoveredShips, boolean withCredits) {
         super.generatePlayerLoot(recoveredShips, withCredits);
@@ -132,24 +133,44 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
             return;
         }
 
-        // Add special items
-        if (bounty.getSpec().job_item_reward != null) {
-            for (Map.Entry<String, Integer> entry : bounty.getSpec().job_item_reward.entrySet()) {
-                String itemId = entry.getKey();
-                Integer count = entry.getValue();
-                try {
-                    loot.addSpecial(new SpecialItemData(itemId, null), count);
-                } catch (Exception ex) {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add special loot: " + itemId, ex);
-                }
-            }
-        }
-
+        // Add AI core if commander was an AI
         if (bounty.getSpec().target_aiCoreId != null) {
             CommoditySpecAPI core = Global.getSector().getEconomy().getCommoditySpec(bounty.getSpec().target_aiCoreId);
 
             if (core != null) {
                 loot.addCommodity(core.getId(), 1);
+            }
+        }
+
+        // Add special items
+        for (Map.Entry<String, Integer> entry : bounty.getSpec().job_item_reward.entrySet()) {
+            String itemId = entry.getKey();
+            Integer count = entry.getValue();
+
+            try {
+                CommoditySpecAPI commoditySpec = Global.getSector().getEconomy().getCommoditySpec(itemId);
+
+                if (commoditySpec != null) {
+                    loot.addItems(CargoAPI.CargoItemType.RESOURCES, itemId, count);
+                } else {
+                    String[] split = itemId.split(" ");
+                    String specialItemId = split[0];
+                    String data = null;
+
+                    if (split.length > 1) {
+                        data = split[1];
+                    }
+
+                    SpecialItemSpecAPI specialItemSpec = Global.getSettings().getSpecialItemSpec(specialItemId);
+
+                    if (specialItemSpec != null) {
+                        loot.addSpecial(new SpecialItemData(specialItemId, data), count);
+                    } else {
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, new NullPointerException());
+                    }
+                }
+            } catch (Exception ex) {
+                Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, ex);
             }
         }
     }
