@@ -534,6 +534,81 @@ public class MagicBountyData {
             this.location_prioritizeUnexplored = location_prioritizeUnexplored;
             this.location_defaultToAnyEntity = location_defaultToAnyEntity;
         }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("bountyData{");
+            sb.append("trigger_market_id=").append(trigger_market_id);
+            sb.append(", trigger_marketFaction_any=").append(trigger_marketFaction_any);
+            sb.append(", trigger_marketFaction_alliedWith=").append(trigger_marketFaction_alliedWith);
+            sb.append(", trigger_marketFaction_none=").append(trigger_marketFaction_none);
+            sb.append(", trigger_marketFaction_enemyWith=").append(trigger_marketFaction_enemyWith);
+            sb.append(", trigger_market_minSize=").append(trigger_market_minSize);
+            sb.append(", trigger_player_minLevel=").append(trigger_player_minLevel);
+            sb.append(", trigger_min_days_elapsed=").append(trigger_min_days_elapsed);
+            sb.append(", trigger_weight_mult=").append(trigger_weight_mult);
+            sb.append(", trigger_memKeys_all=").append(trigger_memKeys_all);
+            sb.append(", trigger_memKeys_any=").append(trigger_memKeys_any);
+            sb.append(", trigger_playerRelationship_atLeast=").append(trigger_playerRelationship_atLeast);
+            sb.append(", trigger_playerRelationship_atMost=").append(trigger_playerRelationship_atMost);
+            sb.append(", job_name='").append(job_name).append('\'');
+            sb.append(", job_description='").append(job_description).append('\'');
+            sb.append(", job_comm_reply='").append(job_comm_reply).append('\'');
+            sb.append(", job_intel_success='").append(job_intel_success).append('\'');
+            sb.append(", job_intel_failure='").append(job_intel_failure).append('\'');
+            sb.append(", job_intel_expired='").append(job_intel_expired).append('\'');
+            sb.append(", job_forFaction='").append(job_forFaction).append('\'');
+            sb.append(", job_difficultyDescription='").append(job_difficultyDescription).append('\'');
+            sb.append(", job_deadline=").append(job_deadline);
+            sb.append(", job_credit_reward=").append(job_credit_reward);
+            sb.append(", job_credit_scaling=").append(job_credit_scaling);
+            sb.append(", job_reputation_reward=").append(job_reputation_reward);
+            sb.append(", job_item_reward=").append(job_item_reward);
+            sb.append(", job_type=").append(job_type);
+            sb.append(", job_show_type=").append(job_show_type);
+            sb.append(", job_show_captain=").append(job_show_captain);
+            sb.append(", job_show_fleet=").append(job_show_fleet);
+            sb.append(", job_show_distance=").append(job_show_distance);
+            sb.append(", job_show_arrow=").append(job_show_arrow);
+            sb.append(", job_pick_option='").append(job_pick_option).append('\'');
+            sb.append(", job_pick_script='").append(job_pick_script).append('\'');
+            sb.append(", job_memKey='").append(job_memKey).append('\'');
+            sb.append(", job_conclusion_script='").append(job_conclusion_script).append('\'');
+            sb.append(", target_first_name='").append(target_first_name).append('\'');
+            sb.append(", target_last_name='").append(target_last_name).append('\'');
+            sb.append(", target_portrait='").append(target_portrait).append('\'');
+            sb.append(", target_gender=").append(target_gender);
+            sb.append(", target_rank='").append(target_rank).append('\'');
+            sb.append(", target_post='").append(target_post).append('\'');
+            sb.append(", target_personality='").append(target_personality).append('\'');
+            sb.append(", target_aiCoreId='").append(target_aiCoreId).append('\'');
+            sb.append(", target_level=").append(target_level);
+            sb.append(", target_elite_skills=").append(target_elite_skills);
+            sb.append(", target_skill_preference=").append(target_skill_preference);
+            sb.append(", target_skills=").append(target_skills);
+            sb.append(", fleet_name='").append(fleet_name).append('\'');
+            sb.append(", fleet_faction='").append(fleet_faction).append('\'');
+            sb.append(", fleet_flagship_variant='").append(fleet_flagship_variant).append('\'');
+            sb.append(", fleet_flagship_name='").append(fleet_flagship_name).append('\'');
+            sb.append(", fleet_flagship_recoverable=").append(fleet_flagship_recoverable);
+            sb.append(", fleet_preset_ships=").append(fleet_preset_ships);
+            sb.append(", fleet_scaling_multiplier=").append(fleet_scaling_multiplier);
+            sb.append(", fleet_min_DP=").append(fleet_min_DP);
+            sb.append(", fleet_composition_faction='").append(fleet_composition_faction).append('\'');
+            sb.append(", fleet_composition_quality=").append(fleet_composition_quality);
+            sb.append(", fleet_transponder=").append(fleet_transponder);
+            sb.append(", fleet_behavior=").append(fleet_behavior);
+            sb.append(", location_marketIDs=").append(location_marketIDs);
+            sb.append(", location_marketFactions=").append(location_marketFactions);
+            sb.append(", location_distance='").append(location_distance).append('\'');
+            sb.append(", location_themes=").append(location_themes);
+            sb.append(", location_themes_blacklist=").append(location_themes_blacklist);
+            sb.append(", location_entities=").append(location_entities);
+            sb.append(", location_prioritizeUnexplored=").append(location_prioritizeUnexplored);
+            sb.append(", location_defaultToAnyEntity=").append(location_defaultToAnyEntity);
+            sb.append('}');
+            return sb.toString();
+        }
     }
     
     //Loads a bounty list from modSettings.json while respecting their mod requirements

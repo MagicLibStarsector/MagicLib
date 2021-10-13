@@ -641,4 +641,27 @@ public final class ActiveBounty {
         class ExpiredWithoutAccepting implements BountyResult {
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ActiveBounty{");
+        sb.append("bountyKey='").append(bountyKey).append('\'');
+        sb.append(", fleet=").append(fleet);
+        sb.append(", fleetSpawnLocation=").append(fleetSpawnLocation);
+        sb.append(", presetShipIds=").append(presetShipIds);
+        sb.append(", spec=").append(spec);
+        sb.append(", bountyCreatedTimestamp=").append(bountyCreatedTimestamp);
+        sb.append(", captain=").append(captain);
+        sb.append(", flagshipId='").append(flagshipId).append('\'');
+        sb.append(", initialBountyFleetPoints=").append(initialBountyFleetPoints);
+        sb.append(", acceptedBountyTimestamp=").append(acceptedBountyTimestamp);
+        sb.append(", bountyResult=").append(bountyResult);
+        sb.append(", bountySource=").append(bountySource);
+        sb.append(", stage=").append(stage);
+        sb.append(", rewardCredits=").append(rewardCredits);
+        sb.append(", rewardReputation=").append(rewardReputation);
+        sb.append(", rewardFaction='").append(rewardFaction).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

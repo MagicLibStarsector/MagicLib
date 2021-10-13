@@ -1073,7 +1073,7 @@ public class MagicCampaign {
         if(playerRelationship_atLeast!=null && !playerRelationship_atLeast.isEmpty()){
             for(String f : playerRelationship_atLeast.keySet()){
                 //skip non existing factions
-                if(Global.getSector().getFaction(f)!=null) {
+                if(Global.getSector().getFaction(f)==null) {
                     log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
                     continue;
                 }
@@ -1085,7 +1085,7 @@ public class MagicCampaign {
         if(playerRelationship_atMost!=null && !playerRelationship_atMost.isEmpty()){
             for(String f : playerRelationship_atMost.keySet()){
                 //skip non existing factions
-                if(Global.getSector().getFaction(f)!=null) {
+                if(Global.getSector().getFaction(f)==null) {
                     log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
                     continue;
                 }
