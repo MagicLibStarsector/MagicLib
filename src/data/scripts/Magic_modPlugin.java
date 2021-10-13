@@ -67,7 +67,11 @@ public class Magic_modPlugin extends BaseModPlugin {
         if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
             if (!newGame) {
                 //add new bounties if there are any
-                MagicBountyData.loadBountiesFromJSON(true);
+                if(Global.getSettings().isDevMode()){
+                    MagicBountyData.loadBountiesFromJSON(false);
+                } else {
+                    MagicBountyData.loadBountiesFromJSON(true);
+                }
             }
 
             MagicBountyCoordinator.onGameLoad();

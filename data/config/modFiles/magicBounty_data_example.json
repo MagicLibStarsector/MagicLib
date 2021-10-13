@@ -8,7 +8,7 @@
 		"trigger_marketFaction_any": ["faction"], # Default: no values. markets of these factions will show the bounty (if other conditions are met).
 		"trigger_marketFaction_alliedWith": true, # Default: false. if true, markets of all factions whose relationship is at least FAVORABLE to ANY ONE of the factions above will show the bounty (if other conditions are met).
 		"trigger_marketFaction_none": ["other_faction"], # Default: no values. markets of factions listed here will never carry the bounty, regardless of other conditions.
-		"trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
+		"trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above will carry the bounty. Beware when using this parameter with multiple excluded factions.
 		"trigger_market_minSize": 3, # Default: 0. The minimum size of the market.
 		"trigger_player_minLevel": 15, # Default: 0. The minimum level of the player.
 		"trigger_min_days_elapsed": 360, # Default: 0. The minimum number of days that must have elapsed.
@@ -80,7 +80,7 @@
 		"job_difficultyDescription": "auto",  # Default: no description shown. "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
 		"job_pick_option": "Accept the job", # Default: "Accept the job". The text option that, when selected, accepts the bounty job.
 		"job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
-		"job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed successfully.
+		"job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". Only use it if you need to need a specific memkey. The specified memkey will be set to false when the job is accepted, then true if it is completed successfully.
 		"job_conclusion_script":"data.script.FancyScriptThatDoStuff", # Default: no script. Can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
 		
 		#TARGET COMMANDER (OPTIONAL)
