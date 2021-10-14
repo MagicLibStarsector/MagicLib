@@ -380,7 +380,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (true) { // todo
-                    info.addPara(bounty.createLocationEstimateText(), 10f);
+                    info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {

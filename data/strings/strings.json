@@ -111,10 +111,21 @@
 		"mb_permDismissConfirm": "Are you sure you want to permanently dismiss this bounty? It will not appear in bounty boards in the future.",
 		"mb_permDismissConfirmOpt": "Permanently dismiss this bounty",
 		"mb_permDismissConfirmed": "Bounty dismissed.",
-		"mb_comm_reply": "The other $shipOrFleet does not answer to you hails.",
+		"mb_comm_reply": "The other $shipOrFleet does not answer to your hails.",
 		"mb_son":"son",
 		"mb_daughter":"daughter",
+		"mb_child":"child",
 		"mb_father":"father",
 		"mb_mother":"mother",
+		"mb_parent":"parent",
+		"mb_man":"man",
+		"mb_woman":"woman",
+		"mb_person":"person",
+		"mb_his":"his",
+		"mb_her":"her",
+		"mb_their":"their",
+		"mb_he":"he",
+		"mb_she":"she",
+		"mb_they":"they"
 	}
 }
