@@ -460,7 +460,7 @@ public class MagicCampaign {
      * @param portraitId
      * id of the sprite in settings.json/graphics/characters
      * @param gender
-     * FullName.Gender value
+     * FullName.Gender
      * @param factionId
      * person's faction
      * @param rankId
@@ -734,7 +734,7 @@ public class MagicCampaign {
      * @param lastName
      * @param portraitId
      * id of the sprite in settings.json/graphics/characters
-     * @param gender
+     * @param gender, any is gender-neutral, null is random male/female to avoid oddities and issues with dialogs and random portraits
      * @param factionId
      * @param rankId
      * rank from campaign.ids.Ranks
@@ -800,6 +800,10 @@ public class MagicCampaign {
                 );
                 if(person.getGender()==gender)break;
             }
+        }
+        
+        if(gender!=null && gender!=FullName.Gender.ANY){
+            person.setGender(FullName.Gender.ANY);
         }
 
         if(isAI){

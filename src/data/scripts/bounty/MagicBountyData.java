@@ -92,12 +92,20 @@ public class MagicBountyData {
             if(bounty_data.has(bountyId)){
                 
                 String genderString = getString(bountyId, "target_gender");
-                FullName.Gender gender = FullName.Gender.ANY;
+                FullName.Gender gender = null;
                 if(genderString!=null){
-                    if(genderString.equals("MALE")){
-                        gender = FullName.Gender.MALE;
-                    } else if(genderString.equals("FEMALE")){
-                        gender = FullName.Gender.FEMALE;
+                    switch (genderString) {
+                        case "MALE":
+                            gender = FullName.Gender.MALE;
+                            break;
+                        case "FEMALE":
+                            gender = FullName.Gender.FEMALE;
+                            break;
+                        case "UNDEFINED":
+                            gender = FullName.Gender.ANY;
+                            break;
+                        default:
+                            break;
                     }
                 }
                         
@@ -885,5 +893,11 @@ public class MagicBountyData {
         Vanilla,
         Distance,
         VanillaDistance
+    }
+    public enum Gender {
+        Undefined,
+        Any,
+        Male,
+        Female
     }
 }

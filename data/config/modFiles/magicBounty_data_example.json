@@ -93,7 +93,7 @@
         "target_first_name":"Firstname", # Default: randomly selected based on faction.
         "target_last_name":"Lastname", # Default: randomly selected based on faction.
         "target_portrait":"portraitId", # Default: randomly selected based on faction. Id of the sprite in settings.json/graphics/characters
-        "target_gender":"ANY", # Default: ANY. [MALE, FEMALE, ANY]
+        "target_gender":"ANY", # Default: ANY. [ANY, UNDEFINED, MALE, FEMALE] ANY will randomly pick between male and female to avoid oddities and issues with texts and portraits.
         "target_rank": "Captain", # Default: "citizen". Rank from campaign.ids.Ranks [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
         "target_post": "Fleet Commander", # Default: "spacer". Post from campaign.ids.Ranks (yes, Ranks, posts are the bottom half). [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
         "target_personality": "aggressive", # Default: Randomly selected. Personality from campaign.ids.Personalities ("timid", "cautious", "steady", "aggressive", "reckless")
