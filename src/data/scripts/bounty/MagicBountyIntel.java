@@ -1,5 +1,9 @@
 package data.scripts.bounty;
 
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.FactionAPI;
+import com.fs.starfarer.api.campaign.RepLevel;
+import com.fs.starfarer.api.campaign.ReputationActionResponsePlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -198,7 +202,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
                 
                 if (bounty.hasCreditReward()) {
-                    bullet(info);
+//                    bullet(info);
                     //"%s credits received"
                     info.addPara(
                             getString("mb_descRewarded"),
@@ -207,7 +211,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Misc.getHighlightColor(),
                             Misc.getDGSCredits(bounty.getRewardCredits())
                     );
-                    unindent(info);
+//                    unindent(info);
                 }
 
                 if (bounty.hasReputationReward()) {
@@ -224,7 +228,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             isUpdate,
                             initPad
                     );
-                    */
                     bullet(info);
                     //"Your reputation with %s has improved by %s."
                     info.addPara(
@@ -236,13 +239,12 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Math.round(bounty.getRewardReputation() * 100) + ""
                     );
                     unindent(info);
-
+                    */
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getRewardReputation());
                 }
                 break;
                 
             case FailedSalvagedFlagship:
-                //TO DO: VANILLA STYLE REPUTATION MESSAGE
-                
                 //"You have failed this bounty."
                 info.addPara(getString("mb_descFailure"), 0f);
                 
@@ -255,7 +257,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     );
                 }
                 
-                if(bounty.hasReputationReward()){                    
+                if(bounty.hasReputationReward()){     
+                    /*
                     bullet(info);
                     //"Your reputation with %s has been reduced by %s."
                     info.addPara(
@@ -267,12 +270,12 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Math.max(5, Math.round(bounty.getRewardReputation() * 100)) + ""
                     );
                     unindent(info);
+                    */
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.min(-0.05f, -bounty.getRewardReputation()));
                 }
                 break;
                 
             case ExpiredAfterAccepting:
-                //TO DO: VANILLA STYLE REPUTATION MESSAGE
-                
                 //"You have failed this bounty."
                 info.addPara(getString("mb_descExpired"), 0f);
                 
@@ -286,6 +289,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
                 
                 if(bounty.hasReputationReward()){      
+                    /*
                     bullet(info);
                     //"Your reputation with %s has been reduced by %s."
                     info.addPara(
@@ -297,6 +301,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Math.min(5, Math.round(bounty.getRewardReputation() * 100)) + ""
                     );
                     unindent(info);
+                    */
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.max(-0.05f, -bounty.getRewardReputation()));
                 }
                 break;
                 
@@ -306,8 +312,9 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 info.addPara(getString("mb_descUninvolved"), 0f);
                 
                 if(bounty.hasReputationReward()){   
+                    /*
                     bullet(info);
-                    //"Your reputation with was unafected."
+                    //"Your reputation with %s was unafected."
                     info.addPara(
                             getString("mb_descReputationNothing"),
                             PADDING_DESC,
@@ -316,6 +323,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             bounty.getGivingFaction().getDisplayNameWithArticle()
                     );
                     unindent(info);
+                    */
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), 0);
                 }
                 break;
             case Accepted:
@@ -453,7 +462,36 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         return tags;
     }
+    
+    public static void addRepMessage(TooltipMakerAPI info, float pad, FactionAPI faction, float change) {
+        
+        if (info==null || faction==null)return;
 
+        String factionName = faction.getDisplayNameWithArticle();
+        int deltaInt = Math.round(Math.abs(change) * 100f);
+        FactionAPI player = Global.getSector().getPlayerFaction();
+        int repInt = RepLevel.getRepInt(player.getRelationship(faction.getId()));
+        RepLevel repLevel = player.getRelationshipLevel(faction.getId());
+        Color factionColor = faction.getBaseUIColor();
+        Color deltaColor = Misc.getPositiveHighlightColor();
+        Color relationColor = faction.getRelColor(player.getId());
+
+        String deltaString = getString("mb_descRepGood") + deltaInt;
+        String standing = "" + repInt + getString("mb_descRepStanding") + getString("(") + repLevel.getDisplayName().toLowerCase() + getString(")");
+
+        if (change < 0) {
+            deltaColor = Misc.getNegativeHighlightColor();
+            deltaString = getString("mb_descRepBad") + deltaInt;
+        } else if (change == 0) {
+            deltaString = getString("mb_descRepNothing");
+            deltaColor = Misc.getTextColor();
+        }
+
+        Color[] highlightColors = {factionColor, deltaColor, relationColor};
+        //"Relationship with %s %s, currently at %s",
+        info.addPara(getString("mb_descRep"), pad, highlightColors, factionName, deltaString, standing);
+    }
+    
     private void showFleet(TooltipMakerAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset) {
 
         int columns = 7;
