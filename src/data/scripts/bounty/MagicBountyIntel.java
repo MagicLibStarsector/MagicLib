@@ -13,7 +13,9 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicDeserializable;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.Collections;
@@ -34,6 +36,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
     private static final Float PADDING_DESC = 10f;
     private static final Float PADDING_INFO_SUBTITLE = 3f;
+    private static Logger logger = Global.getLogger(MagicBountyIntel.class);
 
     public MagicBountyIntel(@NotNull String bountyKey) {
         this.bountyKey = bountyKey;
@@ -41,6 +44,8 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         if (getBounty() == null) {
             throw new NullPointerException("Expected an active bounty for key " + bountyKey);
         }
+
+        Global.getSector().addScript(this);
     }
 
     @Override
@@ -48,7 +53,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         return this;
     }
 
-    @NotNull
+    @Nullable
     private ActiveBounty getBounty() {
         return MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
     }
@@ -187,20 +192,20 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         switch (bounty.getStage()) {
             case Succeeded:
-                
+
                 info.addPara(bounty.getSpec().job_conclusion_script, 0f);
                 //"You have successfully completed this bounty."
                 info.addPara(getString("mb_descSuccess"), 0f);
-                
+
                 //adding optional success text:
-                if(bounty.getSpec().job_intel_success!=null && !bounty.getSpec().job_intel_success.isEmpty() ){
+                if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
                     info.addPara(
                             bounty.getSpec().job_intel_success,
                             Misc.getGrayColor(),
                             PADDING_DESC
                     );
                 }
-                
+
                 if (bounty.hasCreditReward()) {
 //                    bullet(info);
                     //"%s credits received"
@@ -243,21 +248,21 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getRewardReputation());
                 }
                 break;
-                
+
             case FailedSalvagedFlagship:
                 //"You have failed this bounty."
                 info.addPara(getString("mb_descFailure"), 0f);
-                
+
                 //adding optional failure text:
-                if(bounty.getSpec().job_intel_failure!=null && !bounty.getSpec().job_intel_failure.isEmpty() ){
+                if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
                     info.addPara(
                             bounty.getSpec().job_intel_failure,
                             Misc.getGrayColor(),
                             PADDING_DESC
                     );
                 }
-                
-                if(bounty.hasReputationReward()){     
+
+                if (bounty.hasReputationReward()) {
                     /*
                     bullet(info);
                     //"Your reputation with %s has been reduced by %s."
@@ -274,21 +279,21 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.min(-0.05f, -bounty.getRewardReputation()));
                 }
                 break;
-                
+
             case ExpiredAfterAccepting:
                 //"You have failed this bounty."
                 info.addPara(getString("mb_descExpired"), 0f);
-                
+
                 //adding optional failure text:
-                if(bounty.getSpec().job_intel_expired!=null && !bounty.getSpec().job_intel_expired.isEmpty() ){
+                if (bounty.getSpec().job_intel_expired != null && !bounty.getSpec().job_intel_expired.isEmpty()) {
                     info.addPara(
                             bounty.getSpec().job_intel_expired,
                             Misc.getGrayColor(),
                             PADDING_DESC
                     );
                 }
-                
-                if(bounty.hasReputationReward()){      
+
+                if (bounty.hasReputationReward()) {
                     /*
                     bullet(info);
                     //"Your reputation with %s has been reduced by %s."
@@ -305,13 +310,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.max(-0.05f, -bounty.getRewardReputation()));
                 }
                 break;
-                
+
             case EndedWithoutPlayerInvolvement:
-                
+
                 //"Someone else completed this mission."
                 info.addPara(getString("mb_descUninvolved"), 0f);
-                
-                if(bounty.hasReputationReward()){   
+
+                if (bounty.hasReputationReward()) {
                     /*
                     bullet(info);
                     //"Your reputation with %s was unafected."
@@ -462,10 +467,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         return tags;
     }
-    
+
     public static void addRepMessage(TooltipMakerAPI info, float pad, FactionAPI faction, float change) {
-        
-        if (info==null || faction==null)return;
+
+        if (info == null || faction == null) return;
 
         String factionName = faction.getDisplayNameWithArticle();
         int deltaInt = Math.round(Math.abs(change) * 100f);
@@ -491,7 +496,60 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         //"Relationship with %s %s, currently at %s",
         info.addPara(getString("mb_descRep"), pad, highlightColors, factionName, deltaString, standing);
     }
-    
+
+    @Override
+    protected void advanceImpl(float amount) {
+        super.advanceImpl(amount);
+        ActiveBounty bounty = getBounty();
+
+        if (!isDone() && bounty != null && !bounty.isDespawning() && bounty.getDaysRemainingToComplete() <= 0) {
+            logger.info(String.format("Ending expired bounty %s", bounty.getKey()));
+            bounty.endBounty(new ActiveBounty.BountyResult.FailedOutOfTime());
+        }
+    }
+
+    @Override
+    protected void notifyEnding() {
+        super.notifyEnding();
+        endMission(false);
+    }
+
+    @Override
+    protected void notifyEnded() {
+        super.notifyEnded();
+
+        logger.info(String.format("Intel ended for bounty %s.", bountyKey));
+        Global.getSector().removeScript(this);
+        Global.getSector().getIntelManager().removeIntel(this);
+
+        ActiveBounty bounty = getBounty();
+
+        if (bounty != null) {
+            bounty.despawn();
+        }
+    }
+
+    private void endMission(boolean expire) {
+        ActiveBounty bounty = getBounty();
+
+        if (ended == null || !ended) {
+            // Shouldn't happen
+            if (bounty.getStage().ordinal() <= ActiveBounty.Stage.Accepted.ordinal()) {
+                logger.warn(String.format("Intel ending while stage is %s.", bounty.getStage().name()));
+                if (expire) {
+                    bounty.endBounty(new ActiveBounty.BountyResult.FailedOutOfTime());
+                } else {
+                    bounty.endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
+                }
+            }
+            setImportant(false);
+        }
+
+        if (!isEnding() && !isEnded()) {
+            endAfterDelay();
+        }
+    }
+
     private void showFleet(TooltipMakerAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset) {
 
         int columns = 7;

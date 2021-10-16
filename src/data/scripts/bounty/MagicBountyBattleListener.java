@@ -38,6 +38,8 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             return;
         }
 
+        fleet.removeEventListener(this);
+
         ActiveBounty bounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
 
         if (bounty == null) return;
@@ -50,8 +52,6 @@ public final class MagicBountyBattleListener implements FleetEventListener {
             Global.getSector().addScript(new AutoDespawnScript(fleet));
             return;
         }
-
-        fleet.removeEventListener(this);
     }
 
     /**

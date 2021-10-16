@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Adapted from {@link com.fs.starfarer.api.impl.campaign.rulecmd.PaginatedOptions}.
+ *
+ * @author Wisp
+ */
 public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
 
     public static final String OPTION_NEXT_PAGE = "core_option_next_page";

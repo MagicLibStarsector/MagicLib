@@ -1,2 +1,2 @@
 command,class,tags,syntax,help
-ML_ListBounties,data.scripts.bounty.console.ListBountiesCommand,"MagicLib,campaign",ML_ListBounties,Lists bounties loaded MagicLib's Bounty Board.
+MagicLib_ListBounties,data.scripts.bounty.console.ListBountiesCommand,"MagicLib,campaign",MagicLib_ListBounties,Lists bounties loaded MagicLib's Bounty Board.

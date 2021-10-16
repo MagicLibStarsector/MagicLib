@@ -47,7 +47,10 @@ public final class MagicBountyCoordinator {
 
     @Nullable
     private Map<String, ActiveBounty> activeBountiesByKey = null;
-    private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties";
+    @Nullable
+    private List<String> completedBountyKeys;
+    private final static String BOUNTIES_MEMORY_KEY = "$MagicBounties_active_bounties";
+    private final static String COMPLETED_BOUNTIES_MEMORY_KEY = "$MagicBounties_completed_keys";
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
     private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
@@ -65,10 +68,9 @@ public final class MagicBountyCoordinator {
 
             if (activeBountiesByKey == null) {
                 Global.getSector().getMemoryWithoutUpdate().set(BOUNTIES_MEMORY_KEY, new HashMap<>());
-                activeBountiesByKey = (Map<String, ActiveBounty>) Global.getSector().getMemoryWithoutUpdate().get(BOUNTIES_MEMORY_KEY);
+                activeBountiesByKey = (Map<String, ActiveBounty>) Global.getSector().getMemory().get(BOUNTIES_MEMORY_KEY);
             }
         }
-
 
         for (Iterator<Map.Entry<String, ActiveBounty>> iterator = activeBountiesByKey.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, ActiveBounty> entry = iterator.next();
@@ -83,10 +85,30 @@ public final class MagicBountyCoordinator {
                                 entry.getValue().getSpec().job_name));
                 entry.getValue().endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
                 iterator.remove();
+            } else if (entry.getValue().getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
+                    && entry.getValue().getFleet().isDespawning()
+                    && entry.getValue().getIntel() == null) {
+                // Remove bounties that have completed and their fleets have/are despawning and the intel has timed out.
+                iterator.remove();
+                getCompletedBounties().add(entry.getKey());
             }
         }
 
         return activeBountiesByKey;
+    }
+
+    @NotNull
+    public List<String> getCompletedBounties() {
+        if (completedBountyKeys == null) {
+            completedBountyKeys = (List<String>) Global.getSector().getMemoryWithoutUpdate().get(COMPLETED_BOUNTIES_MEMORY_KEY);
+
+            if (completedBountyKeys == null) {
+                Global.getSector().getMemoryWithoutUpdate().set(COMPLETED_BOUNTIES_MEMORY_KEY, new ArrayList<>());
+                completedBountyKeys = (List<String>) Global.getSector().getMemory().get(COMPLETED_BOUNTIES_MEMORY_KEY);
+            }
+        }
+
+        return completedBountyKeys;
     }
 
     /**
@@ -114,6 +136,11 @@ public final class MagicBountyCoordinator {
         // Run checks on each bounty to see if it should be displayed.
         for (String bountyKey : MagicBountyData.BOUNTIES.keySet()) {
             MagicBountyData.bountyData bountySpec = MagicBountyData.BOUNTIES.get(bountyKey);
+
+            // If the bounty has been completed, don't offer it.
+            if (getCompletedBounties().contains(bountyKey)) {
+                continue;
+            }
 
             // If it's not available at this market, skip over it.
             if (!MagicCampaign.isAvailableAtMarket(

@@ -4,15 +4,15 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
-import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DebugFlags;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
-import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicTxt;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,6 +94,8 @@ public final class ActiveBounty {
     private @Nullable Float rewardCredits;
     private @Nullable Float rewardReputation;
     private @Nullable String rewardFaction;
+    private boolean isDespawning = false;
+    private static Logger logger = Global.getLogger(ActiveBounty.class);
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -240,9 +242,38 @@ public final class ActiveBounty {
 
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-        }
 
-//        destroy(); // Caused ConcurrentModification crash
+            despawn();
+        }
+    }
+
+    void despawn() {
+        if (!isDespawning) {
+            logger.info(String.format("Despawning bounty %s with stage %s", getKey(), getStage().name()));
+
+            if (fleet != null) {
+                fleet.getMemoryWithoutUpdate().unset(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE);
+                fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_MAKE_NON_AGGRESSIVE, true);
+                fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE, true);
+                fleet.clearAssignments();
+
+                if (getFleetSpawnLocation() != null) {
+                    fleet.getAI().addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, getFleetSpawnLocation(), 1000000f, null);
+                } else {
+                    fleet.despawn();
+                }
+            }
+
+            MagicBountyIntel intel = getIntel();
+
+            if (intel != null) {
+                if (!intel.isEnding() && !intel.isEnded()) {
+                    intel.endAfterDelay();
+                }
+            }
+
+            isDespawning = true;
+        }
     }
 
     private void runRuleScript(String scriptRuleId) {
@@ -271,18 +302,12 @@ public final class ActiveBounty {
         }
     }
 
-    private void destroy() {
-        if (fleet != null && !fleet.isDespawning()) {
-            fleet.despawn();
-        }
-    }
-
     /**
      * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
      */
     public @NotNull Float getDaysRemainingToComplete() {
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {
-            return Math.max(1, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
+            return Math.max(0, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
         } else {
             return Float.POSITIVE_INFINITY;
         }
@@ -379,7 +404,7 @@ public final class ActiveBounty {
         float bonusCreditsFromScaling = Math.max(0, getSpec().job_credit_scaling * bountyFPIncreaseOverBaseDueToScaling);
         float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
         float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
-        Global.getLogger(ActiveBounty.class)
+        logger
                 .info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s scaling * %s FP diff)",
                         rewardRoundedToNearest100,
                         getKey(),
@@ -451,6 +476,10 @@ public final class ActiveBounty {
         return getDaysRemainingToComplete() != Float.POSITIVE_INFINITY;
     }
 
+    public boolean isDespawning() {
+        return isDespawning;
+    }
+
     public @NotNull List<String> getPresetShipIds() {
         return presetShipIds;
     }
@@ -505,6 +534,8 @@ public final class ActiveBounty {
         Accepted,
         /**
          * The player failed the bounty because they salvaged the flagship and weren't allowed to.
+         * Note: A few bits of code use this ordinal as the threshold for whether the bounty is complete or not;
+         * don't add a new Stage above this if it isn't some variation of "completed/failed".
          */
         FailedSalvagedFlagship,
         /**
