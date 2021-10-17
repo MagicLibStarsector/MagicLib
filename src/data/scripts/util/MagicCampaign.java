@@ -33,7 +33,13 @@ import org.lazywizard.lazylib.MathUtils;
 import java.util.*;
 
 import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.*;
+import com.fs.starfarer.api.loading.WeaponGroupSpec;
+import com.fs.starfarer.api.loading.WeaponGroupType;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -517,12 +523,13 @@ public class MagicCampaign {
         return person;
     }
 
+    /*
     private static CampaignFleetAPI theFleet;
     private static FleetMemberAPI theFlagship;
     private static String theFlagshipVariant;
     private static Map<String, Integer> theSupportFleet = new HashMap<>();
     public static List<String> presetShipIdsOfLastCreatedFleet = new ArrayList<>();
-
+    */
 
     /**
      * Creates a fleet with a defined flagship and optional escort
@@ -570,12 +577,72 @@ public class MagicCampaign {
             boolean isImportant,
             boolean transponderOn
     ) {
+        CampaignFleetAPI result = createFleet(fleetName, fleetFaction, fleetType, flagshipName, flagshipVariant,
+                captain, supportFleet, minFP, reinforcementFaction, qualityOverride,
+                spawnLocation, assignment, assignementTarget, isImportant, transponderOn, null);
+        return result;
+    }
+    
+    /**
+     * Creates a fleet with a defined flagship and optional escort
+     * 
+     * @param fleetName
+     * @param fleetFaction
+     * @param fleetType
+     * campaign.ids.FleetTypes, default to FleetTypes.PERSON_BOUNTY_FLEET
+     * @param flagshipName
+     * Optional flagship name
+     * @param flagshipVariant
+     * @param captain
+     * PersonAPI, can be NULL for random captain, otherwise use createCaptain() 
+     * @param supportFleet
+     * map <variantId, number> Optional escort ship VARIANTS and their NUMBERS
+     * @param minFP
+     * Minimal fleet size, can be used to adjust to the player's power,         set to 0 to ignore
+     * @param reinforcementFaction
+     * Reinforcement faction,                                                   if the fleet faction is a "neutral" faction without ships
+     * @param qualityOverride
+     * Optional ship quality override, default to 2 (no D-mods) if null or <0
+     * @param spawnLocation
+     * Where the fleet will spawn, default to assignmentTarget if NULL
+     * @param assignment
+     * campaign.FleetAssignment, default to orbit aggressive
+     * @param assignementTarget
+     * @param isImportant
+     * @param transponderOn
+     * @param variantsPath
+     * If not null, the script will try to find missing variant files there. 
+     * Used to generate fleets using cross-mod variants that won't be loaded otherwise to avoid crashes.
+     * The name of the variant files must match the ID of the variant.
+     * @return 
+     */
+    public static CampaignFleetAPI createFleet(
+            String fleetName,
+            String fleetFaction,
+            @Nullable String fleetType,
+            @Nullable String flagshipName,
+            String flagshipVariant,
+            @Nullable PersonAPI captain,
+            @Nullable Map<String, Integer> supportFleet,
+            int minFP,
+            String reinforcementFaction,
+            @Nullable Float qualityOverride,
+            @Nullable SectorEntityToken spawnLocation,
+            @Nullable FleetAssignment assignment,
+            @Nullable SectorEntityToken assignementTarget,
+            boolean isImportant,
+            boolean transponderOn,
+            @Nullable String variantsPath
+    ) {
+        /*
         //enforce clean generation
         theSupportFleet.clear();
         presetShipIdsOfLastCreatedFleet.clear();
         theFlagshipVariant=null;
         theFlagship=null;
         theFleet=null;
+        */
+        MagicVariables.presetShipIdsOfLastCreatedFleet.clear();
         boolean verbose = Global.getSettings().isDevMode();
 
         if(verbose){
@@ -619,25 +686,30 @@ public class MagicCampaign {
             log.error("No quality override defined, defaulting to highest quality.");
         }
         
-        //NON RANDOM FLEET ELEMENT
-                
+        ////////////////////////////
+        //NON RANDOM FLEET ELEMENT//
+        ////////////////////////////       
+        
+        /*
         theFlagshipVariant=flagshipVariant;
         if(supportFleet!=null && !supportFleet.isEmpty()){
             theSupportFleet=supportFleet;
         } 
+        */
         
         FleetParamsV3 params = new FleetParamsV3(
                 null,
                 assignementTarget != null ? assignementTarget.getLocationInHyperspace() : null,
                 fleetFaction,
-                2f, // qualityOverride
+                //2f, // qualityOverride
+                qualityOverride,
                 type,
                 0f, 0f, 0f, 0f, 0f, 0f, 0f
         );
         params.ignoreMarketFleetSizeMult = true;
 
         //create a fleet using the defined flagship variant and escort ships if any
-        CampaignFleetAPI newFleet = createFleet(params); // nonrandom fleet, flagship and preset variants
+        CampaignFleetAPI newFleet = generateFleet(params, flagshipVariant, supportFleet, variantsPath); // nonrandom fleet, flagship and preset variants
         if (newFleet == null || newFleet.isEmpty()) {
             if(verbose){
                 log.error("Fleet spawned empty, possibly due to missing flagship - aborting");
@@ -645,7 +717,9 @@ public class MagicCampaign {
             return null;
         }
 
-        //if needed, complete the fleet using relevant random ships
+        ////////////////////////////
+        // RANDOM SHIPS ADDITIONS //
+        ////////////////////////////  
         
         //calculate missing portion of the fleet
         int currPts = newFleet.getFleetPoints();
@@ -671,6 +745,7 @@ public class MagicCampaign {
         CampaignFleetAPI extraFleet = FleetFactoryV3.createFleet(params);
 
         //only add the proper amount of ships, starting by the larger ones
+        /*
         List<FleetMemberAPI> holding = new ArrayList<>();
         for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
             holding.add(mem);
@@ -679,20 +754,32 @@ public class MagicCampaign {
             extraFleet.getFleetData().removeFleetMember(held);
             newFleet.getFleetData().addFleetMember(held);
         }
+        */
+        for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
+            if(mem.isFlagship())mem.setFlagship(false);
+            newFleet.getFleetData().addFleetMember(mem);
+        }
+        
+        /*
         if (!newFleet.getFlagship().equals(theFlagship)) {
             newFleet.getFlagship().setFlagship(false);
             theFlagship.setFlagship(true);
         }
-
+        */
+        
+        ///////////////////////////
+        //FINISH FLEET GENERATION//
+        ///////////////////////////
+        
         //add the defined captain to the flagship, apply skills to the fleet
         if(captain!=null){
-            theFlagship.setCaptain(captain);
+            newFleet.getFlagship().setCaptain(captain);
         }
         if(flagshipName!=null){
-            theFlagship.setShipName(flagshipName);
+            newFleet.getFlagship().setShipName(flagshipName);
         }
-        newFleet.setCommander(theFlagship.getCaptain());
-        FleetFactoryV3.addCommanderSkills(theFleet.getCommander(), theFleet, null);
+        newFleet.setCommander(newFleet.getFlagship().getCaptain());
+        FleetFactoryV3.addCommanderSkills(newFleet.getCommander(), newFleet, null);
 
         //cleanup name and faction
         newFleet.setNoFactionInName(true);
@@ -875,7 +962,12 @@ public class MagicCampaign {
         return person;
     }
     
-    private static CampaignFleetAPI createFleet(FleetParamsV3 params) {
+    private static CampaignFleetAPI generateFleet(
+            FleetParamsV3 params,
+            String flagshipVariant,
+            @Nullable Map<String, Integer> supportFleet,
+            @Nullable String variantsPath
+    ) {
 
         boolean verbose = Global.getSettings().isDevMode();
         
@@ -894,7 +986,7 @@ public class MagicCampaign {
 
         // create the fleet object
         CampaignFleetAPI newFleet = createEmptyFleet(factionId, params.fleetType, market);
-        theFleet = newFleet;
+        //theFleet = newFleet;
         newFleet.getFleetData().setOnlySyncMemberLists(true);
 
         Random random = new Random();
@@ -903,25 +995,26 @@ public class MagicCampaign {
         }
         
         // add boss
-        FleetMemberAPI flag = addToFleet(theFlagshipVariant, newFleet, random);
+        FleetMemberAPI flag = addToFleet(flagshipVariant, newFleet, random, variantsPath);
         if (flag == null) {
             if(verbose){
-                log.error(theFlagshipVariant + " does not exist, aborting");
+                log.error(flagshipVariant + " does not exist, aborting");
             }
             return null;
         }
-        theFlagship = flag;
-        presetShipIdsOfLastCreatedFleet.add(flag.getId());
+        flag.setFlagship(true);
+//        theFlagship = flag;
+        MagicVariables.presetShipIdsOfLastCreatedFleet.add(flag.getId());
         
         // add support
-        if (theSupportFleet!=null && !theSupportFleet.isEmpty()) {
-            for (String v : theSupportFleet.keySet()) {
-                for(int i=0; i<theSupportFleet.get(v); i++){
-                    FleetMemberAPI test = addToFleet(v, newFleet, random);
+        if (supportFleet!=null && !supportFleet.isEmpty()) {
+            for (String v : supportFleet.keySet()) {
+                for(int i=0; i<supportFleet.get(v); i++){
+                    FleetMemberAPI test = addToFleet(v, newFleet, random, variantsPath);
                     if (test == null && verbose) {
                         log.warn(v + " not found, skipping that variant");
                     } else if (test != null) {
-                        presetShipIdsOfLastCreatedFleet.add(test.getId());
+                        MagicVariables.presetShipIdsOfLastCreatedFleet.add(test.getId());
                     }
                 }
             }
@@ -945,11 +1038,15 @@ public class MagicCampaign {
         return newFleet;
     }
     
-    protected static FleetMemberAPI addToFleet(String variant, CampaignFleetAPI fleet, Random random) {
+    protected static FleetMemberAPI addToFleet(String variant, CampaignFleetAPI fleet, Random random, @Nullable String variantsPath) {
 
         FleetMemberAPI member;
         ShipVariantAPI test = Global.getSettings().getVariant(variant);
-        if (test == null) {
+        //if the variant doesn't exist but a custom variant path is defined, try loading it
+        if (test == null && variantsPath!=null) {
+            test = loadVariant(variantsPath+variant+".variant");
+        }
+        if(test==null){
             return null;
         }
 
@@ -960,6 +1057,107 @@ public class MagicCampaign {
         return member;
     }
     
+    
+    /**
+     * Creates a ship variant from a regular variant file.
+     * Used to create variants that requires different mods to be loaded.
+     * @param path variant file full path.
+     * @return ship variant object
+     */
+    //Credit to Rubi
+    public static ShipVariantAPI loadVariant(String path) {
+        ShipVariantAPI variant = null;
+        try {
+            JSONObject obj = Global.getSettings().loadJSON(path);
+            String displayName = obj.getString("displayName");
+            int fluxCapacitors = obj.getInt("fluxCapacitors");
+            int fluxVents = obj.getInt("fluxVents");
+            boolean goalVariant = false;
+            try {
+                goalVariant = obj.getBoolean("goalVariant");
+            } catch (JSONException ignored) {}
+            String hullId = obj.getString("hullId");
+            JSONArray hullMods = obj.getJSONArray("hullMods");
+            JSONArray modules = null;
+            try {
+                modules = obj.getJSONArray("modules");
+            } catch (JSONException ignored) {}
+            JSONArray permaMods = obj.getJSONArray("permaMods");
+            JSONArray sMods = null;
+            try {
+                sMods = obj.getJSONArray("sMods");
+            } catch (JSONException ignored) {}
+            //float quality = (float) obj.getDouble("quality"); not used/available in API
+            String variantId = obj.getString("variantId");
+            JSONArray weaponGroups = obj.getJSONArray("weaponGroups");
+            JSONArray wings = null;
+            try {
+                wings = obj.getJSONArray("wings");
+            } catch (JSONException ignored) {}
+
+            variant = Global.getSettings().createEmptyVariant(variantId, Global.getSettings().getHullSpec(hullId));
+            variant.setVariantDisplayName(displayName);
+            variant.setNumFluxCapacitors(fluxCapacitors);
+            variant.setNumFluxVents(fluxVents);
+            variant.setGoalVariant(goalVariant);
+            // todo: check if order matters
+            for (int i = 0; i < hullMods.length(); i++) {
+                String hullModId = hullMods.getString(i);
+                variant.addMod(hullModId);
+            }
+            for (int j = 0; j < permaMods.length(); j++) {
+                String permaModId = hullMods.getString(j);
+                variant.addPermaMod(permaModId);
+            }
+            if (sMods != null) {
+                for (int k = 0; k < sMods.length(); k++) {
+                    String sModId = hullMods.getString(k);
+                    variant.addPermaMod(sModId, true);
+                }
+            }
+            if (modules != null) {
+                for (int m = 0; m < modules.length(); m++) {
+                    JSONObject module = modules.getJSONObject(m);
+                    // todo this is a very inefficient way to do it (obj length always == 1)
+                    //  but I don't want to deal with Iterators
+                    JSONArray slots = module.names();
+                    for (int s = 0; s < slots.length(); s++) {
+                        String slotId = slots.getString(s);
+                        String moduleVariantId = module.getString(slotId);
+                        //todo *** Given moduleVariantId instead of path, create ShipVariantAPI using loadVariant() ***
+                        variant.setModuleVariant(slotId, Global.getSettings().getVariant(moduleVariantId));
+                    }
+                }
+            }
+            // todo maybe you can do something better with variant.getNonBuiltInWeaponSlots()?
+            for (int wg = 0; wg < weaponGroups.length(); wg++) {
+                WeaponGroupSpec weaponGroupSpec = new WeaponGroupSpec(WeaponGroupType.LINKED);
+                JSONObject weaponGroup = weaponGroups.getJSONObject(wg);
+                boolean autofire = weaponGroup.getBoolean("autofire");
+                String mode = weaponGroup.getString("mode");
+                JSONObject weapons = weaponGroup.getJSONObject("weapons");
+                JSONArray slots = weapons.names();
+                for (int s = 0; s < slots.length(); s++) {
+                    String slotId = slots.getString(s);
+                    String weaponId = weapons.getString(slotId);
+                    variant.addWeapon(slotId, weaponId);
+                    weaponGroupSpec.addSlot(slotId);
+                }
+                weaponGroupSpec.setAutofireOnByDefault(autofire);
+                weaponGroupSpec.setType(WeaponGroupType.valueOf(mode));
+                variant.addWeaponGroup(weaponGroupSpec);
+            }
+            if (wings != null) {
+                int numBuiltIn = Global.getSettings().getVariant(variant.getHullSpec().getHullId() + "_Hull").getFittedWings().size();
+                for (int w = 0; w < wings.length(); w++) {
+                    variant.setWingId(numBuiltIn + w, wings.getString(w));
+                }
+            }
+        } catch (IOException | JSONException e) {
+            log.error("could not load ship variant at " + path, e);
+        }
+        return variant;
+    }
     
     //BOUNTY CHECKS THAT MAY PROVE USEFULL FOR OTHER THINGS:    
     /**

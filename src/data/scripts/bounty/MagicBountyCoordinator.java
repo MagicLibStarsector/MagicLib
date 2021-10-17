@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import data.scripts.util.MagicVariables;
 
 /**
  * The point of entry into MagicBounty scripting.
@@ -283,9 +284,10 @@ public final class MagicBountyCoordinator {
                 spec.fleet_behavior,
                 null,
                 false,
-                spec.fleet_transponder
+                spec.fleet_transponder,
+                MagicVariables.MAGICBOUNTY_variantPath
         );
-        ArrayList<String> presetShipIds = new ArrayList<>(MagicCampaign.presetShipIdsOfLastCreatedFleet);
+        ArrayList<String> presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
 
         if (fleet == null) {
             return null;
@@ -308,7 +310,7 @@ public final class MagicBountyCoordinator {
     }
 
     /**
-     * Idempotently ensures that each `ActiveBounty` has a `MagicBountyBattleListener` running.
+     * Idem potently ensures that each `ActiveBounty` has a `MagicBountyBattleListener` running.
      */
     public void configureBountyListeners() {
         Collection<ActiveBounty> bounties = getActiveBounties().values();

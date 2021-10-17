@@ -3,6 +3,8 @@ package data.scripts.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.util.Misc;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -63,4 +65,7 @@ public class MagicVariables {
         }
         return SECTOR_WIDTH/Misc.getUnitsPerLightYear();
     }
+    
+    public static String MAGICBOUNTY_variantPath = "data/config/modFiles/magicBounty_variants/";
+    public static List<String> presetShipIdsOfLastCreatedFleet = new ArrayList<>();
 }
