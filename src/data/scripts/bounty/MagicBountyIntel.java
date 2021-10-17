@@ -3,7 +3,6 @@ package data.scripts.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.RepLevel;
-import com.fs.starfarer.api.campaign.ReputationActionResponsePlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -13,6 +12,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicDeserializable;
+import data.scripts.util.MagicTxt;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -193,16 +193,17 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         switch (bounty.getStage()) {
             case Succeeded:
 
-                info.addPara(bounty.getSpec().job_conclusion_script, 0f);
                 //"You have successfully completed this bounty."
                 info.addPara(getString("mb_descSuccess"), 0f);
 
                 //adding optional success text:
                 if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
-                    info.addPara(
+                    MagicTxt.addPara(
+                            info,
                             bounty.getSpec().job_intel_success,
+                            PADDING_DESC,
                             Misc.getGrayColor(),
-                            PADDING_DESC
+                            Misc.getHighlightColor()
                     );
                 }
 
@@ -255,10 +256,12 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 //adding optional failure text:
                 if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
-                    info.addPara(
+                    MagicTxt.addPara(
+                            info,
                             bounty.getSpec().job_intel_failure,
+                            PADDING_DESC,
                             Misc.getGrayColor(),
-                            PADDING_DESC
+                            Misc.getHighlightColor()
                     );
                 }
 
@@ -286,10 +289,12 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 //adding optional failure text:
                 if (bounty.getSpec().job_intel_expired != null && !bounty.getSpec().job_intel_expired.isEmpty()) {
-                    info.addPara(
+                    MagicTxt.addPara(
+                            info,
                             bounty.getSpec().job_intel_expired,
+                            PADDING_DESC,
                             Misc.getGrayColor(),
-                            PADDING_DESC
+                            Misc.getHighlightColor()
                     );
                 }
 

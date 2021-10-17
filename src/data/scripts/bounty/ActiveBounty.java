@@ -512,9 +512,9 @@ public final class ActiveBounty {
 
             for (String replacedPara : replacedParas) {
                 if (text instanceof TextPanelAPI) {
-                    ((TextPanelAPI) text).addPara(replacedPara, color);
+                    MagicTxt.addPara(((TextPanelAPI) text), replacedPara, color, Misc.getHighlightColor());
                 } else if (text instanceof TooltipMakerAPI) {
-                    ((TooltipMakerAPI) text).addPara(replacedPara, color, padding);
+                    MagicTxt.addPara(((TooltipMakerAPI) text), replacedPara, 10f, color, Misc.getHighlightColor());
                 }
             }
         }
