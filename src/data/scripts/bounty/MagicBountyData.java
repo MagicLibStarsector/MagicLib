@@ -3,18 +3,9 @@ package data.scripts.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.FullName;
-import com.fs.starfarer.api.combat.ShipVariantAPI;
-//import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
-import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicTxt;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,12 +13,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.*;
+
 /**
  *
  * @author Tartiflette
  */
 public class MagicBountyData {
-    
+
     public static Map<String,bountyData> BOUNTIES = new HashMap<>();
     public static boolean JSONfailed=false;
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
@@ -35,11 +29,11 @@ public class MagicBountyData {
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
     private static boolean verbose=false;
     private static final String MOD = "MagicLib", BOUNTY_BOARD = "bounty_board", PATH = "data/config/modFiles/magicBounty_data.json";
-    
+
     /**
      * @param id
      * bounty unique id
-     * @param data 
+     * @param data
      * all the data
      * @param overwrite
      * overwrite existing bounty with same id
@@ -49,26 +43,26 @@ public class MagicBountyData {
             BOUNTIES.put(id, data);
         }
     }
-    
+
     public static bountyData getBountyData(String id){
         if(BOUNTIES.containsKey(id)){
             return BOUNTIES.get(id);
         } else return null;
     }
-    
+
     public static void deleteBountyData(String id){
         if(BOUNTIES.containsKey(id)){
             BOUNTIES.remove(id);
         }
     }
-    
+
     public static void loadBountiesFromJSON(boolean appendOnly){
-        
+
         if(Global.getSettings().isDevMode())verbose=true;
         if(verbose){
             LOG.info("\n ######################\n\n MAGIC BOUNTIES LOADING\n\n ######################");
         }
-        
+
         //this will be a long one
         if(!appendOnly){
             BOUNTIES.clear();
@@ -76,7 +70,7 @@ public class MagicBountyData {
                 LOG.info("Clearing bounty board");
             }
         }
-        
+
         //get the list of bounties that need to be created from modSettings.json        
         List<String> bountiesToLoad = readBountyList(verbose);
         if(verbose){
@@ -84,7 +78,7 @@ public class MagicBountyData {
         }
         //load MagicBounty_data.json
         bounty_data = loadBountyData();
-        
+
         int x=0;
         //time to sort that stuff
         for(String bountyId : bountiesToLoad){
@@ -92,7 +86,7 @@ public class MagicBountyData {
                 LOG.info("Reading "+bountyId+" from file ");
             }
             if(bounty_data.has(bountyId)){
-                
+
                 String genderString = getString(bountyId, "target_gender");
                 FullName.Gender gender = null;
                 if(genderString!=null){
@@ -110,8 +104,8 @@ public class MagicBountyData {
                             break;
                     }
                 }
-                        
-                String fleet_behavior = getString(bountyId, "fleet_behavior");                
+
+                String fleet_behavior = getString(bountyId, "fleet_behavior");
                 FleetAssignment order = FleetAssignment.ORBIT_AGGRESSIVE;
                 if(fleet_behavior!=null){
                     switch (fleet_behavior){
@@ -126,10 +120,10 @@ public class MagicBountyData {
                         case "ROAMING":{
                             order=FleetAssignment.PATROL_SYSTEM;
                             break;
-                        }                        
+                        }
                     }
                 }
-                
+
                 String target_skill_pref = getString(bountyId, "target_skill_preference");
                 SkillPickPreference skillPref = SkillPickPreference.GENERIC;
                 if(target_skill_pref!=null && !target_skill_pref.isEmpty()){
@@ -144,22 +138,22 @@ public class MagicBountyData {
                         }
                     }
                 }
-                
+
                 String memKey = "$"+bountyId;
                 if(getString(bountyId, "job_memKey")!=null && !getString(bountyId, "job_memKey").isEmpty()){
                     memKey = getString(bountyId, "job_memKey");
                 }
-                
+
                 float reputation = 0.05f;
                 if(getInt(bountyId, "job_reputation_reward")!=null){
                     reputation = (float)getInt(bountyId, "job_reputation_reward")/100f;
                 }
-                
+
                 String reply = MagicTxt.getString("mb_comm_reply");
                 if(getString(bountyId,"job_comm_reply")!=null && !getString(bountyId,"job_comm_reply").isEmpty()){
                     reply = getString(bountyId,"job_comm_reply");
                 }
-                
+
                 bountyData this_bounty = new bountyData(
                         getStringList(bountyId, "trigger_market_id"),
                         getStringList(bountyId, "trigger_marketFaction_any"),
@@ -174,9 +168,9 @@ public class MagicBountyData {
                         getBooleanMap(bountyId, "trigger_memKeys_any"),
                         getFloatMap(bountyId, "trigger_playerRelationship_atLeast"),
                         getFloatMap(bountyId, "trigger_playerRelationship_atMost"),
-                                                
+
                         getString(bountyId, "job_name", MagicTxt.getString("mb_unnamed")), //"Unnamed job"
-                        getString(bountyId, "job_description"), 
+                        getString(bountyId, "job_description"),
                         reply,
                         getString(bountyId, "job_intel_success"),
                         getString(bountyId, "job_intel_failure"),
@@ -194,49 +188,49 @@ public class MagicBountyData {
                         getString(bountyId, "job_show_fleet"),
                         getString(bountyId, "job_show_distance"),
                         getBooleanDefaultTrue(bountyId, "job_show_arrow"),
-                        getString(bountyId, "job_pick_option"), 
-                        getString(bountyId, "job_pick_script"), 
+                        getString(bountyId, "job_pick_option"),
+                        getString(bountyId, "job_pick_script"),
                         memKey,
-                        getString(bountyId, "job_conclusion_script"), 
-                        
-                        getString(bountyId, "target_first_name"), 
-                        getString(bountyId, "target_last_name"), 
-                        getString(bountyId, "target_portrait"), 
+                        getString(bountyId, "job_conclusion_script"),
+
+                        getString(bountyId, "target_first_name"),
+                        getString(bountyId, "target_last_name"),
+                        getString(bountyId, "target_portrait"),
                         gender,
-                        getString(bountyId, "target_rank"), 
-                        getString(bountyId, "target_post"), 
-                        getString(bountyId, "target_personality"), 
+                        getString(bountyId, "target_rank"),
+                        getString(bountyId, "target_post"),
+                        getString(bountyId, "target_personality"),
                         getString(bountyId, "target_aiCoreId"),
                         getInt(bountyId, "target_level"),
                         getInt(bountyId, "target_elite_skills", 0),
-                        skillPref, 
+                        skillPref,
                         getIntMap(bountyId, "target_skills"),
-                        
-                        getString(bountyId, "fleet_name"), 
-                        getString(bountyId, "fleet_faction"), 
-                        getString(bountyId, "fleet_flagship_variant"), 
-                        getString(bountyId, "fleet_flagship_name"), 
-                        getBoolean(bountyId, "fleet_flagship_recoverable"),  
-                        getIntMap(bountyId, "fleet_preset_ships"), 
-                        getFloat(bountyId, "fleet_scaling_multiplier"), 
+
+                        getString(bountyId, "fleet_name"),
+                        getString(bountyId, "fleet_faction"),
+                        getString(bountyId, "fleet_flagship_variant"),
+                        getString(bountyId, "fleet_flagship_name"),
+                        getBoolean(bountyId, "fleet_flagship_recoverable"),
+                        getIntMap(bountyId, "fleet_preset_ships"),
+                        getFloat(bountyId, "fleet_scaling_multiplier"),
                         getInt(bountyId, "fleet_min_DP"),
-                        getString(bountyId, "fleet_composition_faction"), 
-                        getFloat(bountyId, "fleet_composition_quality"), 
+                        getString(bountyId, "fleet_composition_faction"),
+                        getFloat(bountyId, "fleet_composition_quality"),
                         getBoolean(bountyId, "fleet_transponder"),
                         order,
-                        
-                        getStringList(bountyId, "location_marketIDs"), 
+
+                        getStringList(bountyId, "location_marketIDs"),
                         getStringList(bountyId, "location_marketFactions"),
-                        getString(bountyId, "location_distance"), 
-                        getStringList(bountyId, "location_themes"), 
-                        getStringList(bountyId, "location_themes_blacklist"), 
+                        getString(bountyId, "location_distance"),
+                        getStringList(bountyId, "location_themes"),
+                        getStringList(bountyId, "location_themes_blacklist"),
                         getStringList(bountyId, "location_entities"),
                         getBoolean(bountyId, "location_prioritizeUnexplored"),
                         getBoolean(bountyId, "location_defaultToAnyEntity")
-                );   
-                
+                );
+
                 //add the bounty if it doesn't exist and hasn't been taken already or if the script is redoing the whole thing
-                if(!appendOnly || (!BOUNTIES.containsKey(bountyId) && !Global.getSector().getMemoryWithoutUpdate().contains(this_bounty.job_memKey))){
+                if((!appendOnly || (!BOUNTIES.containsKey(bountyId) && !Global.getSector().getMemoryWithoutUpdate().contains(this_bounty.job_memKey)))){
                     BOUNTIES.put(bountyId, this_bounty);
                     if(verbose){
                         LOG.info("SUCCESS");
@@ -247,7 +241,7 @@ public class MagicBountyData {
                 }
             }
         }
-        
+
         if(verbose){
             LOG.info("Successfully loaded "+x+" bounties");
         }
@@ -257,7 +251,7 @@ public class MagicBountyData {
      * The code representation of a bounty json definition.
      */
     public static class bountyData {
-        
+
         //trigger parameters                                                    //ALL OPTIONAL
         @NotNull public List <String> trigger_market_id;                                 //will default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
         @NotNull public List <String> trigger_marketFaction_any;
@@ -352,20 +346,20 @@ public class MagicBountyData {
                                                                                 //if false, the script will ignore the distance requirement to attempt to find a suitable system
         public bountyData(
             List <String> trigger_market_id,
-            List <String> trigger_marketFaction_any,            
+            List <String> trigger_marketFaction_any,
             boolean trigger_marketFaction_alliedWith,
-            List <String> trigger_marketFaction_none,            
+            List <String> trigger_marketFaction_none,
             boolean trigger_marketFaction_enemyWith,
             int trigger_market_minSize,
             int trigger_player_minLevel,
             int trigger_min_days_elapsed,
-            float trigger_weight_mult,                       
-            Map <String,Boolean> trigger_memKeys_all,          
+            float trigger_weight_mult,
+            Map <String,Boolean> trigger_memKeys_all,
             Map <String,Boolean> trigger_memKeys_any,
-            Map <String,Float> trigger_playerRelationship_atLeast,  
-            Map <String,Float> trigger_playerRelationship_atMost,  
-            String job_name,                         
-            String job_description, 
+            Map <String,Float> trigger_playerRelationship_atLeast,
+            Map <String,Float> trigger_playerRelationship_atMost,
+            String job_name,
+            String job_description,
             String job_comm_reply,
             String job_intel_success,
             String job_intel_failure,
@@ -374,7 +368,7 @@ public class MagicBountyData {
             String job_difficultyDescription,
             int job_deadline,
             int job_credit_reward,
-            float job_credit_scaling,    
+            float job_credit_scaling,
             float job_reputation_reward,
             Map <String,Integer> job_item_reward,
             String job_type,
@@ -383,34 +377,34 @@ public class MagicBountyData {
             String job_show_fleet,
             String job_show_distance,
             boolean job_show_arrow,
-            String job_pick_option,                  
-            String job_pick_script,                  
+            String job_pick_option,
+            String job_pick_script,
             String job_memKey,
-            String job_conclusion_script,            
+            String job_conclusion_script,
             String target_first_name,
             String target_last_name,
-            String target_portrait,                  
-            FullName.Gender target_gender,           
-            String target_rank,                      
-            String target_post,                      
-            String target_personality,               
+            String target_portrait,
+            FullName.Gender target_gender,
+            String target_rank,
+            String target_post,
+            String target_personality,
             String target_aiCoreId,
             int target_level,
-            int target_elite_skills,                 
-            SkillPickPreference target_skill_preference,          
-            Map <String,Integer> target_skills,    
+            int target_elite_skills,
+            SkillPickPreference target_skill_preference,
+            Map <String,Integer> target_skills,
             String fleet_name,
-            String fleet_faction,                    
+            String fleet_faction,
             String fleet_flagship_variant,
-            String fleet_flagship_name,              
+            String fleet_flagship_name,
             boolean fleet_flagship_recoverable,
-            Map <String,Integer> fleet_preset_ships, 
-            float fleet_scaling_multiplier,          
+            Map <String,Integer> fleet_preset_ships,
+            float fleet_scaling_multiplier,
             int fleet_min_DP,
-            String fleet_composition_faction,        
-            float fleet_composition_quality,         
+            String fleet_composition_faction,
+            float fleet_composition_quality,
             boolean fleet_transponder,
-            FleetAssignment fleet_behavior,        
+            FleetAssignment fleet_behavior,
             List<String> location_marketIDs,
             List<String> location_marketFactions,
             String location_distance,
@@ -418,7 +412,7 @@ public class MagicBountyData {
             List<String> location_themes_blacklist,
             List<String> location_entities,
             boolean location_prioritizeUnexplored,
-            boolean location_defaultToAnyEntity            
+            boolean location_defaultToAnyEntity
         ) {
             this.trigger_market_id = trigger_market_id;
             this.trigger_marketFaction_any = trigger_marketFaction_any;
@@ -428,13 +422,13 @@ public class MagicBountyData {
             this.trigger_market_minSize = trigger_market_minSize;
             this.trigger_player_minLevel = trigger_player_minLevel;
             this.trigger_min_days_elapsed = trigger_min_days_elapsed;
-            this.trigger_weight_mult = trigger_weight_mult;                       
-            this.trigger_memKeys_all = trigger_memKeys_all;                     
+            this.trigger_weight_mult = trigger_weight_mult;
+            this.trigger_memKeys_all = trigger_memKeys_all;
             this.trigger_memKeys_any = trigger_memKeys_any;
             this.trigger_playerRelationship_atLeast = trigger_playerRelationship_atLeast;
             this.trigger_playerRelationship_atMost = trigger_playerRelationship_atMost;
-            this.job_name = job_name;                         
-            this.job_description = job_description;  
+            this.job_name = job_name;
+            this.job_description = job_description;
             this.job_comm_reply = job_comm_reply;
             this.job_intel_success = job_intel_success;
             this.job_intel_failure = job_intel_failure;
@@ -483,7 +477,7 @@ public class MagicBountyData {
             } else {
                 this.job_show_fleet = ShowFleet.None;
             }
-            
+
             if (job_show_distance != null) {
                 if (job_show_distance.equalsIgnoreCase("vague")) {
                     this.job_show_distance = ShowDistance.Vague;
@@ -501,40 +495,40 @@ public class MagicBountyData {
             }
 
             this.job_show_arrow = job_show_arrow;
-            
+
             if(job_pick_option!=null && !job_pick_option.equals("")){
-                this.job_pick_option = job_pick_option;   
+                this.job_pick_option = job_pick_option;
             } else {
                 this.job_pick_option = MagicTxt.getString("mb_accept");
             }
-            
-            this.job_pick_script = job_pick_script;                  
+
+            this.job_pick_script = job_pick_script;
             this.job_memKey = job_memKey;
-            this.job_conclusion_script = job_conclusion_script;            
+            this.job_conclusion_script = job_conclusion_script;
             this.target_first_name = target_first_name;
             this.target_last_name = target_last_name;
-            this.target_portrait = target_portrait;                  
-            this.target_gender = target_gender;           
-            this.target_rank = target_rank;                      
-            this.target_post = target_post;                      
-            this.target_personality = target_personality;               
+            this.target_portrait = target_portrait;
+            this.target_gender = target_gender;
+            this.target_rank = target_rank;
+            this.target_post = target_post;
+            this.target_personality = target_personality;
             this.target_aiCoreId = target_aiCoreId;
             this.target_level = target_level;
-            this.target_elite_skills = target_elite_skills;                 
-            this.target_skill_preference = target_skill_preference;          
-            this.target_skills = target_skills;    
+            this.target_elite_skills = target_elite_skills;
+            this.target_skill_preference = target_skill_preference;
+            this.target_skills = target_skills;
             this.fleet_name = fleet_name;
-            this.fleet_faction = fleet_faction;                    
+            this.fleet_faction = fleet_faction;
             this.fleet_flagship_variant = fleet_flagship_variant;
-            this.fleet_flagship_name = fleet_flagship_name;              
+            this.fleet_flagship_name = fleet_flagship_name;
             this.fleet_flagship_recoverable = fleet_flagship_recoverable;
-            this.fleet_preset_ships = fleet_preset_ships; 
-            this.fleet_scaling_multiplier = fleet_scaling_multiplier;  
+            this.fleet_preset_ships = fleet_preset_ships;
+            this.fleet_scaling_multiplier = fleet_scaling_multiplier;
             this.fleet_min_DP = fleet_min_DP;
-            this.fleet_composition_faction = fleet_composition_faction;        
-            this.fleet_composition_quality = fleet_composition_quality;         
+            this.fleet_composition_faction = fleet_composition_faction;
+            this.fleet_composition_quality = fleet_composition_quality;
             this.fleet_transponder = fleet_transponder;
-            this.fleet_behavior = fleet_behavior;        
+            this.fleet_behavior = fleet_behavior;
             this.location_marketIDs = location_marketIDs;
             this.location_marketFactions = location_marketFactions;
             this.location_distance = location_distance;
@@ -620,15 +614,15 @@ public class MagicBountyData {
             return sb.toString();
         }
     }
-    
+
     //Loads a bounty list from modSettings.json while respecting their mod requirements
     private static List<String> readBountyList(boolean verbose){
-        
+
         //load the list of bounties that should be loaded, as well as their mod requirements
         Map<String, List<String>> bountiesWithRequirements = new HashMap<>();
-        
+
         JSONObject localCopy = MagicSettings.modSettings;
-        
+
         try {
             JSONObject reqSettings = localCopy.getJSONObject(MOD);
             //try to get the requested value
@@ -639,8 +633,8 @@ public class MagicBountyData {
                         //bounty id
                         String key = (String)iter.next();
                         //bounty requirements
-                        List<String> values = new ArrayList<>();                                    
-                        JSONArray requirementList = bountiesList.getJSONArray(key);                                
+                        List<String> values = new ArrayList<>();
+                        JSONArray requirementList = bountiesList.getJSONArray(key);
                         if(requirementList.length()>0){
                             for(int i=0; i<requirementList.length(); i++){
                                 values.add(requirementList.getString(i));
@@ -655,9 +649,9 @@ public class MagicBountyData {
         } catch (JSONException ex){
             LOG.error("MagicBountyData is unable to read the content of "+MOD+" in modSettings.json",ex);
         }
-        
+
         List<String> bountiesAvailable = new ArrayList<>();
-        
+
         for(String id : bountiesWithRequirements.keySet()){
             if(bountiesWithRequirements.get(id).isEmpty()){
                 //no requirement
@@ -677,7 +671,7 @@ public class MagicBountyData {
                         break;
                     }
                 }
-                if(!missingRequirement){ 
+                if(!missingRequirement){
                     bountiesAvailable.add(id);
                     //log if devMode is active
                     if(verbose){
@@ -689,45 +683,45 @@ public class MagicBountyData {
         //only return bounties that have no other mod requirement, or all of them are present
         return bountiesAvailable;
     }
-    
+
     //Load the bounty data file
     private static JSONObject loadBountyData(){
         JSONObject this_bounty_data=null;
         try{
-            this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH,MOD);    
+            this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH,MOD);
         } catch (IOException | JSONException ex) {
             LOG.fatal("MagicBountyData is unable to read magicBounty_data.json",ex);
             JSONfailed=true;
         }
         return this_bounty_data;
     }
-    
+
     private static boolean getBoolean(String bountyId, String key){
-        boolean value=false;   
-        
+        boolean value=false;
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 value = reqSettings.getBoolean(key);
             }
         } catch (JSONException ex){}
-        
+
         return value;
     }
-    
+
     private static boolean getBooleanDefaultTrue(String bountyId, String key){
-        boolean value=true;   
-        
+        boolean value=true;
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 value = reqSettings.getBoolean(key);
             }
         } catch (JSONException ex){}
-        
+
         return value;
     }
-    
+
     private static String getString(String bountyId, String key){
         return getString(bountyId, key, null);
     }
@@ -744,7 +738,7 @@ public class MagicBountyData {
 
         return value;
     }
-    
+
     private static Integer getInt(String bountyId, String key){
         return getInt(bountyId, key, -1);
     }
@@ -761,7 +755,7 @@ public class MagicBountyData {
 
         return value;
     }
-    
+
     private static Float getFloat(String bountyId, String key){
         return getFloat(bountyId, key, -1);
     }
@@ -778,12 +772,12 @@ public class MagicBountyData {
 
         return value;
     }
-    
+
     private static List<String> getStringList(String bountyId, String key){
         List<String> value=new ArrayList<>();
-          
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 JSONArray list = reqSettings.getJSONArray(key);
                 if(list.length()>0){
@@ -793,15 +787,15 @@ public class MagicBountyData {
                 }
             }
         } catch (JSONException ex){}
-                
+
         return value;
     }
-    
+
     private static Map<String,Boolean> getBooleanMap(String bountyId, String key){
         Map<String,Boolean> value = new HashMap<>();
-          
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 JSONObject list = reqSettings.getJSONObject(key);
                 if(list.length()>0){
@@ -813,15 +807,15 @@ public class MagicBountyData {
                 }
             }
         } catch (JSONException ex){}
-        
+
         return value;
     }
-    
+
     private static Map<String,Float> getFloatMap(String bountyId, String key){
         Map<String,Float> value = new HashMap<>();
-          
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 JSONObject list = reqSettings.getJSONObject(key);
                 if(list.length()>0){
@@ -833,15 +827,15 @@ public class MagicBountyData {
                 }
             }
         } catch (JSONException ex){}
-        
+
         return value;
     }
-    
+
     private static Map<String,Integer> getIntMap(String bountyId, String key){
         Map<String,Integer> value = new HashMap<>();
-        
+
         try {
-            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);   
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if(reqSettings.has(key)){
                 JSONObject list = reqSettings.getJSONObject(key);
                 if(list.length()>0){
@@ -853,7 +847,7 @@ public class MagicBountyData {
                 }
             }
         } catch (JSONException ex){}
-        
+
         return value;
     }
 

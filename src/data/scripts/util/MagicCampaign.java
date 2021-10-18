@@ -27,6 +27,7 @@ import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lazywizard.lazylib.MathUtils;
 
@@ -847,7 +848,7 @@ public class MagicCampaign {
             @Nullable String lastName,
             @Nullable String portraitId,
             @Nullable FullName.Gender gender,
-            String factionId,
+            @NotNull String factionId,
             @Nullable String rankId,
             @Nullable String postId,
             @Nullable String personality,
@@ -1153,8 +1154,8 @@ public class MagicCampaign {
                     variant.setWingId(numBuiltIn + w, wings.getString(w));
                 }
             }
-        } catch (IOException | JSONException e) {
-            log.error("could not load ship variant at " + path, e);
+        } catch (Exception e) {
+            log.info("could not load ship variant at " + path, e);
         }
         return variant;
     }

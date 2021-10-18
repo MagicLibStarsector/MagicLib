@@ -2,6 +2,7 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
@@ -12,16 +13,16 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicSettings;
+import data.scripts.util.MagicVariables;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import data.scripts.util.MagicVariables;
 
 /**
  * The point of entry into MagicBounty scripting.
@@ -36,6 +37,7 @@ import data.scripts.util.MagicVariables;
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
+    private static Logger logger = Global.getLogger(MagicBountyCoordinator.class);
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -44,6 +46,9 @@ public final class MagicBountyCoordinator {
 
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
+        for (Map.Entry<String, MagicBountyData.bountyData> dataEntry : MagicBountyData.BOUNTIES.entrySet()) {
+            validateAndCorrectIds(dataEntry.getKey(), dataEntry.getValue());
+        }
     }
 
     @Nullable
@@ -194,7 +199,7 @@ public final class MagicBountyCoordinator {
             try {
                 return (List<String>) memoryAPI.get(key);
             } catch (Exception e) {
-                Logger.getLogger(MagicBountyCoordinator.class.getName()).warning(e.getMessage());
+                logger.warn(e.getMessage());
             }
         }
 
@@ -290,6 +295,7 @@ public final class MagicBountyCoordinator {
         ArrayList<String> presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
 
         if (fleet == null) {
+            Global.getLogger(MagicBountyCoordinator.class).warn(String.format("Unable to create fleet for bounty %s, look for earlier warnings/errors.", bountyKey));
             return null;
         }
 
@@ -351,7 +357,7 @@ public final class MagicBountyCoordinator {
         int desiredFP = Math.round(spec.fleet_min_DP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
 
         Global.getLogger(MagicBountyCoordinator.class)
-                .info(String.format("Bounty '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
+                .info(String.format("After scaling, bounty fleet '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
                         spec.job_name,
                         desiredFP,
                         spec.fleet_min_DP,
@@ -359,5 +365,93 @@ public final class MagicBountyCoordinator {
                         differenceBetweenBountyMinDPAndPlayerFleetDP));
 
         return desiredFP;
+    }
+
+    private static boolean validateAndCorrectIds(String bountyId, MagicBountyData.bountyData this_bounty) {
+        Logger logger = Global.getLogger(MagicBountyCoordinator.class);
+
+        try {
+            // fleet_faction
+            String fleetFactionId = nullStringIfEmpty(this_bounty.fleet_faction);
+            FactionAPI faction = StringMatcher.findBestFactionMatch(fleetFactionId);
+
+            if (faction == null) {
+                logger.info(String.format("Unable to find faction '%s' in bounty %s.", fleetFactionId, bountyId));
+                return false;
+            } else if (!Objects.equals(faction.getId(), fleetFactionId)) {
+                logger.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
+                this_bounty.fleet_faction = faction.getId();
+            }
+
+            // fleet_composition_faction
+            String compositionFactionId = nullStringIfEmpty(this_bounty.fleet_composition_faction);
+
+            if (compositionFactionId != null) {
+                FactionAPI fleetCompositionFaction = StringMatcher.findBestFactionMatch(compositionFactionId);
+
+                if (fleetCompositionFaction != null && !Objects.equals(fleetCompositionFaction.getId(), compositionFactionId)) {
+                    logger.info(String.format("Corrected fleet_composition_faction '%s' to '%s' in bounty %s.", compositionFactionId, fleetCompositionFaction.getId(), bountyId));
+                    this_bounty.fleet_composition_faction = fleetCompositionFaction.getId();
+                }
+            }
+
+            // job_forFaction
+            String job_forFactionId = nullStringIfEmpty(this_bounty.job_forFaction);
+
+            if (job_forFactionId != null) {
+                FactionAPI job_forFaction = StringMatcher.findBestFactionMatch(job_forFactionId);
+
+                if (job_forFaction != null && !Objects.equals(job_forFaction.getId(), job_forFactionId)) {
+                    logger.info(String.format("Corrected job_forFactionId '%s' to '%s' in bounty %s.", job_forFactionId, job_forFaction.getId(), bountyId));
+                    this_bounty.job_forFaction = job_forFaction.getId();
+                }
+            }
+
+            // location_marketFactions
+            List<String> location_marketFactions = this_bounty.location_marketFactions;
+
+            for (int i = location_marketFactions.size() - 1; i >= 0; i--) {
+                String location_marketFactionId = location_marketFactions.get(i);
+                FactionAPI location_marketFaction = StringMatcher.findBestFactionMatch(location_marketFactionId);
+
+                if (location_marketFaction != null && !Objects.equals(location_marketFaction.getId(), location_marketFactionId)) {
+                    logger.info(String.format("Corrected location_marketFactionId '%s' to '%s' in bounty %s.", location_marketFactionId, location_marketFaction.getId(), bountyId));
+                    this_bounty.location_marketFactions.remove(i);
+                    this_bounty.location_marketFactions.add(location_marketFaction.getId());
+                }
+            }
+
+            // trigger_marketFaction_any
+            List<String> trigger_marketFaction_any = this_bounty.trigger_marketFaction_any;
+
+            for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
+                String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
+                FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
+
+                if (trigger_marketFaction != null && !Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
+                    logger.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
+                    this_bounty.trigger_marketFaction_any.remove(i);
+                    this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
+                }
+            }
+
+            // trigger_marketFaction_none
+            List<String> trigger_marketFaction_none = this_bounty.trigger_marketFaction_none;
+
+            for (int i = trigger_marketFaction_none.size() - 1; i >= 0; i--) {
+                String trigger_marketFaction_noneId = trigger_marketFaction_none.get(i);
+                FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_noneId);
+
+                if (trigger_marketFaction != null && !Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_noneId)) {
+                    logger.info(String.format("Corrected trigger_marketFaction_none '%s' to '%s' in bounty %s.", trigger_marketFaction_noneId, trigger_marketFaction.getId(), bountyId));
+                    this_bounty.trigger_marketFaction_none.remove(i);
+                    this_bounty.trigger_marketFaction_none.add(trigger_marketFaction.getId());
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Something went wrong when validating " + bountyId, e);
+        }
+
+        return true;
     }
 }
