@@ -31,8 +31,13 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
 
-        //pre-loading the bounties to throw a crash if the JSON is messed up on merge
-        MagicBountyData.loadBountiesFromJSON(false);
+        //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
+//        if(Global.getSettings().isDevMode()){
+            MagicBountyData.loadBountiesFromJSON(false);
+            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
+                MagicBountyHVB.convertHVBs(false);
+            }
+//        }
 
         if (MagicBountyData.JSONfailed) {
             String message = System.lineSeparator()
@@ -67,17 +72,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
             if (!newGame) {
                 //add new bounties if there are any
-                if(Global.getSettings().isDevMode()){
-                    MagicBountyData.loadBountiesFromJSON(false);
-                } else {
-                    MagicBountyData.loadBountiesFromJSON(true);
-                }
+                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode());                
             }
-
-            MagicBountyCoordinator.onGameLoad();
-            MagicBountyCoordinator.getInstance().configureBountyListeners();
-
-            Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
 
             //check for IBBs presence
             if (Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties == true) {
@@ -90,7 +86,13 @@ public class Magic_modPlugin extends BaseModPlugin {
                 Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
             } else {
                 Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
+                MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode());
             }
+            
+            MagicBountyCoordinator.onGameLoad();
+            MagicBountyCoordinator.getInstance().configureBountyListeners();
+
+            Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
         }
     }
 

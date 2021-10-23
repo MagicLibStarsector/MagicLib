@@ -27,7 +27,7 @@ public class MagicBountyData {
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
     private static JSONObject bounty_data;
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
-    private static boolean verbose=false;
+    public static boolean verbose = false;
     private static final String MOD = "MagicLib", BOUNTY_BOARD = "bounty_board", PATH = "data/config/modFiles/magicBounty_data.json";
 
     /**
@@ -153,7 +153,19 @@ public class MagicBountyData {
                 if(getString(bountyId,"job_comm_reply")!=null && !getString(bountyId,"job_comm_reply").isEmpty()){
                     reply = getString(bountyId,"job_comm_reply");
                 }
-
+                
+                /*
+                List<String> themes = new ArrayList<>();
+                if(getStringList(bountyId, "location_themes")!=null && !getStringList(bountyId, "location_themes").isEmpty()){
+                    themes = getStringList(bountyId, "location_themes");
+                    if(themes.contains("procgen_no_theme") || themes.contains("procgen_no_theme_pulsar_blackhole")){
+                        themes.add("theme_misc_skip");
+                        themes.add("theme_misc");
+                        themes.add("theme_core_unpopulated");
+                    }
+                }
+                */
+                
                 bountyData this_bounty = new bountyData(
                         getStringList(bountyId, "trigger_market_id"),
                         getStringList(bountyId, "trigger_marketFaction_any"),
@@ -163,6 +175,7 @@ public class MagicBountyData {
                         getInt(bountyId, "trigger_market_minSize"),
                         getInt(bountyId, "trigger_player_minLevel"),
                         getInt(bountyId, "trigger_min_days_elapsed"),
+                        getInt(bountyId, "trigger_min_fleet_size", 0),
                         getFloat(bountyId, "trigger_weight_mult", 1f),
                         getBooleanMap(bountyId, "trigger_memKeys_all"),
                         getBooleanMap(bountyId, "trigger_memKeys_any"),
@@ -202,7 +215,7 @@ public class MagicBountyData {
                         getString(bountyId, "target_personality"),
                         getString(bountyId, "target_aiCoreId"),
                         getInt(bountyId, "target_level"),
-                        getInt(bountyId, "target_elite_skills", 0),
+                        getInt(bountyId, "target_elite_skills", -1),
                         skillPref,
                         getIntMap(bountyId, "target_skills"),
 
@@ -253,7 +266,7 @@ public class MagicBountyData {
     public static class bountyData {
 
         //trigger parameters                                                    //ALL OPTIONAL
-        @NotNull public List <String> trigger_market_id;                                 //will default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
+        @NotNull public List <String> trigger_market_id;                        //will default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
         @NotNull public List <String> trigger_marketFaction_any;
         public boolean trigger_marketFaction_alliedWith;                        //visited market is at least neutral with one those factions
         @NotNull public List <String> trigger_marketFaction_none;
@@ -261,11 +274,12 @@ public class MagicBountyData {
         public int trigger_market_minSize;
         public int trigger_player_minLevel;
         public int trigger_min_days_elapsed;
+        public int trigger_min_fleet_size;
         public float trigger_weight_mult;                                       //simple frequency multiplier
         @NotNull public Map <String,Boolean> trigger_memKeys_all;
         @NotNull public Map <String,Boolean> trigger_memKeys_any;
-        @NotNull public Map <String,Float> trigger_playerRelationship_atLeast;           //minimal player relationship with those factions
-        @NotNull public Map <String,Float> trigger_playerRelationship_atMost;            //maximum player relationship with those factions
+        @NotNull public Map <String,Float> trigger_playerRelationship_atLeast;  //minimal player relationship with those factions
+        @NotNull public Map <String,Float> trigger_playerRelationship_atMost;   //maximum player relationship with those factions
         //job description
         public String job_name;                                                 //job name in the dialog pick list
         public String job_description;                                          //full text of the bounty offer, the description will handle some text variables such as "$he_or_she". See documentation for more details
@@ -338,7 +352,7 @@ public class MagicBountyData {
         public List<String> location_marketIDs;                                 //preset location, can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
         public List<String> location_marketFactions;                            //takes precedence over all other parameters but market ids
         public String location_distance;                                        //prefered distance, "CORE", "CLOSE" or "FAR". Can be left empty to ignore.
-        public List<String> location_themes;                                    //campaign.ids.Tags + "PROCGEN_NO_THEME" + "PROCGEN_NO_THEME_NO_PULSAR_NO_BLACKHOLE"
+        public List<String> location_themes;                                    //campaign.ids.Tags + "procgen_no_theme" + "procgen_no_theme_pulsar_blackhole"
         public List<String> location_themes_blacklist;
         public List<String> location_entities;                                  //PLANET, GATE, STATION, STABLE_LOCATION, DEBRIS, WRECK, PROBE.
         public boolean location_prioritizeUnexplored;                           //will pick in priority systems that have not been visited by the player yet, but won't override the distance requirements
@@ -353,6 +367,7 @@ public class MagicBountyData {
             int trigger_market_minSize,
             int trigger_player_minLevel,
             int trigger_min_days_elapsed,
+            int trigger_min_fleet_size,
             float trigger_weight_mult,
             Map <String,Boolean> trigger_memKeys_all,
             Map <String,Boolean> trigger_memKeys_any,
@@ -422,6 +437,7 @@ public class MagicBountyData {
             this.trigger_market_minSize = trigger_market_minSize;
             this.trigger_player_minLevel = trigger_player_minLevel;
             this.trigger_min_days_elapsed = trigger_min_days_elapsed;
+            this.trigger_min_fleet_size = trigger_min_fleet_size;
             this.trigger_weight_mult = trigger_weight_mult;
             this.trigger_memKeys_all = trigger_memKeys_all;
             this.trigger_memKeys_any = trigger_memKeys_any;

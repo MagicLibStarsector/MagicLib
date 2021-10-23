@@ -867,7 +867,7 @@ public class MagicCampaign {
                 false, 
                 null,
                 true,
-                true,
+                eliteSkillsOverride!=0,
                 eliteSkillsOverride,
                 Misc.random
         );
@@ -914,7 +914,11 @@ public class MagicCampaign {
         }
         
         if (nullStringIfEmpty(portraitId) != null){
-            person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
+            if(portraitId.startsWith("graphics")){
+                person.setPortraitSprite(portraitId);
+            } else {
+                person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
+            }
         }
 //        person.setFaction(factionId);
         if(nullStringIfEmpty(personality)!=null){
@@ -1057,7 +1061,6 @@ public class MagicCampaign {
         fleet.getFleetData().addFleetMember(member);
         return member;
     }
-    
     
     /**
      * Creates a ship variant from a regular variant file.
@@ -1251,6 +1254,7 @@ public class MagicCampaign {
      * 
      * @param player_minLevel
      * @param min_days_elapsed
+     * @param min_fleet_size
      * @param memKeys_all
      * @param memKeys_any
      * @param playerRelationship_atLeast
@@ -1259,18 +1263,26 @@ public class MagicCampaign {
      */
     public static boolean isAvailableToPlayer(
             int player_minLevel,
-            int min_days_elapsed,                  
+            int min_days_elapsed,
+            int min_fleet_size,
             @Nullable Map <String,Boolean> memKeys_all,          
             @Nullable Map <String,Boolean> memKeys_any,
             @Nullable Map <String,Float> playerRelationship_atLeast,  
             @Nullable Map <String,Float> playerRelationship_atMost
     ){
         
-        //checking min_days_elapsed
+        //checking trigger_min_days_elapsed
         if(min_days_elapsed>0 && Global.getSector().getClock().getElapsedDaysSince(0)<min_days_elapsed)return false;
         
         //checking trigger_player_minLevel
         if(player_minLevel>0 && Global.getSector().getPlayerStats().getLevel()<player_minLevel)return false;
+        
+        //checking trigger_min_fleet_size
+        if(min_fleet_size>0){
+            CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
+            float effectiveFP = playerFleet.getEffectiveStrength();
+            return min_fleet_size < effectiveFP;
+        }
         
         //checking trigger_playerRelationship_atLeast
         if(playerRelationship_atLeast!=null && !playerRelationship_atLeast.isEmpty()){
@@ -1455,16 +1467,19 @@ public class MagicCampaign {
                 }
                 //special test for basic procgen systems without special content
                 if(seek_themes.contains("procgen_no_theme") || seek_themes.contains("procgen_no_theme_pulsar_blackhole")){
-                    if(s.getTags().isEmpty() && s.isProcgen()){
-                        if(seek_themes.contains("PROCGEN_NO_THEME_NO_PULSAR_NO_BLACKHOLE") && (s.hasBlackHole() || s.hasPulsar()))continue;
-                        //sort systems by distances because that will come in handy later
-                        float dist = s.getLocation().length();
-                        if(dist<sector_width*0.33f){
-                            systems_core.add(s);
-                        } else if (dist<sector_width*0.66f){
-                            systems_close.add(s);
-                        } else {
-                            systems_far.add(s);
+                    if(s.isProcgen()){
+                        if(seek_themes.contains("procgen_no_theme_pulsar_blackhole") && (s.hasBlackHole() || s.hasPulsar()))continue;
+                        //check for the 3 bland themes
+                        if(s.getTags().contains("theme_misc_skip") || s.getTags().contains("theme_misc") ||  s.getTags().contains("theme_core_unpopulated")){
+                            //sort systems by distances because that will come in handy later
+                            float dist = s.getLocation().length();
+                            if(dist<sector_width*0.33f){
+                                systems_core.add(s);
+                            } else if (dist<sector_width*0.66f){
+                                systems_close.add(s);
+                            } else {
+                                systems_far.add(s);
+                            }
                         }
                     }
                 }

@@ -119,6 +119,9 @@
 		"mb_permDismissConfirmOpt": "Permanently dismiss this bounty",
 		"mb_permDismissConfirmed": "Bounty dismissed.",
 		"mb_comm_reply": "The other $shipOrFleet does not answer to your hails.",
+
+		"mb_hvb_title":"High Value Bounty",
+
 		"mb_son":"son",
 		"mb_daughter":"daughter",
 		"mb_child":"child",

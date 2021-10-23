@@ -199,6 +199,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                         activeBounty.addDescriptionToTextPanel(text);
 
+                        if(bounty.job_memKey.startsWith("$HVB_")){
+                            //adding HVB descriptions
+                            MagicBountyHVB.generateFancyFleetDescription(text, activeBounty.getFleet(), activeBounty.getCaptain());
+                            MagicBountyHVB.generateFancyCommanderDescription(text, activeBounty.getFleet(), activeBounty.getCaptain());
+                        }
+                        
                         if (nullStringIfEmpty(bounty.job_forFaction) != null) {
                             //"Posted by %s."
                             FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);

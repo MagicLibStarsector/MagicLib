@@ -10,6 +10,9 @@
     },
 
     "graphics":{
+		"character":{
+			"godiva":"graphics/portraits/godiva.jpg",
+		},
         "beams":{
             "fakeBeamCore":"graphics/magic/fx/fakebeam/fakeBeamCore.png",
             "fakeBeamFringe":"graphics/magic/fx/fakebeam/fakeBeamFringe.png",

@@ -163,6 +163,7 @@ public final class MagicBountyCoordinator {
             if (!MagicCampaign.isAvailableToPlayer(
                     bountySpec.trigger_player_minLevel,
                     bountySpec.trigger_min_days_elapsed,
+                    bountySpec.trigger_min_fleet_size,
                     bountySpec.trigger_memKeys_all,
                     bountySpec.trigger_memKeys_any,
                     bountySpec.trigger_playerRelationship_atLeast,

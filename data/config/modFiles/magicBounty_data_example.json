@@ -99,7 +99,7 @@
         "target_personality": "aggressive", # Default: Randomly selected. Personality from campaign.ids.Personalities ("timid", "cautious", "steady", "aggressive", "reckless")
         "target_aiCoreId": null, # Default: null (not an AI). The AI Core id of the bounty commander. Core will be dropped as loot. Options: [ null, "gamma_core", "beta_core", "alpha_core" ]
         "target_level": 1, # Default: 0. The level of the bounty commander
-        "target_elite_skills":2, # Default: Max elite skills. Overrides the regular number of elite skills, set to -1 to ignore.
+        "target_elite_skills":2, # Default: vanilla elite skills. Overrides the regular number of elite skills, set to 0 to not use elite skills.
         "target_skill_preference": "GENERIC", # Default: "GENERIC". ["GENERIC", "PHASE", "CARRIER", "ANY"] (from OfficerManagerEvent.SkillPickPreference)
         "target_skills": { # Default: random. OVERRIDES ALL RANDOM SKILLS
             "skillname":2,
@@ -164,7 +164,7 @@
         "location_themes_blacklist": [ # Default: none. System themes to never spawn the fleet at.
             "theme_already_occupied",
         ],
-        "location_entities": [ # Default: no preference. Possible entities to spawn the fleet around. Default to PLANET + JUMP_POINT + STABLE_LOCATION if left empty
+        "location_entities": [ # Default: PLANET + JUMP_POINT + STABLE_LOCATION. Possible entities to spawn the fleet around.
             "gate",
             "station",
             "wreck",

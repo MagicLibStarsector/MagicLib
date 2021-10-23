@@ -2,7 +2,7 @@ MagicLib
 
 0.35
 Added MagicBounty framework, a highly customizable yet easy to implement system to add unique story-driven bounties to a board present in bars.
-Huge thanks to Wisp that did the bulk of the work, to Schaf-Unschaf and Ruby for their contributions."
+Huge thanks to Wisp that did the bulk of the work, to Schaf-Unschaf and Rubi for their contributions."
 
 MagicRender: Fixed issue where sprite flickering was applied incorrectly.
 MagicLensFlare: Now uses the "visual only" API.
