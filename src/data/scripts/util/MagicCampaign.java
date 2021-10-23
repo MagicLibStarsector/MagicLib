@@ -717,6 +717,7 @@ public class MagicCampaign {
             }
             return null;
         }
+        FleetMemberAPI flagship = newFleet.getFlagship();
 
         ////////////////////////////
         // RANDOM SHIPS ADDITIONS //
@@ -756,17 +757,19 @@ public class MagicCampaign {
             newFleet.getFleetData().addFleetMember(held);
         }
         */
+        
+        //making sure there is no flagship override there 
         for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
             if(mem.isFlagship())mem.setFlagship(false);
             newFleet.getFleetData().addFleetMember(mem);
         }
         
-        /*
-        if (!newFleet.getFlagship().equals(theFlagship)) {
+        
+        if (!newFleet.getFlagship().equals(flagship)) {
             newFleet.getFlagship().setFlagship(false);
-            theFlagship.setFlagship(true);
+            flagship.setFlagship(true);
         }
-        */
+        
         
         ///////////////////////////
         //FINISH FLEET GENERATION//
@@ -1007,8 +1010,6 @@ public class MagicCampaign {
             }
             return null;
         }
-        flag.setFlagship(true);
-//        theFlagship = flag;
         MagicVariables.presetShipIdsOfLastCreatedFleet.add(flag.getId());
         
         // add support
@@ -1020,9 +1021,17 @@ public class MagicCampaign {
                         log.warn(v + " not found, skipping that variant");
                     } else if (test != null) {
                         MagicVariables.presetShipIdsOfLastCreatedFleet.add(test.getId());
+                        //just to make sure
+                        if(test.isFlagship())test.setFlagship(false);
                     }
                 }
             }
+        }
+        
+        //enforcing proper flagship just to be sure
+        if (!newFleet.getFlagship().equals(flag)) {
+            newFleet.getFlagship().setFlagship(false);
+            flag.setFlagship(true);
         }
 
         if (params.withOfficers) {
