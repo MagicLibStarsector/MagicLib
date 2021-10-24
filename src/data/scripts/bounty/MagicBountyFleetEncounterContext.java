@@ -85,7 +85,7 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 float weaponProb = Global.getSettings().getFloat("salvageWeaponProb");
                 float wingProb = Global.getSettings().getFloat("salvageWingProb");
 
-                prepareShipForRecovery(data.getMember(), false, true, true, weaponProb, wingProb, getSalvageRandom());
+                prepareShipForRecovery(data.getMember(), false, true, false, weaponProb, wingProb, getSalvageRandom());
 
                 getStoryRecoverableShips().add(data.getMember());
 
