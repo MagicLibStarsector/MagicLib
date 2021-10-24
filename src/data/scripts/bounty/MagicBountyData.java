@@ -866,6 +866,35 @@ public class MagicBountyData {
 
         return value;
     }
+    
+    private static Map<String,List<String>> getListMap(String bountyId, String key){
+        Map<String,List<String>> value = new HashMap<>();
+        try {
+            JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
+            //get object
+            if(reqSettings.has(key)){
+                //get key list
+                JSONObject keyList = reqSettings.getJSONObject(key);
+                if(keyList.length()>0){
+                    for(Iterator<?> iter = keyList.keys(); iter.hasNext();){
+                        String this_key = (String)iter.next();
+                        //get list of values for each key
+                        JSONArray data_list = keyList.getJSONArray(key);
+                        List<String>parsed_list = new ArrayList<>();
+                        if(data_list.length()>0){
+                            for(int i=0; i<data_list.length();i++){
+                                //turn json list into array list
+                                parsed_list.add(data_list.getString(i));
+                            }
+                        }
+                        value.put(this_key,parsed_list);
+                    }
+                }
+            }
+        } catch (JSONException ex){}
+
+        return value;
+    }
 
     /**
      * The type of bounty; defines criteria for successful completion.
