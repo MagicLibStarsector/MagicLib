@@ -24,6 +24,7 @@ import java.util.Set;
 
 import static com.fs.starfarer.api.util.Misc.random;
 import static data.scripts.util.MagicTxt.getString;
+import java.util.ArrayList;
 
 /**
  * Displays MagicLib Bounties to the player.
@@ -431,7 +432,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             width,
                             bounty.getFleet().getFaction().getBaseUIColor(),
                             bounty.getSpec().job_show_fleet,
-                            bounty.getFleet().getMembersWithFightersCopy(),
+                            bounty.getFleet().getFleetData().getMembersInPriorityOrder(),
                             bounty.getFlagshipInFleet(),
                             bounty.getPresetShipsInFleet()
                     );
@@ -694,17 +695,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     break;
                 }
                 //If there are more than 7 ships, pick the largest 7
-                //make a random picker with squared FP weight to heavily trend toward bigger ships
-                WeightedRandomPicker<FleetMemberAPI> picker = new WeightedRandomPicker<>();
+                toShow = new ArrayList<>();
                 for (FleetMemberAPI m : ships) {
-                    if (m == flagship.get(0)) continue;
-                    if (m.isFighterWing()) continue;
-                    picker.add(m, (float) Math.pow(m.getFleetPointCost(), 2));
-                }
-                //make a pick list starting with the flagship 
-                toShow = flagship;
-                for (int i = 1; i < columns; i++) {
-                    toShow.add(picker.pickAndRemove());
+                    if(toShow.size()>=columns)break;
+                    toShow.add(m);
                 }
                 //make the ship list
                 info.addShipList(

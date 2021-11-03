@@ -380,14 +380,21 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                             activeBounty.getFleet().getFaction().getBaseUIColor(),
                                             ships, 10f);
                             */
-
-
+                            
+                            /*
+                            //DEBUG
+                            List <FleetMemberAPI> ships =activeBounty.getFleet().getFleetData().getMembersInPriorityOrder();
+                            List <String> FPs = new ArrayList<>();
+                            for(FleetMemberAPI m : ships){
+                                FPs.add(m.getFleetPointCost()+"");
+                            }
+                            */
                             showFleet(
                                     text,
                                     dialog.getTextWidth(),
                                     activeBounty.getFleet().getFaction().getBaseUIColor(),
                                     activeBounty.getSpec().job_show_fleet,
-                                    activeBounty.getFleet().getMembersWithFightersCopy(),
+                                    activeBounty.getFleet().getFleetData().getMembersInPriorityOrder(),
                                     activeBounty.getFlagshipInFleet(),
                                     activeBounty.getPresetShipsInFleet()
                             );
@@ -546,7 +553,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
             case Preset:
                 //show the preset fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
+                info.addPara(getString("mb_fleet1") + getString("mb_fleet")); 
+                
                 info.beginTooltip().addShipList(
                         columns,
                         (int) Math.round(Math.ceil((double) preset.size() / columns)),
@@ -562,7 +570,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 //show the preset fleet
                 info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
                 List<FleetMemberAPI> toShow = preset;
-//                toShow.addAll(preset);
                 info.beginTooltip().addShipList(
                         columns,
                         (int) Math.round(Math.ceil((double) preset.size() / columns)),
@@ -615,17 +622,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     break;
                 }
                 //If there are more than 7 ships, pick the largest 7
-                //make a random picker with squared FP weight to heavily trend toward bigger ships
-                WeightedRandomPicker<FleetMemberAPI> picker = new WeightedRandomPicker<>();
+                toShow = new ArrayList<>();
                 for (FleetMemberAPI m : ships) {
-                    if (m == flagship.get(0)) continue;
-                    if (m.isFighterWing()) continue;
-                    picker.add(m, (float) Math.pow(m.getFleetPointCost(), 2));
-                }
-                //make a pick list starting with the flagship 
-                toShow = flagship;
-                for (int i = 1; i < columns; i++) {
-                    toShow.add(picker.pickAndRemove());
+                    if(toShow.size()>=columns)break;
+                    toShow.add(m);
                 }
                 //make the ship list
                 info.beginTooltip().addShipList(

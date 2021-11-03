@@ -790,7 +790,16 @@ public class MagicCampaign {
         
         
         //FINISHING
-
+        
+        bountyFleet.getFleetData().sort();
+        bountyFleet.getFleetData().setSyncNeeded();
+        bountyFleet.getFleetData().syncIfNeeded();
+        
+//        //debug
+//        log.warn(bountyFleet.getMembersWithFightersCopy());
+//        log.warn(bountyFleet.getFleetData().getMembersListWithFightersCopy().toString());
+//        log.warn(bountyFleet.getFleetData().getMembersInPriorityOrder().toString());
+        
         //cleanup name and faction
         bountyFleet.setNoFactionInName(true);
         bountyFleet.setFaction(fleetFaction, true);
