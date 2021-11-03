@@ -34,11 +34,9 @@ import org.lazywizard.lazylib.MathUtils;
 
 import java.util.*;
 
-import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.*;
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.loading.WeaponGroupType;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +63,11 @@ public class MagicCampaign {
         editor.clearArc(system.getLocation().x, system.getLocation().y, 0, radius + minRadius, 0, 360f, 0.25f);	     
     }
     
+    /**
+     * Place an object on a stable orbit similar to the most approaching existing one that can be found 
+     * @param object
+     * @param spin 
+     */
     public void placeOnStableOrbit(SectorEntityToken object, boolean spin){
         
         StarSystemAPI system = object.getStarSystem();
@@ -525,13 +528,6 @@ public class MagicCampaign {
         return person;
     }
 
-    /*
-    private static CampaignFleetAPI theFleet;
-    private static FleetMemberAPI theFlagship;
-    private static String theFlagshipVariant;
-    private static Map<String, Integer> theSupportFleet = new HashMap<>();
-    public static List<String> presetShipIdsOfLastCreatedFleet = new ArrayList<>();
-    */
 
     /**
      * Creates a fleet with a defined flagship and optional escort
@@ -558,6 +554,7 @@ public class MagicCampaign {
      * @param assignment
      * campaign.FleetAssignment, default to orbit aggressive
      * @param assignementTarget
+     * where the fleet will go to execute its order, it will not spawn if NULL
      * @param isImportant
      * @param transponderOn
      * @return 
@@ -610,6 +607,7 @@ public class MagicCampaign {
      * @param assignment
      * campaign.FleetAssignment, default to orbit aggressive
      * @param assignementTarget
+     * where the fleet will go to execute its order, it will not spawn if NULL
      * @param isImportant
      * @param transponderOn
      * @param variantsPath
@@ -635,15 +633,8 @@ public class MagicCampaign {
             boolean isImportant,
             boolean transponderOn,
             @Nullable String variantsPath
-    ) {
-        /*
-        //enforce clean generation
-        theSupportFleet.clear();
-        presetShipIdsOfLastCreatedFleet.clear();
-        theFlagshipVariant=null;
-        theFlagship=null;
-        theFleet=null;
-        */
+    ){
+        //cleanup previous generation
         MagicVariables.presetShipIdsOfLastCreatedFleet.clear();
         boolean verbose = Global.getSettings().isDevMode();
 
@@ -652,7 +643,8 @@ public class MagicCampaign {
             log.error("SPAWNING " + fleetName);
             log.error(" ");
         }
-    
+        
+        //Setup defaults
         String type = FleetTypes.PERSON_BOUNTY_FLEET;
         if(fleetType!=null && !fleetType.equals("")){
             type=fleetType;
@@ -688,131 +680,146 @@ public class MagicCampaign {
             log.error("No quality override defined, defaulting to highest quality.");
         }
         
-        ////////////////////////////
-        //NON RANDOM FLEET ELEMENT//
-        ////////////////////////////       
+        //EMPTY FLEET
+        CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(fleetFaction, type, null);
         
-        /*
-        theFlagshipVariant=flagshipVariant;
-        if(supportFleet!=null && !supportFleet.isEmpty()){
-            theSupportFleet=supportFleet;
-        } 
-        */
-        
-        FleetParamsV3 params = new FleetParamsV3(
-                null,
-                assignementTarget != null ? assignementTarget.getLocationInHyperspace() : null,
-                fleetFaction,
-                //2f, // qualityOverride
-                qualityOverride,
-                type,
-                0f, 0f, 0f, 0f, 0f, 0f, 0f
-        );
-        params.ignoreMarketFleetSizeMult = true;
-
-        //create a fleet using the defined flagship variant and escort ships if any
-        CampaignFleetAPI newFleet = generateFleet(params, flagshipVariant, supportFleet, variantsPath); // nonrandom fleet, flagship and preset variants
-        if (newFleet == null || newFleet.isEmpty()) {
-            if(verbose){
-                log.error("Fleet spawned empty, possibly due to missing flagship - aborting");
-            }
+        //ADDING FLAGSHIP
+        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, true, verbose);
+        if (flagship==null){
+            log.error("Aborting "+fleetName+" generation");
             return null;
         }
-        FleetMemberAPI flagship = newFleet.getFlagship();
-
-        ////////////////////////////
-        // RANDOM SHIPS ADDITIONS //
-        ////////////////////////////  
+        bountyFleet.getFleetData().addFleetMember(flagship);
+        flagship.setFlagship(true);
+        MagicVariables.presetShipIdsOfLastCreatedFleet.add(flagship.getId());
         
-        //calculate missing portion of the fleet
-        int currPts = newFleet.getFleetPoints();
-        int extraPts = 0;        
+        //ADDING PRESET SHIPS IF REQUIRED
+        if(supportFleet!=null && !supportFleet.isEmpty()){
+            List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, verbose);
+            for (FleetMemberAPI m : support){
+                bountyFleet.getFleetData().addFleetMember(m);
+                MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
+            }
+        }
+        
+        int coreFP = bountyFleet.getFleetPoints();
+        
+        //ADDING PROCGEN SHIPS IF REQUIRED
+        if(minFP>0){
+            if(verbose){
+                if(minFP<coreFP){
+                    log.warn("Preset FP: "+coreFP+", requested FP: "+minFP+". No reinforcements required.");
+                } else {
+                    log.warn("Preset FP: "+coreFP+", requested FP: "+minFP+". Adding "+(minFP-coreFP)+" FP worth of "+Global.getSector().getFaction(extraShipsFaction).getDisplayName()+" reinforcements.");
+                }
+            }
+            
+            if(minFP>coreFP){
+                CampaignFleetAPI reinforcements = generateRandomFleet(extraShipsFaction, quality, type, (minFP-coreFP), 0.2f );
+                
+                List<FleetMemberAPI> membersInPriorityOrder = reinforcements.getFleetData().getMembersInPriorityOrder();
+                if (membersInPriorityOrder!=null && !membersInPriorityOrder.isEmpty()){
+                    for (FleetMemberAPI m : membersInPriorityOrder) {
+                        m.setCaptain(null);
+                        bountyFleet.getFleetData().addFleetMember(m);
+                        MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
+                    }
+                }
+            }
+        }
+        
+        //ensuring the flagship is properly set
+        bountyFleet.getFleetData().setFlagship(flagship);
+        
+        //ADDING OFFICERS
+        FleetParamsV3 fleetParams = new FleetParamsV3(
+                null,
+                new Vector2f(),
+                fleetFaction,
+                quality,
+                type,
+                bountyFleet.getFleetPoints(),
+                0f, 0f, 0f, 0f, 0f, 0f
+        );
+        FleetFactoryV3.addCommanderAndOfficersV2(bountyFleet, fleetParams, new Random());
+        
+        //ensuring the flagship is properly set AGAIN!
+        bountyFleet.getFleetData().setFlagship(flagship);
+        
+        //I swear those sneaky officers are messing up the flagship tags
         if(verbose){
-            log.info("pregenerated fleet is " + currPts + " FP, minimum fleet FP is " + minFP);
-            if (currPts < minFP) {
-                extraPts = minFP - currPts;
-                log.info("adding " + extraPts + " extra FP of random ships to hit minimum");
+            log.warn("Fleet flagship is "+bountyFleet.getFlagship().getHullId());
+            for(FleetMemberAPI m : bountyFleet.getMembersWithFightersCopy()){
+                if(m.isFlagship()){
+                    log.warn(m.getHullId()+" has the Flagship tag");
+                }
+            }
+        } 
+        for (FleetMemberAPI m : bountyFleet.getMembersWithFightersCopy()) {
+            if (m==flagship){
+                if(!m.isFlagship()){
+                    m.setFlagship(true);
+                    if(verbose){
+                        log.warn("Adding flagship tag to "+m.getHullId());
+                    }
+                }
+            } else if(m.isFlagship()){
+                m.setFlagship(false);
+                if(verbose){
+                    log.warn("Removing flagship tag from "+m.getHullId());
+                }
+            }
+        }    
+        
+        //add the defined captain to the flagship if needed
+        if(captain!=null){
+            bountyFleet.getFlagship().setCaptain(captain);
+            bountyFleet.setCommander(flagship.getCaptain());
+            if(verbose){
+                log.warn("Assigning "+captain.getNameString()+" to the Flagship");
             }
         } else {
-            if (currPts < minFP) {
-                extraPts = minFP - currPts;
+            bountyFleet.getFlagship().setCaptain(bountyFleet.getCommander());
+            if(verbose){
+                log.warn("Moving random commander to the Flagship");
             }
         }
         
-        //tweak the existing fleet generation to add random ships
-        params.combatPts = extraPts;
-        params.doNotPrune = true;
-        params.factionId=extraShipsFaction;
-        params.quality = quality;
-        params.qualityOverride = quality;
-        CampaignFleetAPI extraFleet = FleetFactoryV3.createFleet(params);
-
-        //only add the proper amount of ships, starting by the larger ones
-        /*
-        List<FleetMemberAPI> holding = new ArrayList<>();
-        for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
-            holding.add(mem);
-        }
-        for (FleetMemberAPI held : holding) {
-            extraFleet.getFleetData().removeFleetMember(held);
-            newFleet.getFleetData().addFleetMember(held);
-        }
-        */
+        //apply skills to the fleet
+        FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());
         
-        //making sure there is no flagship override there 
-        for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
-            if(mem.isFlagship())mem.setFlagship(false);
-            newFleet.getFleetData().addFleetMember(mem);
-        }
         
-        //Triple down on enforcing the proper flagship
-        if (newFleet.getFlagship()!=flagship) {
-            newFleet.getFlagship().setFlagship(false);
-            flagship.setFlagship(true);
-        }        
-        
-        ///////////////////////////
-        //FINISH FLEET GENERATION//
-        ///////////////////////////
-        
-        //add the defined captain to the flagship, apply skills to the fleet
-        if(captain!=null){
-            newFleet.getFlagship().setCaptain(captain);
-        }
-        if(flagshipName!=null){
-            newFleet.getFlagship().setShipName(flagshipName);
-        }
-        newFleet.setCommander(newFleet.getFlagship().getCaptain());
-        FleetFactoryV3.addCommanderSkills(newFleet.getCommander(), newFleet, Misc.random);
+        //FINISHING
 
         //cleanup name and faction
-        newFleet.setNoFactionInName(true);
-        newFleet.setFaction(fleetFaction, true);
-        newFleet.setName(fleetName);
-
-        //spawn placement and assignement
-        if (location != null) {
-            LocationAPI systemLocation = location.getContainingLocation();
-            systemLocation.addEntity(newFleet);
-            newFleet.setLocation(location.getLocation().x, location.getLocation().y);
-            newFleet.getAI().addAssignment(order, assignementTarget, 1000000f, null);
-        }
+        bountyFleet.setNoFactionInName(true);
+        bountyFleet.setFaction(fleetFaction, true);
+        bountyFleet.setName(fleetName);
 
         //set standard 70% CR
-        List<FleetMemberAPI> members = newFleet.getFleetData().getMembersListCopy();
+        List<FleetMemberAPI> members = bountyFleet.getFleetData().getMembersListCopy();
         for (FleetMemberAPI member : members) {
             member.getRepairTracker().setCR(0.7f);
         }
         
-        //radius fix
-        newFleet.forceSync();
-        newFleet.getFleetData().setSyncNeeded();
-        newFleet.getFleetData().syncIfNeeded();
+        //SPAWN if needed
+        if (location != null) {
+            spawnFleet(
+                bountyFleet,
+                location,
+                order,
+                assignementTarget,
+                isImportant,
+                transponderOn,
+                verbose
+            );
+        }
         
-        newFleet.getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, isImportant);        
-        newFleet.setTransponderOn(transponderOn);
+        if(verbose){
+            log.warn(fleetName+" creation completed");
+        }
         
-        return newFleet;
+        return bountyFleet;
     }
     
     /**
@@ -842,8 +849,7 @@ public class MagicCampaign {
      * @param skillLevels
      * Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
      * @return 
-     */
-    
+     */    
     public static PersonAPI createCaptain(
             boolean isAI,
             @Nullable String AICoreType,
@@ -977,107 +983,6 @@ public class MagicCampaign {
         return person;
     }
     
-    private static CampaignFleetAPI generateFleet(
-            FleetParamsV3 params,
-            String flagshipVariant,
-            @Nullable Map<String, Integer> supportFleet,
-            @Nullable String variantsPath
-    ) {
-
-        boolean verbose = Global.getSettings().isDevMode();
-        
-        // create fake market and set ship quality
-        MarketAPI market = Global.getFactory().createMarket("fake", "fake", 5);
-        market.getStability().modifyFlat("fake", 10000);
-        market.setFactionId(params.factionId);
-        SectorEntityToken token = Global.getSector().getHyperspace().createToken(0, 0);
-        market.setPrimaryEntity(token);
-        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", BASE_QUALITY_WHEN_NO_MARKET);
-        market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat("fake", 1f);
-        params.source = market;
-
-        // set faction
-        String factionId = params.factionId;
-
-        // create the fleet object
-        CampaignFleetAPI newFleet = createEmptyFleet(factionId, params.fleetType, market);
-        //theFleet = newFleet;
-        newFleet.getFleetData().setOnlySyncMemberLists(true);
-
-        Random random = new Random();
-        if (params.random != null) {
-            random = params.random;
-        }
-        
-        // add boss
-        FleetMemberAPI flag = addToFleet(flagshipVariant, newFleet, random, variantsPath);
-        if (flag == null) {
-            if(verbose){
-                log.error(flagshipVariant + " does not exist, aborting");
-            }
-            return null;
-        }
-        MagicVariables.presetShipIdsOfLastCreatedFleet.add(flag.getId());
-        
-        // add support
-        if (supportFleet!=null && !supportFleet.isEmpty()) {
-            for (String v : supportFleet.keySet()) {
-                for(int i=0; i<supportFleet.get(v); i++){
-                    FleetMemberAPI test = addToFleet(v, newFleet, random, variantsPath);
-                    if (test == null && verbose) {
-                        log.warn(v + " not found, skipping that variant");
-                    } else if (test != null) {
-                        MagicVariables.presetShipIdsOfLastCreatedFleet.add(test.getId());
-                        //just to make sure
-                        if(test.isFlagship())test.setFlagship(false);
-                    }
-                }
-            }
-        }
-        
-        //enforcing proper flagship just to be sure
-        if ( newFleet.getFlagship() != flag ) {
-            newFleet.getFlagship().setFlagship(false);
-            flag.setFlagship(true);
-        }
-
-        if (params.withOfficers) {
-            addCommanderAndOfficers(newFleet, params, random);
-        }
-
-        newFleet.forceSync();
-
-        if (newFleet.getFleetData().getNumMembers() <= 0
-                || newFleet.getFleetData().getNumMembers() == newFleet.getNumFighters()) {
-        }
-        params.source = null;
-
-        newFleet.setInflater(null); // no autofit
-
-        newFleet.getFleetData().setOnlySyncMemberLists(false);
-        
-        return newFleet;
-    }
-    
-    protected static FleetMemberAPI addToFleet(String variant, CampaignFleetAPI fleet, Random random, @Nullable String variantsPath) {
-
-        FleetMemberAPI member;
-        ShipVariantAPI test = Global.getSettings().getVariant(variant);
-        //if the variant doesn't exist but a custom variant path is defined, try loading it
-        if (test == null && variantsPath!=null) {
-            test = loadVariant(variantsPath+variant+".variant");
-        }
-        if(test==null){
-            return null;
-        }
-
-        member = Global.getFactory().createFleetMember(FleetMemberType.SHIP, test);
-        String name = fleet.getFleetData().pickShipName(member, random);
-        member.setShipName(name);
-        fleet.getFleetData().addFleetMember(member);
-        return member;
-    }
-    
     /**
      * Creates a ship variant from a regular variant file.
      * Used to create variants that requires different mods to be loaded.
@@ -1179,7 +1084,136 @@ public class MagicCampaign {
         return variant;
     }
     
+    private static FleetMemberAPI generateShip(String variant, @Nullable String variantsPath, boolean flagship, boolean verbose) {        
+        ShipVariantAPI thisVariant = Global.getSettings().getVariant(variant);
+        //if the variant doesn't exist but a custom variant path is defined, try loading it
+        if (thisVariant == null && variantsPath!=null) {
+            thisVariant = loadVariant(variantsPath+variant+".variant");
+        }
+        if(thisVariant==null){
+            return null;
+        }        
+        FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, thisVariant);  
+        
+        if (ship!=null) {
+            ship.setFlagship(flagship);
+            if(verbose) log.warn("Created "+variant);            
+            return ship;
+        }        
+        
+        log.error("Failed to create "+variant);
+        return null;
+    }
+
+    private static List<FleetMemberAPI> generatePresetShips(Map<String, Integer> supportFleet, @Nullable String variantsPath, boolean verbose) {
+        List<FleetMemberAPI> fleetMemberList = new ArrayList<>();
+        for (String shipVariantId : supportFleet.keySet()) {
+            for(int i=0; i<supportFleet.get(shipVariantId); i++){
+                FleetMemberAPI fleetMember = generateShip(shipVariantId, variantsPath, false, verbose);
+                if(fleetMember!=null) fleetMemberList.add(fleetMember);
+            }
+        }
+        return fleetMemberList;
+    }
+    
+    private static CampaignFleetAPI generateRandomFleet(String factionId, float qualityOverride, String fleetType, float fleetPoints, float freightersAndTankersFraction ) {
+        
+        FleetParamsV3 params = new FleetParamsV3(
+                fakeMarket(factionId, qualityOverride),
+                new Vector2f(),
+                factionId,
+                qualityOverride,
+                fleetType,
+                fleetPoints*(1-freightersAndTankersFraction),
+                fleetPoints*(freightersAndTankersFraction/3),
+                fleetPoints*(freightersAndTankersFraction/3), 
+                fleetPoints*(freightersAndTankersFraction/3),
+                0f, 0f,
+                qualityOverride
+        );
+        
+        params.ignoreMarketFleetSizeMult = true;
+        params.maxNumShips = 50;
+        params.modeOverride = FactionAPI.ShipPickMode.PRIORITY_THEN_ALL;
+
+        CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
+        if (tempFleet==null || tempFleet.isEmpty()) {
+            log.warn("Failed to create procedural Support-Fleet");
+            return null;
+        }
+        
+        return tempFleet;
+    }
+    
+    private static MarketAPI fakeMarket(String factionId, float quality_override){
+        // create fake market and set ship quality
+        MarketAPI market = Global.getFactory().createMarket("fake", "fake", 5);
+        market.getStability().modifyFlat("fake", 10000);
+        market.setFactionId(factionId);
+        SectorEntityToken token = Global.getSector().getHyperspace().createToken(0, 0);
+        market.setPrimaryEntity(token);
+        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", quality_override);
+        market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat("fake", 1f);
+        
+        return market;
+    }
+    
+    /**
+     * Spawn a fleet in its intended location with the proper order and target
+     * @param fleet
+     * @nullable @param spawnLocation
+     * @nullable @param assignment
+     * @param target
+     * @param isImportant
+     * @param transponderOn
+     * @param verbose
+     */
+    public static void spawnFleet(
+            CampaignFleetAPI fleet,
+            @Nullable SectorEntityToken spawnLocation,
+            @Nullable FleetAssignment assignment,
+            SectorEntityToken target,
+            boolean isImportant,
+            boolean transponderOn,
+            boolean verbose
+            ){
+        
+        //defaults
+        FleetAssignment order = FleetAssignment.ORBIT_AGGRESSIVE;
+        if(assignment!=null){
+            order=assignment;
+        }        
+        SectorEntityToken location = target;
+        if(spawnLocation!=null){
+            location=spawnLocation;
+        }
+        
+        //spawn placement and assignement
+        LocationAPI systemLocation = location.getContainingLocation();
+        systemLocation.addEntity(fleet);
+        fleet.setLocation(location.getLocation().x, location.getLocation().y);
+        fleet.getAI().addAssignment(order, target, 1000000f, null);
+        
+        //radius fix
+        fleet.forceSync();
+        fleet.getFleetData().setSyncNeeded();
+        fleet.getFleetData().syncIfNeeded();
+        
+        //ancillary stuff
+        fleet.getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, isImportant);        
+        fleet.setTransponderOn(transponderOn);
+        
+        if(verbose){
+            log.warn("Spawned "+fleet.getName()+" around "+location.getId()+" in the "+location.getStarSystem().getId()+" system.");
+            log.warn("Order: "+order.name()+", target: "+target.getId()+" in the "+target.getStarSystem().getId()+" system.");
+        }
+    }
+    
+    
+    
     //BOUNTY CHECKS THAT MAY PROVE USEFULL FOR OTHER THINGS:    
+    
+    
     /**
      * 
      * @param market
@@ -1745,4 +1779,369 @@ public class MagicCampaign {
         }
         return null;
     }
+    
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////
+    //DUMPSTER
+    ////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    
+    
+//    private static FleetMemberAPI FLAGSHIP=null;
+    
+    /**
+     * Creates a fleet with a defined flagship and optional escort
+     * 
+     * @param fleetName
+     * @param fleetFaction
+     * @param fleetType
+     * campaign.ids.FleetTypes, default to FleetTypes.PERSON_BOUNTY_FLEET
+     * @param flagshipName
+     * Optional flagship name
+     * @param flagshipVariant
+     * @param captain
+     * PersonAPI, can be NULL for random captain, otherwise use createCaptain() 
+     * @param supportFleet
+     * map <variantId, number> Optional escort ship VARIANTS and their NUMBERS
+     * @param minFP
+     * Minimal fleet size, can be used to adjust to the player's power,         set to 0 to ignore
+     * @param reinforcementFaction
+     * Reinforcement faction,                                                   if the fleet faction is a "neutral" faction without ships
+     * @param qualityOverride
+     * Optional ship quality override, default to 2 (no D-mods) if null or <0
+     * @param spawnLocation
+     * Where the fleet will spawn, default to assignmentTarget if NULL
+     * @param assignment
+     * campaign.FleetAssignment, default to orbit aggressive
+     * @param assignementTarget
+     * @param isImportant
+     * @param transponderOn
+     * @param variantsPath
+     * If not null, the script will try to find missing variant files there. 
+     * Used to generate fleets using cross-mod variants that won't be loaded otherwise to avoid crashes.
+     * The name of the variant files must match the ID of the variant.
+     * @return 
+     */
+//    public static CampaignFleetAPI createFleet(
+//            String fleetName,
+//            String fleetFaction,
+//            @Nullable String fleetType,
+//            @Nullable String flagshipName,
+//            String flagshipVariant,
+//            @Nullable PersonAPI captain,
+//            @Nullable Map<String, Integer> supportFleet,
+//            int minFP,
+//            String reinforcementFaction,
+//            @Nullable Float qualityOverride,
+//            @Nullable SectorEntityToken spawnLocation,
+//            @Nullable FleetAssignment assignment,
+//            @Nullable SectorEntityToken assignementTarget,
+//            boolean isImportant,
+//            boolean transponderOn,
+//            @Nullable String variantsPath
+//    ) {
+//        
+//        
+//        
+//        
+//        
+//        
+//        /*
+//        //enforce clean generation
+//        theSupportFleet.clear();
+//        presetShipIdsOfLastCreatedFleet.clear();
+//        theFlagshipVariant=null;
+//        theFlagship=null;
+//        theFleet=null;
+//        */
+//        MagicVariables.presetShipIdsOfLastCreatedFleet.clear();
+//        boolean verbose = Global.getSettings().isDevMode();
+//
+//        if(verbose){
+//            log.error(" ");
+//            log.error("SPAWNING " + fleetName);
+//            log.error(" ");
+//        }
+//    
+//        String type = FleetTypes.PERSON_BOUNTY_FLEET;
+//        if(fleetType!=null && !fleetType.equals("")){
+//            type=fleetType;
+//        } else if(verbose){
+//            log.error("No fleet type defined, defaulting to bounty fleet.");
+//        }
+//        
+//        String extraShipsFaction = fleetFaction;
+//        if(reinforcementFaction!=null){
+//            extraShipsFaction=reinforcementFaction;
+//        } else if(verbose){
+//            log.error("No reinforcement faction defined, defaulting to fleet faction.");
+//        }
+//        
+//        SectorEntityToken location = assignementTarget;
+//        if(spawnLocation!=null){
+//            location=spawnLocation;
+//        } else if(verbose){
+//            log.error("No spawn location defined, defaulting to assignment target.");
+//        }
+//        
+//        FleetAssignment order = FleetAssignment.ORBIT_AGGRESSIVE;
+//        if(assignment!=null){
+//            order=assignment;
+//        } else if(verbose){
+//            log.error("No assignment defined, defaulting to aggressive orbit.");
+//        }
+//        
+//        Float quality = 2f;
+//        if(qualityOverride!=null && qualityOverride>=0){
+//            quality=qualityOverride;
+//        } else if(verbose){
+//            log.error("No quality override defined, defaulting to highest quality.");
+//        }
+//        
+//        ////////////////////////////
+//        //NON RANDOM FLEET ELEMENT//
+//        ////////////////////////////       
+//        
+//        /*
+//        theFlagshipVariant=flagshipVariant;
+//        if(supportFleet!=null && !supportFleet.isEmpty()){
+//            theSupportFleet=supportFleet;
+//        } 
+//        */
+//        
+//        FleetParamsV3 params = new FleetParamsV3(
+//                null,
+//                assignementTarget != null ? assignementTarget.getLocationInHyperspace() : null,
+//                fleetFaction,
+//                //2f, // qualityOverride
+//                qualityOverride,
+//                type,
+//                0f, 0f, 0f, 0f, 0f, 0f, 0f
+//        );
+//        params.ignoreMarketFleetSizeMult = true;
+//
+//        //create a fleet using the defined flagship variant and escort ships if any
+//        CampaignFleetAPI newFleet = generateFleet(params, flagshipVariant, supportFleet, variantsPath); // nonrandom fleet, flagship and preset variants
+//        if (newFleet == null || newFleet.isEmpty()) {
+//            if(verbose){
+//                log.error("Fleet spawned empty, possibly due to missing flagship - aborting");
+//            }
+//            return null;
+//        }
+////        FleetMemberAPI flagship = newFleet.getFlagship();
+//
+//        ////////////////////////////
+//        // RANDOM SHIPS ADDITIONS //
+//        ////////////////////////////  
+//        
+//        //calculate missing portion of the fleet
+//        int currPts = newFleet.getFleetPoints();
+//        int extraPts = 0;        
+//        if(verbose){
+//            log.warn("pregenerated fleet is " + currPts + " FP, minimum fleet FP is " + minFP);
+//            if (currPts < minFP) {
+//                extraPts = minFP - currPts;
+//                log.warn("adding " + extraPts + " extra FP of random ships to hit minimum");
+//            }
+//        } else {
+//            if (currPts < minFP) {
+//                extraPts = minFP - currPts;
+//            }
+//        }
+//        
+//        //tweak the existing fleet generation to add random ships
+//        params.combatPts = extraPts;
+//        params.doNotPrune = true;
+//        params.factionId=extraShipsFaction;
+//        params.quality = quality;
+//        params.qualityOverride = quality;
+//        CampaignFleetAPI extraFleet = FleetFactoryV3.createFleet(params);
+//
+//        //only add the proper amount of ships, starting by the larger ones
+//        /*
+//        List<FleetMemberAPI> holding = new ArrayList<>();
+//        for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
+//            holding.add(mem);
+//        }
+//        for (FleetMemberAPI held : holding) {
+//            extraFleet.getFleetData().removeFleetMember(held);
+//            newFleet.getFleetData().addFleetMember(held);
+//        }
+//        */
+//        
+//        //making sure there is no flagship override there 
+//        for (FleetMemberAPI mem : extraFleet.getFleetData().getMembersInPriorityOrder()) {
+//            if(mem.isFlagship())mem.setFlagship(false);
+//            newFleet.getFleetData().addFleetMember(mem);
+//        }
+//        
+//        ///////////////////////////
+//        //FINISH FLEET GENERATION//
+//        ///////////////////////////
+//        
+//        
+//        //add the defined captain to the flagship, apply skills to the fleet
+//        if(captain!=null){
+//            newFleet.getFlagship().setCaptain(captain);
+//        }
+//        
+//        if(flagshipName!=null){
+//            newFleet.getFlagship().setShipName(flagshipName);
+//        }
+//        newFleet.setCommander(newFleet.getFlagship().getCaptain());
+//        FleetFactoryV3.addCommanderSkills(newFleet.getCommander(), newFleet, Misc.random);
+//
+//        //cleanup name and faction
+//        newFleet.setNoFactionInName(true);
+//        newFleet.setFaction(fleetFaction, true);
+//        newFleet.setName(fleetName);
+//
+//        //spawn placement and assignement
+//        if (location != null) {
+//            LocationAPI systemLocation = location.getContainingLocation();
+//            systemLocation.addEntity(newFleet);
+//            newFleet.setLocation(location.getLocation().x, location.getLocation().y);
+//            newFleet.getAI().addAssignment(order, assignementTarget, 1000000f, null);
+//        }
+//
+//        //set standard 70% CR
+//        List<FleetMemberAPI> members = newFleet.getFleetData().getMembersListCopy();
+//        for (FleetMemberAPI member : members) {
+//            member.getRepairTracker().setCR(0.7f);
+//        }
+//        
+//        //radius fix
+//        newFleet.forceSync();
+//        newFleet.getFleetData().setSyncNeeded();
+//        newFleet.getFleetData().syncIfNeeded();
+//        
+//        newFleet.getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, isImportant);        
+//        newFleet.setTransponderOn(transponderOn);
+//        /*
+//        //Triple down on enforcing the proper flagship
+//        for (FleetMemberAPI m : newFleet.getMembersWithFightersCopy()) {
+//            if (m==FLAGSHIP){
+//                m.setFlagship(true);
+//            } else {
+//                m.setFlagship(false);
+//            }
+//        }
+//        FLAGSHIP=null;
+//        */
+//        return newFleet;
+//    }
+    
+    
+    /*
+    private static CampaignFleetAPI generateFleet(
+            FleetParamsV3 params,
+            String flagshipVariant,
+            @Nullable Map<String, Integer> supportFleet,
+            @Nullable String variantsPath
+    ) {
+
+        boolean verbose = Global.getSettings().isDevMode();
+        
+        // create fake market and set ship quality
+        MarketAPI market = Global.getFactory().createMarket("fake", "fake", 5);
+        market.getStability().modifyFlat("fake", 10000);
+        market.setFactionId(params.factionId);
+        SectorEntityToken token = Global.getSector().getHyperspace().createToken(0, 0);
+        market.setPrimaryEntity(token);
+        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", BASE_QUALITY_WHEN_NO_MARKET);
+        market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat("fake", 1f);
+        params.source = market;
+
+        // set faction
+        String factionId = params.factionId;
+
+        // create the fleet object
+        CampaignFleetAPI newFleet = createEmptyFleet(factionId, params.fleetType, market);
+        //theFleet = newFleet;
+//        newFleet.getFleetData().setOnlySyncMemberLists(true);
+
+        Random random = new Random();
+        if (params.random != null) {
+            random = params.random;
+        }
+        
+        // add boss
+        FleetMemberAPI flag = addToFleet(flagshipVariant, newFleet, random, variantsPath, true);
+        if (flag == null) {
+            if(verbose){
+                log.error(flagshipVariant + " does not exist, aborting");
+            }
+            return null;
+        }
+        MagicVariables.presetShipIdsOfLastCreatedFleet.add(flag.getId());
+        
+        FLAGSHIP=flag;
+        
+        // add support
+        if (supportFleet!=null && !supportFleet.isEmpty()) {
+            for (String v : supportFleet.keySet()) {
+                for(int i=0; i<supportFleet.get(v); i++){
+                    FleetMemberAPI test = addToFleet(v, newFleet, random, variantsPath, false);
+                    if (test == null && verbose) {
+                        log.warn(v + " not found, skipping that variant");
+                    } else if (test != null) {
+                        MagicVariables.presetShipIdsOfLastCreatedFleet.add(test.getId());
+                        //just to make sure
+                        if(test.isFlagship())test.setFlagship(false);
+                    }
+                }
+            }
+        }
+        
+        //enforcing proper flagship just to be sure
+//        if ( newFleet.getFlagship() != flag ) {
+//            newFleet.getFlagship().setFlagship(false);
+//            flag.setFlagship(true);
+//        }
+        
+        if (params.withOfficers) {
+            addCommanderAndOfficers(newFleet, params, random);
+        }
+
+        newFleet.forceSync();
+
+        if (newFleet.getFleetData().getNumMembers() <= 0
+                || newFleet.getFleetData().getNumMembers() == newFleet.getNumFighters()) {
+        }
+        params.source = null;
+
+        newFleet.setInflater(null); // no autofit
+
+        newFleet.getFleetData().setOnlySyncMemberLists(false);
+        
+        return newFleet;
+    }
+    */
+    
+    /*
+    protected static FleetMemberAPI addToFleet(String variant, CampaignFleetAPI fleet, Random random, @Nullable String variantsPath, boolean flagship) {
+
+        FleetMemberAPI member;
+        ShipVariantAPI test = Global.getSettings().getVariant(variant);
+        //if the variant doesn't exist but a custom variant path is defined, try loading it
+        if (test == null && variantsPath!=null) {
+            test = loadVariant(variantsPath+variant+".variant");
+        }
+        if(test==null){
+            return null;
+        }
+
+        member = Global.getFactory().createFleetMember(FleetMemberType.SHIP, test);
+        String name = fleet.getFleetData().pickShipName(member, random);
+        member.setShipName(name);
+        member.setFlagship(flagship);
+        fleet.getFleetData().addFleetMember(member);
+        return member;
+    }
+    */
+    
 }
