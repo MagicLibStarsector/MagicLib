@@ -2,7 +2,7 @@ package data.scripts.bounty;
 
 /**
  *
- * @author Schaf-Unschaf, Tartiflette
+ * @author Schaf-Unschaf, Tartiflette (and Vayra)
  */
 
 import com.fs.starfarer.api.Global;
@@ -84,6 +84,10 @@ public class MagicBountyHVB {
                         }
                     }
                     
+                    //convert poster faction into market list for board intel
+                    List<String> postingMarket = new ArrayList<>();
+                    postingMarket.add(row.getString("postedByFaction"));
+                    
                     //convert bounty faction into market list for board intel
                     List<String> enemyMarket = new ArrayList<>();
                     enemyMarket.add(row.getString("faction"));
@@ -153,9 +157,9 @@ public class MagicBountyHVB {
                             //List <String> trigger_market_id,
                             null,
                             //List <String> trigger_marketFaction_any,
-                            null,
+                            postingMarket,
                             //boolean trigger_marketFaction_alliedWith,
-                            false,
+                            true,
                             //List <String> trigger_marketFaction_none,
                             enemyMarket,
                             //boolean trigger_marketFaction_enemyWith,

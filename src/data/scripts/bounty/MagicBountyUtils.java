@@ -150,6 +150,7 @@ class MagicBountyUtils {
         loc = loc.replaceAll("located in", "hiding out in");
         String sheIs = "She is";
         if (bounty.getCaptain().getGender() == FullName.Gender.MALE) sheIs = "He is";
+        if (bounty.getCaptain().getGender() == FullName.Gender.ANY) sheIs = "They are";
         loc = sheIs + " rumored to be " + loc + ".";
 
         return loc;

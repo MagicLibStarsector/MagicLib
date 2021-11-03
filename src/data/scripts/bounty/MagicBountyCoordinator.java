@@ -159,17 +159,20 @@ public final class MagicBountyCoordinator {
                     bountySpec.trigger_market_minSize)) {
                 continue;
             }
-
-            if (!MagicCampaign.isAvailableToPlayer(
-                    bountySpec.trigger_player_minLevel,
-                    bountySpec.trigger_min_days_elapsed,
-                    bountySpec.trigger_min_fleet_size,
-                    bountySpec.trigger_memKeys_all,
-                    bountySpec.trigger_memKeys_any,
-                    bountySpec.trigger_playerRelationship_atLeast,
-                    bountySpec.trigger_playerRelationship_atMost
-            )) {
-                continue;
+            
+            //adding testing mode
+            if(!MagicSettings.getBoolean("MagicLib", "bounty_board_test_mode")){
+                if (!MagicCampaign.isAvailableToPlayer(
+                        bountySpec.trigger_player_minLevel,
+                        bountySpec.trigger_min_days_elapsed,
+                        bountySpec.trigger_min_fleet_size,
+                        bountySpec.trigger_memKeys_all,
+                        bountySpec.trigger_memKeys_any,
+                        bountySpec.trigger_playerRelationship_atLeast,
+                        bountySpec.trigger_playerRelationship_atMost
+                )) {
+                    continue;
+                }
             }
 
             ActiveBounty activeBounty = getActiveBounty(bountyKey);

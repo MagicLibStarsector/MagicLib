@@ -32,12 +32,12 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
-//        if(Global.getSettings().isDevMode()){
+        if(Global.getSettings().isDevMode()){
             MagicBountyData.loadBountiesFromJSON(false);
             if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
                 MagicBountyHVB.convertHVBs(false);
             }
-//        }
+        }
 
         if (MagicBountyData.JSONfailed) {
             String message = System.lineSeparator()
@@ -70,9 +70,12 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicIncompatibleHullmods.clearData();
 
         if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
-            if (!newGame) {
-                //add new bounties if there are any
-                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode());                
+            if (newGame) {  
+                //add all bounties on a new game
+                MagicBountyData.loadBountiesFromJSON(false);              
+            } else {
+                //only add new bounties if there are any on a save load
+                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode());  
             }
 
             //check for IBBs presence
@@ -96,6 +99,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
     }
 
+    /*
     @Override
     public void onNewGame() {
         if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
@@ -103,6 +107,7 @@ public class Magic_modPlugin extends BaseModPlugin {
             MagicBountyData.loadBountiesFromJSON(false);
         }
     }
+    */
 
     /**
      * Define how classes are named in the save xml, allowing class renaming without

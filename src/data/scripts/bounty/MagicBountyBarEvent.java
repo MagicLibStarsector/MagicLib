@@ -228,11 +228,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         if (bounty.job_show_distance != MagicBountyData.ShowDistance.None) {
                             switch (bounty.job_show_distance) {
                                 case Vague:
-                                    float distance = activeBounty.getFleetSpawnLocation().getLocation().length();
+                                    float distance = activeBounty.getFleetSpawnLocation().getContainingLocation().getLocation().length();
                                     String vague = getString("mb_distance_core");
-                                    if (distance > MagicVariables.getSectorSize() / 0.66f) {
+                                    if (distance > MagicVariables.getSectorSize() * 0.66f) {
                                         vague = getString("mb_distance_far");
-                                    } else if (distance > MagicVariables.getSectorSize() / 0.33f) {
+                                    } else if (distance > MagicVariables.getSectorSize() * 0.33f) {
                                         vague = getString("mb_distance_close");
                                     }
                                     text.addPara(getString("mb_distance_vague"),

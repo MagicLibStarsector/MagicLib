@@ -11,6 +11,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicTxt;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -211,26 +212,44 @@ public final class ActiveBounty {
                 Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), getRewardReputation());
             }
 
+            //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_succeeded", true);
             }
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
+            //set the relevant outcome memkey
+            if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
+            }
         } else if (result instanceof BountyResult.FailedOutOfTime) {
             stage = Stage.ExpiredAfterAccepting;
             //reputation penalty
             if (hasReputationReward()) {
                 Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.min(5, getRewardReputation()));
             }
+            //set the relevant outcome memkey
+            if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
+            }
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
+            //set the relevant outcome memkey
+            if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
+            }
         } else if (result instanceof BountyResult.FailedSalvagedFlagship) {
             stage = Stage.FailedSalvagedFlagship;
             //reputation penalty
             if (hasReputationReward()) {
                 Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.max(5, getRewardReputation()));
+            }
+            //set the relevant outcome memkey
+            if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_failed", true);
             }
         }
 
@@ -397,7 +416,8 @@ public final class ActiveBounty {
         if (spec.job_credit_reward <= 0) {
             return null;
         }
-
+        
+        /*
         int bountyFPIncreaseOverBaseDueToScaling = getFleet().getFleetPoints() - getSpec().fleet_min_DP;
 
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
@@ -412,6 +432,25 @@ public final class ActiveBounty {
                         bonusCreditsFromScaling,
                         getSpec().job_credit_scaling,
                         bountyFPIncreaseOverBaseDueToScaling));
+
+        return rewardRoundedToNearest100;
+        */
+        
+        //Reward scaling is a mult applied to the size ratio between the player fleet and the min target fleet
+        float playerFleetScale = Math.max(0,MagicCampaign.PlayerThreatMultiplier(getSpec().fleet_min_DP)-1);
+
+        // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
+        float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;
+        float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
+        float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
+        logger
+                .info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s credit scaling * %s player fleet size mult * base reward)",
+                        rewardRoundedToNearest100,
+                        getKey(),
+                        getSpec().job_credit_reward,
+                        bonusCreditsFromScaling,
+                        getSpec().job_credit_scaling,
+                        playerFleetScale));
 
         return rewardRoundedToNearest100;
     }
