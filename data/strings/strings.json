@@ -43,6 +43,8 @@
 		"mb_accept":"Accept the job",
 		"mb_accepted":"Accepted job: ",
 		"mb_from":"Posted by %s.",
+		"mb_unknown":"unknown",
+		"mb_fromAgainst":"Posted by %s, against %s.",
 		"mb_credits":"Reward: %s",
 		"mb_time":"Time limit: %s days",
 		"mb_distance":"It is located roughly %s LY away from your current position.",
@@ -97,10 +99,14 @@
 		"mb_returnBoard":"Back to the board",
 		"mb_intelRewarded":"%s received",
 		"mb_intelFaction":"Faction: %s",
+		"mb_intelTarget":"Target: %s",
 		"mb_intelRewardRemaining":"%s reward, %s days remaining",
 		"mb_intelReward":"%s reward",
 		"mb_intelRemaining":"%s days remaining",
 		"mb_intelType":"This mission requires the %s of the target.",
+		"mb_intelType0":"This mission requires the ",
+		"mb_intelType1":" of the ",
+		"mb_intelType2":" target.",
 		"mb_intelTitleCompleted": "Bounty Completed - %s",
 		"mb_intelTitleFailed": "Bounty Failed - %s",
 		"mb_intelTitleInProgress": "Bounty Board - %s",
@@ -163,14 +169,13 @@
 		"mb_hvb_fleetSize3":"very large fleet",
 		"mb_hvb_fleetSize4":"gigantic fleet",
 		"mb_hvb_fleetSize5":"freaking armada",
+
 		"mb_hvb_fleet0":"%s is in command of a %s and personally captains the %s, a %s, as ",
 		"mb_hvb_fleetHis":"his",
 		"mb_hvb_fleetHer":"her",
 		"mb_hvb_fleetTheir":"their",
 		"mb_hvb_fleetIts":"its",
 		"mb_hvb_fleet1":" flagship.",
-
-	
 
 
 		"mb_son":"son",

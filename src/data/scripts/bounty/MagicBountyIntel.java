@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
+import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
@@ -136,6 +137,17 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             bounty.getGivingFaction().getDisplayName());
                     unindent(info);
                 }
+                
+                if (bounty.getTargetFaction() != null) {
+                    bullet(info);
+                    //"Target: %s"
+                    info.addPara(getString("mb_intelTarget"),
+                            PADDING_INFO_SUBTITLE,
+                            Misc.getGrayColor(),
+                            bounty.getTargetFactionTextColor(),
+                            bounty.getTargetFaction().getDisplayName());
+                    unindent(info);
+                }
 
                 if (bounty.hasCreditReward() && bounty.hasExpiration()) {
                     bullet(info);
@@ -208,7 +220,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasCreditReward()) {
-//                    bullet(info);
                     //"%s credits received"
                     info.addPara(
                             getString("mb_descRewarded"),
@@ -217,35 +228,9 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             Misc.getHighlightColor(),
                             Misc.getDGSCredits(bounty.getRewardCredits())
                     );
-//                    unindent(info);
                 }
 
                 if (bounty.hasReputationReward()) {
-                    //TO DO: VANILLA STYLE REPUTATION MESSAGE
-                    /*
-                    CoreReputationPlugin.addAdjustmentMessage(
-                            bounty.getRewardReputation(),
-                            bounty.getGivingFaction(),
-                            null,
-                            null,
-                            null,
-                            info, 
-                            bulletColor,
-                            isUpdate,
-                            initPad
-                    );
-                    bullet(info);
-                    //"Your reputation with %s has improved by %s."
-                    info.addPara(
-                            getString("mb_descReputation"),
-                            PADDING_DESC,
-                            Misc.getTextColor(),
-                            Misc.getHighlightColor(),
-                            bounty.getGivingFaction().getDisplayNameWithArticle(),
-                            Math.round(bounty.getRewardReputation() * 100) + ""
-                    );
-                    unindent(info);
-                    */
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getRewardReputation());
                 }
                 break;
@@ -266,19 +251,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasReputationReward()) {
-                    /*
-                    bullet(info);
-                    //"Your reputation with %s has been reduced by %s."
-                    info.addPara(
-                            getString("mb_descReputationBad"),
-                            PADDING_DESC,
-                            Misc.getTextColor(),
-                            Misc.getNegativeHighlightColor(),
-                            bounty.getGivingFaction().getDisplayNameWithArticle(),
-                            Math.max(5, Math.round(bounty.getRewardReputation() * 100)) + ""
-                    );
-                    unindent(info);
-                    */
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.min(-0.05f, -bounty.getRewardReputation()));
                 }
                 break;
@@ -299,19 +271,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasReputationReward()) {
-                    /*
-                    bullet(info);
-                    //"Your reputation with %s has been reduced by %s."
-                    info.addPara(
-                            getString("mb_descReputationBad"),
-                            PADDING_DESC,
-                            Misc.getTextColor(),
-                            Misc.getNegativeHighlightColor(),
-                            bounty.getGivingFaction().getDisplayNameWithArticle(),
-                            Math.min(5, Math.round(bounty.getRewardReputation() * 100)) + ""
-                    );
-                    unindent(info);
-                    */
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.max(-0.05f, -bounty.getRewardReputation()));
                 }
                 break;
@@ -322,18 +281,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 info.addPara(getString("mb_descUninvolved"), 0f);
 
                 if (bounty.hasReputationReward()) {
-                    /*
-                    bullet(info);
-                    //"Your reputation with %s was unafected."
-                    info.addPara(
-                            getString("mb_descReputationNothing"),
-                            PADDING_DESC,
-                            Misc.getTextColor(),
-                            Misc.getNegativeHighlightColor(),
-                            bounty.getGivingFaction().getDisplayNameWithArticle()
-                    );
-                    unindent(info);
-                    */
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), 0);
                 }
                 break;
@@ -345,36 +292,88 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_show_type) {
                     switch (bounty.getSpec().job_type) {
                         case Assassination:
-                            info.addPara(getString("mb_intelType"),
-                                    PADDING_DESC,
-                                    Misc.getTextColor(),
-                                    Misc.getHighlightColor(),
-                                    getString("mb_type_assassination1")
-                            );
+                            if(bounty.getTargetFaction()==null){
+                                info.addPara(getString("mb_intelType"),
+                                        PADDING_DESC,
+                                        Misc.getTextColor(),
+                                        Misc.getHighlightColor(),
+                                        getString("mb_type_assassination1")
+                                );
+                            } else {
+                                LabelAPI label = info.addPara(
+                                                getString("mb_intelType0")+
+                                                getString("mb_type_assassination1")+
+                                                getString("mb_intelType1")+
+                                                bounty.getTargetFaction().getDisplayName()+
+                                                getString("mb_intelType2"),
+                                        PADDING_DESC
+                                );
+                                label.setHighlight(getString("mb_type_assassination1"),bounty.getTargetFaction().getDisplayName());
+                                label.setHighlightColors(Misc.getHighlightColor(),bounty.getTargetFactionTextColor());
+                            }
                             break;
                         case Destruction:
-                            info.addPara(getString("mb_intelType"),
-                                    PADDING_DESC,
-                                    Misc.getTextColor(),
-                                    Misc.getHighlightColor(),
-                                    getString("mb_type_destruction1")
-                            );
+                            if(bounty.getTargetFaction()==null){
+                                info.addPara(getString("mb_intelType"),
+                                        PADDING_DESC,
+                                        Misc.getTextColor(),
+                                        Misc.getHighlightColor(),
+                                        getString("mb_type_destruction1")
+                                );
+                            } else {
+                                LabelAPI label = info.addPara(
+                                                getString("mb_intelType0")+
+                                                getString("mb_type_destruction1")+
+                                                getString("mb_intelType1")+
+                                                bounty.getTargetFaction().getDisplayName()+
+                                                getString("mb_intelType2"),
+                                        PADDING_DESC
+                                );
+                                label.setHighlight(getString("mb_type_destruction1"),bounty.getTargetFaction().getDisplayName());
+                                label.setHighlightColors(Misc.getHighlightColor(),bounty.getTargetFactionTextColor());
+                            }
                             break;
                         case Obliteration:
-                            info.addPara(getString("mb_intelType"),
-                                    PADDING_DESC,
-                                    Misc.getTextColor(),
-                                    Misc.getHighlightColor(),
-                                    getString("mb_type_obliteration1")
-                            );
+                            if(bounty.getTargetFaction()==null){
+                                info.addPara(getString("mb_intelType"),
+                                        PADDING_DESC,
+                                        Misc.getTextColor(),
+                                        Misc.getHighlightColor(),
+                                        getString("mb_type_obliteration1")
+                                );
+                            } else {
+                                LabelAPI label = info.addPara(
+                                                getString("mb_intelType0")+
+                                                getString("mb_type_obliteration1")+
+                                                getString("mb_intelType1")+
+                                                bounty.getTargetFaction().getDisplayName()+
+                                                getString("mb_intelType2"),
+                                        PADDING_DESC
+                                );
+                                label.setHighlight(getString("mb_type_obliteration1"),bounty.getTargetFaction().getDisplayName());
+                                label.setHighlightColors(Misc.getHighlightColor(),bounty.getTargetFactionTextColor());
+                            }
                             break;
                         case Neutralisation:
-                            info.addPara(getString("mb_intelType"),
-                                    PADDING_DESC,
-                                    Misc.getTextColor(),
-                                    Misc.getHighlightColor(),
-                                    getString("mb_type_neutralisation1")
-                            );
+                            if(bounty.getTargetFaction()==null){
+                                info.addPara(getString("mb_intelType"),
+                                        PADDING_DESC,
+                                        Misc.getTextColor(),
+                                        Misc.getHighlightColor(),
+                                        getString("mb_type_neutralisation1")
+                                );
+                            } else {
+                                LabelAPI label = info.addPara(
+                                                getString("mb_intelType0")+
+                                                getString("mb_type_neutralisation1")+
+                                                getString("mb_intelType1")+
+                                                bounty.getTargetFaction().getDisplayName()+
+                                                getString("mb_intelType2"),
+                                        PADDING_DESC
+                                );
+                                label.setHighlight(getString("mb_type_neutralisation1"),bounty.getTargetFaction().getDisplayName());
+                                label.setHighlightColors(Misc.getHighlightColor(),bounty.getTargetFactionTextColor());
+                            }
                             break;
                     }
                     unindent(info);
@@ -403,29 +402,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
-                    /*
-                    //"Fleet information is attached to the posting."
-                    String fleetInfo = getString("mb_fleet2");
-                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
-                        fleetInfo = getString("mb_fleet0");
-                    }
-                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
-                        fleetInfo = getString("mb_fleet1");
-                    }
-                    info.addPara(fleetInfo + getString("mb_fleet"), PADDING_DESC);
-
-                    int columns = 7;
-                    List<FleetMemberAPI> ships = bounty.getFleet().getMembersWithFightersCopy();
-                    if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
-                        ships = bounty.getFlagshipInFleet();
-                    } else if (bounty.getSpec().job_show_fleet == MagicBountyData.ShowFleet.Preset) {
-                        ships = bounty.getPresetShipsInFleet();
-                    }
-
-                    info.addShipList(columns, (int) Math.round(Math.ceil((double) ships.size() / columns)), (width - 10) / columns,
-                            bounty.getFleet().getFaction().getBaseUIColor(),
-                            ships, 10f);
-                    */
                     showFleet(
                             info,
                             width,

@@ -208,11 +208,26 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         }
                         
                         //OFFERING FACTION
-                        if (nullStringIfEmpty(bounty.job_forFaction) != null) {
+                        
+                        if(bounty.job_show_captain==false && bounty.job_show_fleet == MagicBountyData.ShowFleet.None){
                             //"Posted by %s."
-                            FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
-                            if (faction != null) {
+                            if(bounty.job_forFaction!=null){
+                                FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
                                 text.addPara(getString("mb_from"), faction.getBaseUIColor(), faction.getDisplayNameWithArticle());
+                            } else {
+                                text.addPara(getString("mb_from"), Misc.getHighlightColor(), getString("mb_unknown"));
+                            }
+                        } else {                            
+                            //"Posted by %s, against %s."
+                            if(bounty.job_forFaction!=null){
+                                FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
+                                FactionAPI target = Global.getSector().getFaction(bounty.fleet_faction);
+                                text.addPara(getString("mb_fromAgainst"), Misc.getHighlightColor(), faction.getDisplayNameWithArticle(), target.getDisplayNameWithArticle());
+                                text.setHighlightColorsInLastPara(faction.getBaseUIColor(),target.getBaseUIColor());
+                            } else {
+                                FactionAPI target = Global.getSector().getFaction(bounty.fleet_faction);
+                                text.addPara(getString("mb_fromAgainst"), Misc.getHighlightColor(), getString("mb_unknown"), target.getDisplayNameWithArticle());
+                                text.setHighlightColorsInLastPara(Misc.getHighlightColor(),target.getBaseUIColor());
                             }
                         }
 
