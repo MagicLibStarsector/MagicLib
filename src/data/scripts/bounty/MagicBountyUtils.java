@@ -6,6 +6,7 @@ import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicTxt;
+import static data.scripts.util.MagicTxt.getString;
 import data.scripts.util.StringCreator;
 
 class MagicBountyUtils {
@@ -146,12 +147,13 @@ class MagicBountyUtils {
         fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
 
         String loc = BreadcrumbSpecial.getLocatedString(fake);
-        loc = loc.replaceAll("orbiting", "hiding out near");
-        loc = loc.replaceAll("located in", "hiding out in");
-        String sheIs = "She is";
-        if (bounty.getCaptain().getGender() == FullName.Gender.MALE) sheIs = "He is";
-        if (bounty.getCaptain().getGender() == FullName.Gender.ANY) sheIs = "They are";
-        loc = sheIs + " rumored to be " + loc + ".";
+        loc = loc.replaceAll(getString("mb_distance_orbit"), getString("mb_distance_hidingNear"));
+        loc = loc.replaceAll(getString("mb_distance_located"), getString("mb_distance_hidingIn"));
+        String sheIs = getString("mb_distance_she");
+        if (bounty.getCaptain().getGender() == FullName.Gender.MALE) sheIs = getString("mb_distance_he");
+        if (bounty.getCaptain().getGender() == FullName.Gender.ANY) sheIs = getString("mb_distance_they");
+        if (bounty.getCaptain().isAICore()) sheIs = getString("mb_distance_it");
+        loc = sheIs + getString("mb_distance_rumor") + loc + getString(".");
 
         return loc;
     }

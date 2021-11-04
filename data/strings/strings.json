@@ -50,6 +50,17 @@
 		"mb_distance_core":"in the core worlds",
 		"mb_distance_close":"in the vicinity of the core worlds",
 		"mb_distance_far":"away to the outer edges of the sector",
+
+		"mb_distance_orbit":"orbiting",
+		"mb_distance_located":"located in",
+		"mb_distance_hidingNear":"hiding out near",
+		"mb_distance_hidingIn":"hiding out in",
+		"mb_distance_she":"She is",
+		"mb_distance_he":"He is",
+		"mb_distance_they":"They are",
+		"mb_distance_it":"It is",
+		"mb_distance_rumor":" rumored to be ",
+
 		"mb_type":"This mission requires the %s of the target. To get the reward, you will need to %s.",
 		"mb_type_assassination1":"assassination",
 		"mb_type_assassination2":"disable the target flagship",
@@ -65,11 +76,7 @@
 		"mb_threatAssesmentAuto":"auto",
 		"mb_threatAssesmentNone":"none",
 		"mb_threat1":"After consulting the provided appendices, your first officer estimates that the target poses ",
-		#"mb_threat2":" threat",
 		"mb_threat2":"%s.",
-		#"mb_threatArticle0":"",
-		#"mb_threatArticle1":"a",
-		#"mb_threatArticle2":"an",
 		"mb_threatLevel0":"no risk whatsoever",
 		"mb_threatLevel1":"a negligible inconvenience",
 		"mb_threatLevel2":"a minor threat",
@@ -102,9 +109,6 @@
 		"mb_descUninvolved":"Someone else completed this mission.",
 		"mb_descExpired":"This job has expired.",
 		"mb_descRewarded":"%s credits received",
-		#"mb_descReputation":"Your reputation with %s has improved by %s",
-		#"mb_descReputationBad":"Your reputation with %s has reduced by %s",
-		#"mb_descReputationNothing":"Your reputation with %s in unaffected.",
 		"mb_descRep":"Relationship with %s %s, currently at %s",
 		"mb_descRepGood":"improved by ",
 		"mb_descRepNothing":"not affected",
@@ -112,15 +116,62 @@
 		"mb_descRepStanding":"/100 ",
 		"mb_descReward":"%s reward",
 		"mb_descRemaining":"remaining",
-		#"mb_descDestruction1":"This bounty requires the %s of the flagship. Flagship recovery will forfeit any rewards.",
-		#"mb_descDestruction2":"destruction",
 		"mb_permDismissOpt": "Dismiss this bounty...",
 		"mb_permDismissConfirm": "Are you sure you want to permanently dismiss this bounty? It will not appear in bounty boards in the future.",
 		"mb_permDismissConfirmOpt": "Permanently dismiss this bounty",
 		"mb_permDismissConfirmed": "Bounty dismissed.",
 		"mb_comm_reply": "The other $shipOrFleet does not answer to your hails.",
 
+
 		"mb_hvb_title":"High Value Bounty",
+
+
+		"mb_hvb_she":"She is",
+		"mb_hvb_he":"He is",
+		"mb_hvb_they":"They are",
+		"mb_hvb_it":"It is",
+
+		#"mb_hvb_levelNone":"an otherwise unremarkable officer",
+		"mb_hvb_levelLow":"an unremarkable officer",
+		"mb_hvb_levelMid":"a capable officer",
+		"mb_hvb_levelHigh":"a highly capable officer",
+		"mb_hvb_levelMax":"an exceptionally capable officer",
+
+		"mb_hvb_skillWD":"a great number of illegal weapon modifications",
+		"mb_hvb_skillAS":"armed-to-the-teeth support ships",
+		"mb_hvb_skillCM":"a high effectiveness in coordinating the maneuvers of ships during combat",
+		"mb_hvb_skillWT":"highly coordinated frigate attacks",
+		"mb_hvb_skillCT":"a very courageous crew",
+		"mb_hvb_skillCG":"a noteworthy level of skill in running carrier operations",
+		"mb_hvb_skillOT":"having extremely skilled subordinates",
+		"mb_hvb_skillOM":"having a high number of skilled subordinates",
+		"mb_hvb_skillN":"having highly skilled navigators",
+		"mb_hvb_skillS":"having overclocked sensory equipment",
+		"mb_hvb_skillEW":"being proficient in electronic warfare",
+		"mb_hvb_skillFU":"removing engine-safety-protocols from fighters",
+		"mb_hvb_skillFluxR":"using overclocked flux coils",
+		"mb_hvb_skillPC":"using experimental phase coils",
+		"mb_hvb_skillFR":"having highly skilled mechanics",
+		"mb_hvb_skillDC":"using military-grade duct tape",
+		"mb_hvb_skillNone":"nothing, really",
+
+		"mb_hvb_captain":" is %s known for %s.",
+
+		"mb_hvb_fleetSize0":"small fleet",
+		"mb_hvb_fleetSize1":"medium-sized fleet",
+		"mb_hvb_fleetSize2":"large fleet",
+		"mb_hvb_fleetSize3":"very large fleet",
+		"mb_hvb_fleetSize4":"gigantic fleet",
+		"mb_hvb_fleetSize5":"freaking armada",
+		"mb_hvb_fleet0":"%s is in command of a %s and personally captains the %s, a %s, as ",
+		"mb_hvb_fleetHis":"his",
+		"mb_hvb_fleetHer":"her",
+		"mb_hvb_fleetTheir":"their",
+		"mb_hvb_fleetIts":"its",
+		"mb_hvb_fleet1":" flagship.",
+
+	
+
 
 		"mb_son":"son",
 		"mb_daughter":"daughter",
@@ -136,6 +187,8 @@
 		"mb_their":"their",
 		"mb_he":"he",
 		"mb_she":"she",
-		"mb_they":"they"
+		"mb_they":"they",
+
+
 	}
 }

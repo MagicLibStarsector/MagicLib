@@ -8,7 +8,6 @@ package data.scripts.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
-//import com.fs.starfarer.api.campaign.RepLevel;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
@@ -17,7 +16,6 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Ranks;
 import com.fs.starfarer.api.impl.campaign.ids.Skills;
-//import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import static data.scripts.bounty.MagicBountyData.BOUNTIES;
@@ -358,15 +356,20 @@ public class MagicBountyHVB {
         if (person.getStats()==null) return;
 
         PersonAPI commander = fleet.getCommander();
-        String heOrShe = person.getHeOrShe();
+        
+        String who = getString("mb_hvb_they");
+        if(person.getGender()== FullName.Gender.MALE) who = getString("mb_hvb_he");
+        if(person.getGender()== FullName.Gender.FEMALE) who = getString("mb_hvb_she");
+        if(person.isAICore()) who = getString("mb_hvb_it");
+        
         String levelDesc;
         String skillDesc;
 
         int personLevel = person.getStats().getLevel();
-        if (personLevel <= 4) levelDesc = "an unremarkable officer";
-        else if (personLevel <= 7) levelDesc = "a capable officer";
-        else if (personLevel <= 11) levelDesc = "a highly capable officer";
-        else levelDesc = "an exceptionally capable officer";
+        if (personLevel <= 2) levelDesc = getString("mb_hvb_levelLow");
+        else if (personLevel <= 4) levelDesc = getString("mb_hvb_levelMid");
+        else if (personLevel <= 6) levelDesc = getString("mb_hvb_levelHigh");
+        else levelDesc = getString("mb_hvb_levelMax");
 
         List<MutableCharacterStatsAPI.SkillLevelAPI> knownSkills = commander.getStats().getSkillsCopy();
         WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
@@ -375,52 +378,52 @@ public class MagicBountyHVB {
             String skillName = skill.getSkill().getId();
             switch (skillName) {
                 case Skills.WEAPON_DRILLS:
-                    picker.add("a great number of illegal weapon modifications");
+                    picker.add(getString("mb_hvb_skillWD"));
                     break;
                 case Skills.AUXILIARY_SUPPORT:
-                    picker.add("armed-to-the-teeth support ships");
+                    picker.add(getString("mb_hvb_skillAS"));
                     break;
                 case Skills.COORDINATED_MANEUVERS:
-                    picker.add("a high effectiveness in coordinating the maneuvers of ships during combat");
+                    picker.add(getString("mb_hvb_skillCM"));
                     break;
                 case Skills.WOLFPACK_TACTICS:
-                    picker.add("highly coordinated frigate attacks");
+                    picker.add(getString("mb_hvb_skillWT"));
                     break;
                 case Skills.CREW_TRAINING:
-                    picker.add("a very courageous crew");
+                    picker.add(getString("mb_hvb_skillCT"));
                     break;
                 case Skills.CARRIER_GROUP:
-                    picker.add("a noteworthy level of skill in running carrier operations");
+                    picker.add(getString("mb_hvb_skillCG"));
                     break;
                 case Skills.OFFICER_TRAINING:
-                    picker.add("having extremely skilled subordinates");
+                    picker.add(getString("mb_hvb_skillOT"));
                     break;
                 case Skills.OFFICER_MANAGEMENT:
-                    picker.add("having a high number of skilled subordinates");
+                    picker.add(getString("mb_hvb_skillOM"));
                     break;
                 case Skills.NAVIGATION:
-                    picker.add("having highly skilled navigators");
+                    picker.add(getString("mb_hvb_skillN"));
                     break;
                 case Skills.SENSORS:
-                    picker.add("having overclocked sensory equipment");
+                    picker.add(getString("mb_hvb_skillS"));
                     break;
                 case Skills.ELECTRONIC_WARFARE:
-                    picker.add("being proficient in electronic warfare");
+                    picker.add(getString("mb_hvb_skillEW"));
                     break;
                 case Skills.FIGHTER_UPLINK:
-                    picker.add("removing engine-safety-protocols from fighters");
+                    picker.add(getString("mb_hvb_skillFU"));
                     break;
                 case Skills.FLUX_REGULATION:
-                    picker.add("using overclocked flux coils");
+                    picker.add(getString("mb_hvb_skillFluxR"));
                     break;
                 case Skills.PHASE_CORPS:
-                    picker.add("using experimental phase coils");
+                    picker.add(getString("mb_hvb_skillPC"));
                     break;
                 case Skills.FIELD_REPAIRS:
-                    picker.add("having highly skilled mechanics");
+                    picker.add(getString("mb_hvb_skillFR"));
                     break;
                 case Skills.DERELICT_CONTINGENT:
-                    picker.add("using military-grade duct tape");
+                    picker.add(getString("mb_hvb_skillDC"));
                     break;
             }
         }
@@ -428,11 +431,11 @@ public class MagicBountyHVB {
         Random random = new Random(person.getId().hashCode() * 1337L);
         picker.setRandom(random);
 
-        skillDesc = picker.isEmpty() ? "nothing, really" : picker.pick();
-        if (levelDesc.contains("unremarkable"))
-            levelDesc = "an otherwise unremarkable officer";
+        skillDesc = picker.isEmpty() ? getString("mb_hvb_skillNone") : picker.pick();
+//        if (levelDesc.equals(getString("mb_hvb_levelLow")))
+//            levelDesc = getString("mb_hvb_levelNone");
 
-        text.addPara(Misc.ucFirst(heOrShe) + " is %s known for %s.", commander.getFaction().getBaseUIColor(), levelDesc, skillDesc);
+        text.addPara(who + getString("mb_hvb_captain"), commander.getFaction().getBaseUIColor(), levelDesc, skillDesc);
     }
 
     public static void generateFancyFleetDescription(TextPanelAPI text, CampaignFleetAPI fleet, PersonAPI person) {
@@ -442,17 +445,28 @@ public class MagicBountyHVB {
         FleetMemberAPI flagship = fleet.getFlagship();
         PersonAPI commander = fleet.getCommander();
         String shipType = flagship.getHullSpec().getHullNameWithDashClass() + " " + flagship.getHullSpec().getDesignation().toLowerCase();
-        String hisOrHer = person.getHisOrHer();
         String fleetDesc;
 
-        if (fleetSize <= 10) fleetDesc = "small fleet";
-        else if (fleetSize <= 20) fleetDesc = "medium-sized fleet";
-        else if (fleetSize <= 30) fleetDesc = "large fleet";
-        else if (fleetSize <= 40) fleetDesc = "very large fleet";
-        else if (fleetSize <= 50) fleetDesc = "gigantic fleet";
-        else fleetDesc = "freaking armada";
-
-        text.addPara("%s is in command of a %s and personally commands the %s, a %s, as "+hisOrHer+" flagship.", commander.getFaction().getBaseUIColor(),
-                commander.getFaction().getRank(commander.getRankId()) + " " + person.getName().getFullName(), fleetDesc, flagship.getShipName(), shipType);
+        if (fleetSize <= 10) fleetDesc = getString("mb_hvb_fleetSize0");
+        else if (fleetSize <= 20) fleetDesc = getString("mb_hvb_fleetSize1");
+        else if (fleetSize <= 30) fleetDesc = getString("mb_hvb_fleetSize2");
+        else if (fleetSize <= 40) fleetDesc = getString("mb_hvb_fleetSize3");
+        else if (fleetSize <= 50) fleetDesc = getString("mb_hvb_fleetSize4");
+        else fleetDesc = getString("mb_hvb_fleetSize5");
+        
+        String own = getString("mb_hvb_fleetTheir");
+        if(person.getGender()== FullName.Gender.MALE) own = getString("mb_hvb_fleetHis");
+        if(person.getGender()== FullName.Gender.FEMALE) own = getString("mb_hvb_fleetHer");
+        if(person.isAICore()) own = getString("mb_hvb_fleetIts");
+        
+        text.addPara(
+                getString("mb_hvb_fleet0")+own+getString("mb_hvb_fleet1"), 
+                commander.getFaction().getBaseUIColor(),
+                
+                commander.getFaction().getRank(commander.getRankId()) + " " + person.getName().getFullName(),
+                fleetDesc,
+                flagship.getShipName(),
+                shipType
+        );
     }
 }

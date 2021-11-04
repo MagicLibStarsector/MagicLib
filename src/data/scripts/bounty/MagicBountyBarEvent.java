@@ -197,14 +197,17 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             if (activeBounty == null) continue;
                         }
 
+                        //FLAVOR TEXT
                         activeBounty.addDescriptionToTextPanel(text);
 
+                        //HVB STYLE TARGET DESCRIPTION
                         if(bounty.job_memKey.startsWith("$HVB_")){
                             //adding HVB descriptions
                             MagicBountyHVB.generateFancyFleetDescription(text, activeBounty.getFleet(), activeBounty.getCaptain());
                             MagicBountyHVB.generateFancyCommanderDescription(text, activeBounty.getFleet(), activeBounty.getCaptain());
                         }
                         
+                        //OFFERING FACTION
                         if (nullStringIfEmpty(bounty.job_forFaction) != null) {
                             //"Posted by %s."
                             FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
@@ -213,18 +216,20 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
                         }
 
+                        //REWARD
                         Float creditReward = activeBounty.calculateCreditReward();
-
                         if (creditReward != null) {
                             //"Reward: %s"
                             text.addPara(getString("mb_credits"), Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));
                         }
 
+                        //DEADLINE
                         if (bounty.job_deadline > 0) {
                             //"Time limit: %s days"
                             text.addPara(getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                         }
 
+                        //DISTANCE
                         if (bounty.job_show_distance != MagicBountyData.ShowDistance.None) {
                             switch (bounty.job_show_distance) {
                                 case Vague:
@@ -264,7 +269,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
                         }
 
-
+                        //MISSION TYPE
                         //This is an %s mission, to get the reward you will need to %s.
                         if (bounty.job_show_type) {
                             switch (bounty.job_type) {
@@ -299,15 +304,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
                         }
                         
-                        /*
-                        if (bounty.job_requireTargetDestruction) {
-                            //"This bounty requires the destruction of the flagship. Flagship recovery will forfeit any rewards."
-                            text.addPara(getString("mb_noRecovery1"),
-                                    Misc.getTextColor(),
-                                    Misc.getHighlightColor(),
-                                    getString("mb_noRecovery2"));
-                        }
-                        */
+                        //TARGET CAPTAIN
                         if (bounty.job_show_captain) {
                             dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
                         } else if (nullStringIfEmpty(bounty.job_forFaction) != null && activeBounty.getGivingFaction() != null) {
@@ -322,14 +319,13 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             dialog.getVisualPanel().showImageVisual(visual);
                         }
 
+                        //DIFFICULTY
                         if (bounty.job_difficultyDescription != null && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))) {
                             int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
                             float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();
-//                            String dangerStringArticle = getString("mb_threatArticle1");
                             String dangerStringPhrase;
 
                             if (playerFleetStrength < Math.round(bountyFleetStrength * 0.25f)) {
-//                                dangerStringArticle = getString("mb_threatArticle2");
                                 dangerStringPhrase = getString("mb_threatLevel6");
                             } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.5f)) {
                                 dangerStringPhrase = getString("mb_threatLevel5");
@@ -342,53 +338,17 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             } else if (playerFleetStrength < Math.round(bountyFleetStrength * 2f)) {
                                 dangerStringPhrase = getString("mb_threatLevel1");
                             } else {
-//                                dangerStringArticle = getString("mb_threatArticle0");
                                 dangerStringPhrase = getString("mb_threatLevel0");
                             }
                             //"Your intelligence officer informs you that the target poses "
-//                            text.addPara(getString("mb_threat1") + dangerStringArticle + getString("mb_threat3"), Misc.getHighlightColor(), dangerStringPhrase + getString("mb_threat2"));
                             text.addPara(getString("mb_threat1") + getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);
                         } else if (nullStringIfEmpty(bounty.job_difficultyDescription) != null
                                 && !bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentNone"))) {
                             text.addPara(bounty.job_difficultyDescription);
                         }
 
+                        //SHOW FLEET
                         if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {
-                            /*
-                            String info = getString("mb_fleet2");
-                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
-                                info = getString("mb_fleet0");
-                            }
-                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
-                                info = getString("mb_fleet1");
-                            }
-                            text.addPara(getString("mb_fleet"),
-                                    Misc.getTextColor(),
-                                    Misc.getHighlightColor(),
-                                    info);
-                            int columns = 10;
-                            List<FleetMemberAPI> ships = activeBounty.getFleet().getMembersWithFightersCopy();
-
-                            if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Flagship) {
-                                ships = activeBounty.getFlagshipInFleet();
-                            } else if (bounty.job_show_fleet == MagicBountyData.ShowFleet.Preset) {
-                                ships = activeBounty.getPresetShipsInFleet();
-                            }
-
-                            text.beginTooltip()
-                                    .addShipList(columns, 2, (dialog.getTextWidth() - 10) / columns,
-                                            activeBounty.getFleet().getFaction().getBaseUIColor(),
-                                            ships, 10f);
-                            */
-                            
-                            /*
-                            //DEBUG
-                            List <FleetMemberAPI> ships =activeBounty.getFleet().getFleetData().getMembersInPriorityOrder();
-                            List <String> FPs = new ArrayList<>();
-                            for(FleetMemberAPI m : ships){
-                                FPs.add(m.getFleetPointCost()+"");
-                            }
-                            */
                             showFleet(
                                     text,
                                     dialog.getTextWidth(),
@@ -398,8 +358,6 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     activeBounty.getFlagshipInFleet(),
                                     activeBounty.getPresetShipsInFleet()
                             );
-
-//                            text.addTooltip();
                         }
 
                         options.clear();
@@ -605,7 +563,21 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                 //there are less than 7 ships total, all will be shown
                 if (ships.size() <= columns) {
-                    toShow = ships;
+                    toShow = new ArrayList<>();
+                    //add flagship first
+                    for(FleetMemberAPI m : ships){
+                        if(m.isFlagship()){
+                            toShow.add(m);
+                            break;
+                        }
+                    }
+                    //then all the rest
+                    for(FleetMemberAPI m : ships){
+                        if(!m.isFlagship()){
+                            toShow.add(m);
+                        }
+                    }
+                    //display the ships
                     info.beginTooltip().addShipList(
                             columns,
                             1,
@@ -623,9 +595,17 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 }
                 //If there are more than 7 ships, pick the largest 7
                 toShow = new ArrayList<>();
+                //add flagship first
+                for(FleetMemberAPI m : ships){
+                    if(m.isFlagship()){
+                        toShow.add(m);
+                        break;
+                    }
+                }
+                //then complete the list
                 for (FleetMemberAPI m : ships) {
                     if(toShow.size()>=columns)break;
-                    toShow.add(m);
+                    if(!m.isFlagship())toShow.add(m);
                 }
                 //make the ship list
                 info.beginTooltip().addShipList(
@@ -660,12 +640,27 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             case All:
                 //show the full fleet
                 info.addPara(getString("mb_fleet2") + getString("mb_fleet"));
+                toShow = new ArrayList<>();
+                //add flagship first
+                for(FleetMemberAPI m : ships){
+                    if(m.isFlagship()){
+                        toShow.add(m);
+                        break;
+                    }
+                }
+                //then all the rest
+                for(FleetMemberAPI m : ships){
+                    if(!m.isFlagship()){
+                        toShow.add(m);
+                    }
+                }
+                //display the ships
                 info.beginTooltip().addShipList(
                         columns,
                         (int) Math.round(Math.ceil((double) ships.size() / columns)),
                         (width - 10) / columns,
                         factionBaseUIColor,
-                        ships,
+                        toShow,
                         10f
                 );
                 info.addTooltip();

@@ -722,7 +722,7 @@ public class MagicCampaign {
                     for (FleetMemberAPI m : membersInPriorityOrder) {
                         m.setCaptain(null);
                         bountyFleet.getFleetData().addFleetMember(m);
-                        MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
+                        //MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
                     }
                 }
             }

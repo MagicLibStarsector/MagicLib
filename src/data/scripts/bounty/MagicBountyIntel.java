@@ -10,7 +10,6 @@ import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.MagicDeserializable;
 import data.scripts.util.MagicTxt;
 import org.apache.log4j.Logger;
@@ -678,7 +677,21 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 //there are less than 7 ships total, all will be shown
                 if (ships.size() <= columns) {
-                    toShow = ships;
+                    toShow = new ArrayList<>();
+                    //add flagship first
+                    for(FleetMemberAPI m : ships){
+                        if(m.isFlagship()){
+                            toShow.add(m);
+                            break;
+                        }
+                    }
+                    //then all the rest
+                    for(FleetMemberAPI m : ships){
+                        if(!m.isFlagship()){
+                            toShow.add(m);
+                        }
+                    }
+                    //display the ships
                     info.addShipList(
                             columns,
                             1,
@@ -696,9 +709,17 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
                 //If there are more than 7 ships, pick the largest 7
                 toShow = new ArrayList<>();
+                //add flagship first
+                for(FleetMemberAPI m : ships){
+                    if(m.isFlagship()){
+                        toShow.add(m);
+                        break;
+                    }
+                }
+                //then complete the list
                 for (FleetMemberAPI m : ships) {
                     if(toShow.size()>=columns)break;
-                    toShow.add(m);
+                    if(!m.isFlagship())toShow.add(m);
                 }
                 //make the ship list
                 info.addShipList(
@@ -734,12 +755,27 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case All:
                 //show the full fleet
                 info.addPara(getString("mb_fleet2") + getString("mb_fleet"), PADDING_DESC);
+                toShow = new ArrayList<>();
+                //add flagship first
+                for(FleetMemberAPI m : ships){
+                    if(m.isFlagship()){
+                        toShow.add(m);
+                        break;
+                    }
+                }
+                //then all the rest
+                for(FleetMemberAPI m : ships){
+                    if(!m.isFlagship()){
+                        toShow.add(m);
+                    }
+                }
+                //display the ships
                 info.addShipList(
                         columns,
                         (int) Math.round(Math.ceil((double) ships.size() / columns)),
                         (width - 10) / columns,
                         factionBaseUIColor,
-                        ships,
+                        toShow,
                         10f
                 );
             default:
