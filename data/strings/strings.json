@@ -187,12 +187,21 @@
 		"mb_man":"man",
 		"mb_woman":"woman",
 		"mb_person":"person",
+		"mb_ai":"AI",
+
 		"mb_his":"his",
 		"mb_her":"her",
 		"mb_their":"their",
+		"mb_its":"its",
+
 		"mb_he":"he",
 		"mb_she":"she",
 		"mb_they":"they",
+		"mb_it":"it",
+
+		"mb_him":"him",
+		#"mb_her":"her",
+		"mb_them":"them",
 
 
 	}

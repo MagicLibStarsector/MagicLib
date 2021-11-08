@@ -47,39 +47,68 @@ class MagicBountyUtils {
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$manOrWomanOrPerson", new StringCreator() {
             @Override
             public String create() {
-                switch (bounty.getFleet().getCommander().getGender()) {
-                    case MALE:
-                        return MagicTxt.getString("mb_man");
-                    case FEMALE:
-                        return MagicTxt.getString("mb_woman");
-                    default:
-                        return MagicTxt.getString("mb_person");
+                if(bounty.getFleet().getCommander().isAICore()){
+                    return MagicTxt.getString("mb_ai");
+                } else {
+                    switch (bounty.getFleet().getCommander().getGender()) {
+                        case MALE:
+                            return MagicTxt.getString("mb_man");
+                        case FEMALE:
+                            return MagicTxt.getString("mb_woman");
+                        default:
+                            return MagicTxt.getString("mb_person");
+                    }
                 }
             }
         });
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$hisOrHerOrTheir", new StringCreator() {
             @Override
             public String create() {
-                switch (bounty.getFleet().getCommander().getGender()) {
-                    case MALE:
-                        return MagicTxt.getString("mb_his");
-                    case FEMALE:
-                        return MagicTxt.getString("mb_her");
-                    default:
-                        return MagicTxt.getString("mb_their");
+                if(bounty.getFleet().getCommander().isAICore()){
+                    return MagicTxt.getString("mb_its");
+                } else {
+                    switch (bounty.getFleet().getCommander().getGender()) {
+                        case MALE:
+                            return MagicTxt.getString("mb_his");
+                        case FEMALE:
+                            return MagicTxt.getString("mb_her");
+                        default:
+                            return MagicTxt.getString("mb_their");
+                    }
                 }
             }
         });
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$heOrSheOrThey", new StringCreator() {
             @Override
             public String create() {
-                switch (bounty.getFleet().getCommander().getGender()) {
-                    case MALE:
-                        return MagicTxt.getString("mb_he");
-                    case FEMALE:
-                        return MagicTxt.getString("mb_she");
-                    default:
-                        return MagicTxt.getString("mb_they");
+                if(bounty.getFleet().getCommander().isAICore()){
+                    return MagicTxt.getString("mb_it");
+                } else {
+                    switch (bounty.getFleet().getCommander().getGender()) {
+                        case MALE:
+                            return MagicTxt.getString("mb_he");
+                        case FEMALE:
+                            return MagicTxt.getString("mb_she");
+                        default:
+                            return MagicTxt.getString("mb_they");
+                    }
+                }
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himOrHerOrThem", new StringCreator() {
+            @Override
+            public String create() {
+                if(bounty.getFleet().getCommander().isAICore()){
+                    return MagicTxt.getString("mb_it");
+                } else {
+                    switch (bounty.getFleet().getCommander().getGender()) {
+                        case MALE:
+                            return MagicTxt.getString("mb_him");
+                        case FEMALE:
+                            return MagicTxt.getString("mb_her");
+                        default:
+                            return MagicTxt.getString("mb_them");
+                    }
                 }
             }
         });
