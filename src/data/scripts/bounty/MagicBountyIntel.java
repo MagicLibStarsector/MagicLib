@@ -397,8 +397,12 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
-                if (true) { // todo
-                    info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                if (bounty.getSpec().job_show_distance!= MagicBountyData.ShowDistance.None) {
+                    if(bounty.getSpec().job_show_distance== MagicBountyData.ShowDistance.Exact){
+                        info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
+                    } else {
+                        info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                    }
                 }
 
                 if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {

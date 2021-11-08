@@ -279,6 +279,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                             Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                     break;
 
+                                case Exact:
+                                    text.addPara(MagicBountyUtils.createLocationPreciseText(activeBounty));                                    
+                                    break;
+                                    
                                 default:
                                     break;
                             }

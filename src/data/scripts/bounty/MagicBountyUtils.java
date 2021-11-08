@@ -1,8 +1,11 @@
 package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.FleetAssignment;
+import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.characters.FullName;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicTxt;
@@ -184,6 +187,40 @@ class MagicBountyUtils {
         if (bounty.getCaptain().isAICore()) sheIs = getString("mb_distance_it");
         loc = sheIs + getString("mb_distance_rumor") + loc + getString(".");
 
+        return loc;
+    }
+    
+    static String createLocationPreciseText(final ActiveBounty bounty) {
+        
+        String loc = getString("mb_distance_last");
+        
+        if(bounty.getSpec().fleet_behavior == FleetAssignment.PATROL_SYSTEM){
+            loc = loc + getString("mb_distance_roaming") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+        } else {
+            if(bounty.getFleetSpawnLocation().hasTag(Tags.PLANET)){
+                loc = loc + getString("mb_distance_orbit") + bounty.getFleetSpawnLocation().getName() + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.STATION)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_station") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.JUMP_POINT)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_jump") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.GATE)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_gate") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.DEBRIS_FIELD)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_debris") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.WRECK)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_wreck") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.COMM_RELAY)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_comm") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.SENSOR_ARRAY)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_sensor") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.NAV_BUOY)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_nav") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.STABLE_LOCATION)){
+                loc = loc + getString("mb_distance_orbit") + getString("mb_distance_stable") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else {
+                loc = loc + getString("mb_distance_somewhere") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            }            
+        }
         return loc;
     }
 }
