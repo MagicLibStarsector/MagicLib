@@ -503,6 +503,8 @@ public class MagicBountyData {
                     this.job_show_distance = ShowDistance.Vanilla;
                 } else if (job_show_distance.equalsIgnoreCase("vanillaDistance")) {
                     this.job_show_distance = ShowDistance.VanillaDistance;
+                } else if (job_show_distance.equalsIgnoreCase("exact")) {
+                    this.job_show_distance = ShowDistance.Exact;
                 } else {
                     this.job_show_distance = ShowDistance.None;
                 }
@@ -933,7 +935,8 @@ public class MagicBountyData {
         Vague,
         Vanilla,
         Distance,
-        VanillaDistance
+        VanillaDistance,
+        Exact
     }
     public enum Gender {
         Undefined,

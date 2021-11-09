@@ -221,6 +221,7 @@ public final class ActiveBounty {
             stage = Stage.EndedWithoutPlayerInvolvement;
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
             }
         } else if (result instanceof BountyResult.FailedOutOfTime) {
@@ -231,6 +232,7 @@ public final class ActiveBounty {
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
             }
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
@@ -239,7 +241,8 @@ public final class ActiveBounty {
             stage = Stage.Dismissed;
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
+//                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
             }
         } else if (result instanceof BountyResult.FailedSalvagedFlagship) {
             stage = Stage.FailedSalvagedFlagship;
@@ -249,6 +252,7 @@ public final class ActiveBounty {
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_failed", true);
             }
         }
@@ -408,6 +412,29 @@ public final class ActiveBounty {
     }
 
     /**
+     * The faction targeted by the bounty, if relevant.
+     */
+    @Nullable
+    public FactionAPI getTargetFaction() {
+        FactionAPI target=null;
+        if(getSpec().job_show_captain!=false || getSpec().job_show_fleet!= MagicBountyData.ShowFleet.None){
+            target = Global.getSector().getFaction(getSpec().fleet_faction);
+        }
+        return target;
+    }
+    /**
+     * The color for the target faction, or Misc.getTextColor() if none.
+     */
+    @NotNull
+    public Color getTargetFactionTextColor() {
+        if (getTargetFaction() != null) {
+            return getTargetFaction().getBaseUIColor();
+        } else {
+            return Misc.getTextColor();
+        }
+    }
+    
+    /**
      * Calculates and returns the number of credits that will be awarded upon completion, if any.
      * Includes any scaling factor.
      */
@@ -524,7 +551,7 @@ public final class ActiveBounty {
     }
 
     public List<FleetMemberAPI> getPresetShipsInFleet() {
-        List<FleetMemberAPI> ships = getFleet().getMembersWithFightersCopy();
+        List<FleetMemberAPI> ships = getFleet().getFleetData().getMembersInPriorityOrder();
 
         for (Iterator<FleetMemberAPI> iterator = ships.iterator(); iterator.hasNext(); ) {
             FleetMemberAPI ship = iterator.next();

@@ -12,8 +12,11 @@
         "trigger_market_minSize": 3, # Default: 0. The minimum size of the market.
         "trigger_player_minLevel": 15, # Default: 0. The minimum level of the player.
         "trigger_min_days_elapsed": 360, # Default: 0. The minimum number of days that must have elapsed.
-        "trigger_weight_mult": 0.25, # Default: -1. Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance.
-        "trigger_memKeys_all": { # Default: no values. The job will only show if ALL of the listed memKeys exist with the specified boolean value.
+        "trigger_weight_mult": 0.25, # Default: -1. Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance. Default bounty memKeys of note:
+            # $job_memKey_succeeded set to true if the job has been successfully completed
+            # $job_memKey_failed set to true if the job required the destruction of a flagship and the player salvaged it instead
+            # $job_memKey_expired set to true if the job deadline expired, ended without player involvment, or was permanently dissmissed
+            # $job_memKey set to false when the job has been picked up, true once concluded regardless of the result
             "$triggerKey":true,
         },
         "trigger_memKeys_any": { # Default: no values. The job will show if ANY of the listed memKeys exist with the specified boolean value.
@@ -31,6 +34,7 @@
         "job_name": "job name", # Default: "Unnamed job". Job name shown in the dialog pick list
         "job_description": "Long form description of the job", # Default: blank. The description shown upon selecting the job.
                                                                # \n creates a line break, for example "Line one.\nLine two."
+                                                               # == brackets create a highlight, for example "Text ==highlight== text."
                                                                # $sonOrDaughterOrChild based on bounty commander gender.
                                                                # $fatherOrMotherOrParent based on bounty commander gender.
                                                                # $manOrWomanOrPerson based on bounty commander gender.
@@ -55,8 +59,9 @@
         "job_reward_scaling": 1.0, # Default: no scaling/bonus. Bonus credits based on FP. Bonus is the specified number multiplied by how many FP the bounty fleet was over their base FP.
         "job_reputation_reward":5, # Default: 5 rep points. Reputation benefit with the faction posting the bounty, if any, in case of success. Set to 0 or less to disable, does not scale
         "job_item_reward": { # Default: no item rewards. Lists special items that will be added to the post-battle loot. First value is the item id, second is the number to give the player.
+            # Using the same syntax as Console Commands, blueprints may be added. ["fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"]
             "item_A":1,
-            "ship_bp shipId": 1 # Using the same syntax as Console Commands, blueprints may be added. ["fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"]
+            "ship_bp shipId": 1 
         },
         "job_type":"assassination", # Default: assassination.
                 # assassination: required only to disable the flagship, may recover it.
@@ -85,14 +90,14 @@
         "job_difficultyDescription": "auto",  # Default: no description shown. "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
         "job_pick_option": "Accept the job", # Default: "Accept the job". The text option that, when selected, accepts the bounty job.
         "job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
-        "job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed successfully.
+        "job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed.
         "job_conclusion_script":"data.script.FancyScriptThatDoStuff", # Default: no script. Can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
         
         #TARGET COMMANDER (OPTIONAL)
         
         "target_first_name":"Firstname", # Default: randomly selected based on faction.
         "target_last_name":"Lastname", # Default: randomly selected based on faction.
-        "target_portrait":"portraitId", # Default: randomly selected based on faction. Id of the sprite in settings.json/graphics/characters
+        "target_portrait":"portraitId", # Default: randomly selected based on faction. Id of the sprite in settings.json/graphics/characters or full file path.
         "target_gender":"ANY", # Default: ANY. [ANY, UNDEFINED, MALE, FEMALE] ANY will randomly pick between male and female to avoid oddities and issues with texts and portraits.
         "target_rank": "Captain", # Default: "citizen". Rank from campaign.ids.Ranks [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
         "target_post": "Fleet Commander", # Default: "spacer". Post from campaign.ids.Ranks (yes, Ranks, posts are the bottom half). [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Ranks.html]
@@ -101,8 +106,10 @@
         "target_level": 1, # Default: 0. The level of the bounty commander
         "target_elite_skills":2, # Default: vanilla elite skills. Overrides the regular number of elite skills, set to 0 to not use elite skills.
         "target_skill_preference": "GENERIC", # Default: "GENERIC". ["GENERIC", "PHASE", "CARRIER", "ANY"] (from OfficerManagerEvent.SkillPickPreference)
-        "target_skills": { # Default: random. OVERRIDES ALL RANDOM SKILLS
-            "skillname":2,
+        "target_skills": { # Default: empty. REMOVES ALL RANDOM SKILLS, set level 1 for normal skill, level 2 for elite.
+            "skillnameA":1,
+            "skillnameB":2,
+            "skillnameC":1,
         }, 
     
     
@@ -111,7 +118,8 @@
         "fleet_name":"Fleet Name", # Default: no name.
         "fleet_faction": "pirates", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
         "fleet_flagship_variant":"buffalo2_FS", # Required.
-        "fleet_flagship_name":"Flagship", # Random.
+        # Variants that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
+        "fleet_flagship_name":"Flagship", # Default: Random.
         "fleet_flagship_recoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
         "fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
             "ship_variant1":1,
@@ -124,7 +132,6 @@
         "fleet_transponder": false, # Default: true.
         "fleet_behavior": "PASSIVE", # Default:"GUARDED". The fleet's behavior on the campaign layer. Options: ["PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING"].
     
-    
         #LOCATION
         
         "location_marketIDs": [  # Default: no preset. Preset locations to spawn the bounty fleet, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
@@ -135,7 +142,6 @@
         ],
         "location_distance": "CLOSE", # Default: no preference. How far from the center to spawn the bounty fleet. Options: "CORE", "CLOSE", "FAR" or just left empty to ignore.
         "location_themes": [ # Default: no preference. System themes that are valid to spawn the fleet at.
-            "theme_hidden",
             "theme_core_unpopulated",
             "theme_core_populated",
             "theme_core",
@@ -163,6 +169,7 @@
         ],
         "location_themes_blacklist": [ # Default: none. System themes to never spawn the fleet at.
             "theme_already_occupied",
+            "theme_hidden",
         ],
         "location_entities": [ # Default: PLANET + JUMP_POINT + STABLE_LOCATION. Possible entities to spawn the fleet around.
             "gate",
