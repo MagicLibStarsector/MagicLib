@@ -46,6 +46,49 @@ public class MagicTxt {
 
     private static final Pattern highlightPattern = Pattern.compile("==(.*?)==", Pattern.DOTALL);
 
+    /**
+     * Takes a string with the format "This is a ==highlighted== sentence with ==words==."
+     * <p>
+     * Usage:
+     * <pre>
+     *         MagicDisplayableText magicText = new MagicDisplayableText(str);
+     *
+     *         text.addPara(
+     *                 magicText.format,
+     *                 textColor,
+     *                 highlightColor,
+     *                 magicText.highlights
+     *         );
+     *        </pre>
+     */
+    public static class MagicDisplayableText {
+        /**
+         * The text that was passed in as `str`.
+         */
+        public String originalText;
+        /**
+         * The text with the highlights replaced by '%s'.
+         */
+        public String format;
+        /**
+         * An array of the highlighted parts of the string.
+         */
+        public String[] highlights;
+
+        public MagicDisplayableText(@NotNull String str) {
+            this.originalText = str;
+            this.format = replaceStringHighlightsWithSymbol(str);
+            this.highlights = getTextMatches(str, highlightPattern);
+        }
+    }
+
+    /**
+     * Takes a string with the format "This is a ==highlighted word== string." and returns {@link data.scripts.util.MagicTxt.MagicDisplayableText}.
+     */
+    public static MagicDisplayableText createMagicDisplayableText(@NotNull String str) {
+        return new MagicDisplayableText(str);
+    }
+
     public static void addPara(
             @NotNull TextPanelAPI text,
             @Nullable String str,
@@ -57,14 +100,13 @@ public class MagicTxt {
             return;
         }
 
-        String replacedStr = replaceStringHighlightsWithSymbol(str);
-        String[] highlights = getTextMatches(str, highlightPattern);
+        MagicDisplayableText magicText = new MagicDisplayableText(str);
 
         text.addPara(
-                replacedStr,
+                magicText.format,
                 textColor,
                 highlightColor,
-                highlights
+                magicText.highlights
         );
     }
 
@@ -80,15 +122,14 @@ public class MagicTxt {
             return;
         }
 
-        String replacedStr = replaceStringHighlightsWithSymbol(str);
-        String[] highlights = getTextMatches(str, highlightPattern);
+        MagicDisplayableText magicText = new MagicDisplayableText(str);
 
         text.addPara(
-                replacedStr,
+                magicText.format,
                 padding,
                 textColor,
                 highlightColor,
-                highlights
+                magicText.highlights
         );
     }
 
