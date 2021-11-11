@@ -215,14 +215,14 @@ public final class ActiveBounty {
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_succeeded", true);
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey + "_succeeded", true);
             }
         } else if (result instanceof BountyResult.EndedWithoutPlayerInvolvement) {
             stage = Stage.EndedWithoutPlayerInvolvement;
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey + "_expired", true);
             }
         } else if (result instanceof BountyResult.FailedOutOfTime) {
             stage = Stage.ExpiredAfterAccepting;
@@ -233,7 +233,7 @@ public final class ActiveBounty {
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_expired", true);
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey + "_expired", true);
             }
         } else if (result instanceof BountyResult.ExpiredWithoutAccepting) {
             stage = Stage.ExpiredWithoutAccepting;
@@ -253,7 +253,7 @@ public final class ActiveBounty {
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey+"_failed", true);
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey + "_failed", true);
             }
         }
 
@@ -416,12 +416,13 @@ public final class ActiveBounty {
      */
     @Nullable
     public FactionAPI getTargetFaction() {
-        FactionAPI target=null;
-        if(getSpec().job_show_captain!=false || getSpec().job_show_fleet!= MagicBountyData.ShowFleet.None){
+        FactionAPI target = null;
+        if (getSpec().job_show_captain != false || getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
             target = Global.getSector().getFaction(getSpec().fleet_faction);
         }
         return target;
     }
+
     /**
      * The color for the target faction, or Misc.getTextColor() if none.
      */
@@ -433,7 +434,7 @@ public final class ActiveBounty {
             return Misc.getTextColor();
         }
     }
-    
+
     /**
      * Calculates and returns the number of credits that will be awarded upon completion, if any.
      * Includes any scaling factor.
@@ -462,9 +463,9 @@ public final class ActiveBounty {
 
         return rewardRoundedToNearest100;
         */
-        
+
         //Reward scaling is a mult applied to the size ratio between the player fleet and the min target fleet
-        float playerFleetScale = Math.max(0,MagicCampaign.PlayerThreatMultiplier(getSpec().fleet_min_DP)-1);
+        float playerFleetScale = Math.max(0, MagicCampaign.PlayerThreatMultiplier(getSpec().fleet_min_DP) - 1);
 
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
         float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;

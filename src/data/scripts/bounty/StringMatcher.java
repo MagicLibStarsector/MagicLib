@@ -3,7 +3,6 @@ package data.scripts.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import org.jetbrains.annotations.Nullable;
-import org.lazywizard.console.Console;
 
 /**
  * From Console Command's `CommandUtils`.
@@ -15,7 +14,7 @@ class StringMatcher {
     public static FactionAPI findBestFactionMatch(String name) {
         name = name.toLowerCase();
         FactionAPI bestMatch = null;
-        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+        double closestDistance = 0.9f;
 
         // Check IDs first in case multiple factions share the same name
         for (FactionAPI faction : Global.getSector().getAllFactions()) {
@@ -55,16 +54,13 @@ class StringMatcher {
      * and 1.0 meaning full equality.
      */
     // Taken from: https://github.com/larsga/Duke/blob/master/duke-core/src/main/java/no/priv/garshol/duke/comparators/JaroWinkler.java
-    private static double calcSimilarity(String s1, String s2)
-    {
-        if (s1.equals(s2))
-        {
+    private static double calcSimilarity(String s1, String s2) {
+        if (s1.equals(s2)) {
             return 1.0;
         }
 
         // ensure that s1 is shorter than or same length as s2
-        if (s1.length() > s2.length())
-        {
+        if (s1.length() > s2.length()) {
             String tmp = s2;
             s2 = s1;
             s1 = tmp;
@@ -77,20 +73,16 @@ class StringMatcher {
         int c = 0; // count of common characters
         int t = 0; // count of transpositions
         int prevpos = -1;
-        for (int ix = 0; ix < s1.length(); ix++)
-        {
+        for (int ix = 0; ix < s1.length(); ix++) {
             char ch = s1.charAt(ix);
 
             // now try to find it in s2
             for (int ix2 = Math.max(0, ix - maxdist);
                  ix2 < Math.min(s2.length(), ix + maxdist);
-                 ix2++)
-            {
-                if (ch == s2.charAt(ix2))
-                {
+                 ix2++) {
+                if (ch == s2.charAt(ix2)) {
                     c++; // we found a common character
-                    if (prevpos != -1 && ix2 < prevpos)
-                    {
+                    if (prevpos != -1 && ix2 < prevpos) {
                         t++; // moved back before earlier
                     }
                     prevpos = ix2;
@@ -107,8 +99,7 @@ class StringMatcher {
         // System.out.println("c/n: " + (c / (double) s2.length()));
         // System.out.println("(c-t)/c: " + ((c - t) / (double) c));
         // we might have to give up right here
-        if (c == 0)
-        {
+        if (c == 0) {
             return 0.0;
         }
 
@@ -120,8 +111,7 @@ class StringMatcher {
         // (2) common prefix modification
         int p = 0; // length of prefix
         int last = Math.min(4, s1.length());
-        while (p < last && s1.charAt(p) == s2.charAt(p))
-        {
+        while (p < last && s1.charAt(p) == s2.charAt(p)) {
             p++;
         }
 
