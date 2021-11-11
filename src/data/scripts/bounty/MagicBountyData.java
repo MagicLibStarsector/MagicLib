@@ -200,7 +200,7 @@ public class MagicBountyData {
                         getBoolean(bountyId, "job_show_captain"),
                         getString(bountyId, "job_show_fleet"),
                         getString(bountyId, "job_show_distance"),
-                        getBooleanDefaultTrue(bountyId, "job_show_arrow"),
+                        getBoolean(bountyId, "job_show_arrow"),
                         getString(bountyId, "job_pick_option"),
                         getString(bountyId, "job_pick_script"),
                         memKey,

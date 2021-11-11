@@ -11,6 +11,7 @@
         "trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
         "trigger_market_minSize": 3, # Default: 0. The minimum size of the market.
         "trigger_player_minLevel": 15, # Default: 0. The minimum level of the player.
+        "trigger_min_fleet_size": 25, # Default: 0. The minimum player fleet "power" based on Fleet Points (not Deployment Points) with some multipliers for officers and player levels 
         "trigger_min_days_elapsed": 360, # Default: 0. The minimum number of days that must have elapsed.
         "trigger_weight_mult": 0.25, # Default: -1. Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance. Default bounty memKeys of note:
             # $job_memKey_succeeded set to true if the job has been successfully completed
@@ -86,7 +87,7 @@
                 # distance: "It is located roughly %s LY away from your current position."
                 # vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation."
                 # vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position."
-        "job_show_arrow": false, # Default: true. Whether to show an arrow on the Intel map pointing from the start to the bounty target location
+        "job_show_arrow": false, # Default: false. Whether to show an arrow on the Intel map pointing from the start to the bounty target location. Should only be enabled when there is a good reason, to match vanilla.
         "job_difficultyDescription": "auto",  # Default: no description shown. "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
         "job_pick_option": "Accept the job", # Default: "Accept the job". The text option that, when selected, accepts the bounty job.
         "job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters

@@ -65,7 +65,7 @@
 
 		"mb_distance_last":"The target was last located",
 		"mb_distance_roaming":"roaming the ",
-		"mb_distance_orbit":" in orbit near ",
+		"mb_distance_near":" in orbit near ",
 		"mb_distance_in":" in the ",
 		"mb_distance_station":"a station",
 		"mb_distance_jump":"a jump-point",
