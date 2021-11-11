@@ -151,6 +151,11 @@ public class MagicBountyHVB {
                     List <String> themes = new ArrayList<>();
                     themes.add("procgen_no_theme_pulsar_blackhole");
                     
+                    String faction = row.getString("faction");
+                    if(faction.equals("hvb_hostile")){
+                        faction="mercenary";
+                    }
+                    
                     MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(
                             //List <String> trigger_market_id,
                             null,
@@ -256,7 +261,7 @@ public class MagicBountyHVB {
                             //String fleet_name,
                             row.getString("fleetName"),
                             //String fleet_faction,
-                            row.getString("faction"),
+                            faction,
                             //String fleet_flagship_variant,
                             row.getString("flagshipVariantId"),
                             //String fleet_flagship_name,
