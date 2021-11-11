@@ -917,11 +917,11 @@ public class MagicCampaign {
             person.setGender(FullName.Gender.ANY);
         }
         
-        if(nullStringIfEmpty(firstName)!=null){
+        if(firstName!=null){
             person.getName().setFirst(firstName);
         }
         
-        if(nullStringIfEmpty(lastName)!=null){
+        if(lastName!=null){
             person.getName().setLast(lastName);
         }
         
