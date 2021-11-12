@@ -280,7 +280,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     break;
 
                                 case Exact:
-                                    text.addPara(MagicBountyUtils.createLocationPreciseText(activeBounty));                                    
+                                    text.addPara(MagicBountyUtils.createLocationPreciseText(activeBounty));   
+                                    text.highlightLastInLastPara(activeBounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType(),Misc.getHighlightColor());
                                     break;
                                     
                                 default:
@@ -458,7 +459,15 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         return MagicBountyCoordinator.getInstance().getBountySlotsAtMarket(market);
     }
 
-    private void showFleet(TextPanelAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset) {
+    private void showFleet(
+            TextPanelAPI info,
+            float width,
+            Color factionBaseUIColor,
+            MagicBountyData.ShowFleet setting,
+            List<FleetMemberAPI> ships,
+            List<FleetMemberAPI> flagship, 
+            List<FleetMemberAPI> preset
+    ) {
 
         int columns = 10;
         switch (setting) {
@@ -490,7 +499,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         1,
                         (width - 10) / columns,
                         factionBaseUIColor,
-                        ships,
+                        flagship,
                         10f
                 );
                 info.addTooltip();
@@ -503,7 +512,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                         1,
                         (width - 10) / columns,
                         factionBaseUIColor,
-                        ships,
+                        flagship,
                         10f
                 );
                 info.addTooltip();

@@ -43,7 +43,7 @@
 		"mb_accept":"Accept the job",
 		"mb_accepted":"Accepted job: ",
 		"mb_from":"Posted by %s.",
-		"mb_unknown":"unknown",
+		"mb_unknown":"an unknown party",
 		"mb_fromAgainst":"Posted by %s, against %s.",
 		"mb_credits":"Reward: %s",
 		"mb_time":"Time limit: %s days",
@@ -64,7 +64,7 @@
 		"mb_distance_rumor":" rumored to be ",
 
 		"mb_distance_last":"The target was last located",
-		"mb_distance_roaming":"roaming the ",
+		"mb_distance_roaming":" roaming the ",
 		"mb_distance_near":" in orbit near ",
 		"mb_distance_in":" in the ",
 		"mb_distance_station":"a station",

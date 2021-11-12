@@ -221,6 +221,7 @@ class MagicBountyUtils {
                 loc = loc + getString("mb_distance_somewhere") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
             }            
         }
+        loc = loc + getString(".");
         return loc;
     }
 }

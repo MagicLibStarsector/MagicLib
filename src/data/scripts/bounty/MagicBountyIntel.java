@@ -572,7 +572,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         }
     }
 
-    private void showFleet(TooltipMakerAPI info, float width, Color factionBaseUIColor, MagicBountyData.ShowFleet setting, List<FleetMemberAPI> ships, List<FleetMemberAPI> flagship, List<FleetMemberAPI> preset) {
+    private void showFleet(
+            TooltipMakerAPI info,
+            float width,
+            Color factionBaseUIColor,
+            MagicBountyData.ShowFleet setting,
+            List<FleetMemberAPI> ships,
+            List<FleetMemberAPI> flagship,
+            List<FleetMemberAPI> preset
+    ) {
 
         int columns = 7;
         switch (setting) {
@@ -606,7 +614,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         1,
                         (width - 10) / columns,
                         factionBaseUIColor,
-                        ships,
+                        flagship,
                         10f
                 );
                 break;
@@ -618,7 +626,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                         1,
                         (width - 10) / columns,
                         factionBaseUIColor,
-                        ships,
+                        flagship,
                         10f
                 );
                 //write the number of other ships
