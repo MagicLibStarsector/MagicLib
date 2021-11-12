@@ -690,6 +690,10 @@ public class MagicCampaign {
             return null;
         }
         bountyFleet.getFleetData().addFleetMember(flagship);
+        //renaming the ship if needed
+        if(flagshipName!=null && !flagshipName.isEmpty()){
+            flagship.setShipName(flagshipName);
+        }        
         flagship.setFlagship(true);
         MagicVariables.presetShipIdsOfLastCreatedFleet.add(flagship.getId());
         
@@ -786,8 +790,7 @@ public class MagicCampaign {
         }
         
         //apply skills to the fleet
-        FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());
-        
+        FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());        
         
         //FINISHING
         
@@ -949,13 +952,13 @@ public class MagicCampaign {
         if(nullStringIfEmpty(rankId)!=null){
             person.setRankId(rankId);
         } else {
-            person.setRankId(Ranks.CITIZEN);
+            person.setRankId(Ranks.SPACE_COMMANDER);
         }
         
         if(nullStringIfEmpty(postId)!=null){
             person.setPostId(postId);
         } else {
-            person.setPostId(Ranks.POST_SPACER);
+            person.setPostId(Ranks.POST_FLEET_COMMANDER);
         }
         
         //reset and reatribute skills if needed
