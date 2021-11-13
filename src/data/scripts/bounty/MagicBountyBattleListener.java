@@ -8,9 +8,7 @@ import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.AutoDespawnScript;
-import com.fs.starfarer.api.util.Misc;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -69,9 +67,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
         /////////// Below is copied (and heavily modified) from PersonBountyIntel.reportBattleOccurred.
         if (isDone) return;
 
-        // also credit the player if they're in the same location as the fleet and nearby
-        float distToPlayer = Misc.getDistance(bountyFleet, Global.getSector().getPlayerFleet());
-        boolean playerInvolved = battle.isPlayerInvolved() || (bountyFleet.isInCurrentLocation() && distToPlayer < 2000f);
+        boolean playerInvolved = battle.isPlayerInvolved();
 
         if (bountyFleet.getId().equals(bounty.getFleet().getId())) {
             PersonAPI bountyCommander = bounty.getCaptain();

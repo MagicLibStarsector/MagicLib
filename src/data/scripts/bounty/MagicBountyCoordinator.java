@@ -13,6 +13,7 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicSettings;
+import data.scripts.util.MagicTxt;
 import data.scripts.util.MagicVariables;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -159,9 +160,9 @@ public final class MagicBountyCoordinator {
                     bountySpec.trigger_market_minSize)) {
                 continue;
             }
-            
+
             //adding testing mode
-            if(!MagicSettings.getBoolean("MagicLib", "bounty_board_test_mode")){
+            if (!MagicSettings.getBoolean("MagicLib", "bounty_board_test_mode")) {
                 if (!MagicCampaign.isAvailableToPlayer(
                         bountySpec.trigger_player_minLevel,
                         bountySpec.trigger_min_days_elapsed,
@@ -339,6 +340,25 @@ public final class MagicBountyCoordinator {
                 bounty.getFleet().addEventListener(new MagicBountyBattleListener(bounty.getKey()));
             }
         }
+    }
+
+    public void resetBounty(@NotNull String bountyKey) {
+        ActiveBounty activeBounty = getActiveBounty(bountyKey);
+
+        if (activeBounty == null) return;
+        MagicBountyData.bountyData spec = activeBounty.getSpec();
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+            Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
+        }
+
+        MagicBountyIntel intel = activeBounty.getIntel();
+
+        if (intel != null) {
+            intel.endImmediately();
+        }
+
+        activeBounty.despawn();
     }
 
     /**

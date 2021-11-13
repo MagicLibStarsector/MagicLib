@@ -8,6 +8,7 @@ import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.impl.campaign.DevMenuOptions;
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEvent;
 import com.fs.starfarer.api.impl.campaign.rulecmd.DumpMemory;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,15 +26,15 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
     public static final String OPTION_PREV_PAGE = "core_option_prev_page";
 
     public static class MagicPaginatedOption {
-        public final String text;
-        public final Object id;
-        public final String tooltip;
-        public final Integer hotkey;
+        @NotNull public final String text;
+        @NotNull public final Object id;
+        @Nullable public final String tooltip;
+        @Nullable public final Integer hotkey;
 
         /**
          * @param hotkey org.lwjgl.input.Keyboard
          */
-        public MagicPaginatedOption(String text, Object id, String tooltip, @Nullable Integer hotkey) {
+        public MagicPaginatedOption(@NotNull String text, @NotNull Object id, @Nullable String tooltip, @Nullable Integer hotkey) {
             this.text = text;
             this.id = id;
             this.tooltip = tooltip;

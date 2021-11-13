@@ -627,7 +627,7 @@ public final class ActiveBounty {
         Succeeded
     }
 
-    interface BountyResult {
+    public interface BountyResult {
         class DismissedPermanently implements BountyResult {
         }
 
@@ -671,6 +671,7 @@ public final class ActiveBounty {
         sb.append(", rewardCredits=").append(rewardCredits);
         sb.append(", rewardReputation=").append(rewardReputation);
         sb.append(", rewardFaction='").append(rewardFaction).append('\'');
+        sb.append(", isDespawning=").append(isDespawning);
         sb.append('}');
         return sb.toString();
     }

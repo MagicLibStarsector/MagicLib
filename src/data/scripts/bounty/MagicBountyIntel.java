@@ -76,10 +76,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     protected String getName() {
         ActiveBounty bounty = getBounty();
+        if (bounty == null) return "";
 
         switch (bounty.getStage()) {
             case Succeeded:
                 return String.format(getString("mb_intelTitleCompleted"), bounty.getSpec().job_name);
+            case ExpiredAfterAccepting:
+            case Dismissed:
+            case ExpiredWithoutAccepting:
+            case EndedWithoutPlayerInvolvement:
             case FailedSalvagedFlagship:
                 return String.format(getString("mb_intelTitleFailed"), bounty.getSpec().job_name);
             case Accepted:
@@ -92,6 +97,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public Color getTitleColor(ListInfoMode mode) {
         ActiveBounty bounty = getBounty();
+        if (bounty == null) return Misc.getGrayColor();
 
         switch (bounty.getStage()) {
             case Accepted:
@@ -108,7 +114,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     public void createIntelInfo(TooltipMakerAPI info, ListInfoMode mode) {
         super.createIntelInfo(info, mode);
         ActiveBounty bounty = getBounty();
-
+        if (bounty == null) return;
 
         switch (bounty.getStage()) {
             case Succeeded:
@@ -124,6 +130,11 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
                 break;
             case FailedSalvagedFlagship:
+            case ExpiredAfterAccepting:
+            case Dismissed:
+            case ExpiredWithoutAccepting:
+            case EndedWithoutPlayerInvolvement:
+                // Don't add any bullet points below the title.
                 break;
             case Accepted:
             case NotAccepted:
@@ -187,6 +198,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public void createSmallDescription(TooltipMakerAPI info, float width, float height) {
         ActiveBounty bounty = getBounty();
+        if (bounty == null) return;
 
         if (bounty.getSpec().job_show_captain && bounty.getFleet().getCommander() != null && bounty.getFleet().getCommander().getPortraitSprite() != null) {
             info.addImage(bounty.getFleet().getCommander().getPortraitSprite(), width, 128f, PADDING_DESC);
@@ -456,6 +468,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public List<ArrowData> getArrowData(SectorMapAPI map) {
         ActiveBounty bounty = getBounty();
+        if (bounty == null) return Collections.emptyList();
 
         if (!bounty.getSpec().job_show_arrow) {
             return null;
@@ -482,6 +495,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         Set<String> tags = super.getIntelTags(map);
         Collections.addAll(tags, Tags.INTEL_BOUNTY, Tags.INTEL_ACCEPTED);
         ActiveBounty bounty = getBounty();
+        if (bounty == null) return Collections.emptySet();
 
         if (bounty.getGivingFaction() != null) {
             tags.add(bounty.getGivingFaction().getDisplayName());
@@ -553,6 +567,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
     private void endMission(boolean expire) {
         ActiveBounty bounty = getBounty();
+        if (bounty == null) return;
 
         if (ended == null || !ended) {
             // Shouldn't happen

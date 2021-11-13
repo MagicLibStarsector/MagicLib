@@ -37,6 +37,7 @@
 		"mb_job":"job is",
 		"mb_jobs":"jobs are",
 		"mb_available":" available on the bounty board.",
+		"mb_continue":"Continue",
 		"mb_unnamed":"Unnamed job",
 		"mb_close":"Close",
 		"mb_closed":"Close the board.",
