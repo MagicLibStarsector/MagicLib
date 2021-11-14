@@ -1,6 +1,6 @@
 {
 	"test_bounty":{
-		#"trigger_market_id":["new_maxios"],
+                "trigger_market_id":["asharu"],
 		"trigger_marketFaction_any":["independent"],
 		"trigger_marketFaction_alliedWith":true,
 		#"trigger_marketFaction_none":["pirates"],

@@ -184,6 +184,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         } else if(entry.TIME>entry.FULL){                    
                             opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
                         }
+                        
                         entry.SPRITE.setAlphaMult(opacity);
                     }
                 } else {
@@ -192,11 +193,10 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
                     } else if(entry.TIME>entry.FULL){                    
                         entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                    }
-                    entry.SPRITE.setAlphaMult(1);
+                    } else entry.SPRITE.setAlphaMult(1);
                 }
+                
                 //finally render that stuff
-//                render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
                 render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
             }
         }
@@ -309,6 +309,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         } else if(entry.TIME>entry.FULL){                    
                             opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
                         }
+                        
                         entry.SPRITE.setAlphaMult(opacity);
                     }
                 } else {
@@ -317,8 +318,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                         entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
                     } else if(entry.TIME>entry.FULL){                    
                         entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                    }
-                    entry.SPRITE.setAlphaMult(1);
+                    } else entry.SPRITE.setAlphaMult(1);
                 }               
                 
                 //move the offset on the anchor
@@ -386,9 +386,8 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     }
 
                     //finally render that stuff
-//                    render(new renderData(entry.SPRITE, center, entry.LAYER));
-
                     render(new renderData(entry.SPRITE, center, entry.LAYER));
+                    
                     //and immediatelly remove
                     iter.remove();
                 } else {
@@ -437,6 +436,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                             } else if(entry.TIME>entry.FULL){                    
                                 opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
                             }
+                            
                             entry.SPRITE.setAlphaMult(opacity);
                         }
                     } else {
@@ -445,8 +445,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                             entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
                         } else if(entry.TIME>entry.FULL){                    
                             entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                        }
-                        entry.SPRITE.setAlphaMult(1);
+                        } else entry.SPRITE.setAlphaMult(1);
                     }
                     
                     
@@ -508,9 +507,6 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                     }
                     
                     //finally render that stuff
-                    
-//                    render(new renderData(entry.SPRITE, center, entry.LAYER));
-
                     render(new renderData(entry.SPRITE, center, entry.LAYER));
 
                     if(entry.FADEOUT<0){

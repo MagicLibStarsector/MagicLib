@@ -11,7 +11,7 @@
         "trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
         "trigger_market_minSize": 3, # Default: 0. The minimum size of the market.
         "trigger_player_minLevel": 15, # Default: 0. The minimum level of the player.
-        "trigger_min_fleet_size": 25, # Default: 0. The minimum player fleet "power" based on Fleet Points (not Deployment Points) with some multipliers for officers and player levels 
+        "trigger_min_fleet_size": 25, # Default: 0. The minimum player fleet "power" based on Fleet Points (not Deployment Points) with some multipliers for officers and player levels. Can be used to prevent exploits such as picking ships in storage to reduce the size of the bounty fleet. 
         "trigger_min_days_elapsed": 360, # Default: 0. The minimum number of days that must have elapsed.
         "trigger_weight_mult": 0.25, # Default: -1. Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance. Default bounty memKeys of note:
             # $job_memKey_succeeded set to true if the job has been successfully completed
@@ -41,6 +41,7 @@
                                                                # $manOrWomanOrPerson based on bounty commander gender.
                                                                # $hisOrHerOrTheir based on bounty commander gender.
                                                                # $heOrSheOrThey based on bounty commander gender.
+                                                               # $himOrHerOrThem
                                                                # $system_name The star system that the bounty fleet is in.
                                                                # $fleetAssignmentTarget The body that the bounty fleet has been placed near.
                                                                # $shipName The name of the bounty flagship.

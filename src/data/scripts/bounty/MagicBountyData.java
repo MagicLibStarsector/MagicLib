@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
+import org.lazywizard.lazylib.MathUtils;
 
 /**
  *
@@ -166,6 +167,14 @@ public class MagicBountyData {
                 }
                 */
                 
+                //test to have a random flagship variant:                
+                String flagship = getString(bountyId, "fleet_flagship_variant");   
+                List <String> flagshipList = getStringList(bountyId, "fleet_flagship_variant");
+                if(flagshipList!=null && !flagshipList.isEmpty()){
+                    int i = MathUtils.getRandomNumberInRange(0, flagshipList.size()-1);
+                    flagship=flagshipList.get(i);
+                }              
+                
                 bountyData this_bounty = new bountyData(
                         getStringList(bountyId, "trigger_market_id"),
                         getStringList(bountyId, "trigger_marketFaction_any"),
@@ -221,7 +230,7 @@ public class MagicBountyData {
 
                         getString(bountyId, "fleet_name"),
                         getString(bountyId, "fleet_faction"),
-                        getString(bountyId, "fleet_flagship_variant"),
+                        flagship,
                         getString(bountyId, "fleet_flagship_name"),
                         getBoolean(bountyId, "fleet_flagship_recoverable"),
                         getIntMap(bountyId, "fleet_preset_ships"),
