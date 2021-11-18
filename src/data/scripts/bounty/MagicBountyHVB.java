@@ -181,6 +181,8 @@ public class MagicBountyHVB {
                             memKeyAll,
                             //Map <String,Boolean> trigger_memKeys_any,
                             null,
+                            //Map <String,Boolean> trigger_memKeys_none,
+                            null,
                             //Map <String,Float> trigger_playerRelationship_atLeast,
                             relationshipAtLeast,
                             //Map <String,Float> trigger_playerRelationship_atMost,

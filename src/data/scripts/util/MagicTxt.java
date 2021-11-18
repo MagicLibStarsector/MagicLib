@@ -31,13 +31,13 @@ public class MagicTxt {
      * The difference from normal String.replaceAll is that stringCreator is only run if a match is found.
      */
     public static String replaceAllIfPresent(String stringToReplace, String regex, StringCreator stringCreator) {
-        if (stringToReplace.contains(regex)) {
+        if (stringToReplace.toLowerCase().contains(regex.toLowerCase())) {
             try {
                 String replacement = stringCreator.create();
-                return stringToReplace.replaceAll(Pattern.quote(regex), replacement);
+                return Pattern.compile(Pattern.quote(regex), Pattern.CASE_INSENSITIVE).matcher(stringToReplace).replaceAll(replacement);
             } catch (Exception e) {
                 Global.getLogger(MagicTxt.class).error("Error thrown while replacing " + stringToReplace, e);
-                return stringToReplace.replaceAll(Pattern.quote(regex), "null");
+                return Pattern.compile(Pattern.quote(regex), Pattern.CASE_INSENSITIVE).matcher(stringToReplace).replaceAll("null");
             }
         } else {
             return stringToReplace;

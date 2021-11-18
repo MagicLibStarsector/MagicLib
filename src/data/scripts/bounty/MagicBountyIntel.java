@@ -219,7 +219,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case Succeeded:
 
                 //"You have successfully completed this bounty."
-                info.addPara(getString("mb_descSuccess"), 0f);
+                info.addPara(getString("mb_descSuccess"), PADDING_DESC);
 
                 //adding optional success text:
                 if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
@@ -227,7 +227,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             info,
                             bounty.getSpec().job_intel_success,
                             PADDING_DESC,
-                            Misc.getGrayColor(),
+                            Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                 }
@@ -250,7 +250,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
             case FailedSalvagedFlagship:
                 //"You have failed this bounty."
-                info.addPara(getString("mb_descFailure"), 0f);
+                info.addPara(getString("mb_descFailure"), PADDING_DESC);
 
                 //adding optional failure text:
                 if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
@@ -258,7 +258,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             info,
                             bounty.getSpec().job_intel_failure,
                             PADDING_DESC,
-                            Misc.getGrayColor(),
+                            Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
                 }

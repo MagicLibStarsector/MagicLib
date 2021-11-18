@@ -169,6 +169,7 @@ public final class MagicBountyCoordinator {
                         bountySpec.trigger_min_fleet_size,
                         bountySpec.trigger_memKeys_all,
                         bountySpec.trigger_memKeys_any,
+                        bountySpec.trigger_memKeys_none,
                         bountySpec.trigger_playerRelationship_atLeast,
                         bountySpec.trigger_playerRelationship_atMost
                 )) {

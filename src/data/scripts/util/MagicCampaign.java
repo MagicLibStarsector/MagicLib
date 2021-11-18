@@ -1329,7 +1329,8 @@ public class MagicCampaign {
             int min_fleet_size,
             @Nullable Map <String,Boolean> memKeys_all,          
             @Nullable Map <String,Boolean> memKeys_any,
-            @Nullable Map <String,Float> playerRelationship_atLeast,  
+            @Nullable Map <String,Boolean> memKeys_none,
+            @Nullable Map <String,Float> playerRelationship_atLeast,
             @Nullable Map <String,Float> playerRelationship_atMost
     ){
         
@@ -1338,6 +1339,18 @@ public class MagicCampaign {
         
         //checking trigger_player_minLevel
         if(player_minLevel>0 && Global.getSector().getPlayerStats().getLevel()<player_minLevel)return false;
+
+        //checking memKeys_none
+        if(memKeys_none != null && !memKeys_none.isEmpty()) {
+            for (Map.Entry<String, Boolean> entry : memKeys_none.entrySet()) {
+                if (Global.getSector().getMemoryWithoutUpdate().contains(entry.getKey())) {
+                    if (Global.getSector().getMemoryWithoutUpdate().getBoolean(entry.getKey()) == entry.getValue()) {
+                        log.info(String.format("Not showing bounty because of memKeys_none %s value %s.", entry.getKey(), entry.getValue()));
+                        return false;
+                    }
+                }
+            }
+        }
         
         //checking trigger_min_fleet_size
         if(min_fleet_size>0){

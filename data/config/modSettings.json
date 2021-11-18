@@ -41,7 +41,7 @@
             "SKR_gatlingLance":"MILD",
         },
         "bounty_board_enabled": true, # whether bounties are enabled in MagicLib or not
-		"bounty_board_test_mode": true, # disable some of the requirements of the bounties to test them
+		"bounty_board_test_mode": false, # disable some of the requirements of the bounties to test them
 		"bounty_board":{
 			#List bounties that will be loaded from data/config/modFiles/MagicBounty_data.json
 			#"id" : bounty id

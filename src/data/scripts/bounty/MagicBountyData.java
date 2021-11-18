@@ -188,6 +188,7 @@ public class MagicBountyData {
                         getFloat(bountyId, "trigger_weight_mult", 1f),
                         getBooleanMap(bountyId, "trigger_memKeys_all"),
                         getBooleanMap(bountyId, "trigger_memKeys_any"),
+                        getBooleanMap(bountyId, "trigger_memKeys_none"),
                         getFloatMap(bountyId, "trigger_playerRelationship_atLeast"),
                         getFloatMap(bountyId, "trigger_playerRelationship_atMost"),
 
@@ -287,6 +288,7 @@ public class MagicBountyData {
         public float trigger_weight_mult;                                       //simple frequency multiplier
         @NotNull public Map <String,Boolean> trigger_memKeys_all;
         @NotNull public Map <String,Boolean> trigger_memKeys_any;
+        @NotNull public Map <String,Boolean> trigger_memKeys_none;
         @NotNull public Map <String,Float> trigger_playerRelationship_atLeast;  //minimal player relationship with those factions
         @NotNull public Map <String,Float> trigger_playerRelationship_atMost;   //maximum player relationship with those factions
         //job description
@@ -380,6 +382,7 @@ public class MagicBountyData {
             float trigger_weight_mult,
             Map <String,Boolean> trigger_memKeys_all,
             Map <String,Boolean> trigger_memKeys_any,
+            Map <String,Boolean> trigger_memKeys_none,
             Map <String,Float> trigger_playerRelationship_atLeast,
             Map <String,Float> trigger_playerRelationship_atMost,
             String job_name,
@@ -450,6 +453,7 @@ public class MagicBountyData {
             this.trigger_weight_mult = trigger_weight_mult;
             this.trigger_memKeys_all = trigger_memKeys_all;
             this.trigger_memKeys_any = trigger_memKeys_any;
+            this.trigger_memKeys_none = trigger_memKeys_none;
             this.trigger_playerRelationship_atLeast = trigger_playerRelationship_atLeast;
             this.trigger_playerRelationship_atMost = trigger_playerRelationship_atMost;
             this.job_name = job_name;
@@ -472,7 +476,8 @@ public class MagicBountyData {
                     this.job_type = JobType.Destruction;
                 } else if (job_type.equalsIgnoreCase("obliteration")) {
                     this.job_type = JobType.Obliteration;
-                } else if (job_type.equalsIgnoreCase("neutralisation")) {
+                } else if (job_type.equalsIgnoreCase("neutralisation")
+                || job_type.equalsIgnoreCase("neutralization")) {
                     this.job_type = JobType.Neutralisation;
                 } else {
                     this.job_type = JobType.Assassination;
