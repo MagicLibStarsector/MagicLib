@@ -68,7 +68,13 @@ public class MagicCampaign {
      * @param object
      * @param spin 
      */
-    public void placeOnStableOrbit(SectorEntityToken object, boolean spin){
+    public static void placeOnStableOrbit(SectorEntityToken object, boolean spin){
+        //prevent crash in hyperspace
+        if(object.isInHyperspace()){
+            object.setFixedLocation(object.getLocation().x, object.getLocation().y);
+            object.setFacing(MathUtils.getRandomNumberInRange(0, 360));
+            return;
+        }
         
         StarSystemAPI system = object.getStarSystem();
         Vector2f location = object.getLocation();
@@ -1319,6 +1325,7 @@ public class MagicCampaign {
      * @param min_fleet_size
      * @param memKeys_all
      * @param memKeys_any
+     * @param memKeys_none
      * @param playerRelationship_atLeast
      * @param playerRelationship_atMost
      * @return 
