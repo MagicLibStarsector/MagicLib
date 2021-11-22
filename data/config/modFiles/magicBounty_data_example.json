@@ -14,7 +14,8 @@
         "trigger_min_fleet_size": 25, # Default: 0. The minimum player fleet "power" based on Fleet Points (not Deployment Points) with some multipliers for officers and player levels. Can be used to prevent exploits such as picking ships in storage to reduce the size of the bounty fleet. 
         "trigger_min_days_elapsed": 360, # Default: 0. The minimum number of days that must have elapsed.
         "trigger_weight_mult": 0.25, # Default: -1. Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance. Default bounty memKeys of note:
-            # $job_memKey_succeeded set to true if the job has been successfully completed
+		"trigger_memKeys_all": { # Default: no values. The job will only show if ALL of the listed memKeys exist with the specified boolean value.
+		    # $job_memKey_succeeded set to true if the job has been successfully completed
             # $job_memKey_failed set to true if the job required the destruction of a flagship and the player salvaged it instead
             # $job_memKey_expired set to true if the job deadline expired, ended without player involvment, or was permanently dissmissed
             # $job_memKey set to false when the job has been picked up, true once concluded regardless of the result
@@ -119,8 +120,8 @@
         
         "fleet_name":"Fleet Name", # Default: no name.
         "fleet_faction": "pirates", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
-        "fleet_flagship_variant":"buffalo2_FS", # Required.
-        # Variants that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
+        "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]
+        # Variant files that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
         "fleet_flagship_name":"Flagship", # Default: Random.
         "fleet_flagship_recoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
         "fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.

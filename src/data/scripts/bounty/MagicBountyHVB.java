@@ -16,7 +16,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Ranks;
 import com.fs.starfarer.api.impl.campaign.ids.Skills;
-import com.fs.starfarer.api.util.Misc;
+//import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import static data.scripts.bounty.MagicBountyData.BOUNTIES;
 import static data.scripts.bounty.MagicBountyData.verbose;
@@ -188,7 +188,7 @@ public class MagicBountyHVB {
                             //Map <String,Float> trigger_playerRelationship_atMost,
                             relationshipAtMost,
                             //String job_name,
-                            getString("mb_hvb_title"),
+                            getString("mb_hvb_title")+row.getString("firstName")+" "+row.getString("lastName"),
                             //String job_description,
                             row.getString("intelText"),
                             //String job_comm_reply,

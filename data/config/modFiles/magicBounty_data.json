@@ -103,5 +103,5 @@
 		],
 		"location_prioritizeUnexplored":false,
 		"location_defaultToAnyEntity":true
-	}
+        },
 }
