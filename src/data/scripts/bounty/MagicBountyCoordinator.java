@@ -270,7 +270,7 @@ public final class MagicBountyCoordinator {
                 nullStringIfEmpty(spec.target_last_name),
                 nullStringIfEmpty(spec.target_portrait),
                 spec.target_gender,
-                nullStringIfEmpty(spec.fleet_faction),
+                nullStringIfEmpty(spec.fleet_composition_faction),
                 nullStringIfEmpty(spec.target_rank),
                 nullStringIfEmpty(spec.target_post),
                 nullStringIfEmpty(spec.target_personality),

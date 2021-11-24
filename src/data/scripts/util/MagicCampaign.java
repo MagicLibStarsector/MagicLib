@@ -687,7 +687,9 @@ public class MagicCampaign {
         }
         
         //EMPTY FLEET
-        CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(fleetFaction, type, null);
+        //CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(fleetFaction, type, null);
+        // TESTING CHANGE: fleet is kept as the reinforcement faction so that appropriate faction officers get added
+        CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(extraShipsFaction, type, null);
         
         //ADDING FLAGSHIP
         FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, true, verbose);
