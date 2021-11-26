@@ -215,6 +215,11 @@
 		"mb_they":"they",
 		"mb_it":"it",
 
+		"mb_itIs":"it is",
+		"mb_heIs":"he is",
+		"mb_sheIs":"she is",
+		"mb_theyAre":"they are",
+
 		"mb_him":"him",
 		#"mb_her":"her",
 		"mb_them":"them",

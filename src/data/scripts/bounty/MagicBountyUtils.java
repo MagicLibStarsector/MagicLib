@@ -2,7 +2,6 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FleetAssignment;
-import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -98,6 +97,25 @@ class MagicBountyUtils {
                 }
             }
         });
+        
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$heIsOrSheIsOrTheyAre", new StringCreator() {
+            @Override
+            public String create() {
+                if(bounty.getFleet().getCommander().isAICore()){
+                    return MagicTxt.getString("mb_itIs");
+                } else {
+                    switch (bounty.getFleet().getCommander().getGender()) {
+                        case MALE:
+                            return MagicTxt.getString("mb_heIs");
+                        case FEMALE:
+                            return MagicTxt.getString("mb_sheIs");
+                        default:
+                            return MagicTxt.getString("mb_theyAre");
+                    }
+                }
+            }
+        });
+        
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$himOrHerOrThem", new StringCreator() {
             @Override
             public String create() {
