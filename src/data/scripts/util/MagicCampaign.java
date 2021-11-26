@@ -46,6 +46,7 @@ import org.lwjgl.util.vector.Vector2f;
 public class MagicCampaign {
     
     public static Logger log = Global.getLogger(MagicCampaign.class);
+    private static final String OCCUPIED = "theme_already_occupied";
     
     /**
      * Removes hyperspace clouds around the system, up to the outer-most jump point radius
@@ -1603,6 +1604,16 @@ public class MagicCampaign {
                             break;
                         }
                     }
+                    if(avoid_themes.contains(OCCUPIED)){
+                        //manually check for markets                        
+                        for(SectorEntityToken t : systems_core.get(i).getAllEntities()){
+                            if(t.getMarket()!=null && t.getMarket().getFaction()!=Global.getSector().getFaction(Factions.NEUTRAL)){
+                                systems_core.remove(i);
+                                i--;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             if(!systems_close.isEmpty()){
@@ -1614,6 +1625,16 @@ public class MagicCampaign {
                             break;
                         }
                     }
+                    if(avoid_themes.contains(OCCUPIED)){
+                        //manually check for markets                        
+                        for(SectorEntityToken t : systems_close.get(i).getAllEntities()){
+                            if(t.getMarket()!=null && t.getMarket().getFaction()!=Global.getSector().getFaction(Factions.NEUTRAL)){
+                                systems_close.remove(i);
+                                i--;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             if(!systems_far.isEmpty()){
@@ -1623,6 +1644,16 @@ public class MagicCampaign {
                             systems_far.remove(i);
                             i--;
                             break;
+                        }
+                    }
+                    if(avoid_themes.contains(OCCUPIED)){
+                        //manually check for markets                        
+                        for(SectorEntityToken t : systems_far.get(i).getAllEntities()){
+                            if(t.getMarket()!=null && t.getMarket().getFaction()!=Global.getSector().getFaction(Factions.NEUTRAL)){
+                                systems_far.remove(i);
+                                i--;
+                                break;
+                            }
                         }
                     }
                 }
