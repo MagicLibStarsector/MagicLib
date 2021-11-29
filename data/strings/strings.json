@@ -220,10 +220,15 @@
 		"mb_sheIs":"she is",
 		"mb_theyAre":"they are",
 
+		"mb_it":"it",
 		"mb_him":"him",
 		#"mb_her":"her",
 		"mb_them":"them",
-
+		
+		"mb_itself":"itself",
+		"mb_himself":"himself",
+		"mb_herself":"herself",
+		"mb_themselves":"themselves",
 
 	}
 }

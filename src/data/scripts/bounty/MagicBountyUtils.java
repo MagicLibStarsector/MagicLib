@@ -133,6 +133,24 @@ class MagicBountyUtils {
                 }
             }
         });
+        
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himselfOrHerselfOrThemselves", new StringCreator() {
+            @Override
+            public String create() {
+                if(bounty.getFleet().getCommander().isAICore()){
+                    return MagicTxt.getString("mb_itself");
+                } else {
+                    switch (bounty.getFleet().getCommander().getGender()) {
+                        case MALE:
+                            return MagicTxt.getString("mb_himself");
+                        case FEMALE:
+                            return MagicTxt.getString("mb_herself");
+                        default:
+                            return MagicTxt.getString("mb_themselves");
+                    }
+                }
+            }
+        });
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$system_name", new StringCreator() {
             @Override
             public String create() {

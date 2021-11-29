@@ -38,12 +38,13 @@
                                                                # \n creates a line break, for example "Line one.\nLine two."
                                                                # == brackets create a highlight, for example "Text ==highlight== text."
                                                                # $sonOrDaughterOrChild based on bounty commander gender.
-                                                               # $fatherOrMotherOrParent based on bounty commander gender.
-                                                               # $manOrWomanOrPerson based on bounty commander gender.
-                                                               # $hisOrHerOrTheir based on bounty commander gender.
-                                                               # $heOrSheOrThey based on bounty commander gender.
-                                                               # $heIsOrSheIsOrTheyAre based on bounty commander gender.
+                                                               # $fatherOrMotherOrParent
+                                                               # $manOrWomanOrPerson
+                                                               # $hisOrHerOrTheir
+                                                               # $heOrSheOrThey
+                                                               # $heIsOrSheIsOrTheyAre
                                                                # $himOrHerOrThem
+                                                               # $himselfOrHerselfOrThemselves
                                                                # $system_name The star system that the bounty fleet is in.
                                                                # $fleetAssignmentTarget The body that the bounty fleet has been placed near.
                                                                # $shipName The name of the bounty flagship.
