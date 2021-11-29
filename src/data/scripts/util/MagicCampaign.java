@@ -1606,6 +1606,12 @@ public class MagicCampaign {
                     }
                     if(avoid_themes.contains(OCCUPIED)){
                         //manually check for markets                        
+                        if(!Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
+                            systems_core.remove(i);
+                            i--;
+                            break;
+                        }
+                        /*
                         for(SectorEntityToken t : systems_core.get(i).getAllEntities()){
                             if(t.getMarket()!=null && t.getMarket().getFaction()!=Global.getSector().getFaction(Factions.NEUTRAL)){
                                 systems_core.remove(i);
@@ -1613,6 +1619,7 @@ public class MagicCampaign {
                                 break;
                             }
                         }
+                        */
                     }
                 }
             }
@@ -1627,12 +1634,10 @@ public class MagicCampaign {
                     }
                     if(avoid_themes.contains(OCCUPIED)){
                         //manually check for markets                        
-                        for(SectorEntityToken t : systems_close.get(i).getAllEntities()){
-                            if(t.getMarket()!=null && t.getMarket().getFaction()!=Global.getSector().getFaction(Factions.NEUTRAL)){
-                                systems_close.remove(i);
-                                i--;
-                                break;
-                            }
+                        if(!Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
+                            systems_core.remove(i);
+                            i--;
+                            break;
                         }
                     }
                 }
@@ -1647,13 +1652,11 @@ public class MagicCampaign {
                         }
                     }
                     if(avoid_themes.contains(OCCUPIED)){
-                        //manually check for markets                        
-                        for(SectorEntityToken t : systems_far.get(i).getAllEntities()){
-                            if(t.getMarket()!=null && t.getMarket().getFaction()!=Global.getSector().getFaction(Factions.NEUTRAL)){
-                                systems_far.remove(i);
-                                i--;
-                                break;
-                            }
+                        //manually check for markets                                  
+                        if(!Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
+                            systems_core.remove(i);
+                            i--;
+                            break;
                         }
                     }
                 }
