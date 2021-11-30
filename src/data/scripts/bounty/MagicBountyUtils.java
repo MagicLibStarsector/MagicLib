@@ -20,7 +20,7 @@ class MagicBountyUtils {
     static String replaceStringVariables(final ActiveBounty bounty, String text) {
         String replaced = text;
 
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$sonOrDaughter|$sonOrDaughterOrChild", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$sonDaughterChild|$sonOrDaughter|$sonOrDaughterOrChild", new StringCreator() {
             @Override
             public String create() {
                 switch (bounty.getFleet().getCommander().getGender()) {
@@ -33,7 +33,7 @@ class MagicBountyUtils {
                 }
             }
         });
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$fatherOrMother|$fatherOrMotherOrParent", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$fatherMotherParent|$fatherOrMother|$fatherOrMotherOrParent", new StringCreator() {
             @Override
             public String create() {
                 switch (bounty.getFleet().getCommander().getGender()) {
@@ -46,7 +46,7 @@ class MagicBountyUtils {
                 }
             }
         });
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$manOrWomanOrPerson", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$manWomanPerson|$manOrWomanOrPerson", new StringCreator() {
             @Override
             public String create() {
                 if(bounty.getFleet().getCommander().isAICore()){
@@ -63,7 +63,7 @@ class MagicBountyUtils {
                 }
             }
         });
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$hisOrHerOrTheir", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$hisHerTheir|$hisOrHerOrTheir", new StringCreator() {
             @Override
             public String create() {
                 if(bounty.getFleet().getCommander().isAICore()){
@@ -80,7 +80,7 @@ class MagicBountyUtils {
                 }
             }
         });
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$heOrSheOrThey", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$heSheThey|$heOrSheOrThey", new StringCreator() {
             @Override
             public String create() {
                 if(bounty.getFleet().getCommander().isAICore()){
@@ -98,7 +98,7 @@ class MagicBountyUtils {
             }
         });
         
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$heIsOrSheIsOrTheyAre", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$heSheTheyAre|$heIsOrSheIsOrTheyAre", new StringCreator() {
             @Override
             public String create() {
                 if(bounty.getFleet().getCommander().isAICore()){
@@ -116,7 +116,7 @@ class MagicBountyUtils {
             }
         });
         
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himOrHerOrThem", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himHerThem|$himOrHerOrThem", new StringCreator() {
             @Override
             public String create() {
                 if(bounty.getFleet().getCommander().isAICore()){
@@ -134,7 +134,7 @@ class MagicBountyUtils {
             }
         });
         
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himselfOrHerselfOrThemselves", new StringCreator() {
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himHerThemselves|$himselfOrHerselfOrThemselves", new StringCreator() {
             @Override
             public String create() {
                 if(bounty.getFleet().getCommander().isAICore()){
