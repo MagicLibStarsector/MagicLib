@@ -280,8 +280,7 @@ public final class MagicBountyCoordinator {
                 spec.target_skills
         );
 
-        CampaignFleetAPI fleet = createFleet(
-                spec.fleet_name,
+        CampaignFleetAPI fleet = createFleet(spec.fleet_name,
                 spec.fleet_faction,
                 FleetTypes.PERSON_BOUNTY_FLEET,
                 spec.fleet_flagship_name,
@@ -296,7 +295,7 @@ public final class MagicBountyCoordinator {
                 null,
                 false,
                 spec.fleet_transponder,
-                MagicVariables.MAGICBOUNTY_variantPath
+                MagicVariables.MAGICLIB_VARIANT_PATH
         );
         ArrayList<String> presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
 

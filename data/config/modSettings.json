@@ -42,17 +42,40 @@
         },
         "bounty_board_enabled": true, # whether bounties are enabled in MagicLib or not
 		"bounty_board_test_mode": false, # disable some of the requirements of the bounties to test them
+		"bounty_offersAtSizeThree":1, #default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
+        "bounty_boardRefreshTimePerMarketInDays": 90,
+		"bounty_neutralisationThreshold": 0.66,
+
+		"merged_themes_blacklist":[
+			#adds custom system themes to the generic "theme_already_occupied" blacklist umbrella that is used by MagicBounties and other campaign scripts
+			"theme_plaguebearers";
+			"theme_breakers";
+			"theme_breakers_main";
+			"theme_breakers_secondary";
+			"theme_breakers_no_fleets";
+			"theme_breakers_destroyed";
+			"theme_breakers_suppressed";
+			"theme_breakers_resurgent";
+			"theme_breakers_homeworld";
+
+			"theme_magellan_leveller";
+			"theme_magellan_leveller_home_nebula";
+
+			"theme_oci";
+			"theme_oci_small";
+			"theme_oci_large";
+			"theme_oci_core";
+		],
+
+		"bounty_market_blacklist":[
+			#Markets that for some reason have a regular bar but should NOT offer any job
+		],
+
 		"bounty_board":{
 			#List bounties that will be loaded from data/config/modFiles/MagicBounty_data.json
 			#"id" : bounty id
 			#["required_mod"] : list mods that are required to load that bounty, can be used to make cross mod bounties. Can be left empty.
 			#"test_bounty":[],
 		},
-		"bounty_market_blacklist":[
-			#Markets that for some reason have a regular bar but should NOT offer any job
-		],
-		"bounty_offersAtSizeThree":1, #default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
-        "bounty_boardRefreshTimePerMarketInDays": 90,
-		"bounty_neutralisationThreshold": 0.66,
     }
 }

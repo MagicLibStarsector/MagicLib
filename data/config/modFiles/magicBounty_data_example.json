@@ -173,8 +173,9 @@
             "procgen_no_theme_pulsar_blackhole", #or this one
         ],
         "location_themes_blacklist": [ # Default: none. System themes to never spawn the fleet at.
-            "theme_already_occupied",
-            "theme_hidden",
+            "theme_already_occupied", #Will avoid systems with "hostile" themes taken from a merged list between mods. Includes all Remnant, Plague-Bearer, OCI, Blade-Breaker systems 
+            "theme_already_colonized", #Will explicitely exclude systems with active markets, kind of mandatory for pirate bounties given that faction colonize otherwise interesting systems with Nexerelin
+            "theme_hidden", #Used by that one story system
         ],
         "location_entities": [ # Default: PLANET + JUMP_POINT + STABLE_LOCATION. Possible entities to spawn the fleet around.
             "gate",

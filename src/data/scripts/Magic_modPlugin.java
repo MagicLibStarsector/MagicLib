@@ -8,6 +8,7 @@ import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
+import data.scripts.util.MagicVariables;
 
 public class Magic_modPlugin extends BaseModPlugin {
 
@@ -51,6 +52,9 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         //gather trail data
         MagicAutoTrails.getTrailData();
+        
+        //gather mod's system themes
+        MagicVariables.loadThemesBlacklist();
     }
 
     @Override
@@ -112,6 +116,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     /**
      * Define how classes are named in the save xml, allowing class renaming without
      * breaking saves.
+     * @param x
      */
     @Override
     public void configureXStream(XStream x) {

@@ -66,6 +66,28 @@ public class MagicVariables {
         return SECTOR_WIDTH/Misc.getUnitsPerLightYear();
     }
     
-    public static String MAGICBOUNTY_variantPath = "data/config/modFiles/magicBounty_variants/";
+    public static final String MAGICLIB_VARIANT_PATH = "data/config/modFiles/magicBounty_variants/";
+    public static final String MAGICLIB_COLONIZED_SYSTEM = "theme_already_colonized";
+    public static final String MAGICLIB_OCCUPIED_SYSTEM = "theme_already_occupied";
+    
+    public static List<String> mergedThemesBlacklist = new ArrayList<>();
+    
+    public static void loadThemesBlacklist(){
+        mergedThemesBlacklist.clear();
+        //load list from settings
+        List<String> themes = MagicSettings.getList("MagicLib", MAGICLIB_VARIANT_PATH);
+        for (String s : themes){
+            if(!mergedThemesBlacklist.contains(s)) mergedThemesBlacklist.add(s);
+        }
+        //default vanilla themes to load
+        mergedThemesBlacklist.add("theme_remnant");
+        mergedThemesBlacklist.add("theme_remnant_main");
+        mergedThemesBlacklist.add("theme_remnant_secondary");
+        mergedThemesBlacklist.add("theme_remnant_no_fleets");
+        mergedThemesBlacklist.add("theme_remnant_destroyed");
+        mergedThemesBlacklist.add("theme_remnant_suppressed");
+        mergedThemesBlacklist.add("theme_remnant_resurgent");
+    }
+    
     public static List<String> presetShipIdsOfLastCreatedFleet = new ArrayList<>();
 }
