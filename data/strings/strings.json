@@ -197,9 +197,11 @@
 		"mb_son":"son",
 		"mb_daughter":"daughter",
 		"mb_child":"child",
+
 		"mb_father":"father",
 		"mb_mother":"mother",
 		"mb_parent":"parent",
+
 		"mb_man":"man",
 		"mb_woman":"woman",
 		"mb_person":"person",
@@ -220,7 +222,7 @@
 		"mb_sheIs":"she is",
 		"mb_theyAre":"they are",
 
-		"mb_it":"it",
+		#"mb_it":"it",
 		"mb_him":"him",
 		#"mb_her":"her",
 		"mb_them":"them",
