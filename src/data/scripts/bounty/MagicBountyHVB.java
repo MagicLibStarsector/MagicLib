@@ -38,6 +38,15 @@ public class MagicBountyHVB {
     
     public static final String VAYRA_UNIQUE_BOUNTIES_FILE = "data/config/vayraBounties/unique_bounty_data.csv";
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
+                        
+    private static final List<String> WHITELIST = new ArrayList<>();
+    static {
+        WHITELIST.add("theme_misc");
+        WHITELIST.add("theme_misc_skip");
+        WHITELIST.add("theme_interesting_minor");
+        WHITELIST.add("theme_ruins_secondary");
+        WHITELIST.add("theme_derelict_probes");
+    }
     
     private static final List<String> BLACKLIST = new ArrayList<>();
     static {
@@ -154,9 +163,6 @@ public class MagicBountyHVB {
                                 break;
                         }
                     }
-                    
-                    List <String> themes = new ArrayList<>();
-                    themes.add("procgen_no_theme_pulsar_blackhole");
                     
                     String faction = row.getString("faction");
                     if(faction.equals("hvb_hostile")){
@@ -276,7 +282,7 @@ public class MagicBountyHVB {
                             //String fleet_flagship_name,
                             row.getString("flagshipName"),
                             //boolean fleet_flagship_recoverable,
-                            row.optDouble("chanceToAutoRecover", 1.0D)>0f,
+                            row.optDouble("chanceToAutoRecover", 1.0f)>0f,
                             //Map <String,Integer> fleet_preset_ships,
                             fleetMap,
                             //float fleet_scaling_multiplier,
@@ -298,7 +304,7 @@ public class MagicBountyHVB {
                             //String location_distance,
                             "CLOSE",
                             //List<String> location_themes,
-                            themes,
+                            WHITELIST,
                             //List<String> location_themes_blacklist,
                             BLACKLIST,
                             //List<String> location_entities,

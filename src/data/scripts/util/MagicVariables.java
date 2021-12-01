@@ -80,6 +80,7 @@ public class MagicVariables {
             if(!mergedThemesBlacklist.contains(s)) mergedThemesBlacklist.add(s);
         }
         //default vanilla themes to load
+        mergedThemesBlacklist.add("theme_unsafe");
         mergedThemesBlacklist.add("theme_remnant");
         mergedThemesBlacklist.add("theme_remnant_main");
         mergedThemesBlacklist.add("theme_remnant_secondary");
