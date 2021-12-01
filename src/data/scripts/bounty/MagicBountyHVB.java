@@ -39,6 +39,13 @@ public class MagicBountyHVB {
     public static final String VAYRA_UNIQUE_BOUNTIES_FILE = "data/config/vayraBounties/unique_bounty_data.csv";
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
     
+    private static final List<String> BLACKLIST = new ArrayList<>();
+    static {
+        BLACKLIST.add("theme_already_colonized");
+        BLACKLIST.add("theme_already_occupied");
+        BLACKLIST.add("theme_hidden");
+    }
+    
     public static void convertHVBs(boolean appendOnly) {
         
         if(Global.getSettings().isDevMode())MagicBountyData.verbose=true;
@@ -293,7 +300,7 @@ public class MagicBountyHVB {
                             //List<String> location_themes,
                             themes,
                             //List<String> location_themes_blacklist,
-                            null,
+                            BLACKLIST,
                             //List<String> location_entities,
                             null,
                             //boolean location_prioritizeUnexplored,
@@ -312,41 +319,6 @@ public class MagicBountyHVB {
                     } else if(verbose){
                         LOG.info("SKIPPED");
                     }
-                    
-                    /*
-                    HighValueBountyData bountyData = new HighValueBountyData(bountyId,
-                            row.getInt("level"),
-                            row.getString("rank"),
-                            row.getString("firstName"),
-                            row.getString("lastName"),
-                            row.optString("captainPersonality", "aggressive"),
-                            row.getString("fleetName"),
-                            row.getString("flagshipName"),
-                            row.getString("gender"),
-                            row.getString("faction"),
-                            row.getString("portrait"),
-                            row.getString("greetingText"),
-                            row.getBoolean("suppressIntel"),
-                            row.getString("postedByFaction"),
-                            row.getInt("creditReward"),
-                            (float) row.getInt("repReward") / 100.0F,
-                            row.getString("intelText"),
-                            row.getString("flagshipVariantId"),
-                            fleetList,
-                            row.getInt("minimumFleetFP"),
-                            (float) row.getDouble("playerFPScalingFactor"),
-                            (float) row.optDouble("chanceToAutoRecover", 1.0D),
-                            itemList,
-                            prerequisiteBountiesList,
-                            row.getBoolean("neverSpawnWhenFactionHostile"),
-                            row.getBoolean("neverSpawnWhenFactionNonHostile"),
-                            row.getInt("neverSpawnBeforeCycle"),
-                            row.getInt("neverSpawnBeforeLevel"),
-                            row.getInt("neverSpawnBeforeFleetPoints")
-                    );
-                    HighValueBountyManager.highValueBountyData.put(bountyId, bountyData);
-                    LOG.info("loaded unique bounty id " + bountyId);
-                    */
                 } else {
                     LOG.info("hit empty line, unique bounty loading ended");
                 }
