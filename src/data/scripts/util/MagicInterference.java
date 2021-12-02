@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 public class MagicInterference {    
     
     private static final String INTERFERENCE_HULLMOD = "ML_interferenceWarning";
+    private static final boolean VERBOSE = false;
     
     //////////////////////////////
     //                          //
@@ -131,14 +132,18 @@ public class MagicInterference {
 
             Map<String,Float> theDebuffs = new HashMap<>();
 
-            LOG.info("computing interference debuff");
+            if(VERBOSE){
+                LOG.info("computing interference debuff");
+            }
 
             //scan all weapons for interference sources
             for(String w : shipVariant.getNonBuiltInWeaponSlots()){
                 if(shipVariant.getFittedWeaponSlots().contains(w) && WEAPONS.containsKey(shipVariant.getWeaponId(w))){
                     theDebuffs.put(w,0f);
 
-                    LOG.info("added interference source: "+shipVariant.getWeaponId(w));
+                    if(VERBOSE){
+                        LOG.info("added interference source: "+shipVariant.getWeaponId(w));
+                    }
                 }
             }
 
@@ -147,11 +152,13 @@ public class MagicInterference {
             if(shipVariant.getHullMods().contains("fluxbreakers")){
                 hullmod=RFC_MULT;
 
-                LOG.info("Resistant Flux Conduits installed, debuff reduced.");
+                if(VERBOSE){
+                    LOG.info("Resistant Flux Conduits installed, debuff reduced.");
+                }
             }
 
             //compute all the debuff
-            LOG.info("found "+theDebuffs.size()+" interference sources");
+            //LOG.info("found "+theDebuffs.size()+" interference sources");
 
             if(theDebuffs.size()>1){
                 for (String w : theDebuffs.keySet()){
@@ -162,7 +169,9 @@ public class MagicInterference {
                                     *WEAPONS.get(shipVariant.getWeaponId(w)) //
                                     *hullmod
                     );
-                    LOG.info(shipVariant.getWeaponSpec(w).getWeaponName() + " debuff: "+WEAPONS.get(shipVariant.getWeaponId(w)));
+                    if(VERBOSE){
+                        LOG.info(shipVariant.getWeaponSpec(w).getWeaponName() + " debuff: "+WEAPONS.get(shipVariant.getWeaponId(w)));
+                    }
                 }
             }
             return theDebuffs;
