@@ -24,6 +24,7 @@ import java.util.*;
 import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 /**
  * The point of entry into MagicBounty scripting.
@@ -61,7 +62,7 @@ public final class MagicBountyCoordinator {
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
     private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
-            MagicSettings.getInteger("MagicLib", "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
+            MagicSettings.getInteger(MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
     /**
      * Returns a map (bounty key, bounty) of all active bounties. Note that this does not necessarily mean that they have
@@ -162,7 +163,7 @@ public final class MagicBountyCoordinator {
             }
 
             //adding testing mode
-            if (!MagicSettings.getBoolean("MagicLib", "bounty_board_test_mode")) {
+            if (!MagicVariables.bounty_test_mode) {
                 if (!MagicCampaign.isAvailableToPlayer(
                         bountySpec.trigger_player_minLevel,
                         bountySpec.trigger_min_days_elapsed,
@@ -192,7 +193,7 @@ public final class MagicBountyCoordinator {
     }
 
     public int getBountySlotsAtMarket(MarketAPI marketAPI) {
-        int offersAtSizeThree = MagicSettings.getInteger("MagicLib", "bounty_offersAtSizeThree");
+        int offersAtSizeThree = MagicSettings.getInteger(MAGICLIB_ID, "bounty_offersAtSizeThree");
         return Math.max(0, marketAPI.getSize() - 3 + offersAtSizeThree);
     }
 

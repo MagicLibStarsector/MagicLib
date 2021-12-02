@@ -19,9 +19,10 @@ import com.fs.starfarer.api.impl.campaign.ids.Skills;
 //import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import static data.scripts.bounty.MagicBountyData.BOUNTIES;
-import static data.scripts.bounty.MagicBountyData.verbose;
 import data.scripts.util.MagicSettings;
 import static data.scripts.util.MagicTxt.getString;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
+import static data.scripts.util.MagicVariables.verbose;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,19 +58,21 @@ public class MagicBountyHVB {
     
     public static void convertHVBs(boolean appendOnly) {
         
-        if(Global.getSettings().isDevMode())MagicBountyData.verbose=true;
-        if(MagicBountyData.verbose){
+        if(verbose){
             LOG.info("\n ######################\n\n   HVB CONVERSION  \n\n ######################");
         }
         
         try {
-            JSONArray uniqueBountyDataJSON = Global.getSettings().getMergedSpreadsheetDataForMod("bounty_id", VAYRA_UNIQUE_BOUNTIES_FILE, "MagicLib");
+            JSONArray uniqueBountyDataJSON = Global.getSettings().getMergedSpreadsheetDataForMod("bounty_id", VAYRA_UNIQUE_BOUNTIES_FILE, MAGICLIB_ID);
 
             for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
                 JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
                 if (row.has("bounty_id") && row.getString("bounty_id") != null && !row.getString("bounty_id").isEmpty()) {
                     String bountyId = row.getString("bounty_id");
-                    LOG.info("loading HVB " + bountyId);
+                    
+                    if(verbose){
+                        LOG.info("loading HVB " + bountyId);
+                    }
                     
                     String fleetListString = row.optString("fleetVariantIds");
                     List<String> fleetList = null;
@@ -326,7 +329,9 @@ public class MagicBountyHVB {
                         LOG.info("SKIPPED");
                     }
                 } else {
-                    LOG.info("hit empty line, unique bounty loading ended");
+                    if(verbose){
+                        LOG.info("hit empty line, unique bounty loading ended");
+                    }
                 }
                 
             }

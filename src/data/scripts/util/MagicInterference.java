@@ -5,6 +5,8 @@ package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
+import static data.scripts.util.MagicVariables.verbose;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,7 +15,6 @@ import org.apache.log4j.Logger;
 public class MagicInterference {    
     
     private static final String INTERFERENCE_HULLMOD = "ML_interferenceWarning";
-    private static final boolean VERBOSE = false;
     
     //////////////////////////////
     //                          //
@@ -60,9 +61,9 @@ public class MagicInterference {
         WEAPONS.clear();
         RATES.clear(); 
         
-        RATES = MagicSettings.getFloatMap("MagicLib", "interferences_rates");
-        RFC_MULT = MagicSettings.getFloat("MagicLib", "interference_RFCmult");        
-        Map<String,String>rawWeapons = MagicSettings.getStringMap("MagicLib", "interferences_weapons");
+        RATES = MagicSettings.getFloatMap(MAGICLIB_ID, "interferences_rates");
+        RFC_MULT = MagicSettings.getFloat(MAGICLIB_ID, "interference_RFCmult");        
+        Map<String,String>rawWeapons = MagicSettings.getStringMap(MAGICLIB_ID, "interferences_weapons");
         for(Entry<String,String> w : rawWeapons.entrySet()){
             WEAPONS.put(w.getKey(), RATES.get(w.getValue()));
         }
@@ -132,7 +133,7 @@ public class MagicInterference {
 
             Map<String,Float> theDebuffs = new HashMap<>();
 
-            if(VERBOSE){
+            if(verbose){
                 LOG.info("computing interference debuff");
             }
 
@@ -141,7 +142,7 @@ public class MagicInterference {
                 if(shipVariant.getFittedWeaponSlots().contains(w) && WEAPONS.containsKey(shipVariant.getWeaponId(w))){
                     theDebuffs.put(w,0f);
 
-                    if(VERBOSE){
+                    if(verbose){
                         LOG.info("added interference source: "+shipVariant.getWeaponId(w));
                     }
                 }
@@ -152,7 +153,7 @@ public class MagicInterference {
             if(shipVariant.getHullMods().contains("fluxbreakers")){
                 hullmod=RFC_MULT;
 
-                if(VERBOSE){
+                if(verbose){
                     LOG.info("Resistant Flux Conduits installed, debuff reduced.");
                 }
             }
@@ -169,7 +170,7 @@ public class MagicInterference {
                                     *WEAPONS.get(shipVariant.getWeaponId(w)) //
                                     *hullmod
                     );
-                    if(VERBOSE){
+                    if(verbose){
                         LOG.info(shipVariant.getWeaponSpec(w).getWeaponName() + " debuff: "+WEAPONS.get(shipVariant.getWeaponId(w)));
                     }
                 }

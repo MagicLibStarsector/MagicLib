@@ -6,6 +6,7 @@ package data.scripts.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,10 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MagicTxt {
-    private static final String ML = "magicLib";
 
     public static String getString(String id) {
-        return Global.getSettings().getString(ML, id);
+        return Global.getSettings().getString(MAGICLIB_ID, id);
     }
 
     public static String nullStringIfEmpty(@Nullable String input) {

@@ -6,6 +6,8 @@ import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
 import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicTxt;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
+import static data.scripts.util.MagicVariables.verbose;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +30,7 @@ public class MagicBountyData {
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
     private static JSONObject bounty_data;
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
-    public static boolean verbose = false;
-    private static final String MOD = "MagicLib", BOUNTY_BOARD = "bounty_board", PATH = "data/config/modFiles/magicBounty_data.json";
+    private static final String BOUNTY_BOARD = "bounty_board", PATH = "data/config/modFiles/magicBounty_data.json";
 
     /**
      * @param id
@@ -59,7 +60,6 @@ public class MagicBountyData {
 
     public static void loadBountiesFromJSON(boolean appendOnly){
 
-        if(Global.getSettings().isDevMode())verbose=true;
         if(verbose){
             LOG.info("\n ######################\n\n MAGIC BOUNTIES LOADING\n\n ######################");
         }
@@ -661,7 +661,7 @@ public class MagicBountyData {
         JSONObject localCopy = MagicSettings.modSettings;
 
         try {
-            JSONObject reqSettings = localCopy.getJSONObject(MOD);
+            JSONObject reqSettings = localCopy.getJSONObject(MAGICLIB_ID);
             //try to get the requested value
             if(reqSettings.has(BOUNTY_BOARD)){
                 JSONObject bountiesList = reqSettings.getJSONObject(BOUNTY_BOARD);
@@ -681,10 +681,10 @@ public class MagicBountyData {
                     }
                 }
             } else {
-                LOG.error("MagicBountyData is unable to find "+BOUNTY_BOARD+" within " +MOD+ " in modSettings.json");
+                LOG.error("MagicBountyData is unable to find "+BOUNTY_BOARD+" within " +MAGICLIB_ID+ " in modSettings.json");
             }
         } catch (JSONException ex){
-            LOG.error("MagicBountyData is unable to read the content of "+MOD+" in modSettings.json",ex);
+            LOG.error("MagicBountyData is unable to read the content of "+MAGICLIB_ID+" in modSettings.json",ex);
         }
 
         List<String> bountiesAvailable = new ArrayList<>();
@@ -725,7 +725,7 @@ public class MagicBountyData {
     private static JSONObject loadBountyData(){
         JSONObject this_bounty_data=null;
         try{
-            this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH,MOD);
+            this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH,MAGICLIB_ID);
         } catch (IOException | JSONException ex) {
             LOG.fatal("MagicBountyData is unable to read magicBounty_data.json",ex);
             JSONfailed=true;

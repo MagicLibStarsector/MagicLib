@@ -69,13 +69,17 @@ public class MagicVariables {
     public static final String MAGICLIB_VARIANT_PATH = "data/config/modFiles/magicBounty_variants/";
     public static final String MAGICLIB_COLONIZED_SYSTEM = "theme_already_colonized";
     public static final String MAGICLIB_OCCUPIED_SYSTEM = "theme_already_occupied";
+    public static final String MAGICLIB_ID = "MagicLib";
+    
+    public static boolean verbose=false;
+    public static boolean bounty_test_mode=false;
     
     public static List<String> mergedThemesBlacklist = new ArrayList<>();
     
     public static void loadThemesBlacklist(){
         mergedThemesBlacklist.clear();
         //load list from settings
-        List<String> themes = MagicSettings.getList("MagicLib", MAGICLIB_VARIANT_PATH);
+        List<String> themes = MagicSettings.getList(MAGICLIB_ID, MAGICLIB_VARIANT_PATH);
         for (String s : themes){
             if(!mergedThemesBlacklist.contains(s)) mergedThemesBlacklist.add(s);
         }

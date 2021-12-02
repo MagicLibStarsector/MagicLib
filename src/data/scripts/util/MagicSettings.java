@@ -6,6 +6,7 @@
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ public class MagicSettings {
     
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
     private static final String PATH = "data/config/modSettings.json";
-    private static final String ID = "MagicLib";
     public static JSONObject modSettings;
     private static boolean devmode=false;
     
@@ -405,7 +405,7 @@ public class MagicSettings {
     
     public static void loadModSettings(){
         try{
-            modSettings = Global.getSettings().getMergedJSONForMod(PATH,ID);    
+            modSettings = Global.getSettings().getMergedJSONForMod(PATH,MAGICLIB_ID);    
         } catch (IOException | JSONException ex) {
             LOG.fatal("unable to read modSettings.json", ex);
         }

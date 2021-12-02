@@ -9,6 +9,7 @@ import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicVariables;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 public class Magic_modPlugin extends BaseModPlugin {
 
@@ -55,11 +56,24 @@ public class Magic_modPlugin extends BaseModPlugin {
         
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();
+        MagicVariables.verbose=Global.getSettings().isDevMode();
+        MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
+        
     }
 
     @Override
     public void onDevModeF8Reload() {
         MagicSettings.loadModSettings();
+        //gather interference data
+        MagicInterference.loadInterference();
+
+        //gather trail data
+        MagicAutoTrails.getTrailData();
+        
+        //gather mod's system themes
+        MagicVariables.loadThemesBlacklist();
+        MagicVariables.verbose=Global.getSettings().isDevMode();
+        MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
     }
 
     ////////////////////////////////////////

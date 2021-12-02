@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.bounty.MagicBountyCoordinator;
 import data.scripts.util.MagicSettings;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class ShouldShowMagicBountyBoard extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
-        if (!MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) return false;
+        if (!MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_enabled")) return false;
         MarketAPI market = dialog.getInteractionTarget().getMarket();
         if (market == null) return false;
 

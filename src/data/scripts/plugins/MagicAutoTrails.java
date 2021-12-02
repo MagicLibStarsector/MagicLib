@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.*;
 
 import static data.scripts.util.MagicSettings.toColor3;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import static org.lwjgl.opengl.GL11.*;
 
 public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
@@ -232,7 +233,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         //clear up the trash
         PROJ_TRAILS.clear();
 
-        List<String> trailFiles = MagicSettings.getList("MagicLib", "magicTrail_files");
+        List<String> trailFiles = MagicSettings.getList(MAGICLIB_ID, "magicTrail_files");
         trailFiles.add("data/config/modFiles/magicTrail_data.csv");
 
         for (String path : trailFiles) {
@@ -243,7 +244,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 //merge all the trail
                 JSONArray trailData = new JSONArray();
                 try {
-                    trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, "MagicLib");
+                    trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, MAGICLIB_ID);
                 } catch (IOException | JSONException | RuntimeException ex) {
                     LOG.error("unable to read " + path,ex);
                 }
@@ -369,7 +370,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 //merge all the trail
                 JSONArray trailData = new JSONArray();
                 try {
-                    trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, "MagicLib");
+                    trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, MAGICLIB_ID);
                 } catch (IOException | JSONException | RuntimeException ex) {
                     LOG.error("unable to read " + path,ex);
                 }

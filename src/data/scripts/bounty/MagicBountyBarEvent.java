@@ -24,6 +24,7 @@ import java.util.*;
 import static com.fs.starfarer.api.util.Misc.random;
 import static data.scripts.util.MagicTxt.getString;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 /**
  * Displays the bounty board and all associated bounties.
@@ -293,7 +294,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         text.addPara(getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
-                                                getString("mb_type_neutralisation1"), getString("mb_type_neutralisation2") + Math.round(100 * MagicSettings.getFloat("MagicLib", "bounty_neutralisationThreshold")) + getString("mb_type_neutralisation3")
+                                                getString("mb_type_neutralisation1"), getString("mb_type_neutralisation2") + Math.round(100 * MagicSettings.getFloat(MAGICLIB_ID, "bounty_neutralisationThreshold")) + getString("mb_type_neutralisation3")
                                         );
                                         break;
                                 }
