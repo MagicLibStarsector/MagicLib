@@ -1608,14 +1608,14 @@ public class MagicCampaign {
                             systems_core.remove(i);
                             i--;
                             break;
-                        }
-                    }
-                    if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
-                        //manually check for markets                        
-                        if(!Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
-                            systems_core.remove(i);
-                            i--;
-                            break;
+                        } else 
+                        if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
+                            //manually check for markets                        
+                            if(!Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
+                                systems_core.remove(i);
+                                i--;
+                                break;
+                            }
                         }
                     }
                 }
@@ -1627,14 +1627,14 @@ public class MagicCampaign {
                             systems_close.remove(i);
                             i--;
                             break;
-                        }
-                    }
-                    if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
-                        //manually check for markets                        
-                        if(!Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
-                            systems_core.remove(i);
-                            i--;
-                            break;
+                        } else
+                        if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
+                            //manually check for markets                        
+                            if(!Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
+                                systems_core.remove(i);
+                                i--;
+                                break;
+                            }
                         }
                     }
                 }
@@ -1646,14 +1646,14 @@ public class MagicCampaign {
                             systems_far.remove(i);
                             i--;
                             break;
-                        }
-                    }
-                    if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
-                        //manually check for markets                                  
-                        if(!Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
-                            systems_core.remove(i);
-                            i--;
-                            break;
+                        } else 
+                        if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
+                            //manually check for markets                                  
+                            if(!Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
+                                systems_core.remove(i);
+                                i--;
+                                break;
+                            }
                         }
                     }
                 }

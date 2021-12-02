@@ -167,7 +167,12 @@ public class MagicBountyData {
                 }
                 */
                 
-                //test to have a random flagship variant:                
+                String origin_faction = getString(bountyId, "fleet_composition_faction");
+                if(origin_faction==null || origin_faction.isEmpty()){
+                    origin_faction = getString(bountyId, "fleet_faction");
+                }
+                
+                //Random flagship variant:                
                 String flagship = getString(bountyId, "fleet_flagship_variant");   
                 List <String> flagshipList = getStringList(bountyId, "fleet_flagship_variant");
                 if(flagshipList!=null && !flagshipList.isEmpty()){
@@ -237,7 +242,7 @@ public class MagicBountyData {
                         getIntMap(bountyId, "fleet_preset_ships"),
                         getFloat(bountyId, "fleet_scaling_multiplier"),
                         getInt(bountyId, "fleet_min_DP"),
-                        getString(bountyId, "fleet_composition_faction"),
+                        origin_faction,
                         getFloat(bountyId, "fleet_composition_quality"),
                         getBoolean(bountyId, "fleet_transponder"),
                         order,
