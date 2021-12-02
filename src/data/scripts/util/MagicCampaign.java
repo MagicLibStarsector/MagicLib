@@ -37,6 +37,8 @@ import java.util.*;
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.loading.WeaponGroupType;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
+import static data.scripts.util.MagicVariables.verbose;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -642,7 +644,6 @@ public class MagicCampaign {
     ){
         //cleanup previous generation
         MagicVariables.presetShipIdsOfLastCreatedFleet.clear();
-        boolean verbose = Global.getSettings().isDevMode();
 
         if(verbose){
             log.error(" ");
@@ -886,8 +887,6 @@ public class MagicCampaign {
             @Nullable OfficerManagerEvent.SkillPickPreference skillPreference,
             @Nullable Map<String, Integer> skillLevels
     ){
-        
-        boolean verbose = Global.getSettings().isDevMode();
         
         PersonAPI person = OfficerManagerEvent.createOfficer(
                 Global.getSector().getFaction(factionId),
@@ -1262,7 +1261,7 @@ public class MagicCampaign {
             int market_minSize
             ){
 
-        List<String> marketBlacklist = MagicSettings.getList("MagicLib", "bounty_market_blacklist");
+        List<String> marketBlacklist = MagicSettings.getList(MAGICLIB_ID, "bounty_market_blacklist");
 
         if (marketBlacklist.contains(market.getId())) {
             return false;
@@ -1604,18 +1603,17 @@ public class MagicCampaign {
             if(!systems_core.isEmpty()){
                 for(int i=0; i<systems_core.size(); i++){
                     for(String t : avoid_themes){
+                        //manually check for markets          
+                        if(t.equals(MagicVariables.MAGICLIB_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
+                                systems_core.remove(i);
+                                i--;
+                                break;
+                        } else 
+                        // check for blacklisted theme
                         if(systems_core.get(i).getTags().contains(t)){
                             systems_core.remove(i);
                             i--;
                             break;
-                        } else 
-                        if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
-                            //manually check for markets                        
-                            if(!Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
-                                systems_core.remove(i);
-                                i--;
-                                break;
-                            }
                         }
                     }
                 }
@@ -1623,18 +1621,17 @@ public class MagicCampaign {
             if(!systems_close.isEmpty()){
                 for(int i=0; i<systems_close.size(); i++){
                     for(String t : avoid_themes){
+                        //manually check for markets          
+                        if(t.equals(MagicVariables.MAGICLIB_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
+                                systems_close.remove(i);
+                                i--;
+                                break;
+                        } else 
+                        // check for blacklisted theme
                         if(systems_close.get(i).getTags().contains(t)){
                             systems_close.remove(i);
                             i--;
                             break;
-                        } else
-                        if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
-                            //manually check for markets                        
-                            if(!Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
-                                systems_core.remove(i);
-                                i--;
-                                break;
-                            }
                         }
                     }
                 }
@@ -1642,18 +1639,17 @@ public class MagicCampaign {
             if(!systems_far.isEmpty()){
                 for(int i=0; i<systems_far.size(); i++){
                     for(String t : avoid_themes){
+                        //manually check for markets          
+                        if(t.equals(MagicVariables.MAGICLIB_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
+                                systems_far.remove(i);
+                                i--;
+                                break;
+                        } else 
+                        // check for blacklisted theme
                         if(systems_far.get(i).getTags().contains(t)){
                             systems_far.remove(i);
                             i--;
                             break;
-                        } else 
-                        if(avoid_themes.contains(MagicVariables.MAGICLIB_COLONIZED_SYSTEM)){
-                            //manually check for markets                                  
-                            if(!Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
-                                systems_core.remove(i);
-                                i--;
-                                break;
-                            }
                         }
                     }
                 }
