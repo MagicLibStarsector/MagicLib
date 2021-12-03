@@ -172,6 +172,19 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //FLAVOR TEXT
                             activeBounty.addDescriptionToTextPanel(text);
+                            
+                            //illustration panel
+                            if (bounty.job_show_captain) {
+                                //diplaying the captain takes priority
+                                dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
+//                            } else if(bounty.job_show_fleet != MagicBountyData.ShowFleet.None && bounty.job_show_fleet != MagicBountyData.ShowFleet.Text){
+//                                //displaying the flagship comes in second if the fleet is visible
+//                                dialog.getVisualPanel().showFleetMemberInfo(activeBounty.getFleet().getFlagship());
+                            } else {
+                                //otherwise, just keep the board illustration
+                                dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
+                            }
+                            
                             addOption(getString("mb_continue"), getBountyDetailsOptionKey(key), null, null);
                             addOption(getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                         } else if (getBountyDetailsOptionKey(key).equals(optionData)) {
@@ -301,6 +314,21 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //TARGET CAPTAIN
+                            if(bounty.job_show_fleet != MagicBountyData.ShowFleet.None && bounty.job_show_fleet != MagicBountyData.ShowFleet.Text){
+                                //displaying the flagship takes priority if possible
+                                dialog.getVisualPanel().showFleetMemberInfo(activeBounty.getFleet().getFlagship());
+                            } else
+                            if (bounty.job_show_captain) {
+                                //diplaying the captain is now second
+                                dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
+                            } else {
+                                //otherwise, just keep the board illustration
+                                dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
+                            }
+                            
+                            /*
+                            OLD DISPLAY
+                            
                             if (bounty.job_show_captain) {
                                 dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
                             } else if (nullStringIfEmpty(bounty.job_forFaction) != null && activeBounty.getGivingFaction() != null) {
@@ -310,10 +338,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 visual.setShowRandomSubImage(false);
                                 dialog.getVisualPanel().showImageVisual(visual);
                             } else {
-                                InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128, 128);
-                                visual.setShowRandomSubImage(false);
-                                dialog.getVisualPanel().showImageVisual(visual);
+//                                InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128, 128);
+//                                visual.setShowRandomSubImage(false);
+//                                dialog.getVisualPanel().showImageVisual(visual);
+                                dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
                             }
+                            */
 
                             //DIFFICULTY
                             if (bounty.job_difficultyDescription != null && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))) {
@@ -374,8 +404,14 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
     private void showBountyBoard(MagicBountyCoordinator instance, TextPanelAPI text) {
         options.clear();
-        dialog.getVisualPanel().restoreSavedVisual();
-        dialog.getVisualPanel().saveCurrentVisual();
+        
+//        InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128, 128);
+//        visual.setShowRandomSubImage(false);
+//        dialog.getVisualPanel().showImageVisual(visual);
+        dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
+        
+//        dialog.getVisualPanel().restoreSavedVisual();
+        dialog.getVisualPanel().saveCurrentVisual();                
         refreshBounties(market);
 
         //"jobs are available on the bounty board."
