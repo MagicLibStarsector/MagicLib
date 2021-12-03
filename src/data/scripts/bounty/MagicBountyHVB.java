@@ -451,8 +451,7 @@ public class MagicBountyHVB {
         
         text.addPara(
                 getString("mb_hvb_fleet0")+own+getString("mb_hvb_fleet1"), 
-                commander.getFaction().getBaseUIColor(),
-                
+                commander.getFaction().getBaseUIColor(),                
                 commander.getFaction().getRank(commander.getRankId()) + " " + person.getName().getFullName(),
                 fleetDesc,
                 flagship.getShipName(),

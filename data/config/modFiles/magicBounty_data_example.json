@@ -43,12 +43,12 @@
                                                                # $heSheThey
                                                                # $himHerThem
                                                                # $hisHerTheir
-                                                               # $heSheTheyAre
-                                                               # $himHerThemselves
-                                                               # $system_name The star system that the bounty fleet is in.
-                                                               # $fleetAssignmentTarget The body that the bounty fleet has been placed near.
+                                                               # $heIsSheIsTheyAre
+                                                               # $himslefHerselfThemselves
+                                                               # $system The star system that the bounty fleet is in.
+                                                               # $location The body that the bounty fleet has been placed near.
                                                                # $shipName The name of the bounty flagship.
-                                                               # $target The name of the faction (with article) of the bounty fleet.
+                                                               # $faction The name of the faction (with article) of the bounty fleet.
                                                                # $reward The amount of credits being given as a reward.
                                                                # $name The name of the bounty commander.
                                                                # $firstName The first name of the bounty commander.
