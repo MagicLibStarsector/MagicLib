@@ -11,6 +11,8 @@ MagicLensFlare: Now uses the "visual only" API.
 MagicSettings: Improved error messages with the lines where the issue is if possible.
 MagicTargeting: Added the option to exclude flares from missile picks.
 MagicCampaign: Many small improvement to the logic of nearly all functions. Better checks for suitable systems, more coherent fleet spawning, made a lot of parameter nullable for procgen filler.
+MagicUI: the widgets texts can be null to be ignored, same for numbers if they are negative.
+
 
 0.34
 
