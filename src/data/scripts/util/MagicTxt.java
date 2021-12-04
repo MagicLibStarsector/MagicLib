@@ -6,7 +6,6 @@ package data.scripts.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
-import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 public class MagicTxt {
 
@@ -45,6 +46,7 @@ public class MagicTxt {
     }
 
     private static final Pattern highlightPattern = Pattern.compile("==(.*?)==", Pattern.DOTALL);
+    private static final Pattern uppercaseFirstPattern = Pattern.compile(".*(?<!\\\\)\\^(.).*");
 
     /**
      * Takes a string with the format "This is a ==highlighted== sentence with ==words==."
@@ -134,7 +136,17 @@ public class MagicTxt {
     }
 
     private static String replaceStringHighlightsWithSymbol(@NotNull String str) {
-        return highlightPattern.matcher(str).replaceAll("%s");
+        String format = highlightPattern.matcher(str).replaceAll("%s");
+        Matcher uppercaseMatcher = uppercaseFirstPattern.matcher(format);
+
+        // Have to match the whole pattern because using find() ignores the negative lookbehind since it matches substrings.
+        // Or something like that.
+        while (uppercaseMatcher.matches()) {
+            format = format.substring(0, uppercaseMatcher.start(1) - 1) + uppercaseMatcher.group(1).toUpperCase() + format.substring(uppercaseMatcher.end(1));
+            uppercaseMatcher = uppercaseFirstPattern.matcher(format);
+        }
+
+        return format;
     }
 
     @NotNull
