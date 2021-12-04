@@ -13,6 +13,7 @@ import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
+import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.BASE_QUALITY_WHEN_NO_MARKET;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
@@ -711,7 +712,7 @@ public class MagicCampaign {
             List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, verbose);
             for (FleetMemberAPI m : support){
                 bountyFleet.getFleetData().addFleetMember(m);
-                MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
+                MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());                
             }
         }
         
@@ -736,7 +737,12 @@ public class MagicCampaign {
                         m.setCaptain(null);
                         bountyFleet.getFleetData().addFleetMember(m);
                         //MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
+                        if(verbose){
+                            log.warn("adding "+m.getHullId());
+                        }
                     }
+                } else {
+                    log.error("FAILED reinforcement generation");
                 }
             }
         }
@@ -1155,7 +1161,7 @@ public class MagicCampaign {
     private static CampaignFleetAPI generateRandomFleet(String factionId, float qualityOverride, String fleetType, float fleetPoints, float freightersAndTankersFraction ) {
         
         FleetParamsV3 params = new FleetParamsV3(
-                fakeMarket(factionId, qualityOverride),
+                null,//fakeMarket(factionId, qualityOverride),
                 new Vector2f(),
                 factionId,
                 qualityOverride,
@@ -1171,7 +1177,12 @@ public class MagicCampaign {
         params.ignoreMarketFleetSizeMult = true;
         params.maxNumShips = 50;
         params.modeOverride = FactionAPI.ShipPickMode.PRIORITY_THEN_ALL;
-
+        
+        //add S mods?
+        if(qualityOverride>1){
+            params.averageSMods = Math.round(qualityOverride-1);
+        }
+        
         CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
         if (tempFleet==null || tempFleet.isEmpty()) {
             log.warn("Failed to create procedural Support-Fleet");
@@ -1182,13 +1193,13 @@ public class MagicCampaign {
     }
     
     private static MarketAPI fakeMarket(String factionId, float quality_override){
-        // create fake market and set ship quality
+        // create fake market and set ship quality    
         MarketAPI market = Global.getFactory().createMarket("fake", "fake", 5);
         market.getStability().modifyFlat("fake", 10000);
         market.setFactionId(factionId);
         SectorEntityToken token = Global.getSector().getHyperspace().createToken(0, 0);
         market.setPrimaryEntity(token);
-        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", quality_override);
+        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", BASE_QUALITY_WHEN_NO_MARKET);
         market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat("fake", 1f);
         
         return market;
