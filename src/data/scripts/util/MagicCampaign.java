@@ -1045,18 +1045,29 @@ public class MagicCampaign {
             variant.setNumFluxVents(fluxVents);
             variant.setGoalVariant(goalVariant);
             // todo: check if order matters
-            for (int i = 0; i < hullMods.length(); i++) {
-                String hullModId = hullMods.getString(i);
-                variant.addMod(hullModId);
-            }
-            for (int j = 0; j < permaMods.length(); j++) {
-                String permaModId = hullMods.getString(j);
-                variant.addPermaMod(permaModId);
-            }
             if (sMods != null) {
                 for (int k = 0; k < sMods.length(); k++) {
                     String sModId = hullMods.getString(k);
                     variant.addPermaMod(sModId, true);
+//                    variant.addPermaMod(sModId);
+                    variant.addMod(sModId);
+                }
+            }
+            if(permaMods != null){
+                for (int j = 0; j < permaMods.length(); j++) {
+                    String permaModId = hullMods.getString(j);
+                    variant.addPermaMod(permaModId);
+                    if(!variant.getHullMods().contains(permaModId)){
+                        variant.addMod(permaModId);
+                    }
+                }
+            }
+            if(hullMods != null){
+                for (int i = 0; i < hullMods.length(); i++) {
+                    String hullModId = hullMods.getString(i);
+                    if(!variant.getHullMods().contains(hullModId)){
+                        variant.addMod(hullModId);
+                    }
                 }
             }
             if (modules != null) {
@@ -1100,6 +1111,12 @@ public class MagicCampaign {
         } catch (Exception e) {
             log.info("could not load ship variant at " + path, e);
         }
+        
+        //Maintain the S-mods through salvage
+        if(variant!=null){
+            variant.addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
+        }
+        
         return variant;
     }
     
