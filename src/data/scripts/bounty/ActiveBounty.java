@@ -228,7 +228,7 @@ public final class ActiveBounty {
             stage = Stage.ExpiredAfterAccepting;
             //reputation penalty
             if (hasReputationReward()) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.min(5, getRewardReputation()));
+                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.min(0.05f, getRewardReputation()));
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -248,7 +248,7 @@ public final class ActiveBounty {
             stage = Stage.FailedSalvagedFlagship;
             //reputation penalty
             if (hasReputationReward()) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.max(5, getRewardReputation()));
+                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.max(0.05f, getRewardReputation()));
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
