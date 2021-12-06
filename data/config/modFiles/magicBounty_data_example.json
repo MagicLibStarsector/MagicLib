@@ -37,6 +37,8 @@
         "job_description": "Long form description of the job", # Default: blank. The description shown upon selecting the job.
                                                                # \n creates a line break, for example "Line one.\nLine two."
                                                                # == brackets create a highlight, for example "Text ==highlight== text."
+                                                               # ^ uppercase the following letter of a text variable, for example "^$heIsSheIsTheyAre turning angry."
+                                                               # %% allow the use of %, otherwise it will be interpreted as an escape character. 
                                                                # $sonDaughterChild based on bounty commander gender.
                                                                # $fatherMotherParent
                                                                # $manWomanPerson
@@ -54,7 +56,10 @@
                                                                # $firstName The first name of the bounty commander.
                                                                # $lastName The last name of the bounty commander.
                                                                # $constellation The constellation that the bounty fleet is in.
-        "job_comm_reply": "Reply of the enemy to your hail", # Default: blank. The text shown if the player opens comms with the bounty fleet, defaults to "The other $shipOrFleet does not answer to your hails."
+                                                               # $shipOrFleet
+        "job_comm_reply": "Reply of the enemy to your hail", # Default: none. The text shown if the player opens comms with the bounty fleet, 
+                                                             # If set as an empty string, displays "The other $shipOrFleet does not answer to your hails."
+                                                             # If not set, defaults to the regular comm reply for the fleet's faction.
         "job_intel_success": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has been COMPLETED SUCCESSFULLY.
         "job_intel_failure": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has been failed through FLAGSHIP RECOVERY.
         "job_intel_expired": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has EXPIRED.
@@ -121,7 +126,8 @@
         #TARGET FLEET
         
         "fleet_name":"Fleet Name", # Default: no name.
-        "fleet_faction": "pirates", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
+        "fleet_faction": "ML_bounty", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
+        # MagicLib includes a utility bounty faction that is forced to be neutral to everyone but the player under the id ["ML_bounty"].
         "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]
         # Variant files that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
         "fleet_flagship_name":"Flagship", # Default: Random.
@@ -139,8 +145,9 @@
     
         #LOCATION
         
-        "location_marketIDs": [  # Default: no preset. Preset locations to spawn the bounty fleet, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
-            "location"
+        "location_entitiesID": [  # Default: no preset. Preset locations to spawn the bounty fleet, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
+            "location1",
+            "location2",
         ],
         "location_marketFactions": [  # Default: no faction specified. Markets of specified faction for the fleet to spawn at. Adding a faction market supersedes all other parameters except location_id.
             "faction" 

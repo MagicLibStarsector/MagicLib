@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
+import data.scripts.util.MagicVariables;
 
 /**
  * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
@@ -151,11 +152,23 @@ public final class ActiveBounty {
                 fleetSpawnLocation,
                 1000000f,
                 null);
+        
+        //if needed set the bounty faction to neutral with everyone but the player.
+        if(spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)){
+            FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
+            for(FactionAPI f : Global.getSector().getAllFactions()){
+                if(f!=bountyFaction && f!=Global.getSector().getPlayerFaction())f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+            }
+        }
 
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
-        // Add comm reply
-        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
+        // Add comm reply if needed
+        if(MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null){
+        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
+            getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
+        }
+        
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();

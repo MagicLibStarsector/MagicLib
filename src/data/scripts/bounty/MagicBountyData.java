@@ -151,7 +151,9 @@ public class MagicBountyData {
                 }
 
                 String reply = MagicTxt.getString("mb_comm_reply");
-                if(getString(bountyId,"job_comm_reply")!=null && !getString(bountyId,"job_comm_reply").isEmpty()){
+                if (getString(bountyId,"job_comm_reply")==null){
+                    reply = null;
+                } else if (!getString(bountyId,"job_comm_reply").isEmpty()){
                     reply = getString(bountyId,"job_comm_reply");
                 }
                 
@@ -178,7 +180,14 @@ public class MagicBountyData {
                 if(flagshipList!=null && !flagshipList.isEmpty()){
                     int i = MathUtils.getRandomNumberInRange(0, flagshipList.size()-1);
                     flagship=flagshipList.get(i);
-                }              
+                }   
+                
+                List <String> locations = new ArrayList<>();
+                if(getStringList(bountyId, "location_marketIDs")!=null){
+                    locations = getStringList(bountyId, "location_marketIDs");
+                } else if(getStringList(bountyId, "location_entitiesID")!=null){
+                    locations = getStringList(bountyId, "location_entitiesID");
+                }                
                 
                 bountyData this_bounty = new bountyData(
                         getStringList(bountyId, "trigger_market_id"),
@@ -247,7 +256,7 @@ public class MagicBountyData {
                         getBoolean(bountyId, "fleet_transponder"),
                         order,
 
-                        getStringList(bountyId, "location_marketIDs"),
+                        locations,
                         getStringList(bountyId, "location_marketFactions"),
                         getString(bountyId, "location_distance"),
                         getStringList(bountyId, "location_themes"),

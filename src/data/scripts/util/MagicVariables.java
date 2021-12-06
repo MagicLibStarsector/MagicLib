@@ -66,10 +66,11 @@ public class MagicVariables {
         return SECTOR_WIDTH/Misc.getUnitsPerLightYear();
     }
     
-    public static final String MAGICLIB_VARIANT_PATH = "data/config/modFiles/magicBounty_variants/";
-    public static final String MAGICLIB_COLONIZED_SYSTEM = "theme_already_colonized";
-    public static final String MAGICLIB_OCCUPIED_SYSTEM = "theme_already_occupied";
+    public static final String VARIANT_PATH = "data/config/modFiles/magicBounty_variants/";
+    public static final String AVOID_COLONIZED_SYSTEM = "theme_already_colonized";
+    public static final String AVOID_OCCUPIED_SYSTEM = "theme_already_occupied";
     public static final String MAGICLIB_ID = "MagicLib";
+    public static final String BOUNTY_FACTION = "ML_bounty";
     
     public static boolean verbose=false;
     public static boolean bounty_test_mode=false;
@@ -79,7 +80,7 @@ public class MagicVariables {
     public static void loadThemesBlacklist(){
         mergedThemesBlacklist.clear();
         //load list from settings
-        List<String> themes = MagicSettings.getList(MAGICLIB_ID, MAGICLIB_VARIANT_PATH);
+        List<String> themes = MagicSettings.getList(MAGICLIB_ID, VARIANT_PATH);
         for (String s : themes){
             if(!mergedThemesBlacklist.contains(s)) mergedThemesBlacklist.add(s);
         }

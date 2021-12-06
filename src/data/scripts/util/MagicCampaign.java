@@ -12,6 +12,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
 import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.BASE_QUALITY_WHEN_NO_MARKET;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
@@ -924,7 +925,7 @@ public class MagicCampaign {
             }
         }
         
-        if(gender!=null && gender!=FullName.Gender.ANY){
+        if(gender!=null && gender==FullName.Gender.ANY){
             person.setGender(FullName.Gender.ANY);
         }
 
@@ -1181,6 +1182,8 @@ public class MagicCampaign {
         //add S mods?
         if(qualityOverride>1){
             params.averageSMods = Math.round(qualityOverride-1);
+        } else {
+            params.averageSMods=0;
         }
         
         CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
@@ -1454,7 +1457,7 @@ public class MagicCampaign {
     
     /**
      * Returns a random target SectorEntityToken given the following parameters:
-     * @param marketIDs
+     * @param entityIDs
      * List of IDs of preferred markets to target, supercedes all,              default to other parameters if none of those markets exist
      * @param marketFactions
      * List of faction to pick a market from, supercedes all but market ids,    default to other parameters if none of those markets exist
@@ -1476,7 +1479,7 @@ public class MagicCampaign {
      */
     @Nullable
     public static SectorEntityToken findSuitableTarget(
-            @Nullable List<String> marketIDs,
+            @Nullable List<String> entityIDs,
             @Nullable List<String> marketFactions,
             @Nullable String distance,
             @Nullable List<String> seek_themes,
@@ -1491,14 +1494,14 @@ public class MagicCampaign {
             log.error("Checking marketIDs");
         }
         //first priority, check if the preset location(s) exist(s)
-        if(marketIDs!=null && !marketIDs.isEmpty()){
+        if(entityIDs!=null && !entityIDs.isEmpty()){
             //if there is just one location and it exist, lets use that.
-            if(marketIDs.size()==1 && Global.getSector().getEntityById(marketIDs.get(0))!=null){
-                return Global.getSector().getEntityById(marketIDs.get(0));
+            if(entityIDs.size()==1 && Global.getSector().getEntityById(entityIDs.get(0))!=null){
+                return Global.getSector().getEntityById(entityIDs.get(0));
             }
             //if there are multiple possible location, pick a random one
             WeightedRandomPicker<SectorEntityToken> picker = new WeightedRandomPicker<>();
-            for(String loc : marketIDs){
+            for(String loc : entityIDs){
                 if(Global.getSector().getEntityById(loc)!=null) picker.add(Global.getSector().getEntityById(loc));
             }
             
@@ -1622,7 +1625,7 @@ public class MagicCampaign {
         if(avoid_themes!=null && !avoid_themes.isEmpty()){
             
             //merge default theme blacklist if needed 
-            if(avoid_themes.contains(MagicVariables.MAGICLIB_OCCUPIED_SYSTEM)){
+            if(avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)){
                 for(String s : MagicVariables.mergedThemesBlacklist){
                     if(!avoid_themes.contains(s)) avoid_themes.add(s);
                 }
@@ -1632,7 +1635,7 @@ public class MagicCampaign {
                 for(int i=0; i<systems_core.size(); i++){
                     for(String t : avoid_themes){
                         //manually check for markets          
-                        if(t.equals(MagicVariables.MAGICLIB_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
+                        if(t.equals(MagicVariables.AVOID_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
                                 systems_core.remove(i);
                                 i--;
                                 break;
@@ -1650,7 +1653,7 @@ public class MagicCampaign {
                 for(int i=0; i<systems_close.size(); i++){
                     for(String t : avoid_themes){
                         //manually check for markets          
-                        if(t.equals(MagicVariables.MAGICLIB_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
+                        if(t.equals(MagicVariables.AVOID_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
                                 systems_close.remove(i);
                                 i--;
                                 break;
@@ -1668,7 +1671,7 @@ public class MagicCampaign {
                 for(int i=0; i<systems_far.size(); i++){
                     for(String t : avoid_themes){
                         //manually check for markets          
-                        if(t.equals(MagicVariables.MAGICLIB_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
+                        if(t.equals(MagicVariables.AVOID_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
                                 systems_far.remove(i);
                                 i--;
                                 break;

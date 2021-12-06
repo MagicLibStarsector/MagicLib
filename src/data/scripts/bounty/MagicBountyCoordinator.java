@@ -296,7 +296,7 @@ public final class MagicBountyCoordinator {
                 null,
                 false,
                 spec.fleet_transponder,
-                MagicVariables.MAGICLIB_VARIANT_PATH
+                MagicVariables.VARIANT_PATH
         );
         ArrayList<String> presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
 
