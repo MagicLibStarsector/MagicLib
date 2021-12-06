@@ -56,7 +56,7 @@
                                                                # $firstName The first name of the bounty commander.
                                                                # $lastName The last name of the bounty commander.
                                                                # $constellation The constellation that the bounty fleet is in.
-                                                               # $shipOrFleet
+                                                               # $shipFleet
         "job_comm_reply": "Reply of the enemy to your hail", # Default: none. The text shown if the player opens comms with the bounty fleet, 
                                                              # If set as an empty string, displays "The other $shipOrFleet does not answer to your hails."
                                                              # If not set, defaults to the regular comm reply for the fleet's faction.

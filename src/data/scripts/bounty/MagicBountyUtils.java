@@ -211,6 +211,16 @@ class MagicBountyUtils {
                 return bounty.getFleetSpawnLocation().getContainingLocation().getConstellation().getName();
             }
         });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$shipFleet", new StringCreator() {
+            @Override
+            public String create() {
+                if(bounty.getFleet().getFleetData().getMembersListCopy().size()==1){
+                    return MagicTxt.getString("mb_ship");
+                } else {
+                    return MagicTxt.getString("mb_fleet");
+                }
+            }
+        });
 
         return replaced;
     }
