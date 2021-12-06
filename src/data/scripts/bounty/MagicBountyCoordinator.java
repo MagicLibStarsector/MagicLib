@@ -375,17 +375,17 @@ public final class MagicBountyCoordinator {
      * ```
      */
     private static int calculateDesiredFP(MagicBountyData.bountyData spec) {
-        int differenceBetweenBountyMinDPAndPlayerFleetDP = Global.getSector().getPlayerFleet().getFleetPoints() - spec.fleet_min_DP;
+        int differenceBetweenBountyMinDPAndPlayerFleetDP = Global.getSector().getPlayerFleet().getFleetPoints() - spec.fleet_min_FP;
 
         // Math.max so that if the player fleet is super weak and the difference is negative, we don't scale to below
         // the minimum DP.
-        int desiredFP = Math.round(spec.fleet_min_DP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
+        int desiredFP = Math.round(spec.fleet_min_FP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
 
         Global.getLogger(MagicBountyCoordinator.class)
                 .info(String.format("After scaling, bounty fleet '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
                         spec.job_name,
                         desiredFP,
-                        spec.fleet_min_DP,
+                        spec.fleet_min_FP,
                         spec.fleet_scaling_multiplier,
                         differenceBetweenBountyMinDPAndPlayerFleetDP));
 

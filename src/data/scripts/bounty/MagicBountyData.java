@@ -182,12 +182,16 @@ public class MagicBountyData {
                     flagship=flagshipList.get(i);
                 }   
                 
+                //fixes for my own mistakes
                 List <String> locations = new ArrayList<>();
                 if(getStringList(bountyId, "location_marketIDs")!=null){
                     locations = getStringList(bountyId, "location_marketIDs");
                 } else if(getStringList(bountyId, "location_entitiesID")!=null){
                     locations = getStringList(bountyId, "location_entitiesID");
-                }                
+                }
+                
+                //fixes for my own mistakes
+                Integer minSize = getInt(bountyId, "fleet_min_FP", getInt(bountyId, "fleet_min_DP"));                    
                 
                 bountyData this_bounty = new bountyData(
                         getStringList(bountyId, "trigger_market_id"),
@@ -250,7 +254,7 @@ public class MagicBountyData {
                         getBoolean(bountyId, "fleet_flagship_recoverable"),
                         getIntMap(bountyId, "fleet_preset_ships"),
                         getFloat(bountyId, "fleet_scaling_multiplier"),
-                        getInt(bountyId, "fleet_min_DP"),
+                        minSize,
                         origin_faction,
                         getFloat(bountyId, "fleet_composition_quality"),
                         getBoolean(bountyId, "fleet_transponder"),
@@ -368,7 +372,7 @@ public class MagicBountyData {
         public boolean fleet_flagship_recoverable;
         public Map <String,Integer> fleet_preset_ships;                         //optional preset fleet generated with the flagship, [variantId:number_of_ships]
         public float fleet_scaling_multiplier;                                  //dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore
-        public int fleet_min_DP;
+        public int fleet_min_FP;
         public String fleet_composition_faction;                                //Faction of the extra ship, can be different from the bounty faction (in case of pirate deserters for example)
         public float fleet_composition_quality;                                 //default to 2 (no Dmods) if <0
         public boolean fleet_transponder;
@@ -441,7 +445,7 @@ public class MagicBountyData {
             boolean fleet_flagship_recoverable,
             Map <String,Integer> fleet_preset_ships,
             float fleet_scaling_multiplier,
-            int fleet_min_DP,
+            int fleet_min_FP,
             String fleet_composition_faction,
             float fleet_composition_quality,
             boolean fleet_transponder,
@@ -570,7 +574,7 @@ public class MagicBountyData {
             this.fleet_flagship_recoverable = fleet_flagship_recoverable;
             this.fleet_preset_ships = fleet_preset_ships;
             this.fleet_scaling_multiplier = fleet_scaling_multiplier;
-            this.fleet_min_DP = fleet_min_DP;
+            this.fleet_min_FP = fleet_min_FP;
             this.fleet_composition_faction = fleet_composition_faction;
             this.fleet_composition_quality = fleet_composition_quality;
             this.fleet_transponder = fleet_transponder;
@@ -643,7 +647,7 @@ public class MagicBountyData {
             sb.append(", fleet_flagship_recoverable=").append(fleet_flagship_recoverable);
             sb.append(", fleet_preset_ships=").append(fleet_preset_ships);
             sb.append(", fleet_scaling_multiplier=").append(fleet_scaling_multiplier);
-            sb.append(", fleet_min_DP=").append(fleet_min_DP);
+            sb.append(", fleet_min_FP=").append(fleet_min_FP);
             sb.append(", fleet_composition_faction='").append(fleet_composition_faction).append('\'');
             sb.append(", fleet_composition_quality=").append(fleet_composition_quality);
             sb.append(", fleet_transponder=").append(fleet_transponder);

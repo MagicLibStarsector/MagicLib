@@ -459,7 +459,7 @@ public final class ActiveBounty {
         }
         
         /*
-        int bountyFPIncreaseOverBaseDueToScaling = getFleet().getFleetPoints() - getSpec().fleet_min_DP;
+        int bountyFPIncreaseOverBaseDueToScaling = getFleet().getFleetPoints() - getSpec().fleet_min_FP;
 
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
         float bonusCreditsFromScaling = Math.max(0, getSpec().job_credit_scaling * bountyFPIncreaseOverBaseDueToScaling);
@@ -478,7 +478,7 @@ public final class ActiveBounty {
         */
 
         //Reward scaling is a mult applied to the size ratio between the player fleet and the min target fleet
-        float playerFleetScale = Math.max(0, MagicCampaign.PlayerThreatMultiplier(getSpec().fleet_min_DP) - 1);
+        float playerFleetScale = Math.max(0, MagicCampaign.PlayerThreatMultiplier(getSpec().fleet_min_FP) - 1);
 
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
         float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;

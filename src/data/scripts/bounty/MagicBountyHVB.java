@@ -290,7 +290,7 @@ public class MagicBountyHVB {
                             fleetMap,
                             //float fleet_scaling_multiplier,
                             (float) row.getDouble("playerFPScalingFactor"),
-                            //int fleet_min_DP,
+                            //int fleet_min_FP,
                             row.getInt("minimumFleetFP"),
                             //String fleet_composition_faction,
                             row.getString("faction"),

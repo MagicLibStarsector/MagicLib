@@ -137,7 +137,7 @@
             "ship_variant2":3,			
         },
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
-        "fleet_min_DP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
+        "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
         "fleet_composition_faction": "pirates", # Default: bounty fleet faction. Used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
         "fleet_composition_quality": 1, # Default: 2 for no Dmods.
         "fleet_transponder": false, # Default: true.
