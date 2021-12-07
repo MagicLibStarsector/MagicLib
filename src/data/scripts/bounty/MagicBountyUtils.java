@@ -215,9 +215,9 @@ class MagicBountyUtils {
             @Override
             public String create() {
                 if(bounty.getFleet().getFleetData().getMembersListCopy().size()==1){
-                    return MagicTxt.getString("mb_ship");
+                    return MagicTxt.getString("mb_var_ship");
                 } else {
-                    return MagicTxt.getString("mb_fleet");
+                    return MagicTxt.getString("mb_var_fleet");
                 }
             }
         });

@@ -143,12 +143,8 @@
 		"mb_permDismissConfirmOpt": "Permanently dismiss this bounty",
 		"mb_permDismissConfirmed": "Bounty dismissed.",
 		"mb_comm_reply": "The other $shipFleet does not answer to your hails.",
-		"mb_ship": "ship",
-		"mb_fleet": "fleet",
-
 
 		"mb_hvb_title":"High Value Bounty: ",
-
 
 		"mb_hvb_she":"She is",
 		"mb_hvb_he":"He is",
@@ -233,6 +229,8 @@
 		"mb_himself":"himself",
 		"mb_herself":"herself",
 		"mb_themselves":"themselves",
-
+		
+		"mb_var_ship": "ship",
+		"mb_var_fleet": "fleet",
 	}
 }
