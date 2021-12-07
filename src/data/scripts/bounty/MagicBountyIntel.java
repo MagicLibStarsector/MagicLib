@@ -443,7 +443,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         switch (bounty.getSpec().job_show_distance) {
             case None:
-                return null;
+//                return null; NOPE, the icon should always be placed somewhere otherwise there is no way to get the location information again.
             case Vague:
             case Vanilla:
             case Distance:
