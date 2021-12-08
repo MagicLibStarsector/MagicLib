@@ -80,7 +80,7 @@ public class MagicVariables {
     public static void loadThemesBlacklist(){
         mergedThemesBlacklist.clear();
         //load list from settings
-        List<String> themes = MagicSettings.getList(MAGICLIB_ID, VARIANT_PATH);
+        List<String> themes = MagicSettings.getList(MAGICLIB_ID, "merged_themes_blacklist");
         for (String s : themes){
             if(!mergedThemesBlacklist.contains(s)) mergedThemesBlacklist.add(s);
         }
