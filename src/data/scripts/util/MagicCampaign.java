@@ -124,7 +124,7 @@ public class MagicCampaign {
         
         object.setCircularOrbitWithSpin(orbitCenter,angle,period,radius,-10,10);
     }
-    
+        
     /**
      * Creates a derelict ship at the desired emplacement
      * 
@@ -681,8 +681,8 @@ public class MagicCampaign {
             log.error("No assignment defined, defaulting to aggressive orbit.");
         }
         
-        Float quality = 2f;
-        if(qualityOverride!=null && qualityOverride>=0){
+        Float quality = 1f;
+        if(qualityOverride!=null && qualityOverride>=-1){
             quality=qualityOverride;
         } else if(verbose){
             log.error("No quality override defined, defaulting to highest quality.");
@@ -729,14 +729,16 @@ public class MagicCampaign {
             }
             
             if(minFP>coreFP){
-                CampaignFleetAPI reinforcements = generateRandomFleet(extraShipsFaction, quality, type, (minFP-coreFP), 0.2f );
+                CampaignFleetAPI reinforcements = generateRandomFleet(extraShipsFaction, quality, type, (minFP-coreFP), 0.2f );                
+                
+                //KEEP THOSE DMODS!
+                bountyFleet.setInflater(reinforcements.getInflater());
                 
                 List<FleetMemberAPI> membersInPriorityOrder = reinforcements.getFleetData().getMembersInPriorityOrder();
                 if (membersInPriorityOrder!=null && !membersInPriorityOrder.isEmpty()){
                     for (FleetMemberAPI m : membersInPriorityOrder) {
                         m.setCaptain(null);
                         bountyFleet.getFleetData().addFleetMember(m);
-                        //MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
                         if(verbose){
                             log.warn("adding "+m.getHullId());
                         }
@@ -806,13 +808,7 @@ public class MagicCampaign {
         
         //apply skills to the fleet
         FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());        
-        
-        //FINISHING
-        
-        bountyFleet.getFleetData().sort();
-        bountyFleet.getFleetData().setSyncNeeded();
-        bountyFleet.getFleetData().syncIfNeeded();
-        
+                
 //        //debug
 //        log.warn(bountyFleet.getMembersWithFightersCopy());
 //        log.warn(bountyFleet.getFleetData().getMembersListWithFightersCopy().toString());
@@ -828,6 +824,11 @@ public class MagicCampaign {
         for (FleetMemberAPI member : members) {
             member.getRepairTracker().setCR(0.7f);
         }
+        
+        //FINISHING
+        bountyFleet.getFleetData().sort();
+        bountyFleet.getFleetData().setSyncNeeded();
+        bountyFleet.getFleetData().syncIfNeeded();
         
         //SPAWN if needed
         if (location != null) {
@@ -1161,17 +1162,18 @@ public class MagicCampaign {
     private static CampaignFleetAPI generateRandomFleet(String factionId, float qualityOverride, String fleetType, float fleetPoints, float freightersAndTankersFraction ) {
         
         FleetParamsV3 params = new FleetParamsV3(
-                null,//fakeMarket(factionId, qualityOverride),
+                null,
+                //fakeMarket(factionId, qualityOverride), //Fake market are actually not needed, one will be created by the FleetFactory
                 new Vector2f(),
                 factionId,
-                qualityOverride,
+                qualityOverride, //this is supposed to everride the default fleet quality without market of 0.5
                 fleetType,
                 fleetPoints*(1-freightersAndTankersFraction),
                 fleetPoints*(freightersAndTankersFraction/3),
                 fleetPoints*(freightersAndTankersFraction/3), 
                 fleetPoints*(freightersAndTankersFraction/3),
                 0f, 0f,
-                qualityOverride
+                0 //DO NOT SET A QUALITY MOD, it is added to the market quality
         );
         
         params.ignoreMarketFleetSizeMult = true;
@@ -1184,12 +1186,19 @@ public class MagicCampaign {
         } else {
             params.averageSMods=0;
         }
+//        params.quality=0;
+//        params.qualityMod=0;
+//        params.qualityOverride=null;
         
         CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
         if (tempFleet==null || tempFleet.isEmpty()) {
             log.warn("Failed to create procedural Support-Fleet");
             return null;
         }
+//        tempFleet.inflateIfNeeded();
+//        tempFleet.deflate();
+//        tempFleet.forceSync();
+//        tempFleet.updateFleetView();
         
         return tempFleet;
     }
@@ -1201,7 +1210,8 @@ public class MagicCampaign {
         market.setFactionId(factionId);
         SectorEntityToken token = Global.getSector().getHyperspace().createToken(0, 0);
         market.setPrimaryEntity(token);
-        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", BASE_QUALITY_WHEN_NO_MARKET);
+        //market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", BASE_QUALITY_WHEN_NO_MARKET);
+        market.getStats().getDynamic().getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("fake", quality_override);
         market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat("fake", 1f);
         
         return market;
