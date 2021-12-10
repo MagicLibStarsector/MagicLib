@@ -172,7 +172,10 @@ class MagicBountyUtils {
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$location", new StringCreator() {
             @Override
             public String create() {
-                return bounty.getFleetSpawnLocation().getName();
+                if(bounty.getFleetSpawnLocation().getMarket()!=null){
+                    return bounty.getFleetSpawnLocation().getMarket().getName();
+                }
+                return bounty.getFleetSpawnLocation().getFullName();
             }
         });
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$faction", new StringCreator() {
@@ -226,13 +229,15 @@ class MagicBountyUtils {
     }
 
     static String createLocationEstimateText(final ActiveBounty bounty) {
-        SectorEntityToken hideoutLocation = bounty.getFleetSpawnLocation();
-        SectorEntityToken fake = hideoutLocation.getContainingLocation().createToken(0, 0);
-        fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
-
-        String loc = BreadcrumbSpecial.getLocatedString(fake);
-        loc = loc.replaceAll(getString("mb_distance_orbit"), getString("mb_distance_hidingNear"));
-        loc = loc.replaceAll(getString("mb_distance_located"), getString("mb_distance_hidingIn"));
+//        SectorEntityToken hideoutLocation = bounty.getFleetSpawnLocation();
+//        SectorEntityToken fake = hideoutLocation.getContainingLocation().createToken(0, 0);
+//        fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
+//
+//        String loc = BreadcrumbSpecial.getLocatedString(fake);
+        
+        String loc = BreadcrumbSpecial.getLocatedString(bounty.getFleetSpawnLocation());
+//        loc = loc.replaceAll(getString("mb_distance_orbit"), getString("mb_distance_hidingNear"));
+//        loc = loc.replaceAll(getString("mb_distance_located"), getString("mb_distance_hidingIn"));
         String sheIs = getString("mb_distance_she");
         if (bounty.getCaptain().getGender() == FullName.Gender.MALE) sheIs = getString("mb_distance_he");
         if (bounty.getCaptain().getGender() == FullName.Gender.ANY) sheIs = getString("mb_distance_they");
@@ -249,7 +254,9 @@ class MagicBountyUtils {
         if(bounty.getSpec().fleet_behavior == FleetAssignment.PATROL_SYSTEM){
             loc = loc + getString("mb_distance_roaming") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
         } else {
-            if(bounty.getFleetSpawnLocation().hasTag(Tags.PLANET)){
+            if(bounty.getFleetSpawnLocation().getMarket()!=null){
+                loc = loc + getString("mb_distance_near") + bounty.getFleetSpawnLocation().getMarket().getName() + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.PLANET)){
                 loc = loc + getString("mb_distance_near") + bounty.getFleetSpawnLocation().getName() + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
             } else if(bounty.getFleetSpawnLocation().hasTag(Tags.STATION)){
                 loc = loc + getString("mb_distance_near") + getString("mb_distance_station") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
