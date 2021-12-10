@@ -19,7 +19,6 @@ public class Magic_modPlugin extends BaseModPlugin {
     //                                    //
     ////////////////////////////////////////
 
-//    public static List<String> TRAIL_DATA = new ArrayList<>();
 
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
@@ -54,6 +53,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         //gather trail data
         MagicAutoTrails.getTrailData();
         
+        MagicVariables.checkBountySystems();
+        
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose=Global.getSettings().isDevMode();
@@ -69,6 +70,9 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         //gather trail data
         MagicAutoTrails.getTrailData();
+        
+        //Check for other bounty systems
+        MagicVariables.checkBountySystems();
         
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();
@@ -86,46 +90,27 @@ public class Magic_modPlugin extends BaseModPlugin {
     public void onGameLoad(boolean newGame) {
 //        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
-
-        if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
+        
+        MagicVariables.checkBountySystems();
+        
+        if (MagicVariables.MagicBountiesEnabled) {
             if (newGame) {  
                 //add all bounties on a new game
-                MagicBountyData.loadBountiesFromJSON(false);              
+                MagicBountyData.loadBountiesFromJSON(false);
+                //convert the HVBs if necessary
+                if(!MagicVariables.hvb)MagicBountyHVB.convertHVBs(false);
             } else {
                 //only add new bounties if there are any on a save load
-                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode());  
+                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode()); 
+                if(!MagicVariables.hvb)MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
             }
 
-            //check for IBBs presence
-            if (Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties == true) {
-                Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", true);
-            } else {
-                Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
-            }
-            //check for HVBs presence
-            if (Global.getSettings().getModManager().isModEnabled("vayrasector") && VayraModPlugin.UNIQUE_BOUNTIES == true) {
-                Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
-            } else {
-                Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
-                MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode());
-            }
-            
             MagicBountyCoordinator.onGameLoad();
             MagicBountyCoordinator.getInstance().configureBountyListeners();
 
             Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
         }
     }
-
-    /*
-    @Override
-    public void onNewGame() {
-        if (MagicSettings.getBoolean("MagicLib", "bounty_board_enabled")) {
-            //setup the bounties
-            MagicBountyData.loadBountiesFromJSON(false);
-        }
-    }
-    */
 
     /**
      * Define how classes are named in the save xml, allowing class renaming without
