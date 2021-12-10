@@ -1,0 +1,89 @@
+{
+    "bountyID":{
+    
+        #TRIGGERS (ALL OPTIONAL)
+        
+        "trigger_market_id": [],
+        "trigger_marketFaction_any": [],
+        "trigger_marketFaction_alliedWith": true,
+        "trigger_marketFaction_none": [],
+        "trigger_marketFaction_enemyWith": false,
+        "trigger_market_minSize": 0,
+        "trigger_player_minLevel": 0,
+        "trigger_min_fleet_size": 0,
+        "trigger_min_days_elapsed": 0, 
+        "trigger_weight_mult": 0,
+        "trigger_memKeys_all": {"$key":true,},
+        "trigger_memKeys_any": {"$key":true,},
+        "trigger_playerRelationship_atLeast": {"faction":0.0,},
+        "trigger_playerRelationship_atMost": {"faction":0.0,},
+        
+        #BOUNTY DESCRIPTION
+        
+        "job_name": "",
+        "job_description": "",
+        "job_comm_reply": "",
+        "job_intel_success": "",
+        "job_intel_failure": "",
+        "job_intel_expired": "",
+        "job_forFaction": "",
+        "job_deadline": 0,
+        "job_credit_reward": 0,
+        "job_reward_scaling": 0,
+        "job_reputation_reward":0,
+        "job_item_reward": {"item":0,},
+        "job_type":"assassination",
+        "job_show_type": true,
+        "job_show_captain": false,
+        "job_show_fleet": "presetText",
+        "job_show_distance": "vague",
+        "job_show_arrow": false,
+        "job_difficultyDescription": "auto",
+        "job_pick_option": "",
+        "job_pick_script": "data.script.script",
+        "job_memKey":"$key",
+        "job_conclusion_script":"data.script.script",
+        
+        #TARGET COMMANDER (OPTIONAL)
+        
+        "target_first_name":"",
+        "target_last_name":"",
+        "target_portrait":"",
+        "target_gender":"UNDEFINED",
+        "target_rank": "citizen",
+        "target_post": "spacer",
+        "target_personality": "aggressive",
+        "target_aiCoreId": null,
+        "target_level": 1,
+        "target_elite_skills":2,
+        "target_skill_preference": "GENERIC",
+        "target_skills": {"skill":1,}, 
+    
+    
+        #TARGET FLEET
+        
+        "fleet_name":"",
+        "fleet_faction": "ML_bounty",
+        "fleet_flagship_variant":"",
+        "fleet_flagship_name":"",
+        "fleet_flagship_recoverable": true,
+        "fleet_preset_ships": {"variant":1,},
+        "fleet_scaling_multiplier": 0,
+        "fleet_min_FP": 0,
+        "fleet_composition_faction": "faction",
+        "fleet_composition_quality": 1,
+        "fleet_transponder": false,
+        "fleet_behavior": "PASSIVE",
+        
+        #LOCATION
+        
+        "location_entitiesID": ["location1",],
+        "location_marketFactions": ["faction",],
+        "location_distance": "CLOSE",
+        "location_themes": ["procgen_no_theme", "procgen_no_theme_pulsar_blackhole",],
+        "location_themes_blacklist": ["theme_already_occupied", "theme_already_colonized", "theme_hidden", ],
+        "location_entities": ["entity",],
+        "location_prioritizeUnexplored": true,
+        "location_defaultToAnyEntity": true,
+    },
+}
