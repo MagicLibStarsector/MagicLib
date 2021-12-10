@@ -1506,6 +1506,10 @@ public class MagicCampaign {
         if(entityIDs!=null && !entityIDs.isEmpty()){
             //if there is just one location and it exist, lets use that.
             if(entityIDs.size()==1 && Global.getSector().getEntityById(entityIDs.get(0))!=null){
+                if(verbose){
+                    SectorEntityToken t = Global.getSector().getEntityById(entityIDs.get(0));
+                    log.error("Selecting "+t.getName()+", in the "+t.getContainingLocation().getName()+" system, "+ t.getContainingLocation().getLocation().length()+ " ("+ Misc.getDistanceLY(new Vector2f(), t.getContainingLocation().getLocation()) +" LY) from the sector's center");
+                }   
                 return Global.getSector().getEntityById(entityIDs.get(0));
             }
             //if there are multiple possible location, pick a random one
