@@ -53,7 +53,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         //gather trail data
         MagicAutoTrails.getTrailData();
         
-        MagicVariables.checkBountySystems();
+//        MagicVariables.checkBountySystems();
         
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();

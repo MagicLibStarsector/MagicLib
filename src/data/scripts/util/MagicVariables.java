@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.SWPModPlugin;
 import data.scripts.VayraModPlugin;
-import data.scripts.bounty.MagicBountyHVB;
 import de.schafunschaf.bountiesexpanded.Settings;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +102,7 @@ public class MagicVariables {
     
     public static boolean ibb=false;
     public static boolean hvb=false;
-    public static boolean MagicBountiesEnabled=false;    
+    public static boolean MagicBountiesEnabled=false;
     
     public static void checkBountySystems(){
         

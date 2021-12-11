@@ -4,13 +4,13 @@ MagicLib
 Added MagicBounty framework, a highly customizable yet easy to implement system to add unique story-driven bounties to a board present in bars.
 Huge thanks to Wisp that did the bulk of the work, to Schaf-Unschaf and Rubi for their contributions.
 
-Added a merged "occupied" system themes list for finding suitable places to spawn exploration content. Currently adds all the Remnant tags, Blade-Breaker, OCI and Plague-Bearer tags.
+Added a merged "occupied" system themes list to MagicSetting, for finding suitable places where to spawn exploration content. Currently adds all the Remnant tags, Blade-Breaker, OCI and Plague-Bearer tags.
 
 MagicRender: Fixed issue where sprite flickering was applied incorrectly.
 MagicLensFlare: Now uses the "visual only" API.
 MagicSettings: Improved error messages with the lines where the issue is if possible.
 MagicTargeting: Added the option to exclude flares from missile picks.
-MagicCampaign: Many small improvement to the logic of nearly all functions. Better checks for suitable systems, more coherent fleet spawning, made a lot of parameter nullable for procgen filler.
+MagicCampaign: Many small improvement to the logic of nearly all functions. Better checks for suitable systems, more coherent fleet spawning, Fleet quality is now a thing, made a lot of parameter nullable for procgen filler...
 MagicUI: the widgets texts can be null to be ignored, same for numbers if they are negative.
 
 
