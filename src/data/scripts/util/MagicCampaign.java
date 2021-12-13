@@ -13,7 +13,7 @@ import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
-import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.BASE_QUALITY_WHEN_NO_MARKET;
+//import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.BASE_QUALITY_WHEN_NO_MARKET;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
@@ -950,9 +950,17 @@ public class MagicCampaign {
         
         if (nullStringIfEmpty(portraitId) != null){
             if(portraitId.startsWith("graphics")){
-                person.setPortraitSprite(portraitId);
+                if(Global.getSettings().getSprite(portraitId)!=null){
+                    person.setPortraitSprite(portraitId);
+                } else {
+                    log.error("Missing portrait at "+portraitId);
+                }
             } else {
-                person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
+                if(Global.getSettings().getSprite("characters", portraitId)!=null){
+                    person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
+                } else {
+                    log.error("Missing portrait id "+portraitId);
+                }
             }
         }
 //        person.setFaction(factionId);
@@ -1186,19 +1194,12 @@ public class MagicCampaign {
         } else {
             params.averageSMods=0;
         }
-//        params.quality=0;
-//        params.qualityMod=0;
-//        params.qualityOverride=null;
         
         CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
         if (tempFleet==null || tempFleet.isEmpty()) {
             log.warn("Failed to create procedural Support-Fleet");
             return null;
         }
-//        tempFleet.inflateIfNeeded();
-//        tempFleet.deflate();
-//        tempFleet.forceSync();
-//        tempFleet.updateFleetView();
         
         return tempFleet;
     }
