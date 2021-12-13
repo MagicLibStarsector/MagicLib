@@ -32,19 +32,19 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
 
+        
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
         if(Global.getSettings().isDevMode()){
             MagicBountyData.loadBountiesFromJSON(false);
-            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
-                MagicBountyHVB.convertHVBs(false);
+//            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
+//                MagicBountyHVB.convertHVBs(false);
+//            }
+            if (MagicBountyData.JSONfailed) {
+                String message = System.lineSeparator()
+                        + System.lineSeparator() + "Malformed MagicBounty_data.json detected"
+                        + System.lineSeparator() + System.lineSeparator();
+                throw new ClassNotFoundException(message);
             }
-        }
-
-        if (MagicBountyData.JSONfailed) {
-            String message = System.lineSeparator()
-                    + System.lineSeparator() + "Malformed MagicBounty_data.json detected"
-                    + System.lineSeparator() + System.lineSeparator();
-            throw new ClassNotFoundException(message);
         }
 
         //gather interference data
