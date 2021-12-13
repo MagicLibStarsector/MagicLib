@@ -68,6 +68,41 @@ public class MagicBountyHVB {
             for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
                 JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
                 if (row.has("bounty_id") && row.getString("bounty_id") != null && !row.getString("bounty_id").isEmpty()) {
+                    
+                    //HVB validation
+                    boolean skip=false;
+                    //check for factions
+                    if((!Global.getSector().getFaction(row.getString("faction")).equals("hvb_hostile") && Global.getSector().getFaction(row.getString("faction"))==null) || Global.getSector().getFaction(row.getString("postedByFaction"))==null){
+                        if(verbose){
+                            LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing either "+row.getString("faction")+" or "+row.getString("postedByFaction"));
+                        }
+                        skip=true;
+                    } else   
+                        //check for flagship variant
+                    if(Global.getSettings().getVariant(row.getString("flagshipVariantId"))==null ){
+                        if(verbose){
+                            LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing "+row.getString("flagshipVariantId")+" flagship variant.");
+                        }
+                        skip=true;
+                    } else  
+                        //check for other ships variants
+                    if(row.optString("fleetVariantIds")!=null){
+                        List<String> fleetList = new ArrayList<>(Arrays.asList(row.optString("fleetVariantIds").split("\\s*(,\\s*)+")));
+                        if(!fleetList.isEmpty()){
+                            for(String id : fleetList){
+                                if(Global.getSettings().getVariant(id)==null){
+                                    if(verbose){
+                                        LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing "+row.getString("flagshipVariantId")+" fleet variant.");
+                                    }
+                                    skip=true;
+                                }
+                            }
+                        }
+                    }                      
+                    if(skip){
+                        continue;
+                    }
+                    
                     String bountyId = row.getString("bounty_id");
                     
                     if(verbose){
