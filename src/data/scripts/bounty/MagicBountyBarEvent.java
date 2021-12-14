@@ -372,27 +372,33 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //DIFFICULTY
                             if (bounty.job_difficultyDescription != null && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))) {
-//                                int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
-//                                float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();                                
-                                int playerFleetStrength = Global.getSector().getPlayerFleet().getFleetPoints();
-                                float bountyFleetStrength = activeBounty.getFleet().getFleetPoints();
+                                int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
+                                float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();                                
+//                                int playerFleetStrength = Global.getSector().getPlayerFleet().getFleetPoints();
+//                                float bountyFleetStrength = activeBounty.getFleet().getFleetPoints();
                                 
                                 String dangerStringPhrase;
-
-                                if (playerFleetStrength < Math.round(bountyFleetStrength * 0.25f)) {
+                                                                                    //"an extreme danger"
+                                       if (playerFleetStrength < Math.round(bountyFleetStrength * 0.70f)) {
                                     dangerStringPhrase = getString("mb_threatLevel6");
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.5f)) {
-                                    dangerStringPhrase = getString("mb_threatLevel5");
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.75f)) {
-                                    dangerStringPhrase = getString("mb_threatLevel4");
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1f)) {
-                                    dangerStringPhrase = getString("mb_threatLevel3");
+                                                                                    //"a deadly peril"
+                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.85f)) {
+                                    dangerStringPhrase = getString("mb_threatLevel5"); 
+                                                                                    //"a significant challenge"
+                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.00f)) {
+                                    dangerStringPhrase = getString("mb_threatLevel4"); 
+                                                                                    //"a moderate hazard"
+                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.15f)) {
+                                    dangerStringPhrase = getString("mb_threatLevel3"); 
+                                                                                    //"a minor threat"
+                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.3f)) {
+                                    dangerStringPhrase = getString("mb_threatLevel2"); 
+                                                                                    //"a negligible inconvenience" 
                                 } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.5f)) {
-                                    dangerStringPhrase = getString("mb_threatLevel2");
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 2f)) {
-                                    dangerStringPhrase = getString("mb_threatLevel1");
+                                    dangerStringPhrase = getString("mb_threatLevel1"); 
+                                                                                    //"no risk whatsoever" 
                                 } else {
-                                    dangerStringPhrase = getString("mb_threatLevel0");
+                                    dangerStringPhrase = getString("mb_threatLevel0"); 
                                 }
                                 //"Your intelligence officer informs you that the target poses "
                                 text.addPara(getString("mb_threat1") + getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);

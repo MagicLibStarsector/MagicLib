@@ -209,7 +209,7 @@ public class MagicBountyHVB {
                     
                     MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(
                             //List <String> trigger_market_id,
-                            null,
+                            new ArrayList<String>(),
                             //List <String> trigger_marketFaction_any,
                             postingMarket,
                             //boolean trigger_marketFaction_alliedWith,

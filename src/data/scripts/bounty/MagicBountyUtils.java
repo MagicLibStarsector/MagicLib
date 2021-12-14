@@ -224,6 +224,14 @@ class MagicBountyUtils {
                 }
             }
         });
+        
+        //FAILSAFE
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$", new StringCreator() {
+            @Override
+            public String create() {
+                return "==error==";
+            }
+        });
 
         return replaced;
     }
