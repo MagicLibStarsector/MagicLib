@@ -1252,8 +1252,11 @@ public class MagicCampaign {
         LocationAPI systemLocation = location.getContainingLocation();
         systemLocation.addEntity(fleet);
         fleet.setLocation(location.getLocation().x, location.getLocation().y);
-        fleet.getAI().addAssignment(order, target, 1000000f, null);
-        
+        if(order == FleetAssignment.PATROL_SYSTEM){
+            fleet.addAssignment(order, target.getStarSystem().getStar(), 1000000f);
+        } else {
+            fleet.addAssignment(order, target, 1000000f);
+        }
         //radius fix
         fleet.forceSync();
         fleet.getFleetData().setSyncNeeded();
@@ -1463,6 +1466,12 @@ public class MagicCampaign {
         CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
         float effectiveFP = playerFleet.getEffectiveStrength();
         return effectiveFP / enemyBaseFP;
+    }
+    public static Float relativeStrength(CampaignFleetAPI enemy){
+        CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
+        float effectiveFP = playerFleet.getEffectiveStrength();
+        float enemyEffectiveFP = enemy.getEffectiveStrength();
+        return effectiveFP / enemyEffectiveFP;
     }
     
     /**

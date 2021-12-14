@@ -94,9 +94,10 @@
                 # none: Do not show the distance.
                 # vague: "The target is located somewhere in the vicinity of the core worlds."
                 # distance: "It is located roughly %s LY away from your current position."
-                # vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation."
-                # vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position."
-        "job_show_arrow": false, # Default: false. Whether to show an arrow on the Intel map pointing from the start to the bounty target location. Should only be enabled when there is a good reason, to match vanilla.
+				# vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation." Also shows a map during the bar dialog
+                # vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position." Also shows a map during the bar dialog
+				# exact: "The target is located near X in the Y system." Also shows a map during the bar dialog
+		"job_show_arrow": false, # Default: false. Whether to show an arrow on the Intel map pointing from the start to the bounty target location. Should only be enabled when there is a good reason, to match vanilla.
         "job_difficultyDescription": "auto",  # Default: no description shown. "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
         "job_pick_option": "Accept the job", # Default: "Accept the job". The text option that, when selected, accepts the bounty job.
         "job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters

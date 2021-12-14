@@ -1,6 +1,12 @@
 MagicLib
 
 0.35
+
+[RC2]
+MagicCampaign.spawnFleet(): Patrol assignment should now be properly respected. (also affects MagicBounty ROAMING assignment)
+MagicBounty HVBs: Added many checks to prevent invalid bounties from being offered.
+MagicBounty bar event: added map direction like vanilla missions. 
+
 Added MagicBounty framework, a highly customizable yet easy to implement system to add unique story-driven bounties to a board present in bars.
 Huge thanks to Wisp that did the bulk of the work, to Schaf-Unschaf and Rubi for their contributions.
 

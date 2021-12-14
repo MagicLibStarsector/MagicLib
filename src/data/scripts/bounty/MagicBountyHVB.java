@@ -72,7 +72,7 @@ public class MagicBountyHVB {
                     //HVB validation
                     boolean skip=false;
                     //check for factions
-                    if((!Global.getSector().getFaction(row.getString("faction")).equals("hvb_hostile") && Global.getSector().getFaction(row.getString("faction"))==null) || Global.getSector().getFaction(row.getString("postedByFaction"))==null){
+                    if((!row.getString("faction").equals("hvb_hostile") && Global.getSector().getFaction(row.getString("faction"))==null) || Global.getSector().getFaction(row.getString("postedByFaction"))==null){
                         if(verbose){
                             LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing either "+row.getString("faction")+" or "+row.getString("postedByFaction"));
                         }
