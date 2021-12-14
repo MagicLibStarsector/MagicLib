@@ -58,18 +58,27 @@ public class MagicBountyData {
         }
     }
 
+    public static void clearBountyData(){
+        if(verbose){
+            LOG.info("Cleaning bounty board");
+        }        
+        for (Iterator<Map.Entry<String, bountyData>> iterator = BOUNTIES.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, bountyData> entry = iterator.next();
+            //cleanly remove the bounties that are NOT taken
+            if(!Global.getSector().getMemoryWithoutUpdate().contains(entry.getValue().job_memKey)){
+                iterator.remove();
+            } else {
+                if(verbose){
+                    LOG.info("Keeping active bounty: "+entry.getKey());
+                }
+            }
+        }
+    }
+    
     public static void loadBountiesFromJSON(boolean appendOnly){
 
         if(verbose){
             LOG.info("\n ######################\n\n MAGIC BOUNTIES LOADING\n\n ######################");
-        }
-
-        //this will be a long one
-        if(!appendOnly){
-            BOUNTIES.clear();
-            if(verbose){
-                LOG.info("Clearing bounty board");
-            }
         }
 
         //get the list of bounties that need to be created from modSettings.json        

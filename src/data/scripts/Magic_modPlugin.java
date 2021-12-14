@@ -59,7 +59,6 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose=Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
-        
     }
 
     @Override
@@ -100,6 +99,10 @@ public class Magic_modPlugin extends BaseModPlugin {
                 //convert the HVBs if necessary
                 if(!MagicVariables.hvb)MagicBountyHVB.convertHVBs(false);
             } else {
+                if(MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_reloadAll")){
+                    //force cleanup of all the bounties that have not been taken
+                    MagicBountyData.clearBountyData();
+                }
                 //only add new bounties if there are any on a save load
                 MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode()); 
                 if(!MagicVariables.hvb)MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
