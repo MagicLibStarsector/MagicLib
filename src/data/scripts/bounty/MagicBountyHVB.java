@@ -88,9 +88,9 @@ public class MagicBountyHVB {
                         //check for other ships variants
                     if(row.optString("fleetVariantIds")!=null){
                         List<String> fleetList = new ArrayList<>(Arrays.asList(row.optString("fleetVariantIds").split("\\s*(,\\s*)+")));
-                        if(!fleetList.isEmpty()){
+                         if(!fleetList.isEmpty()){
                             for(String id : fleetList){
-                                if(Global.getSettings().getVariant(id)==null){
+                                if(!id.isEmpty() && Global.getSettings().getVariant(id)==null){
                                     if(verbose){
                                         LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing "+row.getString("flagshipVariantId")+" fleet variant.");
                                     }
