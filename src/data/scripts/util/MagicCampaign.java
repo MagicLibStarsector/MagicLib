@@ -88,22 +88,24 @@ public class MagicCampaign {
         //find nearest orbit to match
         for(SectorEntityToken e : system.getAllEntities()){
             
+            //skip self
+            if(e==object)continue;
+            //skip stars
+            if(e.isStar())continue;            
             //skip non orpiting objects
             if(e.getOrbit()==null || e.getOrbitFocus()==null || e.getCircularOrbitRadius()<=0 || e.getCircularOrbitPeriod()<=0)continue;
 
-            //skip stars
-            if(e.isStar())continue;
-
             //find closest point on orbit for the tested object
-            Vector2f closestPoint = MathUtils.getPoint(
+            Vector2f closestPointOnOrbit = MathUtils.getPoint(
                     e.getOrbitFocus().getLocation(),
                     e.getCircularOrbitRadius(),
                     VectorUtils.getAngle(e.getOrbitFocus().getLocation(), location)
             );
 
             //closest orbit becomes the reference
-            if(MathUtils.getDistanceSquared(closestPoint, location)<closestOrbit){
+            if(MathUtils.getDistanceSquared(closestPointOnOrbit, location)<closestOrbit){
                 referenceObject=e;
+                closestOrbit = MathUtils.getDistanceSquared(closestPointOnOrbit, location);
             }
         }
 
@@ -121,8 +123,11 @@ public class MagicCampaign {
             radius=MathUtils.getDistance(system.getCenter(),location);
             period=MathUtils.getDistance(system.getCenter(),location)/2;
         }
-        
-        object.setCircularOrbitWithSpin(orbitCenter,angle,period,radius,-10,10);
+        if(spin){
+            object.setCircularOrbitWithSpin(orbitCenter,angle,radius,period,-10,10);
+        } else{
+            object.setCircularOrbit(orbitCenter,angle,radius,period);
+        }
     }
         
     /**
