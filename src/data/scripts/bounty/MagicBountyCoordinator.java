@@ -281,13 +281,17 @@ public final class MagicBountyCoordinator {
                 spec.target_skills
         );
 
-        CampaignFleetAPI fleet = createFleet(spec.fleet_name,
+        CampaignFleetAPI fleet = createFleet(
+                spec.fleet_name,
                 spec.fleet_faction,
                 FleetTypes.PERSON_BOUNTY_FLEET,
                 spec.fleet_flagship_name,
                 spec.fleet_flagship_variant,
+                false,
+                spec.fleet_flagship_autofit,
                 captain,
                 spec.fleet_preset_ships,
+                spec.fleet_preset_autofit,
                 calculateDesiredFP(spec),
                 spec.fleet_composition_faction,
                 spec.fleet_composition_quality,

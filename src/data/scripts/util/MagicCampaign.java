@@ -590,8 +590,8 @@ public class MagicCampaign {
             boolean isImportant,
             boolean transponderOn
     ) {
-        CampaignFleetAPI result = createFleet(fleetName, fleetFaction, fleetType, flagshipName, flagshipVariant,
-                captain, supportFleet, minFP, reinforcementFaction, qualityOverride,
+        CampaignFleetAPI result = createFleet(fleetName, fleetFaction, fleetType, flagshipName, flagshipVariant, false, false,
+                captain, supportFleet, true, minFP, reinforcementFaction, qualityOverride,
                 spawnLocation, assignment, assignementTarget, isImportant, transponderOn, null);
         return result;
     }
@@ -636,8 +636,11 @@ public class MagicCampaign {
             @Nullable String fleetType,
             @Nullable String flagshipName,
             String flagshipVariant,
+            boolean flagshipRecovery,
+            boolean flagshipAutofit,
             @Nullable PersonAPI captain,
             @Nullable Map<String, Integer> supportFleet,
+            boolean supportAutofit,
             int minFP,
             String reinforcementFaction,
             @Nullable Float qualityOverride,
@@ -694,12 +697,10 @@ public class MagicCampaign {
         }
         
         //EMPTY FLEET
-        //CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(fleetFaction, type, null);
-        // TESTING CHANGE: fleet is kept as the reinforcement faction so that appropriate faction officers get added
         CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(extraShipsFaction, type, null);
         
         //ADDING FLAGSHIP
-        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, true, verbose);
+        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
         if (flagship==null){
             log.error("Aborting "+fleetName+" generation");
             return null;
@@ -710,11 +711,14 @@ public class MagicCampaign {
             flagship.setShipName(flagshipName);
         }        
         flagship.setFlagship(true);
+        if(flagshipRecovery){
+            flagship.getVariant().addTag(Tags.VARIANT_ALWAYS_RECOVERABLE);
+        }
         MagicVariables.presetShipIdsOfLastCreatedFleet.add(flagship.getId());
         
         //ADDING PRESET SHIPS IF REQUIRED
         if(supportFleet!=null && !supportFleet.isEmpty()){
-            List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, verbose);
+            List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, supportAutofit, verbose);
             for (FleetMemberAPI m : support){
                 bountyFleet.getFleetData().addFleetMember(m);
                 MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());                
@@ -812,13 +816,8 @@ public class MagicCampaign {
         }
         
         //apply skills to the fleet
-        FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());        
+        FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());
                 
-//        //debug
-//        log.warn(bountyFleet.getMembersWithFightersCopy());
-//        log.warn(bountyFleet.getFleetData().getMembersListWithFightersCopy().toString());
-//        log.warn(bountyFleet.getFleetData().getMembersInPriorityOrder().toString());
-        
         //cleanup name and faction
         bountyFleet.setNoFactionInName(true);
         bountyFleet.setFaction(fleetFaction, true);
@@ -834,6 +833,9 @@ public class MagicCampaign {
         bountyFleet.getFleetData().sort();
         bountyFleet.getFleetData().setSyncNeeded();
         bountyFleet.getFleetData().syncIfNeeded();
+        bountyFleet.getFleetData().syncMemberLists();
+        bountyFleet.setInflated(false);
+        bountyFleet.inflateIfNeeded();
         
         //SPAWN if needed
         if (location != null) {
@@ -1140,7 +1142,7 @@ public class MagicCampaign {
         return variant;
     }
     
-    private static FleetMemberAPI generateShip(String variant, @Nullable String variantsPath, boolean flagship, boolean verbose) {        
+    private static FleetMemberAPI generateShip(String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {        
         ShipVariantAPI thisVariant = Global.getSettings().getVariant(variant);
         //if the variant doesn't exist but a custom variant path is defined, try loading it
         if (thisVariant == null && variantsPath!=null) {
@@ -1152,20 +1154,24 @@ public class MagicCampaign {
         FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, thisVariant);  
         
         if (ship!=null) {
-            ship.setFlagship(flagship);
+            ship.getVariant().addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
+            //attempt at keeping the variants intact
+            if(!autofit){
+                ship.getVariant().addTag("no_autofit");
+            }
             if(verbose) log.warn("Created "+variant);            
             return ship;
-        }        
+        }
         
         log.error("Failed to create "+variant);
         return null;
     }
 
-    private static List<FleetMemberAPI> generatePresetShips(Map<String, Integer> supportFleet, @Nullable String variantsPath, boolean verbose) {
+    private static List<FleetMemberAPI> generatePresetShips(Map<String, Integer> supportFleet, @Nullable String variantsPath, boolean autofit, boolean verbose) {
         List<FleetMemberAPI> fleetMemberList = new ArrayList<>();
         for (String shipVariantId : supportFleet.keySet()) {
             for(int i=0; i<supportFleet.get(shipVariantId); i++){
-                FleetMemberAPI fleetMember = generateShip(shipVariantId, variantsPath, false, verbose);
+                FleetMemberAPI fleetMember = generateShip(shipVariantId, variantsPath, autofit, verbose);
                 if(fleetMember!=null) fleetMemberList.add(fleetMember);
             }
         }
@@ -1357,7 +1363,7 @@ public class MagicCampaign {
                 FactionAPI this_faction = Global.getSector().getFaction(f);
                 if(market.getFaction()==this_faction){
                     return true; //is one of the required factions
-                } else if(marketFaction_alliedWith && market.getFaction().isAtWorst(this_faction, RepLevel.FAVORABLE)){
+                } else if(marketFaction_alliedWith && market.getFaction().isAtWorst(this_faction, RepLevel.WELCOMING)){
                     return true;  //is friendly toward one of the required factions
                 }
             }
@@ -1616,9 +1622,9 @@ public class MagicCampaign {
                     }
                 }
                 //special test for basic procgen systems without special content
-                if(seek_themes.contains("procgen_no_theme") || seek_themes.contains("procgen_no_theme_pulsar_blackhole")){
+                if(seek_themes.contains(MagicVariables.SEEK_EMPTY_SYSTEM) || seek_themes.contains(MagicVariables.SEEK_EMPTY_SAFE_SYSTEM)){
                     if(s.isProcgen()){
-                        if(seek_themes.contains("procgen_no_theme_pulsar_blackhole") && (s.hasBlackHole() || s.hasPulsar()))continue;
+                        if(seek_themes.contains(MagicVariables.SEEK_EMPTY_SAFE_SYSTEM) && (s.hasBlackHole() || s.hasPulsar()))continue;
                         //check for the 3 bland themes
                         if(s.getTags().contains("theme_misc_skip") || s.getTags().contains("theme_misc") ||  s.getTags().contains("theme_core_unpopulated")){
                             //sort systems by distances because that will come in handy later
@@ -1659,14 +1665,24 @@ public class MagicCampaign {
                 }
             }
             
+            boolean noPBH=false;
+            if(avoid_themes.contains(MagicVariables.AVOID_BLACKHOLE_PULSAR))noPBH=true;
+            boolean noPop=false;
+            if(avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM))noPop=true;
+            
             if(!systems_core.isEmpty()){
                 for(int i=0; i<systems_core.size(); i++){
                     for(String t : avoid_themes){
-                        //manually check for markets          
-                        if(t.equals(MagicVariables.AVOID_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
-                                systems_core.remove(i);
-                                i--;
-                                break;
+                        if(noPBH && (systems_core.get(i).hasBlackHole()||systems_core.get(i).hasPulsar())){
+                            systems_core.remove(i);
+                            i--;
+                            break;
+                        } else 
+                        //manually check for markets
+                        if(noPop && !Global.getSector().getEconomy().getMarkets(systems_core.get(i)).isEmpty()){
+                            systems_core.remove(i);
+                            i--;
+                            break;
                         } else 
                         // check for blacklisted theme
                         if(systems_core.get(i).getTags().contains(t)){
@@ -1680,11 +1696,16 @@ public class MagicCampaign {
             if(!systems_close.isEmpty()){
                 for(int i=0; i<systems_close.size(); i++){
                     for(String t : avoid_themes){
+                        if(noPBH && (systems_close.get(i).hasBlackHole()||systems_close.get(i).hasPulsar())){
+                            systems_close.remove(i);
+                            i--;
+                            break;
+                        } else 
                         //manually check for markets          
-                        if(t.equals(MagicVariables.AVOID_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
-                                systems_close.remove(i);
-                                i--;
-                                break;
+                        if(noPop && !Global.getSector().getEconomy().getMarkets(systems_close.get(i)).isEmpty()){
+                            systems_close.remove(i);
+                            i--;
+                            break;
                         } else 
                         // check for blacklisted theme
                         if(systems_close.get(i).getTags().contains(t)){
@@ -1698,11 +1719,16 @@ public class MagicCampaign {
             if(!systems_far.isEmpty()){
                 for(int i=0; i<systems_far.size(); i++){
                     for(String t : avoid_themes){
+                        if(noPBH && (systems_far.get(i).hasBlackHole()||systems_far.get(i).hasPulsar())){
+                            systems_far.remove(i);
+                            i--;
+                            break;
+                        } else 
                         //manually check for markets          
-                        if(t.equals(MagicVariables.AVOID_COLONIZED_SYSTEM) && !Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
-                                systems_far.remove(i);
-                                i--;
-                                break;
+                        if(noPop && !Global.getSector().getEconomy().getMarkets(systems_far.get(i)).isEmpty()){
+                            systems_far.remove(i);
+                            i--;
+                            break;
                         } else 
                         // check for blacklisted theme
                         if(systems_far.get(i).getTags().contains(t)){

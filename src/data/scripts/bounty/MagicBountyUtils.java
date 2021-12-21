@@ -1,8 +1,6 @@
 package data.scripts.bounty;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FleetAssignment;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;

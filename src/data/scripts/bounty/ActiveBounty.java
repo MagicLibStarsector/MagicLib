@@ -170,7 +170,7 @@ public final class ActiveBounty {
         }
         
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
-
+        
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
         MagicBountyIntel intelForBounty = null;

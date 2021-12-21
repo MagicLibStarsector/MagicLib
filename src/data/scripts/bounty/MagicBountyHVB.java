@@ -21,6 +21,7 @@ import com.fs.starfarer.api.util.WeightedRandomPicker;
 import static data.scripts.bounty.MagicBountyData.BOUNTIES;
 import data.scripts.util.MagicSettings;
 import static data.scripts.util.MagicTxt.getString;
+import data.scripts.util.MagicVariables;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import static data.scripts.util.MagicVariables.verbose;
 import java.io.IOException;
@@ -204,7 +205,7 @@ public class MagicBountyHVB {
                     
                     String faction = row.getString("faction");
                     if(faction.equals("hvb_hostile")){
-                        faction="mercenary";
+                        faction=MagicVariables.BOUNTY_FACTION;
                     }
                     
                     MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(
@@ -213,11 +214,11 @@ public class MagicBountyHVB {
                             //List <String> trigger_marketFaction_any,
                             postingMarket,
                             //boolean trigger_marketFaction_alliedWith,
-                            true,
+                            false,
                             //List <String> trigger_marketFaction_none,
                             enemyMarket,
                             //boolean trigger_marketFaction_enemyWith,
-                            true,
+                            false,
                             //int trigger_market_minSize,
                             3,
                             //int trigger_player_minLevel,
@@ -237,7 +238,11 @@ public class MagicBountyHVB {
                             //Map <String,Float> trigger_playerRelationship_atLeast,
                             relationshipAtLeast,
                             //Map <String,Float> trigger_playerRelationship_atMost,
-                            relationshipAtMost,
+                            relationshipAtMost,                            
+                            //getFloat(bountyId, "trigger_giverTargetRelationship_atLeast"),
+                            -99f,
+                            //getFloat(bountyId, "trigger_giverTargetRelationship_atMost"),
+                            99f,
                             //String job_name,
                             getString("mb_hvb_title")+row.getString("firstName")+" "+row.getString("lastName"),
                             //String job_description,
@@ -286,6 +291,8 @@ public class MagicBountyHVB {
                             //String job_memKey,
                             "$HVB_"+bountyId,
                             //String job_conclusion_script,
+                            null,                            
+                            //String existing_target_memkey; 
                             null,
                             //String target_first_name,
                             row.getString("firstName"),
@@ -321,14 +328,18 @@ public class MagicBountyHVB {
                             row.getString("flagshipName"),
                             //boolean fleet_flagship_recoverable,
                             row.optDouble("chanceToAutoRecover", 1.0f)>0f,
+                            //boolean fleet_flagship_autofit; 
+                            false,
                             //Map <String,Integer> fleet_preset_ships,
                             fleetMap,
+                            //public boolean fleet_preset_autofit;   
+                            false,
                             //float fleet_scaling_multiplier,
                             (float) row.getDouble("playerFPScalingFactor"),
                             //int fleet_min_FP,
                             row.getInt("minimumFleetFP"),
                             //String fleet_composition_faction,
-                            row.getString("faction"),
+                            faction,
                             //float fleet_composition_quality,
                             2,
                             //boolean fleet_transponder,

@@ -419,7 +419,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         activeBounty.getPresetShipsInFleet()
                                 );
                             }
-
+                            
                             options.clear();
                             optionsAllPages.clear();
                             addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
@@ -444,8 +444,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 //        dialog.getVisualPanel().showImageVisual(visual);
         dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
         
-//        dialog.getVisualPanel().restoreSavedVisual();
-        dialog.getVisualPanel().saveCurrentVisual();                
+//        dialog.getVisualPanel().saveCurrentVisual();                
         refreshBounties(market);
 
         //"jobs are available on the bounty board."

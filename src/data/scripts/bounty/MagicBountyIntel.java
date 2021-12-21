@@ -94,6 +94,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         }
     }
 
+    /*
     @Override
     public Color getTitleColor(ListInfoMode mode) {
         ActiveBounty bounty = getBounty();
@@ -109,6 +110,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 return Misc.getGrayColor();
         }
     }
+    */
 
     @Override
     public void createIntelInfo(TooltipMakerAPI info, ListInfoMode mode) {
@@ -225,7 +227,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            bounty.getSpec().job_intel_success,
+                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_success),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -256,7 +258,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            bounty.getSpec().job_intel_failure,
+                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_failure),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -276,7 +278,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_expired != null && !bounty.getSpec().job_intel_expired.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            bounty.getSpec().job_intel_expired,
+                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_expired),
                             PADDING_DESC,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor()
@@ -493,7 +495,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public Set<String> getIntelTags(SectorMapAPI map) {
         Set<String> tags = super.getIntelTags(map);
-        Collections.addAll(tags, Tags.INTEL_BOUNTY, Tags.INTEL_ACCEPTED);
+        Collections.addAll(tags, Tags.INTEL_MISSIONS, Tags.INTEL_ACCEPTED);
         ActiveBounty bounty = getBounty();
         if (bounty == null) return Collections.emptySet();
 

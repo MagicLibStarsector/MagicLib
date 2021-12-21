@@ -1,6 +1,9 @@
 {
 	"test_bounty":{
-                "trigger_market_id":["asharu"],
+
+        "required_mods_id": ["do_not_load"],
+
+        "trigger_market_id":["asharu"],
 		"trigger_marketFaction_any":["independent"],
 		"trigger_marketFaction_alliedWith":true,
 		#"trigger_marketFaction_none":["pirates"],

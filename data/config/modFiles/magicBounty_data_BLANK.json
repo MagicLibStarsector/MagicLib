@@ -1,6 +1,8 @@
 {
     "bountyID":{
     
+        "required_mods_id": [],
+
         #TRIGGERS (ALL OPTIONAL)
         
         "trigger_market_id": [],

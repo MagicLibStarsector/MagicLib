@@ -1,6 +1,7 @@
 {
     "bountyID":{
     
+        "required_mods_id": ["modA", "modB"], # Default: no values. List the required mods for this bounty
         #TRIGGERS (ALL OPTIONAL)
         
         "trigger_market_id": ["market_name"], # Default: no values. Can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode. 
@@ -36,6 +37,7 @@
         "job_name": "job name", # Default: "Unnamed job". Job name shown in the dialog pick list
         "job_description": "Long form description of the job", # Default: blank. The description shown upon selecting the job.
                                                                # \n creates a line break, for example "Line one.\nLine two."
+															   # \" adds quotation marks.
                                                                # == brackets create a highlight, for example "Text ==highlight== text."
                                                                # ^ uppercase the following letter of a text variable, for example "^$heIsSheIsTheyAre turning angry."
                                                                # %% allow the use of %, otherwise it will be interpreted as an escape character. 
@@ -56,14 +58,14 @@
                                                                # $firstName The first name of the bounty commander.
                                                                # $lastName The last name of the bounty commander.
                                                                # $constellation The constellation that the bounty fleet is in.
-                                                               # $shipFleet
+                                                               # $shipFleet base on either the target being a ship alone, or a fleet.
         "job_comm_reply": "Reply of the enemy to your hail", # Default: none. The text shown if the player opens comms with the bounty fleet, 
                                                              # If set as an empty string, displays "The other $shipOrFleet does not answer to your hails."
                                                              # If not set, defaults to the regular comm reply for the fleet's faction.
         "job_intel_success": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has been COMPLETED SUCCESSFULLY.
         "job_intel_failure": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has been failed through FLAGSHIP RECOVERY.
         "job_intel_expired": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has EXPIRED.
-        "job_forFaction": "faction_offering_the_job", # Default: no faction. Note that unless "job_reputation_reward" is set, successfully completing a bounty will improve relations by 5 points.
+        "job_forFaction": "faction_offering_the_job", # Default: no faction. Note that unless "job_reputation_reward" is set to 0, successfully completing a bounty will improve relations by 5 points.
         "job_deadline": 360, # Default: no limit. The number of days to complete the bounty.
         "job_credit_reward": 9000, # Default: no credit reward. Number of credits to award the player on successful completion.
         "job_reward_scaling": 1.0, # Default: no scaling/bonus. Bonus credits based on FP. Bonus is the specified number multiplied by how many FP the bounty fleet was over their base FP.
@@ -80,8 +82,9 @@
                 # neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet, may recover.
         "job_show_type": true, # Default: true. Make sure to explain the mission objective in the bounty description if you choose to not use the default display.
         "job_show_captain": false, # Default: false. Whether to show the bounty fleet captain on the job board. If false, shows the flag of the giving faction.
-        "job_show_fleet": "preset", # Default: "none".
+        "job_show_fleet": "preset", # Default: "vanilla".
                 # How much of the fleet to show on the bounty board.
+				# none
                 # text: "The intel assessment notes the target fleet may contain upwards of %s ships."
                 # flagship: only shows an image of the flagship
                 # flagshipText: shows an image of the flagships and a text with the number of other ships
@@ -98,7 +101,7 @@
                 # vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position." Also shows a map during the bar dialog
 				# exact: "The target is located near X in the Y system." Also shows a map during the bar dialog
 		"job_show_arrow": false, # Default: false. Whether to show an arrow on the Intel map pointing from the start to the bounty target location. Should only be enabled when there is a good reason, to match vanilla.
-        "job_difficultyDescription": "auto",  # Default: no description shown. "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
+        "job_difficultyDescription": "auto",  # Default: auto description shown. "none": no description, "auto": bounty board describes how dangerous the bounty is, any other text: bounty board displays the text.
         "job_pick_option": "Accept the job", # Default: "Accept the job". The text option that, when selected, accepts the bounty job.
         "job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
         "job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed.
@@ -133,10 +136,12 @@
         # Variant files that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
         "fleet_flagship_name":"Flagship", # Default: Random.
         "fleet_flagship_recoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
-        "fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
+        "fleet_flagship_autofit": false, # Default: false. Whether the flagship will be autofitted. When false, the Flagship does not receive D-mods or S-mods from the quality override.
+		"fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
             "ship_variant1":1,
             "ship_variant2":3,			
         },
+        "fleet_preset_autofit": true, # Default: false. Whether the preset ships will be autofitted. When false, the preset ships do not receive D-mods or S-mods from the quality override.
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
         "fleet_composition_faction": "pirates", # Default: bounty fleet faction. Used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
@@ -184,6 +189,7 @@
             "theme_already_occupied", #Will avoid systems with "hostile" themes taken from a merged list between mods. Includes all Remnant, Plague-Bearer, OCI, Blade-Breaker systems 
             "theme_already_colonized", #Will explicitely exclude systems with active markets, kind of mandatory for pirate bounties given that faction colonize otherwise interesting systems with Nexerelin
             "theme_hidden", #Used by that one story system
+			"no_pulsar_blackhole",
         ],
         "location_entities": [ # Default: PLANET + JUMP_POINT + STABLE_LOCATION. Possible entities to spawn the fleet around.
             "gate",

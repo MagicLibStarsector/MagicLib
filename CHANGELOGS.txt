@@ -2,6 +2,20 @@ MagicLib
 
 0.35
 
+[RC4]
+MagicBounties:
+   - Removed Bounties Expanded hvb check.
+   - Flagship should keep their original variant without the autofitter making a mess of things.
+   - Variables should now properly get replaced in the conclusion intel.
+   - Fixed another source of crashes from HVB conversions.
+   - Accepted bounties are now placed in the "MISSION" intel tab rather than bounties.
+   - Added another blacklist tag to prevent having bounties in Blackhole or Pulsar systems
+
+
+[RC3]
+MagicCampaign.placeOnStableOrbit(): Fixed not one but two effing stupid mistakes! Affected both the Diable Avionics unique ships and the Plague-Bearer ones.
+MagicBounty HVBs: improved the validation check so that it does not freak out on empty fields.
+
 [RC2]
 MagicCampaign.spawnFleet(): Patrol assignment should now be properly respected. (also affects MagicBounty ROAMING assignment)
 MagicBounty HVBs: Added many checks to prevent invalid bounties from being offered.
