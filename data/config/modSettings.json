@@ -24,10 +24,10 @@
             "STRONG":80,
         },
         "interference_RFCmult":0.5,
-        # The Reinforced Flux Conduit hullmod reduces the impact of weapons interferences. Default : 0.5,
+        # The Reinforced Flux Conduit hullmod reduces the impact of weapons interferences. Default : 0.5
         "interferences_weapons":{
             # List weapons that can "interfere" with each-other reducing the ship's dissipation when several are mounted on the same hull.
-            # "id" : "intensity",
+            # "id" : "intensity"
             # id = weapon.csv id
             # intensity = interferences_rates id in MagicLib's settings. By default it can be WEAK MILD STRONG.
             # "sample_weapon1":"WEAK",
@@ -53,23 +53,23 @@
 
 		"merged_themes_blacklist":[
 			#adds custom system themes to the generic "theme_already_occupied" blacklist umbrella that is used by MagicBounties and other campaign scripts
-			"theme_plaguebearers";
-			"theme_breakers";
-			"theme_breakers_main";
-			"theme_breakers_secondary";
-			"theme_breakers_no_fleets";
-			"theme_breakers_destroyed";
-			"theme_breakers_suppressed";
-			"theme_breakers_resurgent";
-			"theme_breakers_homeworld";
+			"theme_plaguebearers",
+			"theme_breakers",
+			"theme_breakers_main",
+			"theme_breakers_secondary",
+			"theme_breakers_no_fleets",
+			"theme_breakers_destroyed",
+			"theme_breakers_suppressed",
+			"theme_breakers_resurgent",
+			"theme_breakers_homeworld",
 
-			"theme_magellan_leveller";
-			"theme_magellan_leveller_home_nebula";
+			"theme_magellan_leveller",
+			"theme_magellan_leveller_home_nebula",
 
-			"theme_oci";
-			"theme_oci_small";
-			"theme_oci_large";
-			"theme_oci_core";
+			"theme_oci",
+			"theme_oci_small",
+			"theme_oci_large",
+			"theme_oci_core",
 		],
 		"bounty_market_blacklist":[
 			#Markets that for some reason have a regular bar but should NOT offer any job
@@ -91,6 +91,6 @@
 			"fullerene_spool": 30.0,
 			"drone_replicator": 50.0,
 			"dealmaker_holosuite": 50.0,
-		}
-    }
+		},
+    },
 }

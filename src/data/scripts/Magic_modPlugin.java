@@ -2,10 +2,12 @@ package data.scripts;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import data.scripts.bounty.*;
 import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.util.MagicIncompatibleHullmods;
+import data.scripts.util.MagicIndustryItemWrangler;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicVariables;
@@ -53,8 +55,6 @@ public class Magic_modPlugin extends BaseModPlugin {
         //gather trail data
         MagicAutoTrails.getTrailData();
         
-//        MagicVariables.checkBountySystems();
-        
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose=Global.getSettings().isDevMode();
@@ -89,6 +89,12 @@ public class Magic_modPlugin extends BaseModPlugin {
     public void onGameLoad(boolean newGame) {
 //        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
+        
+        //Add industry item wrangler
+        SectorAPI sector = Global.getSectorAPI();
+        if( sector != null ) {
+                sector.addTransientListener( new MagicIndustryItemWrangler() );
+        }
         
         MagicVariables.checkBountySystems();
         
