@@ -240,7 +240,7 @@ class MagicBountyUtils {
 //        fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
 //
 //        String loc = BreadcrumbSpecial.getLocatedString(fake);
-        
+
         String loc = BreadcrumbSpecial.getLocatedString(bounty.getFleetSpawnLocation());
 //        loc = loc.replaceAll(getString("mb_distance_orbit"), getString("mb_distance_hidingNear"));
 //        loc = loc.replaceAll(getString("mb_distance_located"), getString("mb_distance_hidingIn"));

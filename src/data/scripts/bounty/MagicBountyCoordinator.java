@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
@@ -177,7 +178,22 @@ public final class MagicBountyCoordinator {
                     continue;
                 }
             }
-
+            
+            //CHECK FOR EXISTING FLEET
+            if(bountySpec.existing_target_memkey!=null){
+                boolean targetFleetGone=true;
+                for(StarSystemAPI s : Global.getSector().getStarSystems()){
+                    for(CampaignFleetAPI f : s.getFleets()){
+                        if(f.getMemoryWithoutUpdate().contains(bountySpec.existing_target_memkey)){
+                            targetFleetGone=false;
+                            break;
+                        }                        
+                    }
+                    if(!targetFleetGone)break;
+                }
+                if(targetFleetGone)continue;
+            }
+            
             ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
             // If the bounty has already been created and it's not not-accepted, don't offer it (it's been accepted, failed, timed out, etc).
@@ -246,76 +262,104 @@ public final class MagicBountyCoordinator {
     }
 
     public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {
-        SectorEntityToken suitableTargetLocation = findSuitableTarget(
-                spec.location_marketIDs,
-                spec.location_marketFactions,
-                spec.location_distance,
-                spec.location_themes,
-                spec.location_themes_blacklist,
-                spec.location_entities,
-                spec.location_defaultToAnyEntity,
-                spec.location_prioritizeUnexplored,
-                Global.getSettings().isDevMode()
-        );
+        
+        SectorEntityToken suitableTargetLocation=null;
+        CampaignFleetAPI fleet=null;
+        ArrayList<String> presetShipIds = new ArrayList<>();
+        
+        //CHECK IF THE BOUNTY IS ON A NEW FLEET OR EXISTING ONE
+        if(spec.existing_target_memkey!=null){
+            
+            //the bounty is on an existing fleet, so this is pretty quick, the fleet must exist otherwise the bounty cannot be offered
+            for(StarSystemAPI s : Global.getSector().getStarSystems()){
+                for(CampaignFleetAPI f : s.getFleets()){
+                    if(f.getMemoryWithoutUpdate().contains(spec.existing_target_memkey)){
+                        fleet=f;
+                        break;
+                    }                        
+                }
+                if(fleet!=null)break;
+            }
+            if(fleet==null){
+                Global.getLogger(MagicBountyCoordinator.class).error("Existing fleet couldn't be found for bounty " + bountyKey);
+                return null;
+            }
+            suitableTargetLocation=fleet.getCurrentAssignment().getTarget();
+            
+        } else {
+            
+            //the bounty has to create the fleet
+            suitableTargetLocation = findSuitableTarget(
+                    spec.location_marketIDs,
+                    spec.location_marketFactions,
+                    spec.location_distance,
+                    spec.location_themes,
+                    spec.location_themes_blacklist,
+                    spec.location_entities,
+                    spec.location_defaultToAnyEntity,
+                    spec.location_prioritizeUnexplored,
+                    Global.getSettings().isDevMode()
+            );
 
-        if (suitableTargetLocation == null) {
-            Global.getLogger(MagicBountyCoordinator.class).error("No suitable spawn location could be found for bounty " + bountyKey);
-            return null;
-        }
+            if (suitableTargetLocation == null) {
+                Global.getLogger(MagicBountyCoordinator.class).error("No suitable spawn location could be found for bounty " + bountyKey);
+                return null;
+            }
 
-        PersonAPI captain = MagicCampaign.createCaptain(
-                // because apparently putting null in the json shows up as "null", a string...
-                spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"),
-                spec.target_aiCoreId,
-                nullStringIfEmpty(spec.target_first_name),
-                nullStringIfEmpty(spec.target_last_name),
-                nullStringIfEmpty(spec.target_portrait),
-                spec.target_gender,
-                nullStringIfEmpty(spec.fleet_composition_faction),
-                nullStringIfEmpty(spec.target_rank),
-                nullStringIfEmpty(spec.target_post),
-                nullStringIfEmpty(spec.target_personality),
-                spec.target_level,
-                spec.target_elite_skills,
-                spec.target_skill_preference,
-                spec.target_skills
-        );
+            PersonAPI captain = MagicCampaign.createCaptain(
+                    // because apparently putting null in the json shows up as "null", a string...
+                    spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"),
+                    spec.target_aiCoreId,
+                    nullStringIfEmpty(spec.target_first_name),
+                    nullStringIfEmpty(spec.target_last_name),
+                    nullStringIfEmpty(spec.target_portrait),
+                    spec.target_gender,
+                    nullStringIfEmpty(spec.fleet_composition_faction),
+                    nullStringIfEmpty(spec.target_rank),
+                    nullStringIfEmpty(spec.target_post),
+                    nullStringIfEmpty(spec.target_personality),
+                    spec.target_level,
+                    spec.target_elite_skills,
+                    spec.target_skill_preference,
+                    spec.target_skills
+            );
 
-        CampaignFleetAPI fleet = createFleet(
-                spec.fleet_name,
-                spec.fleet_faction,
-                FleetTypes.PERSON_BOUNTY_FLEET,
-                spec.fleet_flagship_name,
-                spec.fleet_flagship_variant,
-                false,
-                spec.fleet_flagship_autofit,
-                captain,
-                spec.fleet_preset_ships,
-                spec.fleet_preset_autofit,
-                calculateDesiredFP(spec),
-                spec.fleet_composition_faction,
-                spec.fleet_composition_quality,
-                null,
-                spec.fleet_behavior,
-                null,
-                false,
-                spec.fleet_transponder,
-                MagicVariables.VARIANT_PATH
-        );
-        ArrayList<String> presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
+            fleet = createFleet(
+                    spec.fleet_name,
+                    spec.fleet_faction,
+                    FleetTypes.PERSON_BOUNTY_FLEET,
+                    spec.fleet_flagship_name,
+                    spec.fleet_flagship_variant,
+                    false,
+                    spec.fleet_flagship_autofit,
+                    captain,
+                    spec.fleet_preset_ships,
+                    spec.fleet_preset_autofit,
+                    calculateDesiredFP(spec),
+                    spec.fleet_composition_faction,
+                    spec.fleet_composition_quality,
+                    null,
+                    spec.fleet_behavior,
+                    null,
+                    false,
+                    spec.fleet_transponder,
+                    MagicVariables.VARIANT_PATH
+            );
+            presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
 
-        if (fleet == null) {
-            Global.getLogger(MagicBountyCoordinator.class).warn(String.format("Unable to create fleet for bounty %s, look for earlier warnings/errors.", bountyKey));
-            return null;
-        }
+            if (fleet == null) {
+                Global.getLogger(MagicBountyCoordinator.class).warn(String.format("Unable to create fleet for bounty %s, look for earlier warnings/errors.", bountyKey));
+                return null;
+            }
 
-        // Add both a constant tag to the fleet as well as the bounty key that it is for.
-        fleet.addTag(MagicBountyData.BOUNTY_FLEET_TAG);
-        fleet.addTag(bountyKey);
+            // Add both a constant tag to the fleet as well as the bounty key that it is for.
+            fleet.addTag(MagicBountyData.BOUNTY_FLEET_TAG);
+            fleet.addTag(bountyKey);
 
-        // Set fleet to max CR
-        for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
-            member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
+            // Set fleet to max CR
+            for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
+                member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
+            }
         }
 
         ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, suitableTargetLocation, presetShipIds, spec);
@@ -402,14 +446,16 @@ public final class MagicBountyCoordinator {
         try {
             // fleet_faction
             String fleetFactionId = nullStringIfEmpty(this_bounty.fleet_faction);
-            FactionAPI faction = StringMatcher.findBestFactionMatch(fleetFactionId);
+            if(fleetFactionId!=null){
+                FactionAPI faction = StringMatcher.findBestFactionMatch(fleetFactionId);
 
-            if (faction == null) {
-                logger.info(String.format("Unable to find faction '%s' in bounty %s.", fleetFactionId, bountyId));
-                return false;
-            } else if (!Objects.equals(faction.getId(), fleetFactionId)) {
-                logger.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
-                this_bounty.fleet_faction = faction.getId();
+                if (faction == null) {
+                    logger.info(String.format("Unable to find faction '%s' from bounty %s.", fleetFactionId, bountyId));
+                    return false;
+                } else if (!Objects.equals(faction.getId(), fleetFactionId)) {
+                    logger.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
+                    this_bounty.fleet_faction = faction.getId();
+                }
             }
 
             // fleet_composition_faction

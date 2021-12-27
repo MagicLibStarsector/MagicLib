@@ -252,7 +252,7 @@ public class MagicBountyData {
                     getIntMap(bountyId, "job_item_reward"),
                     getString(bountyId, "job_type"),
                     getBooleanDefaultTrue(bountyId, "job_show_type"),
-                    getBoolean(bountyId, "job_show_captain"),
+                    getBooleanDefaultTrue(bountyId, "job_show_captain"),
                     getString(bountyId, "job_show_fleet"),
                     getString(bountyId, "job_show_distance"),
                     getBoolean(bountyId, "job_show_arrow"),
@@ -287,7 +287,7 @@ public class MagicBountyData {
                     getFloat(bountyId, "fleet_scaling_multiplier"),
                     minSize,
                     origin_faction,
-                    getFloat(bountyId, "fleet_composition_quality"),
+                    getFloat(bountyId, "fleet_composition_quality", 1),
                     getBoolean(bountyId, "fleet_transponder"),
                     order,
 

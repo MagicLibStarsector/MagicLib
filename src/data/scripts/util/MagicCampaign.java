@@ -821,7 +821,7 @@ public class MagicCampaign {
         //cleanup name and faction
         bountyFleet.setNoFactionInName(true);
         bountyFleet.setFaction(fleetFaction, true);
-        bountyFleet.setName(fleetName);
+        if(!fleetName.isEmpty()) bountyFleet.setName(fleetName);
 
         //set standard 70% CR
         List<FleetMemberAPI> members = bountyFleet.getFleetData().getMembersListCopy();

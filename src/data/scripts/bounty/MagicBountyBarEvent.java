@@ -235,11 +235,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 //"Posted by %s, against %s."
                                 if (bounty.job_forFaction != null) {
                                     FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
-                                    FactionAPI target = Global.getSector().getFaction(bounty.fleet_faction);
+                                    FactionAPI target = activeBounty.getFleet().getFaction();
                                     text.addPara(getString("mb_fromAgainst"), Misc.getHighlightColor(), faction.getDisplayNameWithArticle(), target.getDisplayNameWithArticle());
                                     text.setHighlightColorsInLastPara(faction.getBaseUIColor(), target.getBaseUIColor());
                                 } else {
-                                    FactionAPI target = Global.getSector().getFaction(bounty.fleet_faction);
+                                    FactionAPI target = activeBounty.getFleet().getFaction();
                                     text.addPara(getString("mb_fromAgainst"), Misc.getHighlightColor(), getString("mb_unknown"), target.getDisplayNameWithArticle());
                                     text.setHighlightColorsInLastPara(Misc.getHighlightColor(), target.getBaseUIColor());
                                 }

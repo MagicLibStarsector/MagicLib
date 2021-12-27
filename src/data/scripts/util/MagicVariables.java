@@ -5,7 +5,7 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.SWPModPlugin;
 import data.scripts.VayraModPlugin;
-import de.schafunschaf.bountiesexpanded.Settings;
+//import de.schafunschaf.bountiesexpanded.Settings;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +72,10 @@ public class MagicVariables {
     public static final String VARIANT_PATH = "data/config/modFiles/magicBounty_variants/";
     public static final String AVOID_COLONIZED_SYSTEM = "theme_already_colonized";
     public static final String AVOID_OCCUPIED_SYSTEM = "theme_already_occupied";
+    public static final String AVOID_BLACKHOLE_PULSAR = "no_pulsar_blackhole";
+    public static final String SEEK_EMPTY_SYSTEM = "procgen_no_theme";
+    public static final String SEEK_EMPTY_SAFE_SYSTEM = "procgen_no_theme_pulsar_blackhole";
+    
     public static final String MAGICLIB_ID = "MagicLib";
     public static final String BOUNTY_FACTION = "ML_bounty";
     
@@ -124,7 +128,7 @@ public class MagicVariables {
         } else {
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
         }
-        
+        /*
         //check for Bounties Expanded HVBs presence
         if (Global.getSettings().getModManager().isModEnabled("bountiesexpanded") && Settings.HIGH_VALUE_BOUNTY_ACTIVE == true) {
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
@@ -132,5 +136,6 @@ public class MagicVariables {
         } else if(!hvb){
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
         }
+        */
     }
 }

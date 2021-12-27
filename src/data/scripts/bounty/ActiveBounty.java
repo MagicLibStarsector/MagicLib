@@ -141,23 +141,26 @@ public final class ActiveBounty {
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
         this.bountySource = bountySource;
-
-        LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
-        systemLocation.addEntity(getFleet());
-        getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
-        getFleet().getAI().addAssignment(
-                getSpec().fleet_behavior == null
-                        ? FleetAssignment.ORBIT_AGGRESSIVE
-                        : getSpec().fleet_behavior,
-                fleetSpawnLocation,
-                1000000f,
-                null);
         
-        //if needed set the bounty faction to neutral with everyone but the player.
-        if(spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)){
-            FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
-            for(FactionAPI f : Global.getSector().getAllFactions()){
-                if(f!=bountyFaction && f!=Global.getSector().getPlayerFaction())f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+        //CHECK IF THE FLEET EXIST
+        if(getFleet().getCurrentAssignment()==null){
+            LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
+            systemLocation.addEntity(getFleet());
+            getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
+            getFleet().getAI().addAssignment(
+                    getSpec().fleet_behavior == null
+                            ? FleetAssignment.ORBIT_AGGRESSIVE
+                            : getSpec().fleet_behavior,
+                    fleetSpawnLocation,
+                    1000000f,
+                    null);
+
+            //if needed set the bounty faction to neutral with everyone but the player.
+            if(spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)){
+                FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
+                for(FactionAPI f : Global.getSector().getAllFactions()){
+                    if(f!=bountyFaction && f!=Global.getSector().getPlayerFaction())f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                }
             }
         }
 
@@ -165,11 +168,12 @@ public final class ActiveBounty {
         Misc.makeImportant(getFleet(), "magicbounty");
         // Add comm reply if needed
         if(MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null){
-        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
+            getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
         }
         
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
+        getFleet().getMemoryWithoutUpdate().set(spec.job_memKey, true);
         
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
