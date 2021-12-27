@@ -1,16 +1,28 @@
 MagicLib
 
-0.35
+0.41
 
-[RC4]
+Added MagicIndustryItemWrangler:
+   - Allows mods to define "rating" for their items that can be mounted in the same industries as other items.
+   - When an item with higher priority is sold at a public market, the AI will replace the existing one in its industry.
+   - Works on both vanilla and modded industries.
+   - Items priority is defined in modSettings.json
+
 MagicBounties:
+   - MagicBounties no longer requires a modSettings.json entry.
+   - WARNING: CHANGED HOW BOUNTIES DEFINE MOD REQUIREMENTS!
+ PLEASE REFER TO THE BLANK BOUNTY FILE IN THE MOD TO ADD THE NEW MOD REQUIREMENT PARAMETER.
    - Removed Bounties Expanded hvb check.
-   - Flagship should keep their original variant without the autofitter making a mess of things.
+   - Added parameters to magicBounty_data to force the autofitter on these ships.
    - Variables should now properly get replaced in the conclusion intel.
    - Fixed another source of crashes from HVB conversions.
    - Accepted bounties are now placed in the "MISSION" intel tab rather than bounties.
-   - Added another blacklist tag to prevent having bounties in Blackhole or Pulsar systems
+   - Added another blacklist tag to prevent having bounties in Blackhole or Pulsar systems.
 
+MagicCampaign:
+   - Flagship and escort should keep their original variant without the auto-fitter making a mess of things, unless specifically allowed to.
+
+0.4
 
 [RC3]
 MagicCampaign.placeOnStableOrbit(): Fixed not one but two effing stupid mistakes! Affected both the Diable Avionics unique ships and the Plague-Bearer ones.

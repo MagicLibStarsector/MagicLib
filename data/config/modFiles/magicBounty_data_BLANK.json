@@ -46,6 +46,8 @@
         "job_memKey":"$key",
         "job_conclusion_script":"data.script.script",
         
+		"existing_target_memkey":"$memKey",
+
         #TARGET COMMANDER (OPTIONAL)
         
         "target_first_name":"",
@@ -83,7 +85,7 @@
         "location_marketFactions": ["faction",],
         "location_distance": "CLOSE",
         "location_themes": ["procgen_no_theme", "procgen_no_theme_pulsar_blackhole",],
-        "location_themes_blacklist": ["theme_already_occupied", "theme_already_colonized", "theme_hidden", ],
+        "location_themes_blacklist": ["theme_already_occupied", "theme_already_colonized", "theme_hidden", "no_pulsar_blackhole"],
         "location_entities": ["entity",],
         "location_prioritizeUnexplored": true,
         "location_defaultToAnyEntity": true,

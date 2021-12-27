@@ -81,7 +81,7 @@
                 # obliteration: requires the complete destruction or disabling of the enemy fleet, may recover.
                 # neutralisation: requires the destruction or disabling of 2/3rd of the enemy fleet, may recover.
         "job_show_type": true, # Default: true. Make sure to explain the mission objective in the bounty description if you choose to not use the default display.
-        "job_show_captain": false, # Default: false. Whether to show the bounty fleet captain on the job board. If false, shows the flag of the giving faction.
+        "job_show_captain": false, # Default: true. Whether to show the bounty fleet captain on the job board. If false, shows the flag of the giving faction.
         "job_show_fleet": "preset", # Default: "vanilla".
                 # How much of the fleet to show on the bounty board.
 				# none
@@ -92,7 +92,7 @@
                 # presetText: show an image of the Flagship and the preset fleet, plus a text with the number of other ships
                 # vanilla: shows the Flagship and the 9 biggest ships of the fleet, plus a text with the number of other ships
                 # all: show an image of all the ships in the fleet.
-        "job_show_distance": "vague", # Default: "none".
+        "job_show_distance": "vague", # Default: "vanillaDistance".
                 # How precisely the distance to the target is shown on the bounty board.
                 # none: Do not show the distance.
                 # vague: "The target is located somewhere in the vicinity of the core worlds."
@@ -107,6 +107,10 @@
         "job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed.
         "job_conclusion_script":"data.script.FancyScriptThatDoStuff", # Default: no script. Can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
         
+        #TARGET EXISTING FLEET
+
+		"existing_target_memkey":"$memKey",
+
         #TARGET COMMANDER (OPTIONAL)
         
         "target_first_name":"Firstname", # Default: randomly selected based on faction.
@@ -118,7 +122,7 @@
         "target_personality": "aggressive", # Default: Randomly selected. Personality from campaign.ids.Personalities ("timid", "cautious", "steady", "aggressive", "reckless")
         "target_aiCoreId": null, # Default: null (not an AI). The AI Core id of the bounty commander. Core will be dropped as loot. Options: [ null, "gamma_core", "beta_core", "alpha_core" ]
         "target_level": 1, # Default: 0. The level of the bounty commander
-        "target_elite_skills":2, # Default: vanilla elite skills. Overrides the regular number of elite skills, set to 0 to not use elite skills.
+        "target_elite_skills":2, # Default: vanilla setting (2 by default). Overrides the regular number of elite skills, set to 0 to not use elite skills.
         "target_skill_preference": "GENERIC", # Default: "GENERIC". ["GENERIC", "PHASE", "CARRIER", "ANY"] (from OfficerManagerEvent.SkillPickPreference)
         "target_skills": { # Default: empty. REMOVES ALL RANDOM SKILLS, set level 1 for normal skill, level 2 for elite.
             "skillnameA":1,
@@ -145,7 +149,7 @@
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
         "fleet_composition_faction": "pirates", # Default: bounty fleet faction. Used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
-        "fleet_composition_quality": 1, # Default: 2 for no Dmods.
+        "fleet_composition_quality": 1, # Default: 1, use 2 for no Dmods.
         "fleet_transponder": false, # Default: true.
         "fleet_behavior": "PASSIVE", # Default:"GUARDED". The fleet's behavior on the campaign layer. Options: ["PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING"].
     
