@@ -26,6 +26,7 @@ import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
+import static data.scripts.util.MagicVariables.verbose;
 
 /**
  * The point of entry into MagicBounty scripting.
@@ -40,7 +41,7 @@ import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
-    private static Logger logger = Global.getLogger(MagicBountyCoordinator.class);
+    private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -222,7 +223,7 @@ public final class MagicBountyCoordinator {
             try {
                 return (List<String>) memoryAPI.get(key);
             } catch (Exception e) {
-                logger.warn(e.getMessage());
+                LOG.warn(e.getMessage());
             }
         }
 
@@ -423,108 +424,133 @@ public final class MagicBountyCoordinator {
      * ```
      */
     private static int calculateDesiredFP(MagicBountyData.bountyData spec) {
+        if (spec.fleet_min_FP<=0){
+            if(verbose){
+                LOG.info(
+                        String.format(
+                                "Bounty fleet '%s' has no reinforcement",
+                                spec.job_name
+                        )
+                );
+            }
+            return spec.fleet_min_FP;
+        }
+        
+        if(spec.fleet_scaling_multiplier<=0){
+            if(verbose){
+                LOG.info(String.format("Bounty fleet '%s' should have %s FP (no scaling).)",
+                                spec.job_name,
+                                spec.fleet_min_FP));
+            }
+            return spec.fleet_min_FP;
+        }
         int differenceBetweenBountyMinDPAndPlayerFleetDP = Global.getSector().getPlayerFleet().getFleetPoints() - spec.fleet_min_FP;
 
         // Math.max so that if the player fleet is super weak and the difference is negative, we don't scale to below
         // the minimum DP.
         int desiredFP = Math.round(spec.fleet_min_FP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
 
-        Global.getLogger(MagicBountyCoordinator.class)
-                .info(String.format("After scaling, bounty fleet '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
-                        spec.job_name,
-                        desiredFP,
-                        spec.fleet_min_FP,
-                        spec.fleet_scaling_multiplier,
-                        differenceBetweenBountyMinDPAndPlayerFleetDP));
-
+        if(verbose){
+            LOG.info(String.format("After scaling, bounty fleet '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
+                            spec.job_name,
+                            desiredFP,
+                            spec.fleet_min_FP,
+                            spec.fleet_scaling_multiplier,
+                            differenceBetweenBountyMinDPAndPlayerFleetDP));
+        }
+        
         return desiredFP;
     }
 
     private static boolean validateAndCorrectIds(String bountyId, MagicBountyData.bountyData this_bounty) {
-        Logger logger = Global.getLogger(MagicBountyCoordinator.class);
+//        Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
 
         try {
             // fleet_faction
-            String fleetFactionId = nullStringIfEmpty(this_bounty.fleet_faction);
-            if(fleetFactionId!=null){
+            if(nullStringIfEmpty(this_bounty.fleet_faction)!=null){
+                String fleetFactionId = this_bounty.fleet_faction;
                 FactionAPI faction = StringMatcher.findBestFactionMatch(fleetFactionId);
 
                 if (faction == null) {
-                    logger.info(String.format("Unable to find faction '%s' from bounty %s.", fleetFactionId, bountyId));
+                    LOG.info(String.format("Unable to find faction '%s' from bounty %s.", fleetFactionId, bountyId));
                     return false;
                 } else if (!Objects.equals(faction.getId(), fleetFactionId)) {
-                    logger.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
+                    LOG.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
                     this_bounty.fleet_faction = faction.getId();
                 }
             }
 
             // fleet_composition_faction
-            String compositionFactionId = nullStringIfEmpty(this_bounty.fleet_composition_faction);
-
-            if (compositionFactionId != null) {
+            if(nullStringIfEmpty(this_bounty.fleet_composition_faction)!=null){
+                String compositionFactionId = this_bounty.fleet_composition_faction;
                 FactionAPI fleetCompositionFaction = StringMatcher.findBestFactionMatch(compositionFactionId);
 
                 if (fleetCompositionFaction != null && !Objects.equals(fleetCompositionFaction.getId(), compositionFactionId)) {
-                    logger.info(String.format("Corrected fleet_composition_faction '%s' to '%s' in bounty %s.", compositionFactionId, fleetCompositionFaction.getId(), bountyId));
+                    LOG.info(String.format("Corrected fleet_composition_faction '%s' to '%s' in bounty %s.", compositionFactionId, fleetCompositionFaction.getId(), bountyId));
                     this_bounty.fleet_composition_faction = fleetCompositionFaction.getId();
                 }
             }
 
             // job_forFaction
-            String job_forFactionId = nullStringIfEmpty(this_bounty.job_forFaction);
-
-            if (job_forFactionId != null) {
+            if(nullStringIfEmpty(this_bounty.job_forFaction)!=null){
+                String job_forFactionId = nullStringIfEmpty(this_bounty.job_forFaction);
                 FactionAPI job_forFaction = StringMatcher.findBestFactionMatch(job_forFactionId);
 
                 if (job_forFaction != null && !Objects.equals(job_forFaction.getId(), job_forFactionId)) {
-                    logger.info(String.format("Corrected job_forFactionId '%s' to '%s' in bounty %s.", job_forFactionId, job_forFaction.getId(), bountyId));
+                    LOG.info(String.format("Corrected job_forFactionId '%s' to '%s' in bounty %s.", job_forFactionId, job_forFaction.getId(), bountyId));
                     this_bounty.job_forFaction = job_forFaction.getId();
                 }
             }
 
             // location_marketFactions
-            List<String> location_marketFactions = this_bounty.location_marketFactions;
+            if(this_bounty.location_marketFactions!=null && !this_bounty.location_marketFactions.isEmpty()){
+                List<String> location_marketFactions = this_bounty.location_marketFactions;
 
-            for (int i = location_marketFactions.size() - 1; i >= 0; i--) {
-                String location_marketFactionId = location_marketFactions.get(i);
-                FactionAPI location_marketFaction = StringMatcher.findBestFactionMatch(location_marketFactionId);
+                for (int i = location_marketFactions.size() - 1; i >= 0; i--) {
+                    String location_marketFactionId = location_marketFactions.get(i);
+                    FactionAPI location_marketFaction = StringMatcher.findBestFactionMatch(location_marketFactionId);
 
-                if (location_marketFaction != null && !Objects.equals(location_marketFaction.getId(), location_marketFactionId)) {
-                    logger.info(String.format("Corrected location_marketFactionId '%s' to '%s' in bounty %s.", location_marketFactionId, location_marketFaction.getId(), bountyId));
-                    this_bounty.location_marketFactions.remove(i);
-                    this_bounty.location_marketFactions.add(location_marketFaction.getId());
+                    if (location_marketFaction != null && !Objects.equals(location_marketFaction.getId(), location_marketFactionId)) {
+                        LOG.info(String.format("Corrected location_marketFactionId '%s' to '%s' in bounty %s.", location_marketFactionId, location_marketFaction.getId(), bountyId));
+                        this_bounty.location_marketFactions.remove(i);
+                        this_bounty.location_marketFactions.add(location_marketFaction.getId());
+                    }
                 }
             }
 
             // trigger_marketFaction_any
-            List<String> trigger_marketFaction_any = this_bounty.trigger_marketFaction_any;
+            if(this_bounty.trigger_marketFaction_any!=null && !this_bounty.trigger_marketFaction_any.isEmpty()){
+                List<String> trigger_marketFaction_any = this_bounty.trigger_marketFaction_any;
 
-            for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
-                String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
-                FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
+                for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
+                    String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
+                    FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
 
-                if (trigger_marketFaction != null && !Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
-                    logger.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
-                    this_bounty.trigger_marketFaction_any.remove(i);
-                    this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
+                    if (trigger_marketFaction != null && !Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
+                        LOG.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
+                        this_bounty.trigger_marketFaction_any.remove(i);
+                        this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
+                    }
                 }
             }
 
             // trigger_marketFaction_none
-            List<String> trigger_marketFaction_none = this_bounty.trigger_marketFaction_none;
+            if(this_bounty.trigger_marketFaction_none!=null && !this_bounty.trigger_marketFaction_none.isEmpty()){
+                List<String> trigger_marketFaction_none = this_bounty.trigger_marketFaction_none;
 
-            for (int i = trigger_marketFaction_none.size() - 1; i >= 0; i--) {
-                String trigger_marketFaction_noneId = trigger_marketFaction_none.get(i);
-                FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_noneId);
+                for (int i = trigger_marketFaction_none.size() - 1; i >= 0; i--) {
+                    String trigger_marketFaction_noneId = trigger_marketFaction_none.get(i);
+                    FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_noneId);
 
-                if (trigger_marketFaction != null && !Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_noneId)) {
-                    logger.info(String.format("Corrected trigger_marketFaction_none '%s' to '%s' in bounty %s.", trigger_marketFaction_noneId, trigger_marketFaction.getId(), bountyId));
-                    this_bounty.trigger_marketFaction_none.remove(i);
-                    this_bounty.trigger_marketFaction_none.add(trigger_marketFaction.getId());
+                    if (trigger_marketFaction != null && !Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_noneId)) {
+                        LOG.info(String.format("Corrected trigger_marketFaction_none '%s' to '%s' in bounty %s.", trigger_marketFaction_noneId, trigger_marketFaction.getId(), bountyId));
+                        this_bounty.trigger_marketFaction_none.remove(i);
+                        this_bounty.trigger_marketFaction_none.add(trigger_marketFaction.getId());
+                    }
                 }
             }
         } catch (Exception e) {
-            logger.warn("Something went wrong when validating " + bountyId, e);
+            LOG.warn("Something went wrong when validating " + bountyId, e);
         }
 
         return true;

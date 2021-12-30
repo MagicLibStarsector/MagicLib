@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 class StringMatcher {
     @Nullable
     public static FactionAPI findBestFactionMatch(String name) {
-//        name = name.toLowerCase();
+        name = name.toLowerCase();
         FactionAPI bestMatch = null;
         double closestDistance = 0.9f;
 

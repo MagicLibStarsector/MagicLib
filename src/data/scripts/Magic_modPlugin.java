@@ -91,7 +91,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicIncompatibleHullmods.clearData();
         
         //Add industry item wrangler
-        SectorAPI sector = Global.getSectorAPI();
+        SectorAPI sector = Global.getSector();
         if( sector != null ) {
                 sector.addTransientListener( new MagicIndustryItemWrangler() );
         }

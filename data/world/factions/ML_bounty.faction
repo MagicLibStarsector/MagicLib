@@ -1,7 +1,7 @@
 {
 	# Specifically for spawning neutral-to-everyone but hostile-to-the-player bounties
 	
-	id:"ML_bounty",
+	"id":"ML_bounty",
 	"color":[150,150,150,255],
 	"displayName":"target",
 	"displayNameWithArticle":"the bounty targets",

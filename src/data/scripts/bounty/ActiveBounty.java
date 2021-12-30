@@ -97,7 +97,7 @@ public final class ActiveBounty {
     private @Nullable Float rewardReputation;
     private @Nullable String rewardFaction;
     private boolean isDespawning = false;
-    private static Logger logger = Global.getLogger(ActiveBounty.class);
+    private static final Logger LOG = Global.getLogger(ActiveBounty.class);
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -289,7 +289,7 @@ public final class ActiveBounty {
 
     void despawn() {
         if (!isDespawning) {
-            logger.info(String.format("Despawning bounty %s with stage %s", getKey(), getStage().name()));
+            LOG.info(String.format("Despawning bounty %s with stage %s", getKey(), getStage().name()));
 
             if (fleet != null) {
                 fleet.getMemoryWithoutUpdate().unset(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE);
@@ -462,42 +462,50 @@ public final class ActiveBounty {
             return null;
         }
         
-        /*
-        int bountyFPIncreaseOverBaseDueToScaling = getFleet().getFleetPoints() - getSpec().fleet_min_FP;
-
-        // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
-        float bonusCreditsFromScaling = Math.max(0, getSpec().job_credit_scaling * bountyFPIncreaseOverBaseDueToScaling);
-        float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
-        float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
-        logger
-                .info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s scaling * %s FP diff)",
-                        rewardRoundedToNearest100,
-                        getKey(),
-                        getSpec().job_credit_reward,
-                        bonusCreditsFromScaling,
-                        getSpec().job_credit_scaling,
-                        bountyFPIncreaseOverBaseDueToScaling));
-
-        return rewardRoundedToNearest100;
-        */
+        if(getSpec().job_credit_scaling<=0 || getSpec().fleet_min_FP<=0){
+            float rewardRoundedToNearest100 = Math.round(getSpec().job_credit_reward / 100.0) * 100;
+            LOG.info(
+                    String.format(
+                            "Base reward of %sc for bounty '%s'. No reward scaling defined or no target min FP.",
+                            rewardRoundedToNearest100,
+                            getKey()
+                    )
+            );
+            return rewardRoundedToNearest100;
+        }
 
         //Reward scaling is a mult applied to the size ratio between the player fleet and the min target fleet
-        float playerFleetScale = Math.max(0, MagicCampaign.PlayerThreatMultiplier(getSpec().fleet_min_FP) - 1);
-
+        float playerFleetScale = MagicCampaign.PlayerFleetSizeMultiplier(getSpec().fleet_min_FP) - 1;
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
-        float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;
-        float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
-        float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
-        logger
-                .info(String.format("Rounded reward of %sc for bounty '%s' has base %sc and scaled bonus of %sc (%s credit scaling * %s player fleet size mult * base reward)",
-                        rewardRoundedToNearest100,
-                        getKey(),
-                        getSpec().job_credit_reward,
-                        bonusCreditsFromScaling,
-                        getSpec().job_credit_scaling,
-                        playerFleetScale));
-
-        return rewardRoundedToNearest100;
+        
+        if(playerFleetScale>0){
+            float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;
+            float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
+            float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
+            LOG.info(
+                    String.format(
+                            "Rounded reward of %sc for bounty '%s'. Base reward of %sc, scaled by %s (%s credit scaling, %s player fleet size mult)",
+                            rewardRoundedToNearest100,
+                            getKey(),
+                            getSpec().job_credit_reward,
+                            playerFleetScale+1,
+                            getSpec().job_credit_scaling,
+                            playerFleetScale
+                    )
+            );
+            return rewardRoundedToNearest100;
+        } else {
+            float rewardRoundedToNearest100 = Math.round(getSpec().job_credit_reward / 100.0) * 100;
+            LOG.info(
+                    String.format(
+                            "Base reward of %sc for bounty '%s'. No scaling due to the player fleet being %s times as large as the minimum target fleet.",
+                            rewardRoundedToNearest100,
+                            getKey(),
+                            1+playerFleetScale
+                    )
+            );
+            return rewardRoundedToNearest100;
+        }
     }
 
     /**

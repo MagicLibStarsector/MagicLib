@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.*;
 
 import static com.fs.starfarer.api.util.Misc.random;
+import static data.scripts.util.MagicCampaign.RelativeEffectiveStrength;
 import static data.scripts.util.MagicTxt.getString;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
@@ -371,35 +372,65 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             */
 
                             //DIFFICULTY
-                            if (bounty.job_difficultyDescription != null && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))) {
+                            if (
+                                    bounty.job_difficultyDescription != null 
+                                    && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))
+                                    ){
+                                /*
                                 int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
-                                float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();                                
-//                                int playerFleetStrength = Global.getSector().getPlayerFleet().getFleetPoints();
-//                                float bountyFleetStrength = activeBounty.getFleet().getFleetPoints();
+                                float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();
                                 
                                 String dangerStringPhrase;
                                                                                     //"an extreme danger"
-                                       if (playerFleetStrength < Math.round(bountyFleetStrength * 0.70f)) {
+                                       if (playerFleetStrength < bountyFleetStrength * 0.70f) {
                                     dangerStringPhrase = getString("mb_threatLevel6");
                                                                                     //"a deadly peril"
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 0.85f)) {
+                                } else if (playerFleetStrength < bountyFleetStrength * 0.85f) {
                                     dangerStringPhrase = getString("mb_threatLevel5"); 
                                                                                     //"a significant challenge"
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.00f)) {
+                                } else if (playerFleetStrength < bountyFleetStrength * 1.00f) {
                                     dangerStringPhrase = getString("mb_threatLevel4"); 
                                                                                     //"a moderate hazard"
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.15f)) {
+                                } else if (playerFleetStrength < bountyFleetStrength * 1.15f) {
                                     dangerStringPhrase = getString("mb_threatLevel3"); 
                                                                                     //"a minor threat"
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.3f)) {
+                                } else if (playerFleetStrength < bountyFleetStrength * 1.3f) {
                                     dangerStringPhrase = getString("mb_threatLevel2"); 
                                                                                     //"a negligible inconvenience" 
-                                } else if (playerFleetStrength < Math.round(bountyFleetStrength * 1.5f)) {
+                                } else if (playerFleetStrength < bountyFleetStrength * 1.5f) {
                                     dangerStringPhrase = getString("mb_threatLevel1"); 
                                                                                     //"no risk whatsoever" 
                                 } else {
                                     dangerStringPhrase = getString("mb_threatLevel0"); 
                                 }
+                                */     
+                                
+                                float threatLevel = RelativeEffectiveStrength(activeBounty.getFleet());       
+                                       
+                                String dangerStringPhrase;
+                                                                                    //"an extreme danger"
+                                       if (threatLevel < 0.5f) {
+                                    dangerStringPhrase = getString("mb_threatLevel6");
+                                                                                    //"a deadly peril"
+                                } else if (threatLevel < 0.70f) {
+                                    dangerStringPhrase = getString("mb_threatLevel5"); 
+                                                                                    //"a significant challenge"
+                                } else if (threatLevel < 1.85f) {
+                                    dangerStringPhrase = getString("mb_threatLevel4"); 
+                                                                                    //"a moderate hazard"
+                                } else if (threatLevel < 1.00f) {
+                                    dangerStringPhrase = getString("mb_threatLevel3"); 
+                                                                                    //"a minor threat"
+                                } else if (threatLevel < 1.15f) {
+                                    dangerStringPhrase = getString("mb_threatLevel2"); 
+                                                                                    //"a negligible inconvenience" 
+                                } else if (threatLevel < 1.3f) {
+                                    dangerStringPhrase = getString("mb_threatLevel1"); 
+                                                                                    //"no risk whatsoever" 
+                                } else {
+                                    dangerStringPhrase = getString("mb_threatLevel0"); 
+                                }      
+                                 
                                 //"Your intelligence officer informs you that the target poses "
                                 text.addPara(getString("mb_threat1") + getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);
                             } else if (nullStringIfEmpty(bounty.job_difficultyDescription) != null

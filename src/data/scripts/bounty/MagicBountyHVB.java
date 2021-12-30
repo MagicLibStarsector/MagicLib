@@ -7,6 +7,7 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.characters.FullName;
@@ -141,9 +142,12 @@ public class MagicBountyHVB {
                     List<String> postingMarket = new ArrayList<>();
                     postingMarket.add(row.getString("postedByFaction"));
                     
+                    
                     //convert bounty faction into market list for board intel
                     List<String> enemyMarket = new ArrayList<>();
+                    /*
                     enemyMarket.add(row.getString("faction"));
+                    */
                     
                     //convert required bounty list into memkey list
                     Map <String,Boolean> memKeyAll=new HashMap<>();
@@ -206,6 +210,17 @@ public class MagicBountyHVB {
                     String faction = row.getString("faction");
                     if(faction.equals("hvb_hostile")){
                         faction=MagicVariables.BOUNTY_FACTION;
+                        LOG.info("Replacing hvb_hostile with ML_bounty");
+                    }
+                    if(Global.getSector().getFaction(faction)==null){
+                        LOG.info("Faction "+ faction +" cannot be found, attempting to fix typo");
+                        FactionAPI f = StringMatcher.findBestFactionMatch(faction);
+                        if(f!=null){
+                            faction = f.getId();
+                            LOG.info("Faction replaced with"+ faction);
+                        } else {
+                            LOG.info("Faction unavailable, skipping bounty");
+                        }                        
                     }
                     
                     MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(

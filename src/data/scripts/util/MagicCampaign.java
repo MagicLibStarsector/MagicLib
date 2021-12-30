@@ -10,6 +10,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
+import com.fs.starfarer.api.impl.campaign.DModManager;
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
@@ -37,6 +38,7 @@ import java.util.*;
 
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.loading.WeaponGroupType;
+import static com.fs.starfarer.api.util.Misc.MAX_OFFICER_LEVEL;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import static data.scripts.util.MagicVariables.verbose;
@@ -495,6 +497,63 @@ public class MagicCampaign {
      * @param isMarketAdmin
      * @param industrialPlanning_level
      * skill level for market admin
+     * @param commScreenPosition
+     * position order in the comm screen, 0 is the admin position
+     * @return 
+     */
+    @Deprecated
+    public static PersonAPI addCustomPerson(
+            MarketAPI market,
+            String firstName,
+            String lastName,
+            String portraitId,
+            FullName.Gender gender,
+            String factionId,
+            String rankId,
+            String postId,
+            boolean isMarketAdmin,
+            Integer industrialPlanning_level,
+            Integer spaceOperation_level,
+            Integer groundOperations_level,
+            Integer commScreenPosition
+    ){
+        return addCustomPerson(
+            market,
+            firstName,
+            lastName,
+            portraitId,
+            gender,
+            factionId,
+            rankId,
+            postId,
+            isMarketAdmin,
+            industrialPlanning_level,
+            commScreenPosition
+        );
+    }
+    
+    /**
+     * Adds a custom character to a given market
+     * 
+     * @param market
+     * MarketAPI the person is added to
+     * @param firstName
+     * person's first name
+     * @param lastName
+     * person's last name
+     * @param portraitId
+     * id of the sprite in settings.json/graphics/characters
+     * @param gender
+     * FullName.Gender
+     * @param factionId
+     * person's faction
+     * @param rankId
+     * rank from campaign.ids.Ranks
+     * @param postId
+     * post from campaign.ids.Ranks
+     * @param isMarketAdmin
+     * @param industrialPlanning_level
+     * skill level for market admin
      * @param spaceOperation_level
      * skill level for market admin
      * @param groundOperations_level
@@ -514,8 +573,6 @@ public class MagicCampaign {
             String postId,
             boolean isMarketAdmin,
             Integer industrialPlanning_level,
-            Integer spaceOperation_level,
-            Integer groundOperations_level,
             Integer commScreenPosition
     ){
         
@@ -530,8 +587,8 @@ public class MagicCampaign {
         person.setPostId(postId);
         
         person.getStats().setSkillLevel(Skills.INDUSTRIAL_PLANNING, industrialPlanning_level);
-        person.getStats().setSkillLevel(Skills.SPACE_OPERATIONS, spaceOperation_level);
-        person.getStats().setSkillLevel(Skills.PLANETARY_OPERATIONS, groundOperations_level);
+//        person.getStats().setSkillLevel(Skills.SPACE_OPERATIONS, spaceOperation_level);
+//        person.getStats().setSkillLevel(Skills.PLANETARY_OPERATIONS, groundOperations_level);
 
         if(isMarketAdmin){
             market.setAdmin(person);
@@ -731,9 +788,9 @@ public class MagicCampaign {
         if(minFP>0){
             if(verbose){
                 if(minFP<coreFP){
-                    log.warn("Preset FP: "+coreFP+", requested FP: "+minFP+". No reinforcements required.");
+                    log.info("Preset FP: "+coreFP+", requested FP: "+minFP+". No reinforcements required.");
                 } else {
-                    log.warn("Preset FP: "+coreFP+", requested FP: "+minFP+". Adding "+(minFP-coreFP)+" FP worth of "+Global.getSector().getFaction(extraShipsFaction).getDisplayName()+" reinforcements.");
+                    log.info("Preset FP: "+coreFP+", requested FP: "+minFP+". Adding "+(minFP-coreFP)+" FP worth of "+Global.getSector().getFaction(extraShipsFaction).getDisplayName()+" reinforcements.");
                 }
             }
             
@@ -742,14 +799,16 @@ public class MagicCampaign {
                 
                 //KEEP THOSE DMODS!
                 bountyFleet.setInflater(reinforcements.getInflater());
-                
+                if(verbose){
+                    log.info("Fleet quality set to "+bountyFleet.getInflater().getQuality());
+                }
                 List<FleetMemberAPI> membersInPriorityOrder = reinforcements.getFleetData().getMembersInPriorityOrder();
                 if (membersInPriorityOrder!=null && !membersInPriorityOrder.isEmpty()){
                     for (FleetMemberAPI m : membersInPriorityOrder) {
                         m.setCaptain(null);
                         bountyFleet.getFleetData().addFleetMember(m);
                         if(verbose){
-                            log.warn("adding "+m.getHullId());
+                            log.info("adding "+m.getHullId());
                         }
                     }
                 } else {
@@ -833,9 +892,9 @@ public class MagicCampaign {
         bountyFleet.getFleetData().sort();
         bountyFleet.getFleetData().setSyncNeeded();
         bountyFleet.getFleetData().syncIfNeeded();
-        bountyFleet.getFleetData().syncMemberLists();
-        bountyFleet.setInflated(false);
-        bountyFleet.inflateIfNeeded();
+//        bountyFleet.getFleetData().syncMemberLists();
+//        bountyFleet.setInflated(true);
+//        bountyFleet.inflateIfNeeded();
         
         //SPAWN if needed
         if (location != null) {
@@ -1418,7 +1477,8 @@ public class MagicCampaign {
         //checking trigger_min_fleet_size
         if(min_fleet_size>0){
             CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
-            float effectiveFP = playerFleet.getEffectiveStrength();
+//            float effectiveFP = playerFleet.getEffectiveStrength();
+            float effectiveFP = playerFleet.getFleetPoints();
             return min_fleet_size < effectiveFP;
         }
         
@@ -1473,16 +1533,102 @@ public class MagicCampaign {
         return true;
     }
     
-    public static Float PlayerThreatMultiplier(float enemyBaseFP){ //base FP is the min FP of the enemy fleet with reinforcements.
+    public static Float PlayerFleetSizeMultiplier(float enemyBaseFP){ //base FP is the min FP of the enemy fleet with reinforcements.
         CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
-        float effectiveFP = playerFleet.getEffectiveStrength();
+//        float effectiveFP = playerFleet.getEffectiveStrength();
+        float effectiveFP = playerFleet.getFleetPoints();
         return effectiveFP / enemyBaseFP;
     }
-    public static Float relativeStrength(CampaignFleetAPI enemy){
+    
+    public static Float RelativeEffectiveStrength(CampaignFleetAPI enemyFleet){
+        
         CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
-        float effectiveFP = playerFleet.getEffectiveStrength();
-        float enemyEffectiveFP = enemy.getEffectiveStrength();
-        return effectiveFP / enemyEffectiveFP;
+        
+        if(enemyFleet==null || enemyFleet.getFleetData()==null || playerFleet==null || playerFleet.getFleetData()==null)return null;
+        
+        float playerEffectiveStrength = 0f;
+        float enemyEffectiveStrength = 0f;
+        
+        if(verbose){
+            log.info("\n");
+            log.info("PLAYER strength");
+        }
+        
+        for(FleetMemberAPI m : playerFleet.getFleetData().getMembersListCopy()){
+            float strength = EffectiveFleetMemberStrength(m);
+            if(verbose){
+                log.info(m.getHullId()+" strength = "+ strength);
+            }
+            playerEffectiveStrength += strength;
+        }
+        
+        if(verbose){
+            log.info("Effective player strength = "+playerEffectiveStrength+"\n");
+            log.info("ENEMY strength");
+        }
+        
+        for(FleetMemberAPI m : enemyFleet.getFleetData().getMembersListCopy()){
+            float strength = EffectiveFleetMemberStrength(m);
+            if(verbose){
+                log.info(m.getHullId()+" strength = "+ strength);
+            }
+            enemyEffectiveStrength += strength;
+        }
+        
+        float relativeStrength = playerEffectiveStrength/enemyEffectiveStrength;
+        
+        if(verbose){
+            log.info("Effective enemy strength = "+enemyEffectiveStrength+"\n");
+            log.info("Relative strength = "+relativeStrength);
+        }
+        
+        return relativeStrength;
+    }
+    
+    private static float EffectiveFleetMemberStrength(FleetMemberAPI member) {
+        
+        float str = Math.max(1f,member.getMemberStrength());
+
+        float quality = 0.8f;
+        
+        if (member.getFleetData() != null && member.getFleetData().getFleet() != null) {
+            if(member.getFleetData().getFleet().getInflater()!=null && !member.getFleetData().getFleet().isInflated()){
+                quality = 1 + (member.getFleetData().getFleet().getInflater().getQuality()-1)/2;
+            } else {
+                float dmods = DModManager.getNumDMods(member.getVariant());
+                quality = Math.max(0.25f, 1f - 0.1f * dmods);
+            }
+        }
+        
+        if (member.isStation()) quality = 1f;
+
+        float damageMult = 0.5f + 0.5f * member.getStatus().getHullFraction();
+        
+        float captainMult = 1f;
+        if (member.getCaptain() != null) {
+            float captainLevel = (member.getCaptain().getStats().getLevel() - 1f);
+            if (member.isStation())
+                captainMult += captainLevel / (MAX_OFFICER_LEVEL * 3f);
+            else
+                captainMult += captainLevel / (MAX_OFFICER_LEVEL * 2f);
+        }
+        
+        
+        if(Global.getSector().getPlayerFleet().getFlagship() == member){
+            //PLAYER multiplier
+            captainMult = Global.getSector().getPlayerStats().getLevel();
+            captainMult /= 20;
+            captainMult += 1;
+        }
+        
+        
+        str *= quality;
+        str *= damageMult;
+        str *= captainMult;
+        
+//        if(member.isCivilian())str*=0.5f;
+        
+        return str;
     }
     
     /**

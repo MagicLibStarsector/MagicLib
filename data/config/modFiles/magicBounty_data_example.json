@@ -123,7 +123,24 @@
         "target_aiCoreId": null, # Default: null (not an AI). The AI Core id of the bounty commander. Core will be dropped as loot. Options: [ null, "gamma_core", "beta_core", "alpha_core" ]
         "target_level": 1, # Default: 0. The level of the bounty commander
         "target_elite_skills":2, # Default: vanilla setting (2 by default). Overrides the regular number of elite skills, set to 0 to not use elite skills.
-        "target_skill_preference": "GENERIC", # Default: "GENERIC". ["GENERIC", "PHASE", "CARRIER", "ANY"] (from OfficerManagerEvent.SkillPickPreference)
+        "target_skill_preference": "ANY", # Default: "ANY". 
+		    # YES_ENERGY_YES_BALLISTIC_YES_MISSILE_YES_DEFENSE,
+		    # YES_ENERGY_YES_BALLISTIC_NO_MISSILE_YES_DEFENSE,
+		    # YES_ENERGY_YES_BALLISTIC_YES_MISSILE_NO_DEFENSE,
+		    # YES_ENERGY_YES_BALLISTIC_NO_MISSILE_NO_DEFENSE,
+		    # YES_ENERGY_NO_BALLISTIC_YES_MISSILE_YES_DEFENSE,
+		    # YES_ENERGY_NO_BALLISTIC_NO_MISSILE_YES_DEFENSE,
+		    # YES_ENERGY_NO_BALLISTIC_YES_MISSILE_NO_DEFENSE,
+		    # YES_ENERGY_NO_BALLISTIC_NO_MISSILE_NO_DEFENSE,
+		    # NO_ENERGY_YES_BALLISTIC_YES_MISSILE_YES_DEFENSE,
+		    # NO_ENERGY_YES_BALLISTIC_NO_MISSILE_YES_DEFENSE,
+		    # NO_ENERGY_YES_BALLISTIC_YES_MISSILE_NO_DEFENSE,
+		    # NO_ENERGY_YES_BALLISTIC_NO_MISSILE_NO_DEFENSE,
+		    # NO_ENERGY_NO_BALLISTIC_YES_MISSILE_YES_DEFENSE,
+		    # NO_ENERGY_NO_BALLISTIC_NO_MISSILE_YES_DEFENSE,
+		    # NO_ENERGY_NO_BALLISTIC_YES_MISSILE_NO_DEFENSE,
+		    # NO_ENERGY_NO_BALLISTIC_NO_MISSILE_NO_DEFENSE,
+		    # ANY (from OfficerManagerEvent.SkillPickPreference)
         "target_skills": { # Default: empty. REMOVES ALL RANDOM SKILLS, set level 1 for normal skill, level 2 for elite.
             "skillnameA":1,
             "skillnameB":2,
