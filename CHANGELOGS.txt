@@ -1,6 +1,10 @@
 MagicLib
 
 0.41
+[RC3]
+MagicBounties:
+   - Finally bit the bullet and added a thorough bounty validation on game load. This should solve pretty much all issues remaining with invalid bounties. 
+   - Dev-mode log will precisely indicate why bounties can't be loaded so that bounty writers can quickly fix them.
 
 [RC2]
 MagicBounties:

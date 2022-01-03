@@ -880,7 +880,7 @@ public class MagicCampaign {
         //cleanup name and faction
         bountyFleet.setNoFactionInName(true);
         bountyFleet.setFaction(fleetFaction, true);
-        if(!fleetName.isEmpty()) bountyFleet.setName(fleetName);
+        if(fleetName!=null && !fleetName.isEmpty()) bountyFleet.setName(fleetName);
 
         //set standard 70% CR
         List<FleetMemberAPI> members = bountyFleet.getFleetData().getMembersListCopy();
@@ -1190,7 +1190,7 @@ public class MagicCampaign {
                 }
             }
         } catch (Exception e) {
-            log.info("could not load ship variant at " + path, e);
+            log.info("could not load ship variant at " + path);
         }
         
         //Maintain the S-mods through salvage

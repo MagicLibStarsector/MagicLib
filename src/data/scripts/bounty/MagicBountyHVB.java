@@ -66,7 +66,9 @@ public class MagicBountyHVB {
         
         try {
             JSONArray uniqueBountyDataJSON = Global.getSettings().getMergedSpreadsheetDataForMod("bounty_id", VAYRA_UNIQUE_BOUNTIES_FILE, MAGICLIB_ID);
-
+            
+            int hvb =0;
+            
             for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
                 JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
                 if (row.has("bounty_id") && row.getString("bounty_id") != null && !row.getString("bounty_id").isEmpty()) {
@@ -385,6 +387,7 @@ public class MagicBountyHVB {
                         BOUNTIES.put(bountyId, this_bounty);
                         if(verbose){
                             LOG.info("SUCCESS");
+                            hvb++;
                         }
                     } else if(verbose){
                         LOG.info("SKIPPED");
@@ -393,8 +396,10 @@ public class MagicBountyHVB {
                     if(verbose){
                         LOG.info("hit empty line, unique bounty loading ended");
                     }
-                }
-                
+                }                
+                if(verbose){
+                    LOG.info("Successfully converted "+hvb+" HVBs");
+                }                
             }
         } catch (IOException | JSONException exception) {
             LOG.error("MagicLib - Failed to load HighValueBountyData! - ",exception);
