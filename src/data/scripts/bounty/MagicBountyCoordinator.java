@@ -402,20 +402,23 @@ public final class MagicBountyCoordinator {
     public void resetBounty(@NotNull String bountyKey) {
         ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
-        if (activeBounty == null) return;
-        MagicBountyData.bountyData spec = activeBounty.getSpec();
+        if (activeBounty != null) {
+            MagicBountyData.bountyData spec = activeBounty.getSpec();
 
-        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-            Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
+            if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
+            }
+
+            MagicBountyIntel intel = activeBounty.getIntel();
+
+            if (intel != null) {
+                intel.endImmediately();
+            }
+
+            activeBounty.despawn();
         }
 
-        MagicBountyIntel intel = activeBounty.getIntel();
-
-        if (intel != null) {
-            intel.endImmediately();
-        }
-
-        activeBounty.despawn();
+        getCompletedBounties().remove(bountyKey);
     }
 
     /**
