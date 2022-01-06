@@ -12,7 +12,6 @@ import java.util.List;
 public class ResetBountyCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
-        List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
         MagicBountyCoordinator mbc = MagicBountyCoordinator.getInstance();
         String trimmedArgs = args.trim();
 
@@ -20,12 +19,11 @@ public class ResetBountyCommand implements BaseCommand {
             Console.showMessage("Missing bounty id.");
             return CommandResult.BAD_SYNTAX;
         } else {
-            if (bountyKeys.contains(trimmedArgs)) {
-                String bountyKey = bountyKeys.get(bountyKeys.indexOf(trimmedArgs));
-                mbc.resetBounty(bountyKey);
-                Console.showMessage(String.format("'%s' reset.", bountyKey));
-            } else {
-                Console.showMessage(String.format("Couldn't find '%s'", trimmedArgs));
+            try {
+                mbc.resetBounty(trimmedArgs);
+                Console.showMessage(String.format("'%s' reset.", trimmedArgs));
+            } catch (Exception e) {
+                Console.showMessage(String.format("Error resetting '%s': %s", trimmedArgs, e.getMessage()));
             }
         }
 
