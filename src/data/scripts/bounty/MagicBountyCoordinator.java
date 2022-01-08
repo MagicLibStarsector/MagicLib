@@ -104,9 +104,8 @@ public final class MagicBountyCoordinator {
                 entry.getValue().endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
                 iterator.remove();
             } else if (entry.getValue().getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
-                    && entry.getValue().getFleet().isDespawning()
                     && entry.getValue().getIntel() == null) {
-                // Remove bounties that have completed and their fleets have/are despawning and the intel has timed out.
+                // Remove bounties that have completed and the intel has timed out.
                 iterator.remove();
                 getCompletedBounties().add(entry.getKey());
             }
