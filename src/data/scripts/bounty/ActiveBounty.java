@@ -283,7 +283,10 @@ public final class ActiveBounty {
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
 
-            despawn();
+            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty() || stage != Stage.ExpiredAfterAccepting){  
+                //Do not despawn bounties placed on existing fleets if it simply expired
+                despawn();
+            }
         }
     }
 

@@ -14,7 +14,6 @@ import com.fs.starfarer.api.impl.campaign.DModManager;
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
-//import static com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3.BASE_QUALITY_WHEN_NO_MARKET;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
@@ -434,7 +433,7 @@ public class MagicCampaign {
             @Nullable Map<String, Integer> skillLevels
     ){
         
-        if(skillLevels!=null && !skillLevels.isEmpty()){
+        if(skillLevels!=null && !skillLevels.isEmpty() && level<1){
             level = skillLevels.size();
             eliteSkillsOverride=0;
             for(String s : skillLevels.keySet()){
@@ -1444,6 +1443,13 @@ public class MagicCampaign {
             for (String m : market_id){
                 if (market.getId().equals(m))return true;
             }
+            
+            for (String id : market_id){    
+                //if at least one of the priority market exists, stop here as the bounty shall only be offered there
+                if(Global.getSector().getEntityById(id)!=null){
+                    return false;
+                }
+            }
         }
         
         //checking trigger_market_minSize
@@ -1454,7 +1460,9 @@ public class MagicCampaign {
             for(String f : marketFaction_none){
                 //skip non existing factions
                 if(Global.getSector().getFaction(f)==null) {
-                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    if(verbose){
+                        log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    }
                     continue;
                 }
                 
@@ -1473,7 +1481,9 @@ public class MagicCampaign {
             for(String f : marketFaction_any){
                 //skip non existing factions
                 if(Global.getSector().getFaction(f)==null) {
-                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    if(verbose){
+                        log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    }
                     continue;
                 }
                 
@@ -1515,53 +1525,60 @@ public class MagicCampaign {
     ){
         
         //checking trigger_min_days_elapsed
-        if(min_days_elapsed>0 && Global.getSector().getClock().getElapsedDaysSince(0)<min_days_elapsed)return false;
+        if(min_days_elapsed>0 && Global.getSector().getClock().getDay()<min_days_elapsed)return false;
         
         //checking trigger_player_minLevel
         if(player_minLevel>0 && Global.getSector().getPlayerStats().getLevel()<player_minLevel)return false;
-
-        //checking memKeys_none
-        if(memKeys_none != null && !memKeys_none.isEmpty()) {
-            for (Map.Entry<String, Boolean> entry : memKeys_none.entrySet()) {
-                if (Global.getSector().getMemoryWithoutUpdate().contains(entry.getKey())) {
-                    if (Global.getSector().getMemoryWithoutUpdate().getBoolean(entry.getKey()) == entry.getValue()) {
-                        log.info(String.format("Not showing bounty because of memKeys_none %s value %s.", entry.getKey(), entry.getValue()));
-                        return false;
-                    }
-                }
-            }
-        }
         
         //checking trigger_min_fleet_size
         if(min_fleet_size>0){
             CampaignFleetAPI playerFleet=Global.getSector().getPlayerFleet(); 
 //            float effectiveFP = playerFleet.getEffectiveStrength();
             float effectiveFP = playerFleet.getFleetPoints();
-            return min_fleet_size < effectiveFP;
+            if (min_fleet_size > effectiveFP){
+                if(verbose){
+                    log.info(String.format("Requirement not met: min fleet size of %s requested, currently %s.", min_fleet_size,effectiveFP));
+                }
+                return false;
+            }
         }
         
         //checking trigger_playerRelationship_atLeast
+        boolean relation=false;
         if(playerRelationship_atLeast!=null && !playerRelationship_atLeast.isEmpty()){
             for(String f : playerRelationship_atLeast.keySet()){
                 //skip non existing factions
                 if(Global.getSector().getFaction(f)==null) {
-                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    if(verbose){
+                        log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    }
                     continue;
                 }
-                if(!Global.getSector().getPlayerFaction().isAtWorst(f, RepLevel.getLevelFor(playerRelationship_atLeast.get(f))))return false;
+                if(Global.getSector().getPlayerFaction().isAtWorst(f, RepLevel.getLevelFor(playerRelationship_atLeast.get(f))))relation=true;
             }
+        } else {
+            relation=true;
         }
 
         //checking trigger_playerRelationship_atMost
+        boolean hostility=false;
         if(playerRelationship_atMost!=null && !playerRelationship_atMost.isEmpty()){
             for(String f : playerRelationship_atMost.keySet()){
                 //skip non existing factions
                 if(Global.getSector().getFaction(f)==null) {
-                    log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    if(verbose){
+                        log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
+                    }                    
                     continue;
                 }
-                if(!Global.getSector().getPlayerFaction().isAtBest(f, RepLevel.getLevelFor(playerRelationship_atMost.get(f))))return false;
+                if(Global.getSector().getPlayerFaction().isAtBest(f, RepLevel.getLevelFor(playerRelationship_atMost.get(f)))) relation=true;
             }
+        } else {
+            hostility=true;
+        }
+        
+        if(!relation || !hostility){
+            return false;
         }
         
         //checking trigger_memKeys_all
@@ -1585,6 +1602,20 @@ public class MagicCampaign {
             }
             //the loop has not been exited therefore some key is missing
             return false;
+        }
+        
+        //checking memKeys_none
+        if(memKeys_none != null && !memKeys_none.isEmpty()) {
+            for (Map.Entry<String, Boolean> entry : memKeys_none.entrySet()) {
+                if (Global.getSector().getMemoryWithoutUpdate().contains(entry.getKey())) {
+                    if (Global.getSector().getMemoryWithoutUpdate().getBoolean(entry.getKey()) == entry.getValue()) {
+                        if(verbose){
+                            log.info(String.format("Requirement not met: memKeys_none %s value %s.", entry.getKey(), entry.getValue()));
+                        }
+                        return false;
+                    }
+                }
+            }
         }
         
         //failed none of the tests, must be good then

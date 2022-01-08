@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 //import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
@@ -340,11 +341,16 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //TARGET CAPTAIN
-                            if(bounty.job_show_fleet != MagicBountyData.ShowFleet.None && bounty.job_show_fleet != MagicBountyData.ShowFleet.Text){
+                            if(
+                                    bounty.job_show_fleet != MagicBountyData.ShowFleet.None //fleet shouldn't be displayed
+                                    && 
+                                    bounty.job_show_fleet != MagicBountyData.ShowFleet.Text //only text should be displayed
+                                    && 
+                                    activeBounty.getFleet().getFlagship().getVariant().hasTag(Tags.SHIP_LIMITED_TOOLTIP) //Flagship shouldn't get displayed
+                                    ){
                                 //displaying the flagship takes priority if possible
                                 dialog.getVisualPanel().showFleetMemberInfo(activeBounty.getFleet().getFlagship());
-                            } else
-                            if (bounty.job_show_captain) {
+                            } else if (bounty.job_show_captain) {
                                 //diplaying the captain is now second
                                 dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
                             } else {

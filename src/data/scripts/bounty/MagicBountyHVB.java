@@ -72,41 +72,7 @@ public class MagicBountyHVB {
             for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
                 JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
                 if (row.has("bounty_id") && row.getString("bounty_id") != null && !row.getString("bounty_id").isEmpty()) {
-                    
-                    //HVB validation
-                    boolean skip=false;
-                    //check for factions
-                    if((!row.getString("faction").equals("hvb_hostile") && Global.getSector().getFaction(row.getString("faction"))==null) || Global.getSector().getFaction(row.getString("postedByFaction"))==null){
-                        if(verbose){
-                            LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing either "+row.getString("faction")+" or "+row.getString("postedByFaction"));
-                        }
-                        skip=true;
-                    } else   
-                        //check for flagship variant
-                    if(Global.getSettings().getVariant(row.getString("flagshipVariantId"))==null ){
-                        if(verbose){
-                            LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing "+row.getString("flagshipVariantId")+" flagship variant.");
-                        }
-                        skip=true;
-                    } else  
-                        //check for other ships variants
-                    if(row.optString("fleetVariantIds")!=null){
-                        List<String> fleetList = new ArrayList<>(Arrays.asList(row.optString("fleetVariantIds").split("\\s*(,\\s*)+")));
-                         if(!fleetList.isEmpty()){
-                            for(String id : fleetList){
-                                if(!id.isEmpty() && Global.getSettings().getVariant(id)==null){
-                                    if(verbose){
-                                        LOG.info("Skipping HVB " + row.getString("bounty_id") + ", missing "+row.getString("flagshipVariantId")+" fleet variant.");
-                                    }
-                                    skip=true;
-                                }
-                            }
-                        }
-                    }                      
-                    if(skip){
-                        continue;
-                    }
-                    
+                                        
                     String bountyId = row.getString("bounty_id");
                     
                     if(verbose){
@@ -214,15 +180,11 @@ public class MagicBountyHVB {
                         faction=MagicVariables.BOUNTY_FACTION;
                         LOG.info("Replacing hvb_hostile with ML_bounty");
                     }
-                    if(Global.getSector().getFaction(faction)==null){
-                        LOG.info("Faction "+ faction +" cannot be found, attempting to fix typo");
-                        FactionAPI f = StringMatcher.findBestFactionMatch(faction);
-                        if(f!=null){
-                            faction = f.getId();
-                            LOG.info("Faction replaced with"+ faction);
-                        } else {
-                            LOG.info("Faction unavailable, skipping bounty");
-                        }                        
+                    
+                    int level=row.getInt("neverSpawnBeforeLevel");
+                    if(level>15){
+                        //if min level is superior to 15, it is divided by 2 (old level cap was 30) to avoid outdated bounties from being un-triggerable
+                        level*=0.5f;
                     }
                     
                     MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(
@@ -239,7 +201,7 @@ public class MagicBountyHVB {
                             //int trigger_market_minSize,
                             3,
                             //int trigger_player_minLevel,
-                            row.getInt("neverSpawnBeforeLevel"),
+                            level,
                             //int trigger_min_days_elapsed,
                             row.getInt("neverSpawnBeforeCycle")*365,
                             //int trigger_min_fleet_size,

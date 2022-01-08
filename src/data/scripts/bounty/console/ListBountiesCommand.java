@@ -55,7 +55,15 @@ public class ListBountiesCommand implements BaseCommand {
 
             for (Map.Entry<String, ActiveBounty> entry : entries) {
                 ActiveBounty bounty = entry.getValue();
-                Console.showMessage(String.format("  Id: %s, Stage: %s\n  %s\n", entry.getKey(), bounty.getStage().name(), bounty));
+                Console.showMessage(
+                        String.format(
+                            //"  Id: %s, Stage: %s\n  %s\n"
+                            "  Id: %s, Stage: %s\n"
+                            ,entry.getKey()
+                            ,bounty.getStage().name()
+                            //,bounty
+                        )
+                );
             }
         }
 

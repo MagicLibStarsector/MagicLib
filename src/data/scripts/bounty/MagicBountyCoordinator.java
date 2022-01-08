@@ -12,6 +12,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
+import data.scripts.bounty.ActiveBounty.Stage;
 import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicTxt;
@@ -156,6 +157,10 @@ public final class MagicBountyCoordinator {
 
             // If the bounty has been completed, don't offer it.
             if (getCompletedBounties().contains(bountyKey)) {
+                continue;
+            }
+            
+            if(getActiveBounty(bountyKey)!=null && getActiveBounty(bountyKey).getStage()==Stage.Dismissed){
                 continue;
             }
 
