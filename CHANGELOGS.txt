@@ -1,7 +1,7 @@
 MagicLib
 
-0.41
-[RC3]
+0.42
+
 MagicBounties:
    - Finally bit the bullet and added a thorough bounty validation on game load. This should solve pretty much all issues remaining with invalid bounties. 
    - Dev-mode log will precisely indicate why bounties can't be loaded so that bounty writers can quickly fix them.
@@ -9,6 +9,8 @@ MagicBounties:
    - Added the console command `MagicBounty_ListRequirement` to check where and when you are able to see the bounties.
 MagicCampaign:
    - Fixed an issue when generating captains with custom skill sets that prevented all skills from being assigned.
+
+0.41
 
 [RC2]
 MagicBounties:
