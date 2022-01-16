@@ -3,10 +3,14 @@ MagicLib
 0.42
 
 MagicBounties:
+   - Added [fleet_no_retreat] boolean parameter.
    - Finally bit the bullet and added a thorough bounty validation on game load. This should solve pretty much all issues remaining with invalid bounties. 
    - Dev-mode log will precisely indicate why bounties can't be loaded so that bounty writers can quickly fix them.
-   - Fixed various triggers not being evaluated properly when combined with each-other
-   - Added the console command `MagicBounty_ListRequirement` to check where and when you are able to see the bounties.
+   - Fixed various triggers not being evaluated properly when combined with each-other.
+   - Added the console command [MagicBounty_ListRequirements] to check where and when you are able to see the bounties.
+   - Dismissed bounty are now properly cleaned up.
+   - Completed bounties are properly cleaned up.
+   - [MagicLib_ResetBounty] console command now works properly.
 MagicCampaign:
    - Fixed an issue when generating captains with custom skill sets that prevented all skills from being assigned.
 

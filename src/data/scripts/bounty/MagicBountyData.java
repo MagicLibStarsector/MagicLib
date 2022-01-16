@@ -289,6 +289,7 @@ public class MagicBountyData {
                     origin_faction,
                     getFloat(bountyId, "fleet_composition_quality", 1),
                     getBoolean(bountyId, "fleet_transponder"),
+                    getBoolean(bountyId, "fleet_no_retreat"),                    
                     order,
 
                     locations,
@@ -412,6 +413,7 @@ public class MagicBountyData {
         public String fleet_composition_faction;                                //Faction of the extra ship, can be different from the bounty faction (in case of pirate deserters for example)
         public float fleet_composition_quality;                                 //default to 2 (no Dmods) if <0
         public boolean fleet_transponder;
+        public boolean fleet_no_retreat;                                        //default to false, prevents the enemy from retreating
         public FleetAssignment fleet_behavior;                                  //PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED (campaign.FleetAssignment.orbit_aggressive)
         //location
         public List<String> location_marketIDs;                                 //preset location, can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
@@ -490,6 +492,7 @@ public class MagicBountyData {
             String fleet_composition_faction,
             float fleet_composition_quality,
             boolean fleet_transponder,
+            boolean fleet_no_retreat,
             FleetAssignment fleet_behavior,
             List<String> location_marketIDs,
             List<String> location_marketFactions,
@@ -628,6 +631,7 @@ public class MagicBountyData {
             this.fleet_composition_faction = fleet_composition_faction;
             this.fleet_composition_quality = fleet_composition_quality;
             this.fleet_transponder = fleet_transponder;
+            this.fleet_no_retreat = fleet_no_retreat;
             this.fleet_behavior = fleet_behavior;
             this.location_marketIDs = location_marketIDs;
             this.location_marketFactions = location_marketFactions;

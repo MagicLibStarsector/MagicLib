@@ -79,6 +79,7 @@
         "fleet_composition_faction": "faction",
         "fleet_composition_quality": 1,
         "fleet_transponder": false,
+		"fleet_no_retreat": false,
         "fleet_behavior": "PASSIVE",
         
         #LOCATION

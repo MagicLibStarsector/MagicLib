@@ -7,7 +7,6 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.characters.FullName;
@@ -17,7 +16,6 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Ranks;
 import com.fs.starfarer.api.impl.campaign.ids.Skills;
-//import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import static data.scripts.bounty.MagicBountyData.BOUNTIES;
 import data.scripts.util.MagicSettings;
@@ -323,6 +321,8 @@ public class MagicBountyHVB {
                             2,
                             //boolean fleet_transponder,
                             false,
+                            //boolean fleet_no_retreat,
+                            true,
                             //FleetAssignment fleet_behavior,
                             FleetAssignment.DEFEND_LOCATION,
                             //List<String> location_marketIDs,

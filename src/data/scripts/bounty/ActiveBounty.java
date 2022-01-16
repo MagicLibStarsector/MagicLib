@@ -163,7 +163,7 @@ public final class ActiveBounty {
                 }
             }
         }
-
+        
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
         // Add comm reply if needed
@@ -172,6 +172,7 @@ public final class ActiveBounty {
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
         }
         
+        getFleet().getMemoryWithoutUpdate().set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
         getFleet().getMemoryWithoutUpdate().set(spec.job_memKey, true);
         
