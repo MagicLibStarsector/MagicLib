@@ -19,31 +19,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 
-/*
-import org.json.JSONObject;
-import java.util.Iterator; // because apparently we're using some ancient version of JSONObject that doesn't have a straightforward .keySet() method.
-import org.json.JSONException;
-*/
-
 public class MagicIndustryItemWrangler extends BaseCampaignEventListener {
 	private static Map itemPriorities = new HashMap(); // should really be typed <String,ItemPriority>
 	
 	public MagicIndustryItemWrangler() {
 		super( false );
 		try {
-                        /*
-			JSONObject itemRawData = Global.getSettings().getMergedJSONForMod( "data/campaign/itemPriorities.json", "wyv_test" );
-			Iterator keys = itemRawData.keys();
-			while( keys.hasNext() ) {
-				String item = (String) keys.next();
-				try {
-					itemPriorities.put( item, new FixedPriority( new Double( itemRawData.getDouble( item ) ).floatValue() ) );
-				} catch( JSONException th ) {
-					Global.getLogger( MagicIndustryItemWrangler.class ).error( "Error loading data/campaign/itemPriorities.json entry for \"" +
-						item + "\" - ItemInstallationWrangler will not process this item." );
-				}
-			}
-                        */
                         Map <String, Float> items = MagicSettings.getFloatMap(MagicVariables.MAGICLIB_ID, "itemPriorities");
                         for(String i : items.keySet()){
                             itemPriorities.put(i, new FixedPriority(items.get(i)));

@@ -150,10 +150,10 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
         //WHEN
         if(bounty.trigger_min_days_elapsed>0){   
             Console.showMessage(" - "+"Offered only after "+bounty.trigger_min_days_elapsed+" days.");
-            if(Global.getSector().getClock().getDay()>=bounty.trigger_min_days_elapsed){
-                Console.showMessage("   . "+"VALID ( day "+Global.getSector().getClock().getDay()+" )");                
+            if(Global.getSector().getClock().getDay()+(Global.getSector().getClock().getCycle()-206)*365>=bounty.trigger_min_days_elapsed){
+                Console.showMessage("   . "+"VALID ( day "+Global.getSector().getClock().getDay()+" cycle "+Global.getSector().getClock().getCycle() + " : " + (Global.getSector().getClock().getDay()+(Global.getSector().getClock().getCycle()-206)*365)+" )");                
             } else {
-                Console.showMessage("   . "+"INVALID ( day "+Global.getSector().getClock().getDay()+" )");     
+                Console.showMessage("   . "+"INVALID ( day "+Global.getSector().getClock().getDay()+" cycle "+Global.getSector().getClock().getCycle() + " : " + (Global.getSector().getClock().getDay()+(Global.getSector().getClock().getCycle()-206)*365)+" )");                    
                 valid=false;
             }
         }
@@ -219,7 +219,7 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
         }  
         
         //WHEN ALL MEMKEYS ARE SET        
-        if(!bounty.trigger_memKeys_all.isEmpty()){
+        if(bounty.trigger_memKeys_all!=null && !bounty.trigger_memKeys_all.isEmpty()){
             Console.showMessage(" - "+"Requires all the following MemKey(s): ");
             for (String k : bounty.trigger_memKeys_all.keySet()){
                 Console.showMessage("   . "+k+" : "+bounty.trigger_memKeys_all.get(k));
@@ -233,7 +233,7 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
         }
         
         //WHEN ANY MEMKEYS ARE SET        
-        if(!bounty.trigger_memKeys_any.isEmpty()){
+        if(bounty.trigger_memKeys_any!=null && !bounty.trigger_memKeys_any.isEmpty()){
             Console.showMessage(" - "+"Requires one of the following MemKey(s): ");
             boolean key=false;
             for (String k : bounty.trigger_memKeys_any.keySet()){

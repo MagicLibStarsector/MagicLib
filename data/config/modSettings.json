@@ -40,7 +40,7 @@
 
         "bounty_board_enabled": true,
 			# whether bounties are enabled in MagicLib or not
-		"bounty_board_test_mode": true,
+		"bounty_board_test_mode": false,
 			# disable some of the requirements of the bounties to test them
 		"bounty_board_reloadAll": true,
 			# removes all the bounties that are not taken before reloading them upon a save load

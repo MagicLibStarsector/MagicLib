@@ -255,23 +255,30 @@ public class MagicCampaign {
             
             if(minFP>coreFP){
                 CampaignFleetAPI reinforcements = generateRandomFleet(extraShipsFaction, quality, type, (minFP-coreFP), 0.2f );                
-                
-                //KEEP THOSE DMODS!
-                bountyFleet.setInflater(reinforcements.getInflater());
-                if(verbose){
-                    log.info("Fleet quality set to "+bountyFleet.getInflater().getQuality());
-                }
-                List<FleetMemberAPI> membersInPriorityOrder = reinforcements.getFleetData().getMembersInPriorityOrder();
-                if (membersInPriorityOrder!=null && !membersInPriorityOrder.isEmpty()){
-                    for (FleetMemberAPI m : membersInPriorityOrder) {
-                        m.setCaptain(null);
-                        bountyFleet.getFleetData().addFleetMember(m);
-                        if(verbose){
-                            log.info("adding "+m.getHullId());
+                if(reinforcements!=null){
+                    //KEEP THOSE DMODS!
+                    if(reinforcements.getInflater()!=null){
+                        bountyFleet.setInflater(reinforcements.getInflater());
+                    }
+                    if(verbose){
+                        log.info("Fleet quality set to "+bountyFleet.getInflater().getQuality());
+                    }
+                    
+                    //check for empty reinforcement fleet (the empty fleet is kept just for the quality stuff)
+                    if(!reinforcements.isEmpty()){
+                        List<FleetMemberAPI> membersInPriorityOrder = reinforcements.getFleetData().getMembersInPriorityOrder();
+                        if (membersInPriorityOrder!=null && !membersInPriorityOrder.isEmpty()){
+                            for (FleetMemberAPI m : membersInPriorityOrder) {
+                                m.setCaptain(null);
+                                bountyFleet.getFleetData().addFleetMember(m);
+                                if(verbose){
+                                    log.info("adding "+m.getHullId());
+                                }
+                            }
+                        } else {
+                            log.error("FAILED reinforcement generation");
                         }
                     }
-                } else {
-                    log.error("FAILED reinforcement generation");
                 }
             }
         }
@@ -782,9 +789,13 @@ public class MagicCampaign {
         }
         
         CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
-        if (tempFleet==null || tempFleet.isEmpty()) {
+        if (tempFleet==null) {
             log.warn("Failed to create procedural Support-Fleet");
             return null;
+        }
+        
+        if(tempFleet.isEmpty()){
+            log.warn("Procedural Support-Fleet is empty, requested fleet size is too small");
         }
         
         return tempFleet;
@@ -1525,7 +1536,8 @@ public class MagicCampaign {
     ){
         
         //checking trigger_min_days_elapsed
-        if(min_days_elapsed>0 && Global.getSector().getClock().getDay()<min_days_elapsed)return false;
+//        if(min_days_elapsed>0 && Global.getSector().getClock().getDay()<min_days_elapsed)return false;
+        if(min_days_elapsed>0 && Global.getSector().getClock().getDay()+(Global.getSector().getClock().getCycle()-206)*365<min_days_elapsed)return false;
         
         //checking trigger_player_minLevel
         if(player_minLevel>0 && Global.getSector().getPlayerStats().getLevel()<player_minLevel)return false;

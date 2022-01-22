@@ -2,6 +2,10 @@ MagicLib
 
 0.42
 
+[RC6] Fixed an issue with time threshold evaluation for bounties (that one is on Alex' undocumented API!)
+[RC5] Fixed a crash occurring when bounties have a smaller reinforcement size than their preset size.
+[RC3] Fixed a very stupid mistake that let MagicBounty detect invalid bounties, but not properly remove them.
+
 MagicBounties:
    - Added [fleet_no_retreat] boolean parameter.
    - Finally bit the bullet and added a thorough bounty validation on game load. This should solve pretty much all issues remaining with invalid bounties. 

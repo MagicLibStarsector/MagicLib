@@ -53,10 +53,18 @@ public final class MagicBountyCoordinator {
         instance = new MagicBountyCoordinator();
         LOG.info("\n ######################\n\n VALIDATING BOUNTIES \n\n ######################");
         int valid = 0;
+        List<String> culling = new ArrayList<>();
         for (Map.Entry<String, MagicBountyData.bountyData> dataEntry : MagicBountyData.BOUNTIES.entrySet()) {
             boolean isValid = validateAndCorrectIds(dataEntry.getKey(), dataEntry.getValue());
             if (isValid) {
                 valid++;
+            } else {
+                culling.add(dataEntry.getKey());
+            }
+        }
+        if(!culling.isEmpty()){
+            for(String id : culling){
+                MagicBountyData.BOUNTIES.remove(id);
             }
         }
         LOG.info("Successfully validated " + valid + " bounties!");
@@ -491,7 +499,7 @@ public final class MagicBountyCoordinator {
         return desiredFP;
     }
 
-    private static boolean validateAndCorrectIds(String bountyId, MagicBountyData.bountyData this_bounty) {
+    public static boolean validateAndCorrectIds(String bountyId, MagicBountyData.bountyData this_bounty) {
 
         try {
             // fleet_faction
