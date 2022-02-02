@@ -119,7 +119,7 @@ public class MagicBountyHVB {
                     Map <String,Boolean> memKeyAll=new HashMap<>();
                     if(prerequisiteBountiesList!=null){
                         for(String req : prerequisiteBountiesList){
-                            memKeyAll.put(req, true);
+                            memKeyAll.put("$HVB_"+req+"_succeeded", true);
                         }
                     }
                     
