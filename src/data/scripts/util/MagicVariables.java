@@ -104,9 +104,23 @@ public class MagicVariables {
     
     public static List<String> presetShipIdsOfLastCreatedFleet = new ArrayList<>();
     
+    private static boolean checkedBounties = false;
     public static boolean ibb=false;
     public static boolean hvb=false;
     public static boolean MagicBountiesEnabled=false;
+    
+    public static boolean getIBB(){
+        if(!checkedBounties)checkBountySystems();
+        return ibb;
+    }
+    public static boolean getHVB(){
+        if(!checkedBounties)checkBountySystems();
+        return hvb;
+    }
+    public static boolean getMagicBounty(){
+        if(!checkedBounties)checkBountySystems();
+        return MagicBountiesEnabled;
+    }
     
     public static void checkBountySystems(){
         
@@ -137,5 +151,6 @@ public class MagicVariables {
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
         }
         */
+        checkedBounties=true;
     }
 }

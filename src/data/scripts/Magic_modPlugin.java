@@ -98,12 +98,12 @@ public class Magic_modPlugin extends BaseModPlugin {
         
         MagicVariables.checkBountySystems();
         
-        if (MagicVariables.MagicBountiesEnabled) {
+        if (MagicVariables.getMagicBounty()) {
             if (newGame) {  
                 //add all bounties on a new game
                 MagicBountyData.loadBountiesFromJSON(false);
                 //convert the HVBs if necessary
-                if(!MagicVariables.hvb)MagicBountyHVB.convertHVBs(false);
+                if(!MagicVariables.getHVB())MagicBountyHVB.convertHVBs(false);
             } else {
                 if(MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_reloadAll")){
                     //force cleanup of all the bounties that have not been taken
@@ -111,7 +111,7 @@ public class Magic_modPlugin extends BaseModPlugin {
                 }
                 //only add new bounties if there are any on a save load
                 MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode()); 
-                if(!MagicVariables.hvb)MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
+                if(!MagicVariables.getIBB())MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
             }
 
             MagicBountyCoordinator.onGameLoad();
