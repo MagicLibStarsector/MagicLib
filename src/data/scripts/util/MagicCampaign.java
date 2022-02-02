@@ -1583,7 +1583,7 @@ public class MagicCampaign {
                     }                    
                     continue;
                 }
-                if(Global.getSector().getPlayerFaction().isAtBest(f, RepLevel.getLevelFor(playerRelationship_atMost.get(f)))) relation=true;
+                if(Global.getSector().getPlayerFaction().isAtBest(f, RepLevel.getLevelFor(playerRelationship_atMost.get(f)))) hostility=true;
             }
         } else {
             hostility=true;
