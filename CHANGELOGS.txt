@@ -1,5 +1,22 @@
 MagicLib
 
+0.43
+MagicBounties:
+   - Fixed an issue with HVBs memkeys improperly set for trigger requirements,
+   - Probably fixed the intel spam when ending some bounties (please report it to me immediately if it still occurs after the patch!),
+   - Fixed some memkeys requirements not evaluated properly when combined together,
+   - Weapons and hullmods can be offered as extra rewards,
+   - Extra rewards are no longer given for bounties failed through flagship recovery.
+
+MagicVariables:
+   - Changed the way they are pulled to ensure a proper evaluation beforehand.
+
+MagicRender: 
+   - Fixed issue where objectspace sprite jittering was not applied correctly.
+
+MagicIndustryItemWrangler: 
+   - Code cleanup.
+
 0.42
 
 [RC6] Fixed an issue with time threshold evaluation for bounties (that one is on Alex' undocumented API!)
