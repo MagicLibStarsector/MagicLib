@@ -7,8 +7,12 @@ import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DModManager;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
+import com.fs.starfarer.api.loading.FighterWingSpecAPI;
+import com.fs.starfarer.api.loading.HullModSpecAPI;
 import com.fs.starfarer.api.loading.VariantSource;
+import com.fs.starfarer.api.loading.WeaponSpecAPI;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.loading.specs.FighterWingSpec;
 
 import java.util.*;
 
@@ -141,34 +145,73 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 loot.addCommodity(core.getId(), 1);
             }
         }
-
+        
+        //no extra reward if the bounty has been failed
+        if (bounty.getStage()==ActiveBounty.Stage.FailedSalvagedFlagship){
+            Global.getLogger(MagicBountyFleetEncounterContext.class).debug("MagicBounty has been failed through flagship recovery, no extra items.");
+            return;
+        }
+        
         // Add special items
         for (Map.Entry<String, Integer> entry : bounty.getSpec().job_item_reward.entrySet()) {
             String itemId = entry.getKey();
             Integer count = entry.getValue();
-
+            
             try {
-                CommoditySpecAPI commoditySpec = Global.getSector().getEconomy().getCommoditySpec(itemId);
-
+                CommoditySpecAPI commoditySpec = Global.getSector().getEconomy().getCommoditySpec(itemId);                
                 if (commoditySpec != null) {
                     loot.addItems(CargoAPI.CargoItemType.RESOURCES, itemId, count);
-                } else {
-                    String[] split = itemId.split(" ");
-                    String specialItemId = split[0];
-                    String data = null;
-
-                    if (split.length > 1) {
-                        data = split[1];
-                    }
-
-                    SpecialItemSpecAPI specialItemSpec = Global.getSettings().getSpecialItemSpec(specialItemId);
-
-                    if (specialItemSpec != null) {
-                        loot.addSpecial(new SpecialItemData(specialItemId, data), count);
-                    } else {
-                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, new NullPointerException());
-                    }
+                    continue;
                 }
+            } catch (Exception ex) {
+                Global.getLogger(MagicBountyFleetEncounterContext.class).warn( itemId + "loot is not a commodity", ex);
+            }
+            
+            try {
+                WeaponSpecAPI weaponSpec = Global.getSettings().getWeaponSpec(itemId);              
+                if (weaponSpec != null) {
+                    loot.addWeapons(itemId, count);
+                    continue;
+                }
+            } catch (Exception ex) {
+                Global.getLogger(MagicBountyFleetEncounterContext.class).warn( itemId + "loot is not a weapon", ex);
+            }
+            
+            try {
+                FighterWingSpecAPI fighterWingSpecSpec = Global.getSettings().getFighterWingSpec(itemId);              
+                if (fighterWingSpecSpec != null) {
+                    loot.addFighters(itemId, count);
+                    continue;
+                }
+            } catch (Exception ex) {
+                Global.getLogger(MagicBountyFleetEncounterContext.class).warn( itemId + "loot is not a fighter LCP", ex);
+            }
+            
+            try {
+                HullModSpecAPI hullmodSpec = Global.getSettings().getHullModSpec(itemId);                
+                if (hullmodSpec != null) {
+                    loot.addHullmods(itemId, count);
+                    continue;
+                }
+            } catch (Exception ex) {
+                Global.getLogger(MagicBountyFleetEncounterContext.class).warn( itemId + "loot is not a hullmod", ex);
+            }
+            
+            try {
+                String[] split = itemId.split(" ");
+                String specialItemId = split[0];
+                String data = null;
+
+                if (split.length > 1) {
+                    data = split[1];
+                }
+
+                SpecialItemSpecAPI specialItemSpec = Global.getSettings().getSpecialItemSpec(specialItemId);
+                if (specialItemSpec != null) {
+                    loot.addSpecial(new SpecialItemData(specialItemId, data), count);
+                } else {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn( itemId + "loot is not a special item", new NullPointerException());
+                }                
             } catch (Exception ex) {
                 Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, ex);
             }
