@@ -433,8 +433,12 @@ public final class MagicBountyCoordinator {
             if (intel != null) {
                 intel.endImmediately();
             }
-
-            activeBounty.despawn();
+            
+            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+                //Do not despawn bounties placed on existing fleets
+                activeBounty.despawn();
+            }
+            activeBounty.endIntel();
         } else {
             MagicBountyData.bountyData spec = MagicBountyData.BOUNTIES.get(bountyKey);
 

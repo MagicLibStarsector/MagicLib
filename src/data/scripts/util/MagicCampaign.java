@@ -377,15 +377,28 @@ public class MagicCampaign {
         
         //SPAWN if needed
         if (location != null) {
-            spawnFleet(
-                bountyFleet,
-                location,
-                order,
-                assignementTarget,
-                isImportant,
-                transponderOn,
-                verbose
-            );
+            if(assignementTarget == null){
+                //prevent a crash when the fleet is spawned at a location but without a target
+                spawnFleet(
+                    bountyFleet,
+                    location,
+                    order,
+                    location,
+                    isImportant,
+                    transponderOn,
+                    verbose
+                );
+            } else {
+                spawnFleet(
+                    bountyFleet,
+                    location,
+                    order,
+                    assignementTarget,
+                    isImportant,
+                    transponderOn,
+                    verbose
+                );
+            }
         }
         
         if(verbose){

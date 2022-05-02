@@ -1,6 +1,22 @@
 MagicLib
 
 0.43
+
+Added MagicAsteroid plugins to restore functionalities related to asteroids that have been removed in the vanilla game (by SafaryJohn)
+
+MagicIncompatibleHullmod:
+   - Now handles hullmods with scripted incompatibilities that have been S-modded by removing the incompatible hullmod added instead of itself. (Thanks to Timid)
+
+MagicCampaign:
+   - createFleet now handles fleets that have a spawn location but no assignment target.
+
+MagicBounty: 
+   - Hopefuly fixed the log spam after a bounty expired.
+
+0.42.1
+
+[RC3] fixed a typo that prevented hvb's from showing up after loading a save.
+
 MagicBounties:
    - Fixed an issue with HVBs memkeys improperly set for trigger requirements,
    - Probably fixed the intel spam when ending some bounties (please report it to me immediately if it still occurs after the patch!),

@@ -27,8 +27,25 @@ public class MagicIncompatibleHullmods {
         INCOMPATIBILITIES.clear();
         
         //remove conflicting hullmod if that's not already done
+//        if(variant.getHullMods().contains(toRemove)){
+//            variant.removeMod(toRemove);
+//        }
         if(variant.getHullMods().contains(toRemove)){
-            variant.removeMod(toRemove);
+            if (variant.getSMods().contains(toRemove)) {
+              variant.removeMod(removeCause);
+              //add the info for the tooltip
+              List<String> removed=new ArrayList<>();
+              removed.add(0, removeCause);
+              removed.add(1, toRemove);
+              INCOMPATIBILITIES.put(variant, removed);
+            } else {
+              variant.removeMod(toRemove);
+              //add the info for the tooltip
+              List<String> removed=new ArrayList<>();
+              removed.add(0, toRemove);
+              removed.add(1, removeCause);        
+              INCOMPATIBILITIES.put(variant, removed);
+            }
         }
         //add the warning hullmod
         if(!variant.getHullMods().contains(WARNING)){

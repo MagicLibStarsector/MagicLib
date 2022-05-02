@@ -9,11 +9,34 @@
 		".":".",
 		"(":"(",
 		")":")",
+		"an":"an",
+
+		#magic asteroid fields
+		"af_fieldName" : "Asteroid Field",
+		"af_beltName" : "Asteroid Belt",
+		"af_hiding" : "Hiding inside ",
+		"af_impact1" : "Chance of asteroid impacts that briefly knock the fleet off course and ",
+		"af_impact2" : "may occasionally impact ships directly, dealing moderate damage.",
+		"af_impact3" : "Smaller fleets are usually able to avoid the heavier impacts, ",
+		"af_impact4" : "and slow-moving fleets do not risk impacts at all.",
+		"af_impact5" : "slow-moving",
+		"af_sensor1" : "Reduces the range at which stationary or slow-moving* fleets inside it can be detected by %s.",
+		"af_sensor2" : "*Press and hold %s to stop; combine with holding the left mouse button down to move slowly. ",
+		"af_sensor3" : "A slow-moving fleet moves at a burn level of half that of its slowest ship.",
+		"af_combat1" : "Combat",
+		"af_combat2" : "Numerous asteroids present on the battlefield. Large enough to be an in-combat navigational hazard.",
+		"af_damage1" : "Asteroid impact",
+		"af_damage2" : " suffers damage from an asteroid impact",
+		"af_damage3" : "Asteroid impact on drive bubble",
+
+		#magic incompatible hullmod
 		"conflictWarning":"WARNING",
 		"conflictTitle":"Conflict detected",
 		"conflictTxt1":"The ",
 		"conflictTxt2":" hullmod has been removed due to the presence of the ",
 		"conflictTxt3":" hullmod.",
+
+		#magic interferences
 		"interferenceWarning":"WARNING",
 		"interferenceUItitle":"Weapons Interference:",
 		"interferenceUItxt":" Flux dissipation",

@@ -1,0 +1,17 @@
+{
+	#
+	# terrain with gameplay effects
+	#
+	
+	"asteroid_belt":{
+		"plugin":"scripts.MagicAsteroidBeltTerrainPlugin",
+		#"loopOne":"terrain_asteroid_belt",
+		"loopOne":"terrain_asteroid_field",
+	},
+	"asteroid_field":{
+		"plugin":"scripts.MagicAsteroidFieldTerrainPlugin",
+		"musicSuppression":0.25,
+		"loopOne":"terrain_asteroid_field",
+	},
+}
+

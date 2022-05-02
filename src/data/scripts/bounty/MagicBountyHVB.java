@@ -191,7 +191,7 @@ public class MagicBountyHVB {
                             //List <String> trigger_marketFaction_any,
                             postingMarket,
                             //boolean trigger_marketFaction_alliedWith,
-                            false,
+                            true,
                             //List <String> trigger_marketFaction_none,
                             enemyMarket,
                             //boolean trigger_marketFaction_enemyWith,

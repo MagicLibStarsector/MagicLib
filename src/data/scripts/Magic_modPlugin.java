@@ -111,7 +111,7 @@ public class Magic_modPlugin extends BaseModPlugin {
                 }
                 //only add new bounties if there are any on a save load
                 MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode()); 
-                if(!MagicVariables.getIBB())MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
+                if(!MagicVariables.getHVB())MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
             }
 
             MagicBountyCoordinator.onGameLoad();

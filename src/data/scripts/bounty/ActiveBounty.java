@@ -96,7 +96,7 @@ public final class ActiveBounty {
     private @Nullable Float rewardCredits;
     private @Nullable Float rewardReputation;
     private @Nullable String rewardFaction;
-    private boolean isDespawning = false;
+    private boolean isDespawning = false, hasNoIntel=false;
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
 
     /**
@@ -245,7 +245,7 @@ public final class ActiveBounty {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey + "_expired", true);
             }
-        } else if (result instanceof BountyResult.FailedOutOfTime) {
+        } else if (result instanceof BountyResult.ExpiredAfterAccepting) {
             stage = Stage.ExpiredAfterAccepting;
             //reputation penalty
             if (hasReputationReward()) {
@@ -260,7 +260,10 @@ public final class ActiveBounty {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
-            getFleet().despawn();
+            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+                //Do not despawn bounties placed on existing fleets
+                getFleet().despawn();
+            }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, true);
@@ -287,11 +290,11 @@ public final class ActiveBounty {
 
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty() || stage != Stage.ExpiredAfterAccepting){
+            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
                 //Do not despawn bounties placed on existing fleets if it simply expired
                 despawn();
             }
+            endIntel();
         }
     }
 
@@ -311,7 +314,12 @@ public final class ActiveBounty {
                     fleet.despawn();
                 }
             }
-
+            isDespawning = true;
+        }
+    }
+    
+    void endIntel(){
+        if(!hasNoIntel){
             MagicBountyIntel intel = getIntel();
 
             if (intel != null) {
@@ -319,8 +327,7 @@ public final class ActiveBounty {
                     intel.endAfterDelay();
                 }
             }
-
-            isDespawning = true;
+            hasNoIntel=true;
         }
     }
 
@@ -677,7 +684,7 @@ public final class ActiveBounty {
         class EndedWithoutPlayerInvolvement implements BountyResult {
         }
 
-        class FailedOutOfTime implements BountyResult {
+        class ExpiredAfterAccepting implements BountyResult {
         }
 
         class FailedSalvagedFlagship implements BountyResult {

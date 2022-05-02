@@ -542,7 +542,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         if (!isDone() && bounty != null && !bounty.isDespawning() && bounty.getDaysRemainingToComplete() <= 0) {
             logger.info(String.format("Ending expired bounty %s", bounty.getKey()));
-            bounty.endBounty(new ActiveBounty.BountyResult.FailedOutOfTime());
+            bounty.endBounty(new ActiveBounty.BountyResult.ExpiredAfterAccepting());
         }
     }
 
@@ -563,7 +563,11 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         ActiveBounty bounty = getBounty();
 
         if (bounty != null) {
-            bounty.despawn();
+             if(bounty.getSpec().existing_target_memkey==null || bounty.getSpec().existing_target_memkey.isEmpty()){
+                //Do not despawn bounties placed on existing fleets
+                bounty.despawn();
+            }
+            bounty.endIntel();
         }
     }
 
@@ -576,7 +580,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             if (bounty.getStage().ordinal() <= ActiveBounty.Stage.Accepted.ordinal()) {
                 logger.warn(String.format("Intel ending while stage is %s.", bounty.getStage().name()));
                 if (expire) {
-                    bounty.endBounty(new ActiveBounty.BountyResult.FailedOutOfTime());
+                    bounty.endBounty(new ActiveBounty.BountyResult.ExpiredAfterAccepting());
                 } else {
                     bounty.endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
                 }
