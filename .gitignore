@@ -85,16 +85,7 @@ gradle-app.setting
 
 
 # Custom for MagicLib
-# MagicLib doesn't use gradle for building, keep it out of git
-build.gradle.kts
-gradle
-gradlew
-gradlew.bat
-settings.gradle
-gradle.properties
-# or IntelliJ
-.idea
-.run
+
 
 /build/
 /jars/
