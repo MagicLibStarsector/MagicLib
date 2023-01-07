@@ -339,6 +339,8 @@ public class MagicBountyHVB {
                             null,
                             //boolean location_prioritizeUnexplored,
                             false,
+                            //boolean location_defaultToAnySystem
+                            //true,
                             //boolean location_defaultToAnyEntity
                             true
                     

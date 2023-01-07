@@ -14,11 +14,8 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.terrain.*;
 import com.fs.starfarer.api.impl.campaign.terrain.AsteroidBeltTerrainPlugin.AsteroidBeltParams;
-import com.fs.starfarer.api.impl.campaign.terrain.AsteroidSource;
-import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain;
-import com.fs.starfarer.api.impl.campaign.terrain.RingRenderer;
-import com.fs.starfarer.api.impl.campaign.terrain.RingSystemTerrainPlugin;
 import com.fs.starfarer.api.loading.Description.Type;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
@@ -26,7 +23,7 @@ import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import static data.scripts.util.MagicTxt.getString;
 
-public class MagicAsteroidBeltTerrainPlugin extends BaseRingTerrain implements AsteroidSource {
+public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
 
     // Stats
     public static final String IMPACT_CHANCE = "magicAsteroidImpactChance";
@@ -62,18 +59,18 @@ public class MagicAsteroidBeltTerrainPlugin extends BaseRingTerrain implements A
 
     @Override
     public void renderOnMap(float factor, float alphaMult) {
-        if (beltParams == null) {
+        if (params == null) {
             return;
         }
         if (rr == null) {
             rr = new RingRenderer("systemMap", "map_asteroid_belt");
         }
         Color color = Global.getSettings().getColor("asteroidBeltMapColor");
-        float bandWidth = beltParams.bandWidthInEngine;
+        float bandWidth = params.bandWidthInEngine;
         bandWidth = 300f;
         rr.render(entity.getLocation(),
-                beltParams.middleRadius - bandWidth * 0.5f,
-                beltParams.middleRadius + bandWidth * 0.5f,
+                params.middleRadius - bandWidth * 0.5f,
+                params.middleRadius + bandWidth * 0.5f,
                 color,
                 false, factor, alphaMult);
     }
@@ -83,25 +80,23 @@ public class MagicAsteroidBeltTerrainPlugin extends BaseRingTerrain implements A
         createAsteroids();
     }
 
-    protected boolean needToCreateAsteroids = true;
-
     protected void createAsteroids() {
-        if (!(beltParams instanceof AsteroidBeltParams)) {
+        if (!(params instanceof AsteroidBeltParams)) {
             return;
         }
 
         Random rand = new Random(Global.getSector().getClock().getTimestamp() + entity.getId().hashCode());
 
         LocationAPI location = entity.getContainingLocation();
-        for (int i = 0; i < beltParams.numAsteroids; i++) {
+        for (int i = 0; i < params.numAsteroids; i++) {
             //float size = 8f + (float) Math.random() * 25f;
-            float size = beltParams.minSize + rand.nextFloat() * (beltParams.maxSize - beltParams.minSize);
+            float size = params.minSize + rand.nextFloat() * (params.maxSize - params.minSize);
             AsteroidAPI asteroid = location.addAsteroid(size);
 
             asteroid.setFacing(rand.nextFloat() * 360f);
-            float currRadius = beltParams.middleRadius - beltParams.bandWidthInEngine / 2f + rand.nextFloat() * beltParams.bandWidthInEngine;
+            float currRadius = params.middleRadius - params.bandWidthInEngine / 2f + rand.nextFloat() * params.bandWidthInEngine;
             float angle = rand.nextFloat() * 360f;
-            float orbitDays = beltParams.minOrbitDays + rand.nextFloat() * (beltParams.maxOrbitDays - beltParams.minOrbitDays);
+            float orbitDays = params.minOrbitDays + rand.nextFloat() * (params.maxOrbitDays - params.minOrbitDays);
             asteroid.setCircularOrbit(this.entity, angle, currRadius, orbitDays);
             Misc.setAsteroidSource(asteroid, this);
         }
@@ -117,14 +112,12 @@ public class MagicAsteroidBeltTerrainPlugin extends BaseRingTerrain implements A
         super.advance(amount);
     }
 
-    public AsteroidBeltParams beltParams;
-
     @Override
     public void init(String terrainId, SectorEntityToken entity, Object param) {
         super.init(terrainId, entity, param);
         if (param instanceof AsteroidBeltParams) {
-            beltParams = (AsteroidBeltParams) param;
-            name = beltParams.name;
+            params = (AsteroidBeltParams) param;
+            name = params.name;
             if (name == null) {
                 //"af_beltName" : "Asteroid Belt",
                 name = getString("af_beltName");
@@ -346,7 +339,7 @@ public class MagicAsteroidBeltTerrainPlugin extends BaseRingTerrain implements A
     @Override
     public void reportAsteroidPersisted(SectorEntityToken asteroid) {
         if (Misc.getAsteroidSource(asteroid) == this) {
-            beltParams.numAsteroids--;
+            params.numAsteroids--;
         }
     }
 }

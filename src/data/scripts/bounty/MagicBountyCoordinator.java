@@ -316,6 +316,7 @@ public final class MagicBountyCoordinator {
                     spec.location_themes,
                     spec.location_themes_blacklist,
                     spec.location_entities,
+                    //spec.location_defaultToAnySystem,
                     spec.location_defaultToAnyEntity,
                     spec.location_prioritizeUnexplored,
                     Global.getSettings().isDevMode()

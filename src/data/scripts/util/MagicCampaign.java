@@ -1763,7 +1763,21 @@ public class MagicCampaign {
         
         return str;
     }
-    
+    /*
+    @Nullable
+    public static SectorEntityToken findSuitableTarget(
+            @Nullable List<String> entityIDs,
+            @Nullable List<String> marketFactions,
+            @Nullable String distance,
+            @Nullable List<String> seek_themes,
+            @Nullable List<String> avoid_themes,
+            @Nullable List<String> entities,
+            boolean defaultToAnyEntity,
+            boolean prioritizeUnexplored,
+            boolean verbose){
+        return findSuitableTarget(entityIDs,marketFactions,distance,seek_themes,avoid_themes,entities,false,defaultToAnyEntity,prioritizeUnexplored,verbose);
+    }
+    */
     /**
      * Returns a random target SectorEntityToken given the following parameters:
      * @param entityIDs
@@ -1794,6 +1808,7 @@ public class MagicCampaign {
             @Nullable List<String> seek_themes,
             @Nullable List<String> avoid_themes,
             @Nullable List<String> entities,
+            //boolean defaultToAnySystem,
             boolean defaultToAnyEntity,
             boolean prioritizeUnexplored,
             boolean verbose){
@@ -1932,6 +1947,29 @@ public class MagicCampaign {
             }
         }
         
+        //if the lists are empty but fallback is on, add everything
+        if(systems_core.isEmpty() && systems_close.isEmpty() && systems_far.isEmpty()) {
+            if(defaultToAnyEntity){
+                for(StarSystemAPI s : Global.getSector().getStarSystems()){
+                    //sort systems by distances because that will come in handy later
+                    float dist = s.getLocation().length();
+                    if(dist<sector_width*0.33f){
+                        systems_core.add(s);
+                    } else if (dist<sector_width*0.66f){
+                        systems_close.add(s);
+                    } else {
+                        systems_far.add(s);
+                    }
+                }
+            } else {
+                //all lists are empty, no fallback option for systems
+                if(verbose){
+                    log.error("No valid system theme found");
+                }
+                return null;
+            }
+        }
+        
         //cull systems with blacklisted themes
         if(avoid_themes!=null && !avoid_themes.isEmpty()){
             
@@ -2022,9 +2060,7 @@ public class MagicCampaign {
                 log.error("There are "+systems_core.size()+" themed systems in the core");
                 log.error("There are "+systems_close.size()+" themed systems close to the core");
                 log.error("There are "+systems_far.size()+" themed systems far from the core");
-        }
-                        
-        //TO DO: check if ALL lists are empty
+        }        
         
         //now order the selected system lists by distance preferences
         List <List<StarSystemAPI>> distance_priority = new ArrayList<>();

@@ -299,6 +299,7 @@ public class MagicBountyData {
                     getStringList(bountyId, "location_themes_blacklist"),
                     getStringList(bountyId, "location_entities"),
                     getBoolean(bountyId, "location_prioritizeUnexplored"),
+                    //getBoolean(bountyId, "location_defaultToAnySystem"),                    
                     getBoolean(bountyId, "location_defaultToAnyEntity")
             );
 
@@ -423,6 +424,7 @@ public class MagicBountyData {
         public List<String> location_themes_blacklist;
         public List<String> location_entities;                                  //PLANET, GATE, STATION, STABLE_LOCATION, DEBRIS, WRECK, PROBE.
         public boolean location_prioritizeUnexplored;                           //will pick in priority systems that have not been visited by the player yet, but won't override the distance requirements
+        //public boolean location_defaultToAnySystem;                             //if true and no system with the suitable theme is found, the script will pick any system that DOES NOT have a blacklisted theme.
         public boolean location_defaultToAnyEntity;                             //if true and no suitable entity is found in systems with required themes and distance, a random entity will be picked instead.
                                                                                 //if false, the script will ignore the distance requirement to attempt to find a suitable system
         public bountyData(
@@ -501,6 +503,7 @@ public class MagicBountyData {
             List<String> location_themes_blacklist,
             List<String> location_entities,
             boolean location_prioritizeUnexplored,
+            //boolean location_defaultToAnySystem,
             boolean location_defaultToAnyEntity
         ) {
             this.trigger_market_id = trigger_market_id;
@@ -640,6 +643,7 @@ public class MagicBountyData {
             this.location_themes_blacklist = location_themes_blacklist;
             this.location_entities = location_entities;
             this.location_prioritizeUnexplored = location_prioritizeUnexplored;
+            //this.location_defaultToAnySystem = location_defaultToAnySystem;
             this.location_defaultToAnyEntity = location_defaultToAnyEntity;
         }
 

@@ -4,12 +4,12 @@
 	#
 	
 	"asteroid_belt":{
-		"plugin":"scripts.MagicAsteroidBeltTerrainPlugin",
+		"plugin":"data.scripts.terrain.MagicAsteroidBeltTerrainPlugin",
 		#"loopOne":"terrain_asteroid_belt",
 		"loopOne":"terrain_asteroid_field",
 	},
 	"asteroid_field":{
-		"plugin":"scripts.MagicAsteroidFieldTerrainPlugin",
+		"plugin":"data.scripts.terrain.MagicAsteroidFieldTerrainPlugin",
 		"musicSuppression":0.25,
 		"loopOne":"terrain_asteroid_field",
 	},
