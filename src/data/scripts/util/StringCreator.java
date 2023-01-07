@@ -1,5 +1,5 @@
 package data.scripts.util;
 
-interface StringCreator {
+public interface StringCreator {
     String create();
 }

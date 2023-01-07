@@ -8,25 +8,37 @@ import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.impl.campaign.DevMenuOptions;
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEvent;
 import com.fs.starfarer.api.impl.campaign.rulecmd.DumpMemory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Adapted from {@link com.fs.starfarer.api.impl.campaign.rulecmd.PaginatedOptions}.
+ *
+ * @author Wisp
+ */
 public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
 
     public static final String OPTION_NEXT_PAGE = "core_option_next_page";
     public static final String OPTION_PREV_PAGE = "core_option_prev_page";
 
     public static class MagicPaginatedOption {
-        public String text;
-        public Object id;
-        public String tooltip;
+        @NotNull public final String text;
+        @NotNull public final Object id;
+        @Nullable public final String tooltip;
+        @Nullable public final Integer hotkey;
 
-        public MagicPaginatedOption(String text, Object id, String tooltip) {
+        /**
+         * @param hotkey org.lwjgl.input.Keyboard
+         */
+        public MagicPaginatedOption(@NotNull String text, @NotNull Object id, @Nullable String tooltip, @Nullable Integer hotkey) {
             this.text = text;
             this.id = id;
             this.tooltip = tooltip;
+            this.hotkey = hotkey;
         }
     }
 
@@ -37,12 +49,12 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
     protected int currPage = 0;
     protected boolean withSpacers = true;
 
-    public void addOption(String text, Object id, String tooltip) {
-        options.add(new MagicPaginatedOption(text, id, tooltip));
+    public void addOption(String text, Object id, String tooltip, @Nullable Integer hotkey) {
+        options.add(new MagicPaginatedOption(text, id, tooltip, hotkey));
     }
 
-    public void addOptionAllPages(String text, Object id, String tooltip) {
-        optionsAllPages.add(new MagicPaginatedOption(text, id, tooltip));
+    public void addOptionAllPages(String text, Object id, String tooltip, @Nullable Integer hotkey) {
+        optionsAllPages.add(new MagicPaginatedOption(text, id, tooltip, hotkey));
     }
 
     public void showOptions() {
@@ -62,6 +74,10 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
             } else {
                 MagicPaginatedOption option = options.get(i);
                 dialog.getOptionPanel().addOption(option.text, option.id, option.tooltip);
+
+                if (option.hotkey != null) {
+                    dialog.getOptionPanel().setShortcut(option.id, option.hotkey, false, false, false, false);
+                }
             }
         }
 
@@ -77,8 +93,12 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
             }
         }
 
-        for (MagicPaginatedOption option : optionsAllPages) {
-            dialog.getOptionPanel().addOption(option.text, option.id, option.tooltip);
+        for (MagicPaginatedOption allPagesOption : optionsAllPages) {
+            dialog.getOptionPanel().addOption(allPagesOption.text, allPagesOption.id, allPagesOption.tooltip);
+
+            if (allPagesOption.hotkey != null) {
+                dialog.getOptionPanel().setShortcut(allPagesOption.id, allPagesOption.hotkey, false, false, false, false);
+            }
         }
 
         if (Global.getSettings().isDevMode()) {

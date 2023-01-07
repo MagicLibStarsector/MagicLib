@@ -10,6 +10,7 @@ import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.MissileAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
+import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import java.util.HashMap;
 import java.util.List;
@@ -185,6 +186,44 @@ public class MagicTargeting {
      * @return 
      */
     public static MissileAPI randomMissile(CombatEntityAPI source, missilePriority priority, Vector2f lookAround, float direction, Integer searchCone, Integer maxRange){
+        return randomMissile(source, priority, lookAround, direction, searchCone, maxRange, false);
+    }
+    /**
+     * Picks a random enemy missile within parameters:
+     * 
+     * @param source
+     * CombatEntity looking for a missile
+     * 
+     * @param priority
+     * Does the source look for a complete random or has priorities
+     * 
+     *  RANDOM, 
+     * Pure random pick within search zone.
+     *  
+     *  DAMAGE_PRIORITY
+     * Picks high damage missiles within the search zone first but still has some randomness.
+     * 
+     *  HIGHEST_DAMAGE
+     * Picks the highest damage missile within the search zone.
+     *
+     * @param lookAround
+     * Point around which to look for missiles;
+     * 
+     * @param direction
+     * Direction to look at (only used with a limited search cone)
+     * 
+     * @param searchCone
+     * Angle within which the script will seek the target. 
+     * Set to 360 or more to ignore.
+     * 
+     * @param maxRange
+     * Range within which the script seeks a target in game units.
+     * 
+     * @param ignoreFlares
+     * 
+     * @return 
+     */
+    public static MissileAPI randomMissile(CombatEntityAPI source, missilePriority priority, Vector2f lookAround, float direction, Integer searchCone, Integer maxRange, boolean ignoreFlares){
         
         CombatEngineAPI engine = Global.getCombatEngine();
         MissileAPI candidate = null;
@@ -199,41 +238,39 @@ public class MagicTargeting {
         
         for (MissileAPI m : missiles){
             
-            if(!m.isFading() && m.getOwner()!=source.getOwner() && m.getCollisionClass()!=CollisionClass.NONE && m.getSpec().isRenderTargetIndicator()){ //is the missile alive, hittable and hostile
+            if(!ignoreFlares || !m.isFlare()){
                 
-                if(CombatUtils.isVisibleToSide(m, source.getOwner()) && MathUtils.isPointWithinCircle(lookAround, m.getLocation(), maxRange)){ //is it around
-                    
-                    if(allAspect || Math.abs(MathUtils.getShortestRotation(direction, VectorUtils.getAngle(source.getLocation(), m.getLocation())))<searchCone/2){ //is it within cone of attack
-                        
-                        switch(priority){
-                            
-                            case RANDOM: //random target, all missiles have the same weight
-                                missilePicker.add(m,1);
-                                break;
-                            
-                            case DAMAGE_PRIORITY: //damage priority, all missiles have their damage as weight
-                                missilePicker.add(m, m.getDamageAmount());
-                                break;
-                                
-                            case HIGHTEST_DAMAGE: //highest damage selected outright
-                                if(candidate==null){
-                                    candidate=m;
-                                } else 
-                                    if(m.getDamageAmount()>candidate.getDamageAmount()){
+                if(!m.isFading() && m.getOwner()!=source.getOwner() && m.getCollisionClass()!=CollisionClass.NONE && m.getSpec().isRenderTargetIndicator()){ //is the missile alive, hittable and hostile
+
+                    if(CombatUtils.isVisibleToSide(m, source.getOwner()) && MathUtils.isPointWithinCircle(lookAround, m.getLocation(), maxRange)){ //is it around
+
+                        if(allAspect || Math.abs(MathUtils.getShortestRotation(direction, VectorUtils.getAngle(source.getLocation(), m.getLocation())))<searchCone/2){ //is it within cone of attack
+
+                            switch(priority){
+
+                                case RANDOM: //random target, all missiles have the same weight
+                                    missilePicker.add(m,1);
+                                    break;
+
+                                case DAMAGE_PRIORITY: //damage priority, all missiles have their damage as weight
+                                    missilePicker.add(m, m.getDamageAmount());
+                                    break;
+
+                                case HIGHTEST_DAMAGE: //highest damage selected outright
+                                    if(candidate==null){
                                         candidate=m;
-                                    }
-                                break;
-                                
-                            default:
-                           
+                                    } else 
+                                        if(m.getDamageAmount()>candidate.getDamageAmount()){
+                                            candidate=m;
+                                        }
+                                    break;
+
+                                default:
+                            }
                         }
-                        
                     }
-                    
                 }
-                
             }
-            
         }
         
         //there is a candidate,
@@ -247,7 +284,7 @@ public class MagicTargeting {
         
         //no candidate, try to pick random
         if(!missilePicker.isEmpty()){
-            return missilePicker.pick();
+            return missilePicker.pick(Misc.random);
         }
         //nothing? return null
         return null;

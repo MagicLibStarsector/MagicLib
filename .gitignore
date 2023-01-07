@@ -95,3 +95,8 @@ gradle.properties
 # or IntelliJ
 .idea
 .run
+
+/build/
+/jars/
+/out/
+.idea/csv-plugin.xml

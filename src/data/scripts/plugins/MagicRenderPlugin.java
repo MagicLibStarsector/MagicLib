@@ -109,415 +109,15 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         }
         
         if(!BATTLESPACE.isEmpty()){
-            //iterate throught the BATTLESPACE data first:
-            for(Iterator<battlespaceData> iter=BATTLESPACE.iterator(); iter.hasNext(); ){
-                battlespaceData entry = iter.next();
-
-                //Only run the rest of the code if it's our turn to render/we are on the right layer
-                if (layer != entry.LAYER) {continue;}
-                
-                //add the time spent, that means sprites will never start at 0 exactly, but it simplifies a lot the logic
-                entry.TIME+=amount;
-                if(entry.TIME>entry.FADEOUT){
-                    //remove expended ones
-                    iter.remove();
-                    continue;
-                }
-                
-                //grow/shrink the sprite to a new size if needed
-                if(entry.GROWTH!= null && entry.GROWTH!=new Vector2f()){
-                    entry.SPRITE.setSize(entry.SPRITE.getWidth()+(entry.GROWTH.x*amount), entry.SPRITE.getHeight()+(entry.GROWTH.y*amount));
-                    //check if the growth made the sprite too small
-                    if(entry.SPRITE.getHeight()<=0 || entry.SPRITE.getWidth()<=0){                        
-                        //remove sprites that completely shrunk
-                        iter.remove();
-                        continue;
-                    }
-                }
-                
-                //move the sprite to a new center if needed
-                if(entry.VEL!= null && entry.VEL!=new Vector2f()){
-                    Vector2f move = new Vector2f(entry.VEL);
-                    move.scale(amount);
-                    Vector2f.add(entry.LOC, move, entry.LOC);
-                }
-
-                //spin the sprite if needed
-                if(entry.SPIN!=0){
-                    entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
-                }
-                               
-                //jitter/flickerMedian
-                if(entry.DELAY!=null){
-                    entry.DELAY.advance(amount);
-                    if(entry.DELAY.intervalElapsed()){
-                        
-                        //jitter effect
-                        if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
-                            float a=0, b=0, c=0;
-                            float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
-                            //new jitter values
-                            if(entry.JITTER_RANGE>0){
-                                a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
-                                b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
-                            }
-                            if(entry.JITTER_TILT>0){
-                                c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
-                            }
-                            
-                            //remove old jitter, add new value
-                            Vector2f.add(entry.LOC, new Vector2f(x+a,y+b), entry.LOC);
-                            entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
-                            
-                            //store new jitter values
-                            entry.JITTER = new Vector3f(a,b,c);
-                        }
-                        //flicker effect
-                        float opacity=1;
-                        if(entry.FLICKER_RANGE>0){
-                            opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
-                        }
-                        
-                        //fading stuff
-                        if(entry.TIME<entry.FADEIN){
-                            opacity*=(entry.TIME/entry.FADEIN);
-                        } else if(entry.TIME>entry.FULL){                    
-                            opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                        }
-                        entry.SPRITE.setAlphaMult(opacity);
-                    }
-                } else {
-                    //fading stuff
-                    if(entry.TIME<entry.FADEIN){
-                        entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
-                    } else if(entry.TIME>entry.FULL){                    
-                        entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                    }
-                    entry.SPRITE.setAlphaMult(1);
-                }
-                //finally render that stuff
-//                render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
-                render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
-            }
+            battlespaceHandler(layer, amount);
         }
         
         if(!OBJECTSPACE.isEmpty()){
-            //then iterate throught the OBJECTSPACE data:
-            for(Iterator<objectspaceData> iter=OBJECTSPACE.iterator(); iter.hasNext(); ){
-                objectspaceData entry = iter.next();
-
-                //Only run the rest of the code if it's our turn to render/we are on the right layer
-                if (layer != entry.LAYER) {continue;}
-                
-                //check for possible removal when the anchor isn't in game
-                if(!entry.DEATHFADE && !engine.isEntityInPlay(entry.ANCHOR)){
-                    iter.remove();
-                    continue;
-                }
-                
-                //check for projectile attachement fadeout
-                if(entry.ANCHOR instanceof DamagingProjectileAPI){
-                    //if the proj is fading or removed, offset the fadeout time to the current time
-                    if (entry.TIME<entry.FULL && (
-                            ((DamagingProjectileAPI)entry.ANCHOR).isFading() 
-                            || !engine.isEntityInPlay(entry.ANCHOR))
-                            ){
-                        entry.FADEOUT=(entry.FADEOUT-entry.FULL)+entry.TIME;
-                        entry.FULL=entry.TIME;
-                    }
-                }
-                
-                //add the time spent, that means sprites will never start at 0 exactly, but it simplifies a lot the logic
-                entry.TIME+=amount;
-                if(entry.TIME>entry.FADEOUT){
-                    //remove expended ones
-                    iter.remove();
-                    continue;
-                }                
-                
-                //grow/shrink the sprite to a new size if needed
-                if(entry.GROWTH!= null && entry.GROWTH!=new Vector2f()){
-                    entry.SPRITE.setSize(entry.SPRITE.getWidth()+(entry.GROWTH.x*amount), entry.SPRITE.getHeight()+(entry.GROWTH.y*amount));
-                    //check if the growth made the sprite too small
-                    if(entry.SPRITE.getHeight()<=0 || entry.SPRITE.getWidth()<=0){                        
-                        //remove sprites that completely shrunk
-                        iter.remove();
-                        continue;
-                    }
-                }
-                
-                //adjust the offset if needed
-                if(entry.VEL!= null && entry.VEL!=new Vector2f()){
-                    Vector2f move = new Vector2f(entry.VEL);
-                    move.scale(amount);
-                    Vector2f.add(entry.OFFSET, move, move);
-                    entry.OFFSET = move;
-                }
-                
-                //addjust the position and orientation
-                Vector2f location = new Vector2f(entry.OFFSET); //base offset
-                
-                //for parenting, check if the anchor is present
-                if(entry.PARENT && engine.isEntityInPlay(entry.ANCHOR)){  
-                    //if the sprite is parented, use the ANGLE to store the offset
-                    if(entry.SPIN!=0){
-                        entry.ANGLE+=entry.SPIN*amount;
-                    }
-                    entry.SPRITE.setAngle(entry.ANCHOR.getFacing()+90+entry.ANGLE);
-                    //orient the offset with the facing
-                    VectorUtils.rotate(location, entry.ANCHOR.getFacing(), location);
-                } else {
-                    //otherwise just orient the sprite
-                    if(entry.SPIN!=0){
-                        entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
-                    }
-                }
-                
-                //jitter/flickerMedian
-                if(entry.DELAY!=null){
-                    entry.DELAY.advance(amount);
-                    if(entry.DELAY.intervalElapsed()){
-                        //jitter effect
-                        if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
-                            float a=0, b=0, c=0;
-                            float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
-                            //new jitter values
-                            if(entry.JITTER_RANGE>0){
-                                a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
-                                b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
-                            }
-                            if(entry.JITTER_TILT>0){
-                                c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
-                            }
-                            
-                            //remove old jitter, add new value
-                            Vector2f.add(entry.LOCATION, new Vector2f(x+a,y+b), entry.LOCATION);
-                            entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
-                            
-                            //store new jitter values
-                            entry.JITTER = new Vector3f(a,b,c);
-                        }
-                        //flicker effect
-                        float opacity=1;
-                        if(entry.FLICKER_RANGE>0){
-                            opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
-                        }
-                        
-                        //fading stuff
-                        if(entry.TIME<entry.FADEIN){
-                            opacity*=(entry.TIME/entry.FADEIN);
-                        } else if(entry.TIME>entry.FULL){                    
-                            opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                        }
-                        entry.SPRITE.setAlphaMult(opacity);
-                    }
-                } else {
-                    //fading stuff
-                    if(entry.TIME<entry.FADEIN){
-                        entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
-                    } else if(entry.TIME>entry.FULL){                    
-                        entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                    }
-                    entry.SPRITE.setAlphaMult(1);
-                }               
-                
-                //move the offset on the anchor
-                if(engine.isEntityInPlay(entry.ANCHOR)){
-                    Vector2f loc = new Vector2f(entry.ANCHOR.getLocation());
-                    Vector2f.add(location, loc, location);
-                    entry.LOCATION=loc;
-                } else {
-                    Vector2f.add(location, entry.LOCATION, location);
-                }
-                
-                //finally render that stuff
-                
-//                 render(new renderData(entry.SPRITE, location, entry.LAYER));
-
-                render(new renderData(entry.SPRITE, location, entry.LAYER));
-            }
+            objectspaceHandler(engine, layer, amount);
         }
         
         if(!SCREENSPACE.isEmpty()){
-            //iterate throught the BATTLESPACE data first:
-            
-            Vector2f center;
-            ViewportAPI screen = Global.getCombatEngine().getViewport();
-            
-            for(Iterator<screenspaceData> iter=SCREENSPACE.iterator(); iter.hasNext(); ){
-                screenspaceData entry = iter.next();
-
-                //Only run the rest of the code if it's our turn to render/we are on the right layer
-                if (layer != entry.LAYER) {continue;}
-                
-                if(entry.FADEOUT<0){
-                    // SINGLE FRAME RENDERING
-                    if(entry.POS == MagicRender.positioning.FULLSCREEN_MAINTAIN_RATIO){                    
-                        center = new Vector2f(screen.getCenter());
-                        entry.SPRITE.setSize(entry.SIZE.x*screen.getVisibleWidth(), entry.SIZE.y*screen.getVisibleHeight());
-                    } else if(entry.POS == MagicRender.positioning.STRETCH_TO_FULLSCREEN){
-                        center = new Vector2f(screen.getCenter());
-                        entry.SPRITE.setSize(screen.getVisibleWidth(), screen.getVisibleHeight());
-                    } else {
-                        Vector2f refPoint=screen.getCenter();
-                        switch (entry.POS){
-
-                            case LOW_LEFT:
-                                refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
-                                break;
-
-                            case LOW_RIGHT:
-                                refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
-                                break;
-
-                            case UP_LEFT:
-                                refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
-                                break;
-
-                            case UP_RIGHT:
-                                refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
-                                break;
-
-                            default:
-                        }                
-                        center = new Vector2f(entry.LOC);
-                        center.scale(screen.getViewMult());
-                        Vector2f.add(center, refPoint, center);                
-                    }
-
-                    //finally render that stuff
-//                    render(new renderData(entry.SPRITE, center, entry.LAYER));
-
-                    render(new renderData(entry.SPRITE, center, entry.LAYER));
-                    //and immediatelly remove
-                    iter.remove();
-                } else {
-                    // TIMED RENDERING                    
-                    //add the time spent, that means sprites will never start at 0 exactly, but it simplifies a lot the logic
-                    entry.TIME+=amount;
-                    if(entry.FADEOUT>0 && entry.TIME>entry.FADEOUT){
-                        //remove expended ones
-                        iter.remove();
-                        continue;
-                    }                
-
-                    //jitter/flickerMedian
-                    if(entry.DELAY!=null){
-                        entry.DELAY.advance(amount);
-                        if(entry.DELAY.intervalElapsed()){
-                            //jitter effect
-                            if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
-                                float a=0, b=0, c=0;
-                                float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
-                                //new jitter values
-                                if(entry.JITTER_RANGE>0){
-                                    a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
-                                    b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
-                                }
-                                if(entry.JITTER_TILT>0){
-                                    c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
-                                }
-
-                                //remove old jitter, add new value
-                                Vector2f.add(entry.LOC, new Vector2f(x+a,y+b), entry.LOC);
-                                entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
-
-                                //store new jitter values
-                                entry.JITTER = new Vector3f(a,b,c);
-                            }
-                            //flicker effect
-                            float opacity=1;
-                            if(entry.FLICKER_RANGE>0){
-                                opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
-                            }
-
-                            //fading stuff
-                            if(entry.TIME<entry.FADEIN){
-                                opacity*=(entry.TIME/entry.FADEIN);
-                            } else if(entry.TIME>entry.FULL){                    
-                                opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                            }
-                            entry.SPRITE.setAlphaMult(opacity);
-                        }
-                    } else {
-                        //fading stuff
-                        if(entry.TIME<entry.FADEIN){
-                            entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
-                        } else if(entry.TIME>entry.FULL){                    
-                            entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
-                        }
-                        entry.SPRITE.setAlphaMult(1);
-                    }
-                    
-                    
-                    if(entry.POS == MagicRender.positioning.FULLSCREEN_MAINTAIN_RATIO){                    
-                        center = new Vector2f(screen.getCenter());
-                        entry.SPRITE.setSize(entry.SIZE.x*screen.getVisibleWidth(), entry.SIZE.y*screen.getVisibleHeight());
-                    } else if(entry.POS == MagicRender.positioning.STRETCH_TO_FULLSCREEN){
-                        center = new Vector2f(screen.getCenter());
-                        entry.SPRITE.setSize(screen.getVisibleWidth(), screen.getVisibleHeight());
-                    } else {
-                        Vector2f refPoint=screen.getCenter();
-                        switch (entry.POS){
-
-                            case LOW_LEFT:
-                                refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
-                                break;
-
-                            case LOW_RIGHT:
-                                refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
-                                break;
-
-                            case UP_LEFT:
-                                refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
-                                break;
-
-                            case UP_RIGHT:
-                                refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
-                                break;
-
-                            default:
-                        }                    
-
-                        //move the sprite to a new center if needed
-                        if(entry.VEL!= null && entry.VEL!=new Vector2f()){
-                            Vector2f move = new Vector2f(entry.VEL);
-                            move.scale(amount);
-                            Vector2f.add(entry.LOC, move, entry.LOC);
-                        }
-                        center = new Vector2f(entry.LOC);
-                        center.scale(screen.getViewMult());
-                        Vector2f.add(center, refPoint, center);
-
-                        //grow/shrink the sprite to a new size if needed
-                        if(entry.GROWTH!= null && entry.GROWTH!=new Vector2f()){
-                            entry.SIZE = new Vector2f(entry.SIZE.x+(entry.GROWTH.x*amount), entry.SIZE.y+(entry.GROWTH.y*amount));
-                            //check if the growth made the sprite too small
-                            if(entry.SIZE.x<=0 || entry.SIZE.y<=0){                        
-                                //remove sprites that completely shrunk
-                                iter.remove();
-                                continue;
-                            }
-                        }
-                        entry.SPRITE.setSize(entry.SIZE.x*screen.getViewMult(), entry.SIZE.y*screen.getViewMult());
-
-                        //spin the sprite if needed
-                        if(entry.SPIN!=0){
-                            entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
-                        }
-                    }
-                    
-                    //finally render that stuff
-                    
-//                    render(new renderData(entry.SPRITE, center, entry.LAYER));
-
-                    render(new renderData(entry.SPRITE, center, entry.LAYER));
-
-                    if(entry.FADEOUT<0){
-                        iter.remove();
-                    }
-                }                
-            }
+            screenspaceHandler(layer, amount);
         }
         
         //Single frame sprite rendering
@@ -535,25 +135,423 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
             }
         }
     }
+        
+    private void battlespaceHandler(CombatEngineLayers layer, float amount){        
+        //iterate throught the BATTLESPACE data first:
+        for(Iterator<battlespaceData> iter=BATTLESPACE.iterator(); iter.hasNext(); ){
+            battlespaceData entry = iter.next();
+
+            //Only run the rest of the code if it's our turn to render/we are on the right layer
+            if (layer != entry.LAYER) {continue;}
+
+            //add the time spent, that means sprites will never start at 0 exactly, but it simplifies a lot the logic
+            entry.TIME+=amount;
+            if(entry.TIME>entry.FADEOUT){
+                //remove expended ones
+                iter.remove();
+                continue;
+            }
+
+            //grow/shrink the sprite to a new size if needed
+            if(entry.GROWTH!= null && entry.GROWTH!=new Vector2f()){
+                entry.SPRITE.setSize(entry.SPRITE.getWidth()+(entry.GROWTH.x*amount), entry.SPRITE.getHeight()+(entry.GROWTH.y*amount));
+                //check if the growth made the sprite too small
+                if(entry.SPRITE.getHeight()<=0 || entry.SPRITE.getWidth()<=0){                        
+                    //remove sprites that completely shrunk
+                    iter.remove();
+                    continue;
+                }
+            }
+
+            //move the sprite to a new center if needed
+            if(entry.VEL!= null && entry.VEL!=new Vector2f()){
+                Vector2f move = new Vector2f(entry.VEL);
+                move.scale(amount);
+                Vector2f.add(entry.LOC, move, entry.LOC);
+            }
+
+            //spin the sprite if needed
+            if(entry.SPIN!=0){
+                entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
+            }
+
+            //jitter/flickerMedian
+            if(entry.DELAY!=null){
+                entry.DELAY.advance(amount);
+                if(entry.DELAY.intervalElapsed()){
+
+                    //jitter effect
+                    if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
+                        float a=0, b=0, c=0;
+                        float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
+                        //new jitter values
+                        if(entry.JITTER_RANGE>0){
+                            a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                            b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                        }
+                        if(entry.JITTER_TILT>0){
+                            c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
+                        }
+
+                        //remove old jitter, add new value
+                        Vector2f.add(entry.LOC, new Vector2f(x+a,y+b), entry.LOC);
+                        entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
+
+                        //store new jitter values
+                        entry.JITTER = new Vector3f(a,b,c);
+                    }
+                    //flicker effect
+                    float opacity=1;
+                    if(entry.FLICKER_RANGE>0){
+                        opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
+                    }
+
+                    //fading stuff
+                    if(entry.TIME<entry.FADEIN){
+                        opacity*=(entry.TIME/entry.FADEIN);
+                    } else if(entry.TIME>entry.FULL){                    
+                        opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    }
+
+                    entry.SPRITE.setAlphaMult(opacity);
+                }
+            } else {
+                //fading stuff
+                if(entry.TIME<entry.FADEIN){
+                    entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                } else if(entry.TIME>entry.FULL){                    
+                    entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                } else entry.SPRITE.setAlphaMult(1);
+            }
+
+            //finally render that stuff
+            render(new renderData(entry.SPRITE, entry.LOC, entry.LAYER));
+        }
+    }
+    
+    private void objectspaceHandler(CombatEngineAPI engine, CombatEngineLayers layer, float amount){
+        //then iterate throught the OBJECTSPACE data:
+        for(Iterator<objectspaceData> iter=OBJECTSPACE.iterator(); iter.hasNext(); ){
+            objectspaceData entry = iter.next();
+
+            //Only run the rest of the code if it's our turn to render/we are on the right layer
+            if (layer != entry.LAYER) {continue;}
+
+            //check for possible removal when the anchor isn't in game
+            if(entry.DEATHFADE && !engine.isEntityInPlay(entry.ANCHOR)){
+                iter.remove();
+                continue;
+            }
+
+            //check for projectile attachement fadeout
+            if(entry.ANCHOR instanceof DamagingProjectileAPI){
+                //if the proj is fading or removed, offset the fadeout time to the current time
+                if (entry.TIME<entry.FULL && (
+                        ((DamagingProjectileAPI)entry.ANCHOR).isFading() 
+                        || !engine.isEntityInPlay(entry.ANCHOR))
+                        ){
+                    entry.FADEOUT=(entry.FADEOUT-entry.FULL)+entry.TIME;
+                    entry.FULL=entry.TIME;
+                }
+            }
+
+            //add the time spent, that means sprites will never start at 0 exactly, but it simplifies a lot the logic
+            entry.TIME+=amount;
+            if(entry.TIME>entry.FADEOUT){
+                //remove expended ones
+                iter.remove();
+                continue;
+            }                
+
+            //grow/shrink the sprite to a new size if needed
+            if(entry.GROWTH!= null && entry.GROWTH!=new Vector2f()){
+                entry.SPRITE.setSize(entry.SPRITE.getWidth()+(entry.GROWTH.x*amount), entry.SPRITE.getHeight()+(entry.GROWTH.y*amount));
+                //check if the growth made the sprite too small
+                if(entry.SPRITE.getHeight()<=0 || entry.SPRITE.getWidth()<=0){                        
+                    //remove sprites that completely shrunk
+                    iter.remove();
+                    continue;
+                }
+            }
+
+            //adjust the offset if needed
+            if(entry.VEL!= null && entry.VEL!=new Vector2f()){
+                Vector2f move = new Vector2f(entry.VEL);
+                move.scale(amount);
+                Vector2f.add(entry.OFFSET, move, move);
+                entry.OFFSET = move;
+            }
+            
+            
+            //jitter/flickerMedian
+            if(entry.DELAY!=null){
+                entry.DELAY.advance(amount);
+                if(entry.DELAY.intervalElapsed()){
+                    //jitter effect
+                    if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
+                        float a=0, b=0, c=0;
+                        float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
+                        //new jitter values
+                        if(entry.JITTER_RANGE>0){
+                            a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                            b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                        }
+                        if(entry.JITTER_TILT>0){
+                            c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
+                        }
+
+                        //remove old jitter, add new value
+                        Vector2f.add(entry.OFFSET, new Vector2f(x+a,y+b), entry.OFFSET);
+                        entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
+
+                        //store new jitter values
+                        entry.JITTER = new Vector3f(a,b,c);
+                    }
+                    //flicker effect
+                    float opacity=1;
+                    if(entry.FLICKER_RANGE>0){
+                        opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
+                    }
+
+                    //fading stuff
+                    if(entry.TIME<entry.FADEIN){
+                        opacity*=(entry.TIME/entry.FADEIN);
+                    } else if(entry.TIME>entry.FULL){                    
+                        opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    }
+
+                    entry.SPRITE.setAlphaMult(opacity);
+                }
+            } else {
+                //fading stuff
+                if(entry.TIME<entry.FADEIN){
+                    entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                } else if(entry.TIME>entry.FULL){                    
+                    entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                } else entry.SPRITE.setAlphaMult(1);
+            }  
+            
+            //addjust the position and orientation
+            Vector2f location = new Vector2f(entry.OFFSET); //base offset
+
+            //for parenting, check if the anchor is present
+            if(entry.PARENT && engine.isEntityInPlay(entry.ANCHOR)){  
+                //if the sprite is parented, use the ANGLE to store the offset
+                if(entry.SPIN!=0){
+                    entry.ANGLE+=entry.SPIN*amount;
+                }
+                entry.SPRITE.setAngle(entry.ANCHOR.getFacing()+90+entry.ANGLE);
+                //orient the offset with the facing
+                VectorUtils.rotate(location, entry.ANCHOR.getFacing(), location);
+            } else {
+                //otherwise just orient the sprite
+                if(entry.SPIN!=0){
+                    entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
+                }
+            }
+  
+            //move the offset on the anchor
+            if(engine.isEntityInPlay(entry.ANCHOR)){
+                Vector2f loc = new Vector2f(entry.ANCHOR.getLocation());
+                Vector2f.add(location, loc, location);
+                entry.LOCATION=loc;
+            } else {
+                Vector2f.add(location, entry.LOCATION, location);
+            }
+            
+            //finally render that stuff
+            render(new renderData(entry.SPRITE, location, entry.LAYER));
+        }
+    }
+    
+    private void screenspaceHandler(CombatEngineLayers layer, float amount){
+        //iterate throught the BATTLESPACE data first:
+        Vector2f center;
+        ViewportAPI screen = Global.getCombatEngine().getViewport();
+
+        for(Iterator<screenspaceData> iter=SCREENSPACE.iterator(); iter.hasNext(); ){
+            screenspaceData entry = iter.next();
+
+            //Only run the rest of the code if it's our turn to render/we are on the right layer
+            if (layer != entry.LAYER) {continue;}
+
+            if(entry.FADEOUT<0){
+                // SINGLE FRAME RENDERING
+                if(entry.POS == MagicRender.positioning.FULLSCREEN_MAINTAIN_RATIO){                    
+                    center = new Vector2f(screen.getCenter());
+                    entry.SPRITE.setSize(entry.SIZE.x*screen.getVisibleWidth(), entry.SIZE.y*screen.getVisibleHeight());
+                } else if(entry.POS == MagicRender.positioning.STRETCH_TO_FULLSCREEN){
+                    center = new Vector2f(screen.getCenter());
+                    entry.SPRITE.setSize(screen.getVisibleWidth(), screen.getVisibleHeight());
+                } else {
+                    Vector2f refPoint=screen.getCenter();
+                    switch (entry.POS){
+
+                        case LOW_LEFT:
+                            refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
+                            break;
+
+                        case LOW_RIGHT:
+                            refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
+                            break;
+
+                        case UP_LEFT:
+                            refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
+                            break;
+
+                        case UP_RIGHT:
+                            refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
+                            break;
+
+                        default:
+                    }                
+                    center = new Vector2f(entry.LOC);
+                    center.scale(screen.getViewMult());
+                    Vector2f.add(center, refPoint, center);                
+                }
+
+                //finally render that stuff
+                render(new renderData(entry.SPRITE, center, entry.LAYER));
+
+                //and immediatelly remove
+                iter.remove();
+            } else {
+                // TIMED RENDERING                    
+                //add the time spent, that means sprites will never start at 0 exactly, but it simplifies a lot the logic
+                entry.TIME+=amount;
+                if(entry.FADEOUT>0 && entry.TIME>entry.FADEOUT){
+                    //remove expended ones
+                    iter.remove();
+                    continue;
+                }                
+
+                //jitter/flickerMedian
+                if(entry.DELAY!=null){
+                    entry.DELAY.advance(amount);
+                    if(entry.DELAY.intervalElapsed()){
+                        //jitter effect
+                        if(entry.JITTER_RANGE>0 || entry.JITTER_TILT>0){
+                            float a=0, b=0, c=0;
+                            float x=-entry.JITTER.x, y=-entry.JITTER.y, z=-entry.JITTER.z;
+                            //new jitter values
+                            if(entry.JITTER_RANGE>0){
+                                a=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                                b=MathUtils.getRandomNumberInRange(-entry.JITTER_RANGE, entry.JITTER_RANGE);
+                            }
+                            if(entry.JITTER_TILT>0){
+                                c=MathUtils.getRandomNumberInRange(-entry.JITTER_TILT, entry.JITTER_TILT);
+                            }
+
+                            //remove old jitter, add new value
+                            Vector2f.add(entry.LOC, new Vector2f(x+a,y+b), entry.LOC);
+                            entry.SPRITE.setAngle(entry.SPRITE.getAngle()+z+c);
+
+                            //store new jitter values
+                            entry.JITTER = new Vector3f(a,b,c);
+                        }
+                        //flicker effect
+                        float opacity=1;
+                        if(entry.FLICKER_RANGE>0){
+                            opacity = Math.min(1f,Math.max(0f,MathUtils.getRandomNumberInRange((float)entry.FLICKER_MEDIAN-(float)entry.FLICKER_RANGE, (float)entry.FLICKER_MEDIAN+(float)entry.FLICKER_RANGE)));                            
+                        }
+
+                        //fading stuff
+                        if(entry.TIME<entry.FADEIN){
+                            opacity*=(entry.TIME/entry.FADEIN);
+                        } else if(entry.TIME>entry.FULL){                    
+                            opacity*=(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                        }
+
+                        entry.SPRITE.setAlphaMult(opacity);
+                    }
+                } else {
+                    //fading stuff
+                    if(entry.TIME<entry.FADEIN){
+                        entry.SPRITE.setAlphaMult(entry.TIME/entry.FADEIN);
+                    } else if(entry.TIME>entry.FULL){                    
+                        entry.SPRITE.setAlphaMult(1-((entry.TIME-entry.FULL)/(entry.FADEOUT-entry.FULL)));
+                    } else entry.SPRITE.setAlphaMult(1);
+                }
+
+
+                if(entry.POS == MagicRender.positioning.FULLSCREEN_MAINTAIN_RATIO){                    
+                    center = new Vector2f(screen.getCenter());
+                    entry.SPRITE.setSize(entry.SIZE.x*screen.getVisibleWidth(), entry.SIZE.y*screen.getVisibleHeight());
+                } else if(entry.POS == MagicRender.positioning.STRETCH_TO_FULLSCREEN){
+                    center = new Vector2f(screen.getCenter());
+                    entry.SPRITE.setSize(screen.getVisibleWidth(), screen.getVisibleHeight());
+                } else {
+                    Vector2f refPoint=screen.getCenter();
+                    switch (entry.POS){
+
+                        case LOW_LEFT:
+                            refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
+                            break;
+
+                        case LOW_RIGHT:
+                            refPoint = new Vector2f(refPoint.x-(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
+                            break;
+
+                        case UP_LEFT:
+                            refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y-(screen.getVisibleHeight()/2));
+                            break;
+
+                        case UP_RIGHT:
+                            refPoint = new Vector2f(refPoint.x+(screen.getVisibleWidth()/2), refPoint.y+(screen.getVisibleHeight()/2));
+                            break;
+
+                        default:
+                    }                    
+
+                    //move the sprite to a new center if needed
+                    if(entry.VEL!= null && entry.VEL!=new Vector2f()){
+                        Vector2f move = new Vector2f(entry.VEL);
+                        move.scale(amount);
+                        Vector2f.add(entry.LOC, move, entry.LOC);
+                    }
+                    center = new Vector2f(entry.LOC);
+                    center.scale(screen.getViewMult());
+                    Vector2f.add(center, refPoint, center);
+
+                    //grow/shrink the sprite to a new size if needed
+                    if(entry.GROWTH!= null && entry.GROWTH!=new Vector2f()){
+                        entry.SIZE = new Vector2f(entry.SIZE.x+(entry.GROWTH.x*amount), entry.SIZE.y+(entry.GROWTH.y*amount));
+                        //check if the growth made the sprite too small
+                        if(entry.SIZE.x<=0 || entry.SIZE.y<=0){                        
+                            //remove sprites that completely shrunk
+                            iter.remove();
+                            continue;
+                        }
+                    }
+                    entry.SPRITE.setSize(entry.SIZE.x*screen.getViewMult(), entry.SIZE.y*screen.getViewMult());
+
+                    //spin the sprite if needed
+                    if(entry.SPIN!=0){
+                        entry.SPRITE.setAngle(entry.SPRITE.getAngle()+entry.SPIN*amount);
+                    }
+                }
+
+                //finally render that stuff
+                render(new renderData(entry.SPRITE, center, entry.LAYER));
+
+                if(entry.FADEOUT<0){
+                    iter.remove();
+                }
+            }                
+        }
+    }   
     
     //////////////////////////////
     //                          //
-    //          RENDER          //
+    //      RENDER CLASSES      //
     //                          //
-    //////////////////////////////
+    //////////////////////////////   
     
     private void render (renderData data){
         //where the magic happen
         SpriteAPI sprite = data.SPRITE;
         sprite.renderAtCenter(data.LOC.x, data.LOC.y);
     }
-    
-    
-    //////////////////////////////
-    //                          //
-    //      RENDER CLASSES      //
-    //                          //
-    //////////////////////////////    
     
     public static class renderData {   
         public final SpriteAPI SPRITE; 

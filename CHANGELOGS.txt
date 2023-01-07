@@ -1,9 +1,121 @@
 MagicLib
 
-0.35
+0.45.1
+
+MagicAsteroid plugins updated for SafaryJohn
+
+MagicCampaign/MagicBounty: Finding target objects now supports defaulting to any system if requested themes could not be found.
+
+0.44.1
+
+Added MagicAsteroid plugins to restore functionalities related to asteroids that have been removed in the vanilla game (by SafaryJohn)
+
+MagicIncompatibleHullmod:
+   - Now handles hullmods with scripted incompatibilities that have been S-modded by removing the incompatible hullmod added instead of itself. (Thanks to Timid)
+
+MagicCampaign:
+   - createFleet now handles fleets that have a spawn location but no assignment target.
+
+MagicBounty: 
+   - Hopefuly fixed the log spam after a bounty expired.
+
+0.43.1
+
+[RC3] fixed a typo that prevented hvb's from showing up after loading a save.
+
+MagicBounties:
+   - Fixed an issue with HVBs memkeys improperly set for trigger requirements,
+   - Probably fixed the intel spam when ending some bounties (please report it to me immediately if it still occurs after the patch!),
+   - Fixed some memkeys requirements not evaluated properly when combined together,
+   - Weapons and hullmods can be offered as extra rewards,
+   - Extra rewards are no longer given for bounties failed through flagship recovery.
+
+MagicVariables:
+   - Changed the way they are pulled to ensure a proper evaluation beforehand.
+
+MagicRender: 
+   - Fixed issue where objectspace sprite jittering was not applied correctly.
+
+MagicIndustryItemWrangler: 
+   - Code cleanup.
+
+0.42
+
+[RC6] Fixed an issue with time threshold evaluation for bounties (that one is on Alex' undocumented API!)
+[RC5] Fixed a crash occurring when bounties have a smaller reinforcement size than their preset size.
+[RC3] Fixed a very stupid mistake that let MagicBounty detect invalid bounties, but not properly remove them.
+
+MagicBounties:
+   - Added [fleet_no_retreat] boolean parameter.
+   - Finally bit the bullet and added a thorough bounty validation on game load. This should solve pretty much all issues remaining with invalid bounties. 
+   - Dev-mode log will precisely indicate why bounties can't be loaded so that bounty writers can quickly fix them.
+   - Fixed various triggers not being evaluated properly when combined with each-other.
+   - Added the console command [MagicBounty_ListRequirements] to check where and when you are able to see the bounties.
+   - Dismissed bounty are now properly cleaned up.
+   - Completed bounties are properly cleaned up.
+   - [MagicLib_ResetBounty] console command now works properly.
+MagicCampaign:
+   - Fixed an issue when generating captains with custom skill sets that prevented all skills from being assigned.
+
+0.41
+
+[RC2]
+MagicBounties:
+   - Further work on properly converting HVBs. 
+   - Fixed overzealous "invalid" bounty checker.
+   - Improved difficulty rating.
+   - Fixed some errors related to incorrect fleet and reward scaling.
+   - More informative logs in dev mode to see what is going on while writing bounties.
+MagicCampaign:
+   - Fixed the fleet quality thing that I broke when I tried to make it toggleable on the flagship/escort, that I repaired in 0.40 but was messing up the Flagship/escort loadouts, that never worked before... It's been a journey.
+
+
+Added MagicIndustryItemWrangler:
+   - Courtesy of Wyvern.
+   - Allows mods to define "rating" for their items that can be mounted in the same industries as other items.
+   - When an item with higher priority is sold at a public market, the AI will replace the existing one in its industry.
+   - Works on both vanilla and modded industries.
+   - Items priority is defined in modSettings.json
+
+MagicBounties:
+   - MagicBounties no longer requires a modSettings.json entry.
+   - WARNING: HOW BOUNTIES DEFINE MOD REQUIREMENTS HAS BEEN CHANGED!
+ PLEASE REFER TO THE EMPTY BOUNTY FILES IN THE MOD TO ADD THE NEW MOD REQUIREMENT PARAMETER.
+   - Removed Bounties Expanded hvb check.
+   - Added parameters to magicBounty_data to force the autofitter on the flagship/preset ships.
+   - Variables should now properly get replaced in the conclusion intel.
+   - Fixed another source of crashes from HVB conversions.
+   - Accepted bounties are now placed in the "MISSION" intel tab rather than bounties.
+   - Added another blacklist tag to prevent having bounties in Blackhole or Pulsar systems.
+
+MagicCampaign:
+   - Fixed an issue with the quality setting that was modifying the Flagship and Preset ships loadouts to fit its value,
+   - Flagship and escort ships now keep their original variants unless the autofitter is specifically allowed to alter them.
+
+0.4
+
+[RC3]
+MagicCampaign.placeOnStableOrbit(): Fixed not one but two effing stupid mistakes! Affected both the Diable Avionics unique ships and the Plague-Bearer ones.
+MagicBounty HVBs: improved the validation check so that it does not freak out on empty fields.
+
+[RC2]
+MagicCampaign.spawnFleet(): Patrol assignment should now be properly respected. (also affects MagicBounty ROAMING assignment)
+MagicBounty HVBs: Added many checks to prevent invalid bounties from being offered.
+MagicBounty bar event: added map direction like vanilla missions, modified the difficulty description to be more accurate. 
+MagicBounty: Fixed several sources of crashes, added more fail-safes to prevent hard crashes in case of mistakes present in the bounty definition.
+
+Added MagicBounty framework, a highly customizable yet easy to implement system to add unique story-driven bounties to a board present in bars.
+Huge thanks to Wisp that did the bulk of the work, to Schaf-Unschaf and Rubi for their contributions.
+
+Added a merged "occupied" system themes list to MagicSetting, for finding suitable places where to spawn exploration content. Currently adds all the Remnant tags, Blade-Breaker, OCI and Plague-Bearer tags.
 
 MagicRender: Fixed issue where sprite flickering was applied incorrectly.
 MagicLensFlare: Now uses the "visual only" API.
+MagicSettings: Improved error messages with the lines where the issue is if possible.
+MagicTargeting: Added the option to exclude flares from missile picks.
+MagicCampaign: Many small improvement to the logic of nearly all functions. Better checks for suitable systems, more coherent fleet spawning, Fleet quality is now a thing, made a lot of parameter nullable for procgen filler...
+MagicUI: the widgets texts can be null to be ignored, same for numbers if they are negative.
+
 
 0.34
 

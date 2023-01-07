@@ -1,17 +1,20 @@
 {
     "MagicLib":{
-	
+
         "magicTrail_files":[
             # The default trail data file is "data/config/modFiles/magicTrail_data.csv"
             # Mods that do not want to use the shared modFiles folder can point to their own file here
             "data/trails/trail_data.csv",
         ],
 
+
+		#WEAPONS WITH INTERFERENCES
+
         "interferences_rates":{
             # "id" : (float)rate,
             # id = amount of interference caused by the weapon,
             # rate = ship's dissipation nerf per interference weapon of that rate for each interference weapon installed
-            # default : 
+            # default :
             # "WEAK":20,
             # "MILD":40,
             # "STRONG":80,
@@ -20,36 +23,74 @@
             "MILD":40,
             "STRONG":80,
         },
-        "interference_RFCmult":0.5,	
+        "interference_RFCmult":0.5,
         # The Reinforced Flux Conduit hullmod reduces the impact of weapons interferences. Default : 0.5
-
         "interferences_weapons":{
             # List weapons that can "interfere" with each-other reducing the ship's dissipation when several are mounted on the same hull.
-            # "id" : "intensity",
+            # "id" : "intensity"
             # id = weapon.csv id
             # intensity = interferences_rates id in MagicLib's settings. By default it can be WEAK MILD STRONG.
             # "sample_weapon1":"WEAK",
             # "sample_weapon2":"MILD",
             # "sample_weapon3":"STRONG",
-            # To prevent breaking other mods these weapons are temporarily added to the default list
-            "SKR_blackout":"STRONG",
-            "SKR_glare":"MILD",
-            "SKR_ravager":"MILD",
-            "SKR_targetPainterSmall":"WEAK",
-            "SKR_targetPainterMedium":"WEAK",
-            "SKR_kaleidoscope":"WEAK",
-            "SKR_gatlingLance":"MILD",
         },
-		
-		"bounty_board":{
-			#List bounties that will be loaded from data/config/modFiles/MagicBounty_data.json 
-			#"id" : bounty id
-			#["required_mod"] : list mods that are required to load that bounty, can be used to make cross mod bounties. Can be left empty.
-			"test_bounty":[],
-		},
-		"bounty_market_blacklist":{
+
+
+		#BOUNTY BOARD SETTINGS
+
+        "bounty_board_enabled": true,
+			# whether bounties are enabled in MagicLib or not
+		"bounty_board_test_mode": false,
+			# disable some of the requirements of the bounties to test them
+		"bounty_board_reloadAll": true,
+			# removes all the bounties that are not taken before reloading them upon a save load
+		"bounty_offersAtSizeThree":1,
+			# default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
+        "bounty_boardRefreshTimePerMarketInDays": 90,
+			# how often a given market will offer new bounties
+		"bounty_neutralisationThreshold": 0.66,
+			# how much of a target fleet must be disabled for a sucessful "Neutralization" mission
+
+		"merged_themes_blacklist":[
+			#adds custom system themes to the generic "theme_already_occupied" blacklist umbrella that is used by MagicBounties and other campaign scripts
+			"theme_plaguebearers",
+			"theme_breakers",
+			"theme_breakers_main",
+			"theme_breakers_secondary",
+			"theme_breakers_no_fleets",
+			"theme_breakers_destroyed",
+			"theme_breakers_suppressed",
+			"theme_breakers_resurgent",
+			"theme_breakers_homeworld",
+
+			"theme_magellan_leveller",
+			"theme_magellan_leveller_home_nebula",
+
+			"theme_oci",
+			"theme_oci_small",
+			"theme_oci_large",
+			"theme_oci_core",
+		],
+		"bounty_market_blacklist":[
 			#Markets that for some reason have a regular bar but should NOT offer any job
+		],
+
+
+		#INDUSTRY ITEM WRANGLER
+
+		"itemPriorities": {
+			# list industry items and their "rating".
+			# items with a higher priority will be installed in place of existing ones when sold in a faction's market.
+			"corrupted_nanoforge": 21.0,
+			"pristine_nanoforge": 53.0,
+			"synchrotron": 30.0,
+			"mantle_bore": 30.0,
+			"catalytic_core": 30.0,
+			"soil_nanites": 20.0,
+			"biofactory_embryo": 20.0,
+			"fullerene_spool": 30.0,
+			"drone_replicator": 50.0,
+			"dealmaker_holosuite": 50.0,
 		},
-		"bounty_offersAtSizeThree":1; #default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
     },
 }

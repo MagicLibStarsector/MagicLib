@@ -6,6 +6,7 @@
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +28,6 @@ public class MagicSettings {
     
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
     private static final String PATH = "data/config/modSettings.json";
-    private static final String ID = "MagicLib";
     public static JSONObject modSettings;
     private static boolean devmode=false;
     
@@ -56,7 +57,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -90,7 +91,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -124,7 +125,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -158,7 +159,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -193,7 +194,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -228,7 +229,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -242,6 +243,7 @@ public class MagicSettings {
      * @param id name of the variable to look for
      * @return List< String > from modSettings.json. Default to an empty list in case of failure.
      */
+    @NotNull
     public static List<String> getList(String modId, String id) {
         if(modSettings==null){
             loadModSettings();
@@ -267,7 +269,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -308,7 +310,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -349,7 +351,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json",ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -390,7 +392,7 @@ public class MagicSettings {
                     LOG.error("unable to find "+id+" within " +modId+ " in modSettings.json");
                 }
             } catch (JSONException ex){
-                LOG.error("unable to read content of "+modId+" in modSettings.json");
+                LOG.error("unable to read content of "+modId+" in modSettings.json", ex);
             }
         } else {
             LOG.error("unable to find "+modId+" in modSettings.json");
@@ -403,9 +405,9 @@ public class MagicSettings {
     
     public static void loadModSettings(){
         try{
-            modSettings = Global.getSettings().getMergedJSONForMod(PATH,ID);    
+            modSettings = Global.getSettings().getMergedJSONForMod(PATH,MAGICLIB_ID);    
         } catch (IOException | JSONException ex) {
-            LOG.fatal("unable to read modSettings.json");
+            LOG.fatal("unable to read modSettings.json", ex);
         }
         devmode=Global.getSettings().isDevMode();
     }

@@ -2,85 +2,143 @@ package data.scripts;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager;
+import com.fs.starfarer.api.campaign.SectorAPI;
+import com.thoughtworks.xstream.XStream;
+import data.scripts.bounty.*;
 import data.scripts.plugins.MagicAutoTrails;
-import data.scripts.plugins.MagicBountyData;
-import data.scripts.util.MagicBountyBarEventCreator;
 import data.scripts.util.MagicIncompatibleHullmods;
+import data.scripts.util.MagicIndustryItemWrangler;
 import data.scripts.util.MagicInterference;
 import data.scripts.util.MagicSettings;
+import data.scripts.util.MagicVariables;
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 public class Magic_modPlugin extends BaseModPlugin {
-    
+
     ////////////////////////////////////////
     //                                    //
     //       ON APPLICATION LOAD          //
     //                                    //
     ////////////////////////////////////////
-    
-//    public static List<String> TRAIL_DATA = new ArrayList<>();
-    
+
+
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
-        
+
         MagicSettings.loadModSettings();
-        
-        if(MagicSettings.modSettings==null){
+
+        if (MagicSettings.modSettings == null) {
             String message = System.lineSeparator()
                     + System.lineSeparator() + "Malformed modSettings.json detected"
                     + System.lineSeparator() + System.lineSeparator();
             throw new ClassNotFoundException(message);
         }
+
         
-        //pre-loading the bounties to throw a crash if the JSON is messed up on merge
-        MagicBountyData.loadBountiesFromJSON(false);
-        
-        if(MagicBountyData.JSONfailed){
-            String message = System.lineSeparator()
-                    + System.lineSeparator() + "Malformed MagicBounty_data.json detected"
-                    + System.lineSeparator() + System.lineSeparator();
-            throw new ClassNotFoundException(message);
+        //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
+        if(Global.getSettings().isDevMode()){
+            MagicBountyData.loadBountiesFromJSON(false);
+//            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
+//                MagicBountyHVB.convertHVBs(false);
+//            }
+            if (MagicBountyData.JSONfailed) {
+                String message = System.lineSeparator()
+                        + System.lineSeparator() + "Malformed MagicBounty_data.json detected"
+                        + System.lineSeparator() + System.lineSeparator();
+                throw new ClassNotFoundException(message);
+            }
         }
-        
+
         //gather interference data
-        MagicInterference.loadInterference();   
-        
+        MagicInterference.loadInterference();
+
         //gather trail data
         MagicAutoTrails.getTrailData();
-    }    
-    
+        
+        //gather mod's system themes
+        MagicVariables.loadThemesBlacklist();
+        MagicVariables.verbose=Global.getSettings().isDevMode();
+        MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
+    }
+
     @Override
     public void onDevModeF8Reload() {
         MagicSettings.loadModSettings();
+        //gather interference data
+        MagicInterference.loadInterference();
+
+        //gather trail data
+        MagicAutoTrails.getTrailData();
+        
+        //Check for other bounty systems
+        MagicVariables.checkBountySystems();
+        
+        //gather mod's system themes
+        MagicVariables.loadThemesBlacklist();
+        MagicVariables.verbose=Global.getSettings().isDevMode();
+        MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
     }
-    
+
     ////////////////////////////////////////
     //                                    //
     //            ON GAME LOAD            //
     //                                    //
     ////////////////////////////////////////
-    
+
     @Override
-    public void onGameLoad(boolean newGame){
+    public void onGameLoad(boolean newGame) {
 //        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
-        if(!newGame){
-            //add new bounties if there are any
-            MagicBountyData.loadBountiesFromJSON(true);
+        
+        //Add industry item wrangler
+        SectorAPI sector = Global.getSector();
+        if( sector != null ) {
+                sector.addTransientListener( new MagicIndustryItemWrangler() );
+        }
+        
+        MagicVariables.checkBountySystems();
+        
+        if (MagicVariables.getMagicBounty()) {
+            if (newGame) {  
+                //add all bounties on a new game
+                MagicBountyData.loadBountiesFromJSON(false);
+                //convert the HVBs if necessary
+                if(!MagicVariables.getHVB())MagicBountyHVB.convertHVBs(false);
+            } else {
+                if(MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_reloadAll")){
+                    //force cleanup of all the bounties that have not been taken
+                    MagicBountyData.clearBountyData();
+                }
+                //only add new bounties if there are any on a save load
+                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode()); 
+                if(!MagicVariables.getHVB())MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
+            }
 
-            if (!BarEventManager.getInstance().hasEventCreator(MagicBountyBarEventCreator.class)) {
-                BarEventManager.getInstance().addEventCreator(new MagicBountyBarEventCreator());
+            MagicBountyCoordinator.onGameLoad();
+            MagicBountyCoordinator.getInstance().configureBountyListeners();
+
+            Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
         }
     }
-    }
-    
+
+    /**
+     * Define how classes are named in the save xml, allowing class renaming without
+     * breaking saves.
+     * @param x
+     */
     @Override
-    public void onNewGame(){
-        //setup the bounties
-        MagicBountyData.loadBountiesFromJSON(false);
+    public void configureXStream(XStream x) {
+        super.configureXStream(x);
+        x.alias("MagicBountyBarEvent", MagicBountyBarEvent.class);
+        x.alias("MagicBountyActiveBounty", ActiveBounty.class);
+        x.alias("MagicBountyBattleListener", MagicBountyBattleListener.class);
+        x.alias("MagicBountyIntel", MagicBountyIntel.class);
+        x.alias("MagicBountyFleetEncounterContext", MagicBountyFleetEncounterContext.class);
+        x.alias("MagicBountyFleetInteractionDialogPlugin", MagicBountyFleetInteractionDialogPlugin.class);
+        x.alias("MagicCampaignPlugin", MagicBountyCampaignPlugin.class);
     }
-    
-//    //debugging magic bounties
+
+    //    //debugging magic bounties
 //    
 //    private static final Logger LOG = Global.getLogger(Magic_modPlugin.class);
 //    @Override

@@ -198,7 +198,8 @@ public class MagicFakeBeam {
             MagicFakeBeamPlugin.addBeam(full, fading, width, from, angle, MathUtils.getDistance(from, end)+10, core, fringe);
         }
     }
-        /**
+    
+    /**
      * Fake beam generator. Create a visually convincing beam from arbitrary coordinates.
      * It however has several limitation:
      * - It deal damage instantly and is therefore only meant to be used for burst beams.

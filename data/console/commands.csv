@@ -1,0 +1,4 @@
+command,class,tags,syntax,help
+MagicLib_ListBounties,data.scripts.bounty.console.ListBountiesCommand,"MagicLib,campaign",MagicLib_ListBounties [optionalBountyId],Lists bounties loaded on MagicLib's Bounty Board.
+MagicLib_ListRequirements,data.scripts.bounty.console.ListBountiesRequirementsCommand,"MagicLib,campaign",MagicLib_ListRequirements [optionalBountyId],Lists the currently active bounties loaded on MagicLib's Bounty Board. and their requirements to show up.
+MagicLib_ResetBounty,data.scripts.bounty.console.ResetBountyCommand,"MagicLib,campaign",MagicLib_ResetBounty <bountyId>,Resets a MagicLib bounty.

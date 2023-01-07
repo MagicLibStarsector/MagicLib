@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
@@ -385,9 +386,9 @@ public class MagicUI {
      *
      * @param secondfill Wider filling like the soft/hard-flux. 0 to 1.
      * 
-     * @param text The text written to the left, automatically cut if too large.
+     * @param text The text written to the left, automatically cut if too large. Set to null to ignore
      * 
-     * @param number The number displayed on the right. Can go from 0 to 999 999.
+     * @param number The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
      */
     public static void drawInterfaceStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill, String text, int number) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
@@ -400,8 +401,12 @@ public class MagicUI {
 
         addInterfaceStatusBar(ship, fill, innerColor, borderColor, secondfill);
         if (TODRAW14 != null) {
-            addInterfaceStatusText(ship, text);
-            addInterfaceStatusNumber(ship, number);
+            if(text!=null && !text.isEmpty()){
+                addInterfaceStatusText(ship, text);
+            }
+            if(number>=0){
+                addInterfaceStatusNumber(ship, number);
+            }
         }
 
     }
@@ -420,9 +425,9 @@ public class MagicUI {
      *
      * @param secondfill Wider filling like the soft/hard-flux. 0 to 1.
      * 
-     * @param bottext Write a text just on the left of the bar. Example: 'flux'
+     * @param bottext Write a text just on the left of the bar. Example: 'flux'. Set to null to ignore
      * 
-     * @param toptext Write a text just above the bar. Example: 'player' or 'target'
+     * @param toptext Write a text just above the bar. Example: 'player' or 'target'. Set to null to ignore
      * 
      * @param offset Offsets the bar a few pixels upward. 
      * Can be used for example to display the targeted enemy special status bar.
@@ -447,13 +452,17 @@ public class MagicUI {
         }
         addHUDStatusBar(ship, fill, innerColor, borderColor, secondfill, pos2);
         if (TODRAW10 != null) {
-            TODRAW10.setText(bottext);
-            int pixelleft =(int)TODRAW10.getWidth();
-            pos2.translate(-pixelleft-5f, 8f);
-            addHUDStatusText(ship, innerColor, pos2);
-            pos2.translate(0, 8f);
-            TODRAW10.setText(toptext);
-            addHUDStatusText(ship, innerColor, pos2);
+            if(bottext!=null && !bottext.isEmpty()){
+                TODRAW10.setText(bottext);
+                int pixelleft =(int)TODRAW10.getWidth();
+                pos2.translate(-pixelleft-5f, 8f);
+                addHUDStatusText(ship, innerColor, pos2);
+            }
+            if(toptext!=null && !toptext.isEmpty()){
+                pos2.translate(0, 8f);
+                TODRAW10.setText(toptext);
+                addHUDStatusText(ship, innerColor, pos2);
+            }
         }
     }
     
