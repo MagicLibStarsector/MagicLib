@@ -91,3 +91,5 @@ gradle-app.setting
 /jars/
 /out/
 .idea/csv-plugin.xml
+
+.idea/csv-editor.xml

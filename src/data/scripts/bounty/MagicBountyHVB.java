@@ -126,7 +126,7 @@ public class MagicBountyHVB {
                     //convert hostility requirement
                     Map <String,Float> relationshipAtLeast=new HashMap<>();
                     if(row.getBoolean("neverSpawnWhenFactionHostile")){
-                        relationshipAtLeast.put(row.getString("faction"), -0.49f);
+                        relationshipAtLeast.put(row.getString("postedByFaction"), -0.49f);
                     } 
                     Map <String,Float> relationshipAtMost=new HashMap<>();
                     if(row.getBoolean("neverSpawnWhenFactionNonHostile")){

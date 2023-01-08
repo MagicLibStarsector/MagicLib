@@ -1,12 +1,12 @@
 {
-    "masterVersionFile":"https://www.dropbox.com/s/jvh8oimjkrlz47b/magiclib.version?dl=1",
+    "masterVersionFile":"https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/magiclib.version",
     "modName":"MagicLib",
     "modThreadId":"13718",
-    "modNexusId":"10",
+    # "modNexusId":"10",
     "modVersion":
     {
-        "major":0,
-        "minor":4,
-        "patch":"5.2"
+        "major":"0",
+        "minor":"45",
+        "patch":"3"
     }
 }
