@@ -17,7 +17,7 @@ import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_FORCE;
 import static data.scripts.util.MagicTxt.getString;
 
 /**
- * @author SafariJohn
+ * @author SafariJohn, Tartiflette
  */
 public class MagicAsteroidImpact implements EveryFrameScript {
 

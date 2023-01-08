@@ -24,7 +24,7 @@ import static data.scripts.util.MagicTxt.getString;
  * This is a drop-in replacement for the vanilla AsteroidFieldTerrainPlugin.
  *
  * For example usage, see Roider Union by SafariJohn.
- * @author SafariJohn
+ * @author SafariJohn, Tartiflette
  */
 public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin {
 
