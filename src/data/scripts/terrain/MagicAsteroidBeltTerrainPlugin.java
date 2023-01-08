@@ -1,28 +1,41 @@
 package data.scripts.terrain;
 
-import java.awt.Color;
-import java.util.Random;
-
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.AsteroidAPI;
-import com.fs.starfarer.api.campaign.CampaignEngineLayers;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.LocationAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.TerrainAIFlags;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.impl.campaign.terrain.*;
-import com.fs.starfarer.api.impl.campaign.terrain.AsteroidBeltTerrainPlugin.AsteroidBeltParams;
+import com.fs.starfarer.api.impl.campaign.terrain.AsteroidBeltTerrainPlugin;
+import com.fs.starfarer.api.impl.campaign.terrain.RingRenderer;
+import com.fs.starfarer.api.impl.campaign.terrain.RingSystemTerrainPlugin;
 import com.fs.starfarer.api.loading.Description.Type;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
+
+import java.awt.*;
+import java.util.Random;
+
 import static data.scripts.util.MagicTxt.getString;
 
+/**
+ * This is a drop-in replacement for the vanilla AsteroidBeltTerrainPlugin.
+ * <br />
+ * It allows configuration of:
+ * <ul>
+ * <li>chance of impact</li>
+ * <li>movement force</li>
+ * <li>chance of damaging impact</li>
+ * <li>chance of damaging impact per ship</li>
+ * <li>impact damage</li>
+ * <li>impact damage per ship</li>
+ * </ul>
+ *
+ * For example usage, see Roider Union by SafariJohn.
+ * @author SafariJohn
+ */
 public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
 
     // Stats

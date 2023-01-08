@@ -1,39 +1,31 @@
 package data.scripts.terrain;
 
-import java.util.Random;
-
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-//import com.fs.starfarer.api.graphics.SpriteAPI;
-import static com.fs.starfarer.api.impl.campaign.intel.punitive.PunitiveExpeditionManager.MIN_TIMEOUT;
 import com.fs.starfarer.api.impl.campaign.terrain.AsteroidFieldTerrainPlugin;
-import com.fs.starfarer.api.impl.campaign.terrain.AsteroidFieldTerrainPlugin.AsteroidFieldParams;
 import com.fs.starfarer.api.impl.campaign.terrain.RingSystemTerrainPlugin;
 import com.fs.starfarer.api.loading.Description;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.DURATION_PER_SKIP;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_CHANCE;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_DAMAGE;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_DAMAGE_CHANCE;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_RECENT;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_SKIPPED;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_TIMEOUT;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.MAX_DAMAGE_WINDOW;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.MAX_PROBABILITY;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.MAX_SKIPS_TO_TRACK;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.MAX_TIMEOUT;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.MIN_DAMAGE_WINDOW;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.PROB_PER_SKIP;
-import static data.scripts.util.MagicTxt.getString;
-import java.awt.Color;
 
+import java.awt.*;
+import java.util.Random;
+
+import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.*;
+import static data.scripts.util.MagicTxt.getString;
+
+/**
+ * This is a drop-in replacement for the vanilla AsteroidFieldTerrainPlugin.
+ *
+ * For example usage, see Roider Union by SafariJohn.
+ * @author SafariJohn
+ */
 public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin {
 
     @Override

@@ -1,9 +1,5 @@
 package data.scripts.terrain;
 
-import java.awt.Color;
-
-import org.lwjgl.util.vector.Vector2f;
-
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.AsteroidAPI;
@@ -12,9 +8,17 @@ import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.*;
+import org.lwjgl.util.vector.Vector2f;
+
+import java.awt.*;
+
+import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_DURATION;
+import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_FORCE;
 import static data.scripts.util.MagicTxt.getString;
 
+/**
+ * @author SafariJohn
+ */
 public class MagicAsteroidImpact implements EveryFrameScript {
 
     public static float DURATION_SECONDS = 0.2f;
