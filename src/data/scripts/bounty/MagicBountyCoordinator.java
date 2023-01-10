@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static data.scripts.util.MagicCampaign.createFleet;
 import static data.scripts.util.MagicCampaign.findSuitableTarget;
 import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
@@ -345,7 +344,7 @@ public final class MagicBountyCoordinator {
                     spec.target_skills
             );
 
-            fleet = createFleet(
+            fleet = MagicCampaign.createFleet(
                     spec.fleet_name,
                     spec.fleet_faction,
                     FleetTypes.PERSON_BOUNTY_FLEET,

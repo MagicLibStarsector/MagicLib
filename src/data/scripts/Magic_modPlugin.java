@@ -6,6 +6,8 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import data.scripts.bounty.*;
 import data.scripts.plugins.MagicAutoTrails;
+import data.scripts.terrain.MagicAsteroidBeltTerrainPlugin;
+import data.scripts.terrain.MagicAsteroidFieldTerrainPlugin;
 import data.scripts.util.MagicIncompatibleHullmods;
 import data.scripts.util.MagicIndustryItemWrangler;
 import data.scripts.util.MagicInterference;
@@ -136,6 +138,11 @@ public class Magic_modPlugin extends BaseModPlugin {
         x.alias("MagicBountyFleetEncounterContext", MagicBountyFleetEncounterContext.class);
         x.alias("MagicBountyFleetInteractionDialogPlugin", MagicBountyFleetInteractionDialogPlugin.class);
         x.alias("MagicCampaignPlugin", MagicBountyCampaignPlugin.class);
+
+        // Keep the Magic replacements out of the save file.
+        // The game will automatically swap to the Magic replacements on load because `terrain.json` replaces the vanilla ones.
+        x.alias("AsteroidBeltTerrainPlugin", MagicAsteroidBeltTerrainPlugin.class);
+        x.alias("AsteroidFieldTerrainPlugin", MagicAsteroidFieldTerrainPlugin.class);
     }
 
     //    //debugging magic bounties
