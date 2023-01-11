@@ -10,5 +10,6 @@ DO_NOT_USE
 .flac$
 ^.github/
 banner.png$
-
-^media$
+^.github/
+^doc/
+^media/
