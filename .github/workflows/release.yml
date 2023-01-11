@@ -30,9 +30,9 @@ jobs:
           echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
           git log --format=%B -n 1 $(git log -1 --pretty=format:"%h") | cat - > changes.txt
           if [[ "${{ env.VERSION }}" =~ .*"dev"|"qa"|"rc".* ]]; then
-            echo "IS_PRERELEASE" = true;
+            echo "IS_PRERELEASE = true" >> $GITHUB_ENV;
           else
-            echo "IS_PRERELEASE" = false;
+            echo "IS_PRERELEASE = false" >> $GITHUB_ENV;
           fi
 
       - name: Create Mod Zipfile
@@ -48,6 +48,6 @@ jobs:
           tag: ${{ env.VERSION }}
           bodyFile: changes.txt
           draft: false
-          prerelease: false
+          prerelease: ${{ env.IS_PRERELEASE }}
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: ".github/workflows/artifacts/*"
