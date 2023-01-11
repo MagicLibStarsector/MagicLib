@@ -1,6 +1,9 @@
 MagicLib
 
 0.45.3 - (the first Wisp release 🤞)
+Deprecated data.scripts. Please move to org.magiclib when convenient.
+   When the next Starsector update hits (after 0.95.1a), this move will become mandatory.
+
 MagicAsteroids
    - No longer added to the save file.
    - Fixes a bug causing asteroid impacts to stop happening.
