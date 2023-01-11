@@ -25,6 +25,9 @@ import org.lwjgl.util.vector.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicGuidedProjectileScript extends BaseEveryFrameCombatPlugin {
 	//---Settings: adjust to fill the needs of your implementation---
 	//Sets guidance mode for the projectile when a target is fed to the script (or, in the case of ONE_TURN_DUMB, always).

@@ -11,6 +11,9 @@ import com.fs.starfarer.combat.CombatFleetManager.O0;
 import java.util.List;
 
 // Works around battle not ending if ship with modules retreats
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicModuleRetreatCleaner extends BaseEveryFrameCombatPlugin  {
     
     public static final String CUSTOM_DATA_KEY = "shared_module_retreat_cleaner_plugin";

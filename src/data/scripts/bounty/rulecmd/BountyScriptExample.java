@@ -17,6 +17,7 @@ import java.util.Map;
  * This is triggered by a trigger defined in rules.csv.
  *
  * @author Wisp
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 class BountyScriptExample extends BaseCommandPlugin {
 

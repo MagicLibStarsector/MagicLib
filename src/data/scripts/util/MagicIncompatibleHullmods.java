@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicIncompatibleHullmods {
     
     private static final Map<ShipVariantAPI, List<String>> INCOMPATIBILITIES = new HashMap<>();

@@ -17,6 +17,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 //This class handles each "segment" of a trail: each MagicTrailObject within the MagicTrailTracker is considered to be linked to the other objects.
 //To make a new "segment" of trail, unrelated to the others, you have to create a new Tracker. The trail is invisible until at least two objects are in it
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicTrailTracker {
     //For scrolling textures - NOTE: we always use the most recent scroll speed for the trail, if it for some reason changes mid-trail
     private float scrollingTextureOffset = 0f;

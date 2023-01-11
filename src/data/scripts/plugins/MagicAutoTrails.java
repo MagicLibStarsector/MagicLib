@@ -28,6 +28,9 @@ import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 import static data.scripts.util.MagicVariables.verbose;
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
 
     private static final Logger LOG = Global.getLogger(MagicAutoTrails.class);

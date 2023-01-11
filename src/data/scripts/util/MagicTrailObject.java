@@ -8,6 +8,9 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicTrailObject {
     //Private, non-varying values
     private float inDuration = 0f;

@@ -37,6 +37,7 @@ import static data.scripts.util.MagicVariables.verbose;
  * </pre>
  *
  * @author Wisp
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;

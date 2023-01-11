@@ -16,6 +16,9 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lazywizard.lazylib.combat.AIUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicMissileAI implements MissileAIPlugin, GuidedMissileAI {
           
     //////////////////////
@@ -116,7 +119,7 @@ public class MagicMissileAI implements MissileAIPlugin, GuidedMissileAI {
     //////////////////////
     //  DATA COLLECTING //
     //////////////////////
-    
+
     public MagicMissileAI(MissileAPI missile, ShipAPI launchingShip) {
         this.MISSILE = missile;
         MAX_SPEED = missile.getMaxSpeed();

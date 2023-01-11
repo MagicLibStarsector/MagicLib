@@ -17,6 +17,7 @@ import java.util.Map;
  * Returns true iff there are available bounties at the current market.
  *
  * @author Wisp
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class ShouldShowMagicBountyBoard extends BaseCommandPlugin {
     @Override

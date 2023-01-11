@@ -31,6 +31,7 @@ import static data.scripts.util.MagicTxt.getString;
  * Displays MagicLib Bounties to the player.
  *
  * @author Wisp, Tartiflette
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializable {
     @NotNull

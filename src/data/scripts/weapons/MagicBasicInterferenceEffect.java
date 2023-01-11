@@ -12,6 +12,9 @@ import com.fs.starfarer.api.combat.EveryFrameWeaponEffectPlugin;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import data.scripts.util.MagicInterference;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicBasicInterferenceEffect implements EveryFrameWeaponEffectPlugin {
 
     private boolean runOnce=false;      

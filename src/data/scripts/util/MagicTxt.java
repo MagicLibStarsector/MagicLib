@@ -17,6 +17,9 @@ import java.util.regex.Pattern;
 
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicTxt {
 
     public static String getString(String id) {

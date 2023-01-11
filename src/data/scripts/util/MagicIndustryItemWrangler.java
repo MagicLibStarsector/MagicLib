@@ -19,6 +19,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicIndustryItemWrangler extends BaseCampaignEventListener {
 
     private static final Map ITEMS_PRIORITIES = new HashMap(); // should really be typed <String,ItemPriority>

@@ -24,6 +24,9 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicCampaignTrailPlugin implements EveryFrameScript {
     //Tracker for unique ID getting. Only use for this script, though: it's dangerous to use for other ID purposes, since it is so simple
     //NOTE: IDs should be bigger than 0; lower than 0 IDs are used by the script for "cut" trails

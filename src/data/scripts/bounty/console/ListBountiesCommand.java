@@ -12,6 +12,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class ListBountiesCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {

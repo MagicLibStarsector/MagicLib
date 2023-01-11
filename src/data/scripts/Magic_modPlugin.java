@@ -15,6 +15,9 @@ import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicVariables;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class Magic_modPlugin extends BaseModPlugin {
 
     ////////////////////////////////////////

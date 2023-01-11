@@ -17,6 +17,9 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 //import data.scripts.plugins.SpriteRenderManager;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
     
     private boolean runOnce=false, accel=false, turn=false;

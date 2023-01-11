@@ -29,6 +29,7 @@ import static data.scripts.util.MagicTxt.nullStringIfEmpty;
  * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
  *
  * @author Wisp
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public final class ActiveBounty {
     /**

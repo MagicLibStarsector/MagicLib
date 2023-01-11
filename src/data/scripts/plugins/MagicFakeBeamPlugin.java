@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicFakeBeamPlugin extends BaseEveryFrameCombatPlugin {
 
     private SpriteAPI core = Global.getSettings().getSprite("beams", "fakeBeamCore");

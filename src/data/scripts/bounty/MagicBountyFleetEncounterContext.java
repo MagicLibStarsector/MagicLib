@@ -16,6 +16,9 @@ import com.fs.starfarer.loading.specs.FighterWingSpec;
 
 import java.util.*;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
 
     /**

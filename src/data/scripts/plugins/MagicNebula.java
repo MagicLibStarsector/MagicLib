@@ -10,6 +10,9 @@ import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 // test to make 3d nebula
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicNebula extends BaseEveryFrameCombatPlugin  {
     
     @Override

@@ -10,6 +10,9 @@ import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import data.scripts.plugins.MagicCampaignTrailPlugin;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicCustomCampaignTrailEntityScript extends BaseCustomEntityPlugin {
 
     //Which plugin does this script belong to?

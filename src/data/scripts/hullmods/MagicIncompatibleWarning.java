@@ -10,6 +10,9 @@ import data.scripts.util.MagicTxt;
 import static data.scripts.util.MagicTxt.getString;
 import java.awt.Color;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicIncompatibleWarning extends BaseHullMod {    
     
     

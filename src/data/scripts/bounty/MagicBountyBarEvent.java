@@ -32,6 +32,7 @@ import static data.scripts.util.MagicVariables.MAGICLIB_ID;
  * Displays the bounty board and all associated bounties.
  *
  * @author Wisp, Tartiflette
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;

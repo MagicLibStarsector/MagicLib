@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicInterference {    
     
     private static final String INTERFERENCE_HULLMOD = "ML_interferenceWarning";

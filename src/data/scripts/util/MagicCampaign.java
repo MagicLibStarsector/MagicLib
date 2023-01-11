@@ -47,6 +47,9 @@ import org.json.JSONObject;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicCampaign {
     
     public static Logger log = Global.getLogger(MagicCampaign.class);

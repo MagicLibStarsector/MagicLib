@@ -15,6 +15,9 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicInterferenceWarning extends BaseHullMod {    
     
     //apply the effect

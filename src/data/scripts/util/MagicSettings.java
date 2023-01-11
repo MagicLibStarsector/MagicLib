@@ -23,6 +23,7 @@ import org.json.JSONObject;
 /**
  *
  * @author Tartiflette
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicSettings {
     

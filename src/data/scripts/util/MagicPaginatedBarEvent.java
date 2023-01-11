@@ -19,6 +19,7 @@ import java.util.Map;
  * Adapted from {@link com.fs.starfarer.api.impl.campaign.rulecmd.PaginatedOptions}.
  *
  * @author Wisp
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
 

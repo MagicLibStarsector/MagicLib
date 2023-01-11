@@ -23,9 +23,8 @@ import org.lwjgl.util.vector.Vector2f;
 /**
  *
  * @author Dark.Revenant, Tartiflette, LazyWizard, Snrasha
- * 
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
-
 public class MagicUI {
     //Color of the HUD when the ship is alive or the hud
     public static final Color GREENCOLOR;

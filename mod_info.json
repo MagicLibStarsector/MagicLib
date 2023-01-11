@@ -14,5 +14,5 @@
         },
     ],
     "jars": ["jars/MagicLib.jar"],
-    "modPlugin": "data.scripts.Magic_modPlugin"
+    "modPlugin": "org.magiclib.Magic_modPlugin"
 }

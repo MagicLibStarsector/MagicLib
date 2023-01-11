@@ -21,6 +21,9 @@ import org.lazywizard.lazylib.MathUtils;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
     public static final String PLUGIN_KEY = "MagicTrailPlugin";
     //Tracker for unique ID getting. Only use for this script, though: it's dangerous to use for other ID purposes, since it is so simple

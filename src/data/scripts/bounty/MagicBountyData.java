@@ -22,6 +22,7 @@ import org.lazywizard.lazylib.MathUtils;
 /**
  *
  * @author Tartiflette
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicBountyData {
 

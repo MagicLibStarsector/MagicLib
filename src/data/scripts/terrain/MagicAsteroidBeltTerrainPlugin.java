@@ -35,6 +35,7 @@ import static data.scripts.util.MagicTxt.getString;
  *
  * For example usage, see Roider Union by SafariJohn.
  * @author SafariJohn, Tartiflette
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
 

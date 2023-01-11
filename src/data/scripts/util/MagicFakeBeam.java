@@ -25,6 +25,9 @@ import org.lazywizard.lazylib.combat.CombatUtils;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicFakeBeam {
         
     /////////////////////////////////////////

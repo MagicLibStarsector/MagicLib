@@ -9,6 +9,9 @@ import data.scripts.util.MagicTxt;
 import static data.scripts.util.MagicTxt.getString;
 import data.scripts.util.StringCreator;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 class MagicBountyUtils {
 
 

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
  * From Console Command's `CommandUtils`.
  *
  * @author LazyWizard
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 class StringMatcher {
     @Nullable

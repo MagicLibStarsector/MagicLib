@@ -3,6 +3,7 @@ package data.scripts.bounty;
 /**
  *
  * @author Schaf-Unschaf, Tartiflette (and Vayra)
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 
 import com.fs.starfarer.api.Global;

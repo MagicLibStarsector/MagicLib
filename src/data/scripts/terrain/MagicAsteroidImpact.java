@@ -18,6 +18,7 @@ import static data.scripts.util.MagicTxt.getString;
 
 /**
  * @author SafariJohn, Tartiflette
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicAsteroidImpact implements EveryFrameScript {
 

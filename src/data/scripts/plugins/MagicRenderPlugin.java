@@ -20,6 +20,9 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     
     private static List<renderData> SINGLEFRAME = new ArrayList<>();
@@ -712,6 +715,9 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     }
 }
 
+/**
+ * @deprecated Please replace `data.scripts` with `org.magiclib`.
+ */
 class MagicRenderer extends BaseCombatLayeredRenderingPlugin {
     private MagicRenderPlugin parentPlugin;
 
