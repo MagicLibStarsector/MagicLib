@@ -1,14 +1,27 @@
 MagicLib
 
+0.45.3 - (the first Wisp release 🤞)
+MagicAsteroids
+   - No longer added to the save file.
+   - Fixes a bug causing asteroid impacts to stop happening.
+MagicBounty
+   - Fixes bug reading HVBs where neverSpawnWhenFactionHostile used target faction instead of posting faction.
+
+0.45.2
+
+MagicBounties:
+   - Fixed accidentally-introduced backwards incompatibility.
+
 0.45.1
 
-MagicAsteroid plugins updated for SafaryJohn
+MagicAsteroid plugins updated for SafariJohn
 
-MagicCampaign/MagicBounty: Finding target objects now supports defaulting to any system if requested themes could not be found.
+MagicCampaign/MagicBounty:
+   - Finding target objects now supports defaulting to any system if requested themes could not be found.
 
 0.44.1
 
-Added MagicAsteroid plugins to restore functionalities related to asteroids that have been removed in the vanilla game (by SafaryJohn)
+Added MagicAsteroid plugins to restore functionalities related to asteroids that have been removed in the vanilla game (by SafariJohn)
 
 MagicIncompatibleHullmod:
    - Now handles hullmods with scripted incompatibilities that have been S-modded by removing the incompatible hullmod added instead of itself. (Thanks to Timid)
@@ -17,7 +30,7 @@ MagicCampaign:
    - createFleet now handles fleets that have a spawn location but no assignment target.
 
 MagicBounty: 
-   - Hopefuly fixed the log spam after a bounty expired.
+   - Hopefully fixed the log spam after a bounty expired.
 
 0.43.1
 
