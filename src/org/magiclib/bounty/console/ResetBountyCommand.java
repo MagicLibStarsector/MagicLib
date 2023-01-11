@@ -1,13 +1,9 @@
 package org.magiclib.bounty.console;
 
-import org.magiclib.bounty.MagicBountyCoordinator;
-import org.magiclib.bounty.MagicBountyData;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.magiclib.bounty.MagicBountyCoordinator;
 
 public class ResetBountyCommand implements BaseCommand {
     @Override

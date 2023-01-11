@@ -24,7 +24,7 @@ public class MagicTrailTracker {
 
     //For legacy forward-propagating trail scrolling; causes some issues, but might remove stuttering when spawning trails slower than once-per-frame
     public boolean usesForwardPropagation = false;
-    
+
     public float textureOffset = -1;
 
     //For animated textures: the trail counts as animated only if isAnimated = true
@@ -34,7 +34,7 @@ public class MagicTrailTracker {
     //If the tracker remain empty for 3 seconds, then expire
     private boolean isExpired = false;
     private float remainEmptyElapsed = 0f;
-    
+
     public boolean isExpired() {
         return isExpired;
     }
@@ -88,7 +88,7 @@ public class MagicTrailTracker {
         CombatEngineAPI engine = Global.getCombatEngine();
         if (usesForwardPropagation) {
             //Iterate through all trail parts except the most recent one: the idea is that each part renders in relation to the *next* part
-            float texDistTracker =  currentLatestTrailObject.textureOffset;
+            float texDistTracker = currentLatestTrailObject.textureOffset;
             float texLocator = 0f;
             for (int i = 0; i < size - 1; i++) {
                 //First, get a handle for our parts so we can make the code shorter
@@ -161,9 +161,9 @@ public class MagicTrailTracker {
 
                 //Changes render color to our next segment's opacity
                 glColor4ub((byte) part2.currentColor.getRed(),
-                           (byte) part2.currentColor.getGreen(),
-                           (byte) part2.currentColor.getBlue(),
-                           (byte) (part2.currentOpacity * opacityMult * 255));
+                        (byte) part2.currentColor.getGreen(),
+                        (byte) part2.currentColor.getBlue(),
+                        (byte) (part2.currentOpacity * opacityMult * 255));
 
                 texLocator = texDistTracker + scrollingTextureOffset;
 
@@ -251,9 +251,9 @@ public class MagicTrailTracker {
 
                 //Changes render color to our next segment's opacity
                 glColor4ub((byte) part2.currentColor.getRed(),
-                           (byte) part2.currentColor.getGreen(),
-                           (byte) part2.currentColor.getBlue(),
-                           (byte) (part2.currentOpacity * opacityMult * 255));
+                        (byte) part2.currentColor.getGreen(),
+                        (byte) part2.currentColor.getBlue(),
+                        (byte) (part2.currentOpacity * opacityMult * 255));
 
                 texLocator = texDistTracker + scrollingTextureOffset;
 

@@ -1,7 +1,6 @@
 package org.magiclib.bounty;
 
 /**
- *
  * @author Schaf-Unschaf, Tartiflette (and Vayra)
  */
 
@@ -17,30 +16,28 @@ import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Ranks;
 import com.fs.starfarer.api.impl.campaign.ids.Skills;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import static org.magiclib.bounty.MagicBountyData.BOUNTIES;
-import org.magiclib.util.MagicSettings;
-import static org.magiclib.util.MagicTxt.getString;
-import org.magiclib.util.MagicVariables;
-import static org.magiclib.util.MagicVariables.MAGICLIB_ID;
-import static org.magiclib.util.MagicVariables.verbose;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.magiclib.util.MagicSettings;
+import org.magiclib.util.MagicVariables;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.magiclib.bounty.MagicBountyData.BOUNTIES;
+import static org.magiclib.util.MagicTxt.getString;
+import static org.magiclib.util.MagicVariables.MAGICLIB_ID;
+import static org.magiclib.util.MagicVariables.verbose;
 
 public class MagicBountyHVB {
-    
+
     public static final String VAYRA_UNIQUE_BOUNTIES_FILE = "data/config/vayraBounties/unique_bounty_data.csv";
     private static final Logger LOG = Global.getLogger(MagicSettings.class);
-                        
+
     private static final List<String> WHITELIST = new ArrayList<>();
+
     static {
         WHITELIST.add("theme_misc");
         WHITELIST.add("theme_misc_skip");
@@ -48,35 +45,36 @@ public class MagicBountyHVB {
         WHITELIST.add("theme_ruins_secondary");
         WHITELIST.add("theme_derelict_probes");
     }
-    
+
     private static final List<String> BLACKLIST = new ArrayList<>();
+
     static {
         BLACKLIST.add("theme_already_colonized");
         BLACKLIST.add("theme_already_occupied");
         BLACKLIST.add("theme_hidden");
     }
-    
+
     public static void convertHVBs(boolean appendOnly) {
-        
-        if(verbose){
+
+        if (verbose) {
             LOG.info("\n ######################\n\n   HVB CONVERSION  \n\n ######################");
         }
-        
+
         try {
             JSONArray uniqueBountyDataJSON = Global.getSettings().getMergedSpreadsheetDataForMod("bounty_id", VAYRA_UNIQUE_BOUNTIES_FILE, MAGICLIB_ID);
-            
-            int hvb =0;
-            
+
+            int hvb = 0;
+
             for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
                 JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
                 if (row.has("bounty_id") && row.getString("bounty_id") != null && !row.getString("bounty_id").isEmpty()) {
-                                        
+
                     String bountyId = row.getString("bounty_id");
-                    
-                    if(verbose){
+
+                    if (verbose) {
                         LOG.info("loading HVB " + bountyId);
                     }
-                    
+
                     String fleetListString = row.optString("fleetVariantIds");
                     List<String> fleetList = null;
                     if (fleetListString != null) {
@@ -103,64 +101,64 @@ public class MagicBountyHVB {
                             prerequisiteBountiesList = null;
                         }
                     }
-                    
+
                     //convert poster faction into market list for board intel
                     List<String> postingMarket = new ArrayList<>();
                     postingMarket.add(row.getString("postedByFaction"));
-                    
-                    
+
+
                     //convert bounty faction into market list for board intel
                     List<String> enemyMarket = new ArrayList<>();
                     /*
                     enemyMarket.add(row.getString("faction"));
                     */
-                    
+
                     //convert required bounty list into memkey list
-                    Map <String,Boolean> memKeyAll=new HashMap<>();
-                    if(prerequisiteBountiesList!=null){
-                        for(String req : prerequisiteBountiesList){
-                            memKeyAll.put("$HVB_"+req+"_succeeded", true);
+                    Map<String, Boolean> memKeyAll = new HashMap<>();
+                    if (prerequisiteBountiesList != null) {
+                        for (String req : prerequisiteBountiesList) {
+                            memKeyAll.put("$HVB_" + req + "_succeeded", true);
                         }
                     }
-                    
+
                     //convert hostility requirement
-                    Map <String,Float> relationshipAtLeast=new HashMap<>();
-                    if(row.getBoolean("neverSpawnWhenFactionHostile")){
+                    Map<String, Float> relationshipAtLeast = new HashMap<>();
+                    if (row.getBoolean("neverSpawnWhenFactionHostile")) {
                         relationshipAtLeast.put(row.getString("postedByFaction"), -0.49f);
-                    } 
-                    Map <String,Float> relationshipAtMost=new HashMap<>();
-                    if(row.getBoolean("neverSpawnWhenFactionNonHostile")){
+                    }
+                    Map<String, Float> relationshipAtMost = new HashMap<>();
+                    if (row.getBoolean("neverSpawnWhenFactionNonHostile")) {
                         relationshipAtMost.put(row.getString("faction"), -0.5f);
                     }
-                    
+
                     //convert item list
-                    Map <String,Integer> itemMap=new HashMap<>();
-                    if(itemList!=null){
-                        for(String item : itemList){
-                            if(itemMap.containsKey(item)){
-                                itemMap.put(item, itemMap.get(item)+1);
+                    Map<String, Integer> itemMap = new HashMap<>();
+                    if (itemList != null) {
+                        for (String item : itemList) {
+                            if (itemMap.containsKey(item)) {
+                                itemMap.put(item, itemMap.get(item) + 1);
                             } else {
                                 itemMap.put(item, 1);
                             }
                         }
                     }
-                    
+
                     //convert fleet list
-                    Map <String,Integer> fleetMap=new HashMap<>();
-                    if(fleetList!=null){
-                        for(String ship:fleetList){
-                            if(fleetMap.containsKey(ship)){
-                                fleetMap.put(ship, fleetMap.get(ship)+1);
+                    Map<String, Integer> fleetMap = new HashMap<>();
+                    if (fleetList != null) {
+                        for (String ship : fleetList) {
+                            if (fleetMap.containsKey(ship)) {
+                                fleetMap.put(ship, fleetMap.get(ship) + 1);
                             } else {
                                 fleetMap.put(ship, 1);
                             }
                         }
                     }
-                    
+
                     //convert gender
                     String genderString = row.getString("gender");
                     FullName.Gender gender = null;
-                    if(genderString!=null){
+                    if (genderString != null) {
                         switch (genderString) {
                             case "MALE":
                                 gender = FullName.Gender.MALE;
@@ -172,19 +170,19 @@ public class MagicBountyHVB {
                                 break;
                         }
                     }
-                    
+
                     String faction = row.getString("faction");
-                    if(faction.equals("hvb_hostile")){
-                        faction=MagicVariables.BOUNTY_FACTION;
+                    if (faction.equals("hvb_hostile")) {
+                        faction = MagicVariables.BOUNTY_FACTION;
                         LOG.info("Replacing hvb_hostile with ML_bounty");
                     }
-                    
-                    int level=row.getInt("neverSpawnBeforeLevel");
-                    if(level>15){
+
+                    int level = row.getInt("neverSpawnBeforeLevel");
+                    if (level > 15) {
                         //if min level is superior to 15, it is divided by 2 (old level cap was 30) to avoid outdated bounties from being un-triggerable
-                        level*=0.5f;
+                        level *= 0.5f;
                     }
-                    
+
                     MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(
                             //List <String> trigger_market_id,
                             new ArrayList<String>(),
@@ -201,7 +199,7 @@ public class MagicBountyHVB {
                             //int trigger_player_minLevel,
                             level,
                             //int trigger_min_days_elapsed,
-                            (row.getInt("neverSpawnBeforeCycle")-206)*365,
+                            (row.getInt("neverSpawnBeforeCycle") - 206) * 365,
                             //int trigger_min_fleet_size,
                             row.getInt("neverSpawnBeforeFleetPoints"),
                             //float trigger_weight_mult,
@@ -209,19 +207,19 @@ public class MagicBountyHVB {
                             //Map <String,Boolean> trigger_memKeys_all,
                             memKeyAll,
                             //Map <String,Boolean> trigger_memKeys_any,
-                            new HashMap <String,Boolean>(),
+                            new HashMap<String, Boolean>(),
                             //Map <String,Boolean> trigger_memKeys_none,
-                            new HashMap <String,Boolean>(),
+                            new HashMap<String, Boolean>(),
                             //Map <String,Float> trigger_playerRelationship_atLeast,
                             relationshipAtLeast,
                             //Map <String,Float> trigger_playerRelationship_atMost,
-                            relationshipAtMost,                            
+                            relationshipAtMost,
                             //getFloat(bountyId, "trigger_giverTargetRelationship_atLeast"),
                             -99f,
                             //getFloat(bountyId, "trigger_giverTargetRelationship_atMost"),
                             99f,
                             //String job_name,
-                            getString("mb_hvb_title")+row.getString("firstName")+" "+row.getString("lastName"),
+                            getString("mb_hvb_title") + row.getString("firstName") + " " + row.getString("lastName"),
                             //String job_description,
                             row.getString("intelText"),
                             //String job_comm_reply,
@@ -241,7 +239,7 @@ public class MagicBountyHVB {
                             //int job_credit_reward,
                             row.getInt("creditReward"),
                             //float job_credit_scaling,
-                            (float) row.getDouble("playerFPScalingFactor")/2,
+                            (float) row.getDouble("playerFPScalingFactor") / 2,
                             //float job_reputation_reward,
                             (float) row.getInt("repReward") / 100.0F,
                             //Map <String,Integer> job_item_reward,
@@ -266,9 +264,9 @@ public class MagicBountyHVB {
                             //String job_pick_script,
                             null,
                             //String job_memKey,
-                            "$HVB_"+bountyId,
+                            "$HVB_" + bountyId,
                             //String job_conclusion_script,
-                            null,                            
+                            null,
                             //String existing_target_memkey; 
                             null,
                             //String target_first_name,
@@ -304,7 +302,7 @@ public class MagicBountyHVB {
                             //String fleet_flagship_name,
                             row.getString("flagshipName"),
                             //boolean fleet_flagship_recoverable,
-                            row.optDouble("chanceToAutoRecover", 1.0f)>0f,
+                            row.optDouble("chanceToAutoRecover", 1.0f) > 0f,
                             //boolean fleet_flagship_autofit; 
                             false,
                             //Map <String,Integer> fleet_preset_ships,
@@ -343,45 +341,45 @@ public class MagicBountyHVB {
                             //true,
                             //boolean location_defaultToAnyEntity
                             true
-                    
+
                     );
-                    
+
                     //add the bounty if it doesn't exist and hasn't been taken already or if the script is redoing the whole thing
-                    if((!appendOnly || (!BOUNTIES.containsKey(bountyId) && !Global.getSector().getMemoryWithoutUpdate().contains(this_bounty.job_memKey)))){
+                    if ((!appendOnly || (!BOUNTIES.containsKey(bountyId) && !Global.getSector().getMemoryWithoutUpdate().contains(this_bounty.job_memKey)))) {
                         BOUNTIES.put(bountyId, this_bounty);
-                        if(verbose){
+                        if (verbose) {
                             LOG.info("SUCCESS");
                             hvb++;
                         }
-                    } else if(verbose){
+                    } else if (verbose) {
                         LOG.info("SKIPPED");
                     }
                 } else {
-                    if(verbose){
+                    if (verbose) {
                         LOG.info("hit empty line, unique bounty loading ended");
                     }
-                }                
-                if(verbose){
-                    LOG.info("Successfully converted "+hvb+" HVBs");
-                }                
+                }
+                if (verbose) {
+                    LOG.info("Successfully converted " + hvb + " HVBs");
+                }
             }
         } catch (IOException | JSONException exception) {
-            LOG.error("MagicLib - Failed to load HighValueBountyData! - ",exception);
+            LOG.error("MagicLib - Failed to load HighValueBountyData! - ", exception);
         }
     }
 
-    
-    public static void generateFancyCommanderDescription( TextPanelAPI text, CampaignFleetAPI fleet, PersonAPI person) {
-        if (person==null) return;
-        if (person.getStats()==null) return;
+
+    public static void generateFancyCommanderDescription(TextPanelAPI text, CampaignFleetAPI fleet, PersonAPI person) {
+        if (person == null) return;
+        if (person.getStats() == null) return;
 
         PersonAPI commander = fleet.getCommander();
-        
+
         String who = getString("mb_hvb_they");
-        if(person.getGender()== FullName.Gender.MALE) who = getString("mb_hvb_he");
-        if(person.getGender()== FullName.Gender.FEMALE) who = getString("mb_hvb_she");
-        if(person.isAICore()) who = getString("mb_hvb_it");
-        
+        if (person.getGender() == FullName.Gender.MALE) who = getString("mb_hvb_he");
+        if (person.getGender() == FullName.Gender.FEMALE) who = getString("mb_hvb_she");
+        if (person.isAICore()) who = getString("mb_hvb_it");
+
         String levelDesc;
         String skillDesc;
 
@@ -459,7 +457,7 @@ public class MagicBountyHVB {
     }
 
     public static void generateFancyFleetDescription(TextPanelAPI text, CampaignFleetAPI fleet, PersonAPI person) {
-        if (person==null)return;
+        if (person == null) return;
 
         int fleetSize = fleet.getNumShips();
         FleetMemberAPI flagship = fleet.getFlagship();
@@ -473,15 +471,15 @@ public class MagicBountyHVB {
         else if (fleetSize <= 40) fleetDesc = getString("mb_hvb_fleetSize3");
         else if (fleetSize <= 50) fleetDesc = getString("mb_hvb_fleetSize4");
         else fleetDesc = getString("mb_hvb_fleetSize5");
-        
+
         String own = getString("mb_hvb_fleetTheir");
-        if(person.getGender()== FullName.Gender.MALE) own = getString("mb_hvb_fleetHis");
-        if(person.getGender()== FullName.Gender.FEMALE) own = getString("mb_hvb_fleetHer");
-        if(person.isAICore()) own = getString("mb_hvb_fleetIts");
-        
+        if (person.getGender() == FullName.Gender.MALE) own = getString("mb_hvb_fleetHis");
+        if (person.getGender() == FullName.Gender.FEMALE) own = getString("mb_hvb_fleetHer");
+        if (person.isAICore()) own = getString("mb_hvb_fleetIts");
+
         text.addPara(
-                getString("mb_hvb_fleet0")+own+getString("mb_hvb_fleet1"), 
-                commander.getFaction().getBaseUIColor(),                
+                getString("mb_hvb_fleet0") + own + getString("mb_hvb_fleet1"),
+                commander.getFaction().getBaseUIColor(),
                 commander.getFaction().getRank(commander.getRankId()) + " " + person.getName().getFullName(),
                 fleetDesc,
                 flagship.getShipName(),

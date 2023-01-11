@@ -1,11 +1,11 @@
 package org.magiclib.bounty.console;
 
-import org.magiclib.bounty.ActiveBounty;
-import org.magiclib.bounty.MagicBountyCoordinator;
-import org.magiclib.bounty.MagicBountyData;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
+import org.magiclib.bounty.ActiveBounty;
+import org.magiclib.bounty.MagicBountyCoordinator;
+import org.magiclib.bounty.MagicBountyData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,11 +57,11 @@ public class ListBountiesCommand implements BaseCommand {
                 ActiveBounty bounty = entry.getValue();
                 Console.showMessage(
                         String.format(
-                            //"  Id: %s, Stage: %s\n  %s\n"
-                            "  Id: %s, Stage: %s\n"
-                            ,entry.getKey()
-                            ,bounty.getStage().name()
-                            //,bounty
+                                //"  Id: %s, Stage: %s\n  %s\n"
+                                "  Id: %s, Stage: %s\n"
+                                , entry.getKey()
+                                , bounty.getStage().name()
+                                //,bounty
                         )
                 );
             }

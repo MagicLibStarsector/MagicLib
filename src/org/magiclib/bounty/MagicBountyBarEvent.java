@@ -1,7 +1,6 @@
 package org.magiclib.bounty;
 
 import com.fs.starfarer.api.Global;
-//import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
@@ -9,14 +8,13 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-//import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.input.Keyboard;
 import org.magiclib.util.MagicPaginatedBarEvent;
 import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicVariables;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.List;
@@ -174,7 +172,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //FLAVOR TEXT
                             activeBounty.addDescriptionToTextPanel(text);
-                            
+
                             //illustration panel
                             if (bounty.job_show_captain) {
                                 //diplaying the captain takes priority
@@ -186,32 +184,32 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 //otherwise, just keep the board illustration
                                 dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
                             }
-                            
+
                             //TEST TO ADD LOCATION MAP
-                            if (bounty.job_show_distance== MagicBountyData.ShowDistance.Exact){
+                            if (bounty.job_show_distance == MagicBountyData.ShowDistance.Exact) {
                                 dialog.getVisualPanel().showMapMarker(
-                                        activeBounty.getFleetSpawnLocation(), 
-					null,
-                                        null, 
-					false,
+                                        activeBounty.getFleetSpawnLocation(),
                                         null,
                                         null,
-                                        null
-                                );
-                            } 
-                            if (bounty.job_show_distance== MagicBountyData.ShowDistance.Vanilla
-                                    ||bounty.job_show_distance== MagicBountyData.ShowDistance.VanillaDistance ){
-                                dialog.getVisualPanel().showMapMarker(
-                                        activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor(), 
-					null,
-                                        null, 
-					false,
+                                        false,
                                         null,
                                         null,
                                         null
                                 );
                             }
-                            
+                            if (bounty.job_show_distance == MagicBountyData.ShowDistance.Vanilla
+                                    || bounty.job_show_distance == MagicBountyData.ShowDistance.VanillaDistance) {
+                                dialog.getVisualPanel().showMapMarker(
+                                        activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor(),
+                                        null,
+                                        null,
+                                        false,
+                                        null,
+                                        null,
+                                        null
+                                );
+                            }
+
                             addOption(getString("mb_continue"), getBountyDetailsOptionKey(key), null, null);
                             addOption(getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                         } else if (getBountyDetailsOptionKey(key).equals(optionData)) {
@@ -341,13 +339,13 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //TARGET CAPTAIN
-                            if(
+                            if (
                                     bounty.job_show_fleet != MagicBountyData.ShowFleet.None //fleet shouldn't be displayed
-                                    && 
-                                    bounty.job_show_fleet != MagicBountyData.ShowFleet.Text //only text should be displayed
-                                    && 
-                                    activeBounty.getFleet().getFlagship().getVariant().hasTag(Tags.SHIP_LIMITED_TOOLTIP) //Flagship shouldn't get displayed
-                                    ){
+                                            &&
+                                            bounty.job_show_fleet != MagicBountyData.ShowFleet.Text //only text should be displayed
+                                            &&
+                                            activeBounty.getFleet().getFlagship().getVariant().hasTag(Tags.SHIP_LIMITED_TOOLTIP) //Flagship shouldn't get displayed
+                            ) {
                                 //displaying the flagship takes priority if possible
                                 dialog.getVisualPanel().showFleetMemberInfo(activeBounty.getFleet().getFlagship());
                             } else if (bounty.job_show_captain) {
@@ -379,9 +377,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //DIFFICULTY
                             if (
-                                    bounty.job_difficultyDescription != null 
-                                    && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))
-                                    ){
+                                    bounty.job_difficultyDescription != null
+                                            && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))
+                            ) {
                                 /*
                                 int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
                                 float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();
@@ -409,34 +407,34 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 } else {
                                     dangerStringPhrase = getString("mb_threatLevel0"); 
                                 }
-                                */     
-                                
-                                float threatLevel = RelativeEffectiveStrength(activeBounty.getFleet());       
-                                       
+                                */
+
+                                float threatLevel = RelativeEffectiveStrength(activeBounty.getFleet());
+
                                 String dangerStringPhrase;
-                                                                                    //"an extreme danger"
-                                       if (threatLevel < 0.5f) {
+                                //"an extreme danger"
+                                if (threatLevel < 0.5f) {
                                     dangerStringPhrase = getString("mb_threatLevel6");
-                                                                                    //"a deadly peril"
+                                    //"a deadly peril"
                                 } else if (threatLevel < 0.70f) {
-                                    dangerStringPhrase = getString("mb_threatLevel5"); 
-                                                                                    //"a significant challenge"
+                                    dangerStringPhrase = getString("mb_threatLevel5");
+                                    //"a significant challenge"
                                 } else if (threatLevel < 1.85f) {
-                                    dangerStringPhrase = getString("mb_threatLevel4"); 
-                                                                                    //"a moderate hazard"
+                                    dangerStringPhrase = getString("mb_threatLevel4");
+                                    //"a moderate hazard"
                                 } else if (threatLevel < 1.00f) {
-                                    dangerStringPhrase = getString("mb_threatLevel3"); 
-                                                                                    //"a minor threat"
+                                    dangerStringPhrase = getString("mb_threatLevel3");
+                                    //"a minor threat"
                                 } else if (threatLevel < 1.15f) {
-                                    dangerStringPhrase = getString("mb_threatLevel2"); 
-                                                                                    //"a negligible inconvenience" 
+                                    dangerStringPhrase = getString("mb_threatLevel2");
+                                    //"a negligible inconvenience"
                                 } else if (threatLevel < 1.3f) {
-                                    dangerStringPhrase = getString("mb_threatLevel1"); 
-                                                                                    //"no risk whatsoever" 
+                                    dangerStringPhrase = getString("mb_threatLevel1");
+                                    //"no risk whatsoever"
                                 } else {
-                                    dangerStringPhrase = getString("mb_threatLevel0"); 
-                                }      
-                                 
+                                    dangerStringPhrase = getString("mb_threatLevel0");
+                                }
+
                                 //"Your intelligence officer informs you that the target poses "
                                 text.addPara(getString("mb_threat1") + getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);
                             } else if (nullStringIfEmpty(bounty.job_difficultyDescription) != null
@@ -456,7 +454,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         activeBounty.getPresetShipsInFleet()
                                 );
                             }
-                            
+
                             options.clear();
                             optionsAllPages.clear();
                             addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
@@ -475,12 +473,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
     private void showBountyBoard(MagicBountyCoordinator instance, TextPanelAPI text) {
         options.clear();
-        
+
 //        InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128, 128);
 //        visual.setShowRandomSubImage(false);
 //        dialog.getVisualPanel().showImageVisual(visual);
         dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
-        
+
 //        dialog.getVisualPanel().saveCurrentVisual();                
         refreshBounties(market);
 

@@ -6,8 +6,9 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import org.magiclib.util.MagicTxt;
-import static org.magiclib.util.MagicTxt.getString;
 import org.magiclib.util.StringCreator;
+
+import static org.magiclib.util.MagicTxt.getString;
 
 class MagicBountyUtils {
 
@@ -31,7 +32,7 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$fatherMotherParent", new StringCreator() {
             @Override
             public String create() {
@@ -45,11 +46,11 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$manWomanPerson", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getCommander().isAICore()){
+                if (bounty.getFleet().getCommander().isAICore()) {
                     return MagicTxt.getString("mb_ai");
                 } else {
                     switch (bounty.getFleet().getCommander().getGender()) {
@@ -63,11 +64,11 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$hisHerTheir", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getCommander().isAICore()){
+                if (bounty.getFleet().getCommander().isAICore()) {
                     return MagicTxt.getString("mb_its");
                 } else {
                     switch (bounty.getFleet().getCommander().getGender()) {
@@ -81,11 +82,11 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$heSheThey", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getCommander().isAICore()){
+                if (bounty.getFleet().getCommander().isAICore()) {
                     return MagicTxt.getString("mb_it");
                 } else {
                     switch (bounty.getFleet().getCommander().getGender()) {
@@ -99,11 +100,11 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$heIsSheIsTheyAre", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getCommander().isAICore()){
+                if (bounty.getFleet().getCommander().isAICore()) {
                     return MagicTxt.getString("mb_itIs");
                 } else {
                     switch (bounty.getFleet().getCommander().getGender()) {
@@ -117,11 +118,11 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$himHerThem", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getCommander().isAICore()){
+                if (bounty.getFleet().getCommander().isAICore()) {
                     return MagicTxt.getString("mb_it");
                 } else {
                     switch (bounty.getFleet().getCommander().getGender()) {
@@ -135,11 +136,11 @@ class MagicBountyUtils {
                 }
             }
         });
-        
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$himslefHerselfThemselves", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getCommander().isAICore()){
+                if (bounty.getFleet().getCommander().isAICore()) {
                     return MagicTxt.getString("mb_itself");
                 } else {
                     switch (bounty.getFleet().getCommander().getGender()) {
@@ -153,8 +154,8 @@ class MagicBountyUtils {
                 }
             }
         });
-        
-        
+
+
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$system", new StringCreator() {
             @Override
             public String create() {
@@ -170,7 +171,7 @@ class MagicBountyUtils {
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$location", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleetSpawnLocation().getMarket()!=null){
+                if (bounty.getFleetSpawnLocation().getMarket() != null) {
                     return bounty.getFleetSpawnLocation().getMarket().getName();
                 }
                 return bounty.getFleetSpawnLocation().getFullName();
@@ -215,14 +216,14 @@ class MagicBountyUtils {
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$shipFleet", new StringCreator() {
             @Override
             public String create() {
-                if(bounty.getFleet().getFleetData().getMembersListCopy().size()==1){
+                if (bounty.getFleet().getFleetData().getMembersListCopy().size() == 1) {
                     return MagicTxt.getString("mb_var_ship");
                 } else {
                     return MagicTxt.getString("mb_var_fleet");
                 }
             }
         });
-        
+
         //FAILSAFE
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$", new StringCreator() {
             @Override
@@ -252,39 +253,39 @@ class MagicBountyUtils {
 
         return loc;
     }
-    
+
     static String createLocationPreciseText(final ActiveBounty bounty) {
-        
+
         String loc = getString("mb_distance_last");
-        
-        if(bounty.getSpec().fleet_behavior == FleetAssignment.PATROL_SYSTEM){
+
+        if (bounty.getSpec().fleet_behavior == FleetAssignment.PATROL_SYSTEM) {
             loc = loc + getString("mb_distance_roaming") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
         } else {
-            if(bounty.getFleetSpawnLocation().getMarket()!=null){
-                loc = loc + getString("mb_distance_near") + bounty.getFleetSpawnLocation().getMarket().getName() + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.PLANET)){
-                loc = loc + getString("mb_distance_near") + bounty.getFleetSpawnLocation().getName() + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.STATION)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_station") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.JUMP_POINT)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_jump") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.GATE)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_gate") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.DEBRIS_FIELD)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_debris") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.WRECK)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_wreck") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.COMM_RELAY)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_comm") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.SENSOR_ARRAY)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_sensor") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.NAV_BUOY)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_nav") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            } else if(bounty.getFleetSpawnLocation().hasTag(Tags.STABLE_LOCATION)){
-                loc = loc + getString("mb_distance_near") + getString("mb_distance_stable") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            if (bounty.getFleetSpawnLocation().getMarket() != null) {
+                loc = loc + getString("mb_distance_near") + bounty.getFleetSpawnLocation().getMarket().getName() + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.PLANET)) {
+                loc = loc + getString("mb_distance_near") + bounty.getFleetSpawnLocation().getName() + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.STATION)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_station") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.JUMP_POINT)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_jump") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.GATE)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_gate") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.DEBRIS_FIELD)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_debris") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.WRECK)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_wreck") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.COMM_RELAY)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_comm") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.SENSOR_ARRAY)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_sensor") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.NAV_BUOY)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_nav") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            } else if (bounty.getFleetSpawnLocation().hasTag(Tags.STABLE_LOCATION)) {
+                loc = loc + getString("mb_distance_near") + getString("mb_distance_stable") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
             } else {
-                loc = loc + getString("mb_distance_somewhere") + getString("mb_distance_in")+ bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
-            }            
+                loc = loc + getString("mb_distance_somewhere") + getString("mb_distance_in") + bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType();
+            }
         }
         loc = loc + getString(".");
         return loc;

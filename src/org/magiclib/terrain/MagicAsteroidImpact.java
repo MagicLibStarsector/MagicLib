@@ -63,15 +63,15 @@ public class MagicAsteroidImpact implements EveryFrameScript {
                 if (damageMult < 1) {
                     damageMult = 1;
                 }
-                
-		//"af_damage1" : "Asteroid impact",
-		//"af_damage2" : " suffers damage from an asteroid impact",
+
+                //"af_damage1" : "Asteroid impact",
+                //"af_damage2" : " suffers damage from an asteroid impact",
                 Misc.applyDamage(target, null, damageMult, true, "asteroid_impact", getString("af_damage1"),
                         true, null, target.getShipName() + getString("af_damage2"));
             }
 
             if (!dealDamage && fleet.isPlayerFleet()) {
-		//"af_damage3" : "Asteroid impact on drive bubble",
+                //"af_damage3" : "Asteroid impact on drive bubble",
                 Global.getSector().getCampaignUI().addMessage(getString("af_damage3"), Misc.getNegativeHighlightColor());
             }
 

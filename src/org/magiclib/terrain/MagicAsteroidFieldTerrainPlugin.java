@@ -22,8 +22,9 @@ import static org.magiclib.util.MagicTxt.getString;
 
 /**
  * This is a drop-in replacement for the vanilla AsteroidFieldTerrainPlugin.
- *
+ * <p>
  * For example usage, see Roider Union by SafariJohn.
+ *
  * @author SafariJohn, Tartiflette
  */
 public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin {
@@ -273,7 +274,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
         //"af_impact4" : "and slow-moving fleets do not risk impacts at all.",
         //"af_impact5" : "slow-moving",
         tooltip.addPara(getString("af_impact3")
-                + getString("af_impact4"), pad,
+                        + getString("af_impact4"), pad,
                 highlight,
                 getString("af_impact5")
         );
@@ -288,7 +289,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
         //"af_sensor2" : "*Press and hold %s to stop; combine with holding the left mouse button down to move slowly. ",
         //"af_sensor3" : "A slow-moving fleet moves at a burn level of half that of its slowest ship.",
         tooltip.addPara(getString("af_sensor2")
-                + getString("af_sensor3"), nextPad,
+                        + getString("af_sensor3"), nextPad,
                 Misc.getGrayColor(), highlight,
                 stop
         );

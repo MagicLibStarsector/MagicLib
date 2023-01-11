@@ -12,11 +12,11 @@ import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.SectorMapAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import org.magiclib.util.MagicDeserializable;
-import org.magiclib.util.MagicTxt;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.util.MagicDeserializable;
+import org.magiclib.util.MagicTxt;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -227,7 +227,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_success),
+                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_success),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -258,7 +258,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_failure),
+                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_failure),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -278,7 +278,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_expired != null && !bounty.getSpec().job_intel_expired.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_expired),
+                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_expired),
                             PADDING_DESC,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor()
@@ -563,7 +563,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         ActiveBounty bounty = getBounty();
 
         if (bounty != null) {
-             if(bounty.getSpec().existing_target_memkey==null || bounty.getSpec().existing_target_memkey.isEmpty()){
+            if (bounty.getSpec().existing_target_memkey == null || bounty.getSpec().existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 bounty.despawn();
             }

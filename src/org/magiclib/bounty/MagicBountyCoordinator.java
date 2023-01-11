@@ -12,14 +12,14 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.magiclib.bounty.ActiveBounty.Stage;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicVariables;
-import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -61,8 +61,8 @@ public final class MagicBountyCoordinator {
                 culling.add(dataEntry.getKey());
             }
         }
-        if(!culling.isEmpty()){
-            for(String id : culling){
+        if (!culling.isEmpty()) {
+            for (String id : culling) {
                 MagicBountyData.BOUNTIES.remove(id);
             }
         }
@@ -165,8 +165,8 @@ public final class MagicBountyCoordinator {
             if (getCompletedBounties().contains(bountyKey)) {
                 continue;
             }
-            
-            if(getActiveBounty(bountyKey)!=null && getActiveBounty(bountyKey).getStage()==Stage.Dismissed){
+
+            if (getActiveBounty(bountyKey) != null && getActiveBounty(bountyKey).getStage() == Stage.Dismissed) {
                 continue;
             }
 
@@ -433,8 +433,8 @@ public final class MagicBountyCoordinator {
             if (intel != null) {
                 intel.endImmediately();
             }
-            
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+
+            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 activeBounty.despawn();
             }

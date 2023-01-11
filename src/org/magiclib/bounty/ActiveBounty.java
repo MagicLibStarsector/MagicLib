@@ -11,12 +11,12 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import org.magiclib.util.MagicCampaign;
-import org.magiclib.util.MagicTxt;
-import org.magiclib.util.MagicVariables;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.util.MagicCampaign;
+import org.magiclib.util.MagicTxt;
+import org.magiclib.util.MagicVariables;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public final class ActiveBounty {
     private @Nullable Float rewardCredits;
     private @Nullable Float rewardReputation;
     private @Nullable String rewardFaction;
-    private boolean isDespawning = false, hasNoIntel=false;
+    private boolean isDespawning = false, hasNoIntel = false;
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
 
     /**
@@ -143,7 +143,7 @@ public final class ActiveBounty {
         this.bountySource = bountySource;
 
         //CHECK IF THE FLEET EXIST
-        if(getFleet().getCurrentAssignment()==null){
+        if (getFleet().getCurrentAssignment() == null) {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
             systemLocation.addEntity(getFleet());
             getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
@@ -156,10 +156,11 @@ public final class ActiveBounty {
                     null);
 
             //if needed set the bounty faction to neutral with everyone but the player.
-            if(spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)){
+            if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
                 FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
-                for(FactionAPI f : Global.getSector().getAllFactions()){
-                    if(f!=bountyFaction && f!=Global.getSector().getPlayerFaction())f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                for (FactionAPI f : Global.getSector().getAllFactions()) {
+                    if (f != bountyFaction && f != Global.getSector().getPlayerFaction())
+                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
                 }
             }
         }
@@ -167,7 +168,7 @@ public final class ActiveBounty {
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
         // Add comm reply if needed
-        if(MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null){
+        if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null) {
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
         }
@@ -260,7 +261,7 @@ public final class ActiveBounty {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 getFleet().despawn();
             }
@@ -290,7 +291,7 @@ public final class ActiveBounty {
 
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets if it simply expired
                 despawn();
             }
@@ -317,9 +318,9 @@ public final class ActiveBounty {
             isDespawning = true;
         }
     }
-    
-    void endIntel(){
-        if(!hasNoIntel){
+
+    void endIntel() {
+        if (!hasNoIntel) {
             MagicBountyIntel intel = getIntel();
 
             if (intel != null) {
@@ -327,7 +328,7 @@ public final class ActiveBounty {
                     intel.endAfterDelay();
                 }
             }
-            hasNoIntel=true;
+            hasNoIntel = true;
         }
     }
 
@@ -477,7 +478,7 @@ public final class ActiveBounty {
             return null;
         }
 
-        if(getSpec().job_credit_scaling<=0 || getSpec().fleet_min_FP<=0){
+        if (getSpec().job_credit_scaling <= 0 || getSpec().fleet_min_FP <= 0) {
             float rewardRoundedToNearest100 = Math.round(getSpec().job_credit_reward / 100.0) * 100;
             LOG.info(
                     String.format(
@@ -493,7 +494,7 @@ public final class ActiveBounty {
         float playerFleetScale = MagicCampaign.PlayerFleetSizeMultiplier(getSpec().fleet_min_FP) - 1;
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
 
-        if(playerFleetScale>0){
+        if (playerFleetScale > 0) {
             float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;
             float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
             float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
@@ -503,7 +504,7 @@ public final class ActiveBounty {
                             rewardRoundedToNearest100,
                             getKey(),
                             getSpec().job_credit_reward,
-                            playerFleetScale+1,
+                            playerFleetScale + 1,
                             getSpec().job_credit_scaling,
                             playerFleetScale
                     )
@@ -516,7 +517,7 @@ public final class ActiveBounty {
                             "Base reward of %sc for bounty '%s'. No scaling due to the player fleet being %s times as large as the minimum target fleet.",
                             rewardRoundedToNearest100,
                             getKey(),
-                            1+playerFleetScale
+                            1 + playerFleetScale
                     )
             );
             return rewardRoundedToNearest100;
@@ -630,7 +631,6 @@ public final class ActiveBounty {
     /**
      * The current stage of the bounty.
      * CAUTION: ORDER MATTERS.
-     *
      */
     public enum Stage {
         /**
