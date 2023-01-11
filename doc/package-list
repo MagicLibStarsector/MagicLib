@@ -1,8 +1,10 @@
 data.scripts
 data.scripts.ai
 data.scripts.bounty
+data.scripts.bounty.console
 data.scripts.bounty.rulecmd
 data.scripts.hullmods
 data.scripts.plugins
+data.scripts.terrain
 data.scripts.util
 data.scripts.weapons
