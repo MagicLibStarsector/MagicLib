@@ -15,7 +15,6 @@ import java.util.Map;
  * Part of the logic to show the bounty board in every single market.
  *
  * @author Wisp
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class ShowMagicBountyBoardCmd extends BaseCommandPlugin {
     @Override

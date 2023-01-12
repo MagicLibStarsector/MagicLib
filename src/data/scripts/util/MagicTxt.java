@@ -17,9 +17,6 @@ import java.util.regex.Pattern;
 
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
-/**
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
- */
 public class MagicTxt {
 
     public static String getString(String id) {
@@ -88,7 +85,7 @@ public class MagicTxt {
     }
 
     /**
-     * Takes a string with the format "This is a ==highlighted word== string." and returns {@link data.scripts.util.MagicTxt.MagicDisplayableText}.
+     * Takes a string with the format "This is a ==highlighted word== string." and returns {@link MagicDisplayableText}.
      */
     public static MagicDisplayableText createMagicDisplayableText(@NotNull String str) {
         return new MagicDisplayableText(str);

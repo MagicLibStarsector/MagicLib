@@ -8,17 +8,13 @@ import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
+import data.scripts.util.MagicTxt;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_DURATION;
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.IMPACT_FORCE;
-import static data.scripts.util.MagicTxt.getString;
-
 /**
  * @author SafariJohn, Tartiflette
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicAsteroidImpact implements EveryFrameScript {
 
@@ -32,11 +28,11 @@ public class MagicAsteroidImpact implements EveryFrameScript {
         boolean dealDamage = target != null;
 
         this.fleet = fleet;
-        MutableStat forceMod = fleet.getCommanderStats().getDynamic().getStat(IMPACT_FORCE);
+        MutableStat forceMod = fleet.getCommanderStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_FORCE);
         if (forceMod == null) {
             forceMod = new MutableStat(1f);
         }
-        MutableStat durationMod = fleet.getCommanderStats().getDynamic().getStat(IMPACT_DURATION);
+        MutableStat durationMod = fleet.getCommanderStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_DURATION);
         if (durationMod == null) {
             durationMod = new MutableStat(1f);
         }
@@ -64,16 +60,16 @@ public class MagicAsteroidImpact implements EveryFrameScript {
                 if (damageMult < 1) {
                     damageMult = 1;
                 }
-                
-		//"af_damage1" : "Asteroid impact",
-		//"af_damage2" : " suffers damage from an asteroid impact",
-                Misc.applyDamage(target, null, damageMult, true, "asteroid_impact", getString("af_damage1"),
-                        true, null, target.getShipName() + getString("af_damage2"));
+
+                //"af_damage1" : "Asteroid impact",
+                //"af_damage2" : " suffers damage from an asteroid impact",
+                Misc.applyDamage(target, null, damageMult, true, "asteroid_impact", MagicTxt.getString("af_damage1"),
+                        true, null, target.getShipName() + MagicTxt.getString("af_damage2"));
             }
 
             if (!dealDamage && fleet.isPlayerFleet()) {
-		//"af_damage3" : "Asteroid impact on drive bubble",
-                Global.getSector().getCampaignUI().addMessage(getString("af_damage3"), Misc.getNegativeHighlightColor());
+                //"af_damage3" : "Asteroid impact on drive bubble",
+                Global.getSector().getCampaignUI().addMessage(MagicTxt.getString("af_damage3"), Misc.getNegativeHighlightColor());
             }
 
             Vector2f test = Global.getSector().getPlayerFleet().getLocation();
@@ -135,7 +131,7 @@ public class MagicAsteroidImpact implements EveryFrameScript {
 
     @Override
     public boolean isDone() {
-        MutableStat durationMod = fleet.getCommanderStats().getDynamic().getStat(IMPACT_DURATION);
+        MutableStat durationMod = fleet.getCommanderStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_DURATION);
         if (durationMod == null) {
             durationMod = new MutableStat(1f);
         }

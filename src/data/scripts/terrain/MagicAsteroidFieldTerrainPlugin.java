@@ -13,19 +13,19 @@ import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
+import data.scripts.util.MagicTxt;
 
 import java.awt.*;
 import java.util.Random;
 
 import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.*;
-import static data.scripts.util.MagicTxt.getString;
 
 /**
  * This is a drop-in replacement for the vanilla AsteroidFieldTerrainPlugin.
- *
+ * <p>
  * For example usage, see Roider Union by SafariJohn.
+ *
  * @author SafariJohn, Tartiflette
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin {
 
@@ -37,7 +37,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
         name = params.name;
         if (name == null) {
             //"af_fieldName" : "Asteroid Field",
-            name = getString("af_fieldName");
+            name = MagicTxt.getString("af_fieldName");
         }
         params.numAsteroids = params.minAsteroids;
         if (params.maxAsteroids > params.minAsteroids) {
@@ -101,7 +101,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
     @Override
     public String getNameForTooltip() {
         //"af_fieldName" : "Asteroid Field",
-        return getString("af_fieldName");
+        return MagicTxt.getString("af_fieldName");
     }
 
     @Override
@@ -134,7 +134,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
         if (Misc.isSlowMoving(fleet)) {
             fleet.getStats().addTemporaryModMult(0.1f, getModId() + "_2",
                     //"af_hiding" : "Hiding inside ",
-                    getString("af_hiding") + getNameForTooltip().toLowerCase(),
+                    MagicTxt.getString("af_hiding") + getNameForTooltip().toLowerCase(),
                     RingSystemTerrainPlugin.getVisibilityMult(fleet),
                     fleet.getStats().getDetectedRangeMod());
         }
@@ -249,7 +249,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
 
     @Override
     public String getNameAOrAn() {
-        return getString("an");
+        return MagicTxt.getString("an");
     }
 
     @Override
@@ -268,28 +268,28 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
         }
         //"af_impact1" : "Chance of asteroid impacts that briefly knock the fleet off course and ",
         //"af_impact2" : "may occasionally impact ships directly, dealing moderate damage.",
-        tooltip.addPara(getString("af_impact1")
-                + getString("af_impact2"), nextPad);
+        tooltip.addPara(MagicTxt.getString("af_impact1")
+                + MagicTxt.getString("af_impact2"), nextPad);
         //"af_impact3" : "Smaller fleets are usually able to avoid the heavier impacts, ",
         //"af_impact4" : "and slow-moving fleets do not risk impacts at all.",
         //"af_impact5" : "slow-moving",
-        tooltip.addPara(getString("af_impact3")
-                + getString("af_impact4"), pad,
+        tooltip.addPara(MagicTxt.getString("af_impact3")
+                        + MagicTxt.getString("af_impact4"), pad,
                 highlight,
-                getString("af_impact5")
+                MagicTxt.getString("af_impact5")
         );
 
         String stop = Global.getSettings().getControlStringForEnumName("GO_SLOW");
 
         //"af_sensor1" : "Reduces the range at which stationary or slow-moving* fleets inside it can be detected by %s.",
-        tooltip.addPara(getString("af_sensor1"), nextPad,
+        tooltip.addPara(MagicTxt.getString("af_sensor1"), nextPad,
                 highlight,
-                "" + (int) ((1f - RingSystemTerrainPlugin.getVisibilityMult(Global.getSector().getPlayerFleet())) * 100) + getString("%")
+                "" + (int) ((1f - RingSystemTerrainPlugin.getVisibilityMult(Global.getSector().getPlayerFleet())) * 100) + MagicTxt.getString("%")
         );
         //"af_sensor2" : "*Press and hold %s to stop; combine with holding the left mouse button down to move slowly. ",
         //"af_sensor3" : "A slow-moving fleet moves at a burn level of half that of its slowest ship.",
-        tooltip.addPara(getString("af_sensor2")
-                + getString("af_sensor3"), nextPad,
+        tooltip.addPara(MagicTxt.getString("af_sensor2")
+                        + MagicTxt.getString("af_sensor3"), nextPad,
                 Misc.getGrayColor(), highlight,
                 stop
         );
@@ -297,8 +297,8 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
         if (expanded) {
             //"af_combat1" : "Combat",
             //"af_combat2" : "Numerous asteroids present on the battlefield. Large enough to be an in-combat navigational hazard.",
-            tooltip.addSectionHeading(getString("af_combat1"), Alignment.MID, pad);
-            tooltip.addPara(getString("af_combat2"), small);
+            tooltip.addSectionHeading(MagicTxt.getString("af_combat1"), Alignment.MID, pad);
+            tooltip.addPara(MagicTxt.getString("af_combat2"), small);
         }
     }
 

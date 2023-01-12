@@ -16,7 +16,6 @@ import java.util.List;
  * Ends bounties based on battle results.
  *
  * @author Wisp
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public final class MagicBountyBattleListener implements FleetEventListener {
     /**

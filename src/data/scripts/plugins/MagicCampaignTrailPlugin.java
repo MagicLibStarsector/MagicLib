@@ -24,9 +24,6 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
-/**
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
- */
 public class MagicCampaignTrailPlugin implements EveryFrameScript {
     //Tracker for unique ID getting. Only use for this script, though: it's dangerous to use for other ID purposes, since it is so simple
     //NOTE: IDs should be bigger than 0; lower than 0 IDs are used by the script for "cut" trails
@@ -60,7 +57,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 associatedEntity.getContainingLocation().removeEntity(associatedEntity);
             }
             associatedEntity = Global.getSector().getPlayerFleet().getContainingLocation().addCustomEntity("nictoy_unique_custom_trail_tracker_object", "YOU SHOULD NOT SEE THIS",
-                                                                                                           "nictoy_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
+                    "nictoy_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
             associatedEntity.setFixedLocation(Global.getSector().getPlayerFleet().getLocation().x, Global.getSector().getPlayerFleet().getLocation().y);
         }
 
@@ -165,7 +162,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberSimpleInternal(linkedEntity, ID, sprite, position, speed, angle,
-                                                                                           startSize, endSize, color, opacity, duration, additive, offsetVelocity);
+                        startSize, endSize, color, opacity, duration, additive, offsetVelocity);
             }
         }
     }
@@ -207,7 +204,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                                                                                          opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity);
+                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -282,9 +279,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAdvancedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
-                                                                                             startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
-                                                                                             inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                                                                                             offsetVelocity, locationAPICulling, locationAPI);
+                        startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                        inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                        offsetVelocity, locationAPICulling, locationAPI);
             }
         }
     }
@@ -322,7 +319,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                                                                                          opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -398,9 +395,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAnimatedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
-                                                                                             startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
-                                                                                             inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                                                                                             offsetVelocity, locationAPICulling, locationAPI);
+                        startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                        inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                        offsetVelocity, locationAPICulling, locationAPI);
                 break;
             }
         }
@@ -437,7 +434,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Creates the custom object we want
         NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                                                                                          opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
 
         //And finally add it to the correct location in our maps
         animMap.get(ID).addNewTrailObject(objectToAdd);

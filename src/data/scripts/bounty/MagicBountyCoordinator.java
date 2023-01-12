@@ -12,7 +12,6 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.bounty.ActiveBounty.Stage;
 import data.scripts.util.MagicCampaign;
 import data.scripts.util.MagicSettings;
 import data.scripts.util.MagicTxt;
@@ -23,11 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static data.scripts.util.MagicCampaign.findSuitableTarget;
-import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import static data.scripts.util.MagicVariables.MAGICLIB_ID;
-import static data.scripts.util.MagicVariables.verbose;
-
 /**
  * The point of entry into MagicBounty scripting.
  * Contains methods for getting all or specific {@link ActiveBounty}s, as well as general bounty management logic.
@@ -37,7 +31,6 @@ import static data.scripts.util.MagicVariables.verbose;
  * </pre>
  *
  * @author Wisp
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
@@ -62,8 +55,8 @@ public final class MagicBountyCoordinator {
                 culling.add(dataEntry.getKey());
             }
         }
-        if(!culling.isEmpty()){
-            for(String id : culling){
+        if (!culling.isEmpty()) {
+            for (String id : culling) {
                 MagicBountyData.BOUNTIES.remove(id);
             }
         }
@@ -80,7 +73,7 @@ public final class MagicBountyCoordinator {
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
     private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
-            MagicSettings.getInteger(MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
+            MagicSettings.getInteger(MagicVariables.MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
     /**
      * Returns a map (bounty key, bounty) of all active bounties. Note that this does not necessarily mean that they have
@@ -166,8 +159,8 @@ public final class MagicBountyCoordinator {
             if (getCompletedBounties().contains(bountyKey)) {
                 continue;
             }
-            
-            if(getActiveBounty(bountyKey)!=null && getActiveBounty(bountyKey).getStage()==Stage.Dismissed){
+
+            if (getActiveBounty(bountyKey) != null && getActiveBounty(bountyKey).getStage() == ActiveBounty.Stage.Dismissed) {
                 continue;
             }
 
@@ -229,7 +222,7 @@ public final class MagicBountyCoordinator {
     }
 
     public int getBountySlotsAtMarket(MarketAPI marketAPI) {
-        int offersAtSizeThree = MagicSettings.getInteger(MAGICLIB_ID, "bounty_offersAtSizeThree");
+        int offersAtSizeThree = MagicSettings.getInteger(MagicVariables.MAGICLIB_ID, "bounty_offersAtSizeThree");
         return Math.max(0, marketAPI.getSize() - 3 + offersAtSizeThree);
     }
 
@@ -309,7 +302,7 @@ public final class MagicBountyCoordinator {
         } else {
 
             //the bounty has to create the fleet
-            suitableTargetLocation = findSuitableTarget(
+            suitableTargetLocation = MagicCampaign.findSuitableTarget(
                     spec.location_marketIDs,
                     spec.location_marketFactions,
                     spec.location_distance,
@@ -331,14 +324,14 @@ public final class MagicBountyCoordinator {
                     // because apparently putting null in the json shows up as "null", a string...
                     spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"),
                     spec.target_aiCoreId,
-                    nullStringIfEmpty(spec.target_first_name),
-                    nullStringIfEmpty(spec.target_last_name),
-                    nullStringIfEmpty(spec.target_portrait),
+                    MagicTxt.nullStringIfEmpty(spec.target_first_name),
+                    MagicTxt.nullStringIfEmpty(spec.target_last_name),
+                    MagicTxt.nullStringIfEmpty(spec.target_portrait),
                     spec.target_gender,
-                    nullStringIfEmpty(spec.fleet_composition_faction),
-                    nullStringIfEmpty(spec.target_rank),
-                    nullStringIfEmpty(spec.target_post),
-                    nullStringIfEmpty(spec.target_personality),
+                    MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction),
+                    MagicTxt.nullStringIfEmpty(spec.target_rank),
+                    MagicTxt.nullStringIfEmpty(spec.target_post),
+                    MagicTxt.nullStringIfEmpty(spec.target_personality),
                     spec.target_level,
                     spec.target_elite_skills,
                     spec.target_skill_preference,
@@ -434,8 +427,8 @@ public final class MagicBountyCoordinator {
             if (intel != null) {
                 intel.endImmediately();
             }
-            
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+
+            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 activeBounty.despawn();
             }
@@ -467,7 +460,7 @@ public final class MagicBountyCoordinator {
      */
     private static int calculateDesiredFP(MagicBountyData.bountyData spec) {
         if (spec.fleet_min_FP <= 0) {
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 LOG.info(
                         String.format(
                                 "Bounty fleet '%s' has no reinforcement",
@@ -479,7 +472,7 @@ public final class MagicBountyCoordinator {
         }
 
         if (spec.fleet_scaling_multiplier <= 0) {
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 LOG.info(String.format("Bounty fleet '%s' should have %s FP (no scaling).)",
                         spec.job_name,
                         spec.fleet_min_FP));
@@ -492,7 +485,7 @@ public final class MagicBountyCoordinator {
         // the minimum DP.
         int desiredFP = Math.round(spec.fleet_min_FP + Math.max(0, spec.fleet_scaling_multiplier * differenceBetweenBountyMinDPAndPlayerFleetDP));
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             LOG.info(String.format("After scaling, bounty fleet '%s' should have %s FP (%s min + (%s mult * %s diff between player FP and min FP))",
                     spec.job_name,
                     desiredFP,
@@ -508,7 +501,7 @@ public final class MagicBountyCoordinator {
 
         try {
             // fleet_faction
-            if (nullStringIfEmpty(this_bounty.fleet_faction) != null) {
+            if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_faction) != null) {
                 String fleetFactionId = this_bounty.fleet_faction;
                 FactionAPI faction = StringMatcher.findBestFactionMatch(fleetFactionId);
 
@@ -522,13 +515,13 @@ public final class MagicBountyCoordinator {
                 }
             } else
                 //this is a mandatory value if the bounty is not placed on an existing fleet
-                if (nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
+                if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
                     LOG.info(String.format("Invalid '%s' bounty, missing fleet_faction", bountyId));
                     return false;
                 }
 
             // fleet_composition_faction
-            if (nullStringIfEmpty(this_bounty.fleet_composition_faction) != null) {
+            if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_composition_faction) != null) {
                 String compositionFactionId = this_bounty.fleet_composition_faction;
                 FactionAPI fleetCompositionFaction = StringMatcher.findBestFactionMatch(compositionFactionId);
 
@@ -543,7 +536,7 @@ public final class MagicBountyCoordinator {
             }
 
             // job_forFaction
-            if (nullStringIfEmpty(this_bounty.job_forFaction) != null) {
+            if (MagicTxt.nullStringIfEmpty(this_bounty.job_forFaction) != null) {
                 String job_forFactionId = this_bounty.job_forFaction;
                 FactionAPI job_forFaction = StringMatcher.findBestFactionMatch(job_forFactionId);
 
@@ -662,8 +655,8 @@ public final class MagicBountyCoordinator {
             }
 
             //OTHER REQUIREMENT CHECKS
-            if (nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
-                if (nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null) {
+            if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
+                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null) {
                     //No flagship variant, invalidating the bounty
                     LOG.info(String.format("Missing fleet_flagship_variant from bounty %s. Bounty is INVALID!", bountyId));
                     return false;

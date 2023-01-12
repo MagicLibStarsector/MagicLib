@@ -12,9 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
- */
 public class ListBountiesCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
@@ -60,11 +57,11 @@ public class ListBountiesCommand implements BaseCommand {
                 ActiveBounty bounty = entry.getValue();
                 Console.showMessage(
                         String.format(
-                            //"  Id: %s, Stage: %s\n  %s\n"
-                            "  Id: %s, Stage: %s\n"
-                            ,entry.getKey()
-                            ,bounty.getStage().name()
-                            //,bounty
+                                //"  Id: %s, Stage: %s\n  %s\n"
+                                "  Id: %s, Stage: %s\n"
+                                , entry.getKey()
+                                , bounty.getStage().name()
+                                //,bounty
                         )
                 );
             }

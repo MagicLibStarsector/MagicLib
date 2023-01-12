@@ -1,27 +1,18 @@
 package data.scripts.util;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.BaseCampaignEventListener;
-import com.fs.starfarer.api.campaign.PlayerMarketTransaction;
+import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
+import com.fs.starfarer.api.campaign.econ.Industry;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
-import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
-import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.impl.campaign.econ.impl.GenericInstallableItemPlugin;
 
-import com.fs.starfarer.api.campaign.SpecialItemData;
-import com.fs.starfarer.api.campaign.SpecialItemSpecAPI;
-import com.fs.starfarer.api.campaign.econ.Industry;
-
-import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 
-/**
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
- */
 public class MagicIndustryItemWrangler extends BaseCampaignEventListener {
 
     private static final Map ITEMS_PRIORITIES = new HashMap(); // should really be typed <String,ItemPriority>

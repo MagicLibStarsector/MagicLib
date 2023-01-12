@@ -10,7 +10,6 @@ import java.util.Collection;
 
 /**
  * Tells the game engine to use {@link MagicBountyFleetInteractionDialogPlugin} for battles with bounty fleets.
- * @deprecated Please replace `data.scripts` with `org.magiclib`.
  */
 public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
     @Override
