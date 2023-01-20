@@ -265,7 +265,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasReputationReward()) {
-                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.min(-0.05f, -bounty.getRewardReputation()));
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getFailureReputationPenalty());
                 }
                 break;
 
@@ -285,7 +285,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasReputationReward()) {
-                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.max(-0.05f, -bounty.getRewardReputation()));
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getFailureReputationPenalty());
                 }
                 break;
 

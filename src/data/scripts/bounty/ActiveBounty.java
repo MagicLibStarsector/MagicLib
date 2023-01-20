@@ -248,7 +248,9 @@ public final class ActiveBounty {
             stage = Stage.ExpiredAfterAccepting;
             //reputation penalty
             if (hasReputationReward()) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.min(0.05f, getRewardReputation()));
+                Global.getSector().getPlayerFaction().adjustRelationship(
+                        getRewardFaction(),
+                        getFailureReputationPenalty());
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -272,7 +274,9 @@ public final class ActiveBounty {
             stage = Stage.FailedSalvagedFlagship;
             //reputation penalty
             if (hasReputationReward()) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.max(0.05f, getRewardReputation()));
+                Global.getSector().getPlayerFaction().adjustRelationship(
+                        getRewardFaction(),
+                        getFailureReputationPenalty());
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -393,6 +397,14 @@ public final class ActiveBounty {
 
     public @Nullable Float getRewardReputation() {
         return rewardReputation;
+    }
+
+    /**
+     * Rep penalty is the inverse of the reward, capped to -0.05.
+     * Or, if rep reward is negative, caps the rep reward for failure to 0.05.
+     */
+    public @Nullable Float getFailureReputationPenalty() {
+        return Math.max(-0.05f, Math.min(0.05f, -getRewardReputation()));
     }
 
     public @Nullable String getRewardFaction() {
@@ -569,8 +581,6 @@ public final class ActiveBounty {
 
     public boolean hasReputationReward() {
         return getRewardReputation() != null
-                // TODO: Remove this, but look through `endBounty` because this is assumed to be positive and flipped negative as a punishment.
-                && getRewardReputation() > 0
                 && getRewardFaction() != null
                 && !getRewardFaction().isEmpty()
                 && Global.getSector().getFaction(getRewardFaction()) != null;

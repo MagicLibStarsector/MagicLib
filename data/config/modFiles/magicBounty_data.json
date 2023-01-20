@@ -27,7 +27,7 @@
 		"job_intel_success": "Minutes after the battle your comm officer signals you the reception an anonymous payment, along a link to a StellNet article describing the damning actions of one rising TT exec's child and their gruelling end at the hand of a courageous mercenary outfit.",
 		#"job_intel_success": "error?",
 		#"job_intel_failure": "",
-		"job_intel_expired": "Your Comm officer presents you with a StellNet article describing the heroic boarding of that troublesome heir's flagship by an elite TT commando, the capture of that Pirate wanabe and their subsequent admission in an Addiction Recovery Center. It also showered their father's with praises for their level headed actions and swift decision making that prevented what could have been a PR disaster.",
+		"job_intel_expired": "Your Comm officer presents you with a StelNet article describing the heroic boarding of that troublesome heir's flagship by an elite TT commando, the capture of that Pirate wanabe and their subsequent admission in an Addiction Recovery Center. It also showered their father's with praises for their level headed actions and swift decision making that prevented what could have been a PR disaster.",
 		#"job_intel_expired": "error?",
 		"job_forFaction":"persean",
 		"job_difficultyDescription": "auto",

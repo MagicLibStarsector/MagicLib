@@ -109,7 +109,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_accepted") + bounty.job_name);
 
                     ActiveBounty activeBounty = bountyCoordinator.getActiveBounty(bountyKey);
-                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), (float) bounty.job_reputation_reward, bounty.job_forFaction);
+                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), bounty.job_reputation_reward, bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -218,7 +218,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //OFFERING FACTION
 
-                            if (bounty.job_show_captain == false && bounty.job_show_fleet == MagicBountyData.ShowFleet.None) {
+                            if (!bounty.job_show_captain && bounty.job_show_fleet == MagicBountyData.ShowFleet.None) {
                                 //"Posted by %s."
                                 if (bounty.job_forFaction != null) {
                                     FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);

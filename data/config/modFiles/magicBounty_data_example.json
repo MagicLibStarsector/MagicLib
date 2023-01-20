@@ -69,7 +69,7 @@
         "job_deadline": 360, # Default: no limit. The number of days to complete the bounty.
         "job_credit_reward": 9000, # Default: no credit reward. Number of credits to award the player on successful completion.
         "job_reward_scaling": 1.0, # Default: no scaling/bonus. Bonus credits based on FP. Bonus is the specified number multiplied by how many FP the bounty fleet was over their base FP.
-        "job_reputation_reward":5, # Default: 5 rep points. Reputation benefit with the faction posting the bounty, if any, in case of success. Set to 0 or less to disable, does not scale
+        "job_reputation_reward":5, # Default: 5 rep points. Reputation benefit with the faction posting the bounty, if any, in case of success. Set to 0 to disable, does not scale
         "job_item_reward": { # Default: no item rewards. Lists special items that will be added to the post-battle loot. First value is the item id, second is the number to give the player.
             # Using the same syntax as Console Commands, blueprints may be added. ["fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"]
             "item_A":1,
