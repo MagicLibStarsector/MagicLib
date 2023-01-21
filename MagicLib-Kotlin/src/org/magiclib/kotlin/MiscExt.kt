@@ -1,18 +1,24 @@
 package org.magiclib.kotlin
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
+import com.fs.starfarer.api.campaign.econ.CommodityOnMarketAPI
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.events.CampaignEventTarget
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
-import com.fs.starfarer.api.combat.CombatEntityAPI
-import com.fs.starfarer.api.combat.ShipAPI
-import com.fs.starfarer.api.combat.ShipHullSpecAPI
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI
+import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.events.BaseEventPlugin
 import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
 import com.fs.starfarer.api.impl.campaign.procgen.StarAge
+import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator
 import com.fs.starfarer.api.impl.campaign.terrain.AsteroidSource
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin
+import com.fs.starfarer.api.loading.HullModSpecAPI
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.Misc.FleetFilter
 import org.json.JSONObject
@@ -133,7 +139,7 @@ fun Vector2f.getAngleInDegrees(to: Vector2f) = Misc.getAngleInDegrees(this, to)
 fun Vector2f.normalise() = Misc.normalise(this)
 
 /**
- * Normalizes an angle given in degrees.
+ * MagicLib: Normalizes an angle given in degrees.
  */
 fun Float.normalizeAngle() = Misc.normalizeAngle(this)
 
@@ -149,7 +155,7 @@ fun SectorEntityToken.findNearestLocalMarketWithSameFaction(maxDist: Float) =
 fun Vector2f.getUnitVector(to: Vector2f) = Misc.getUnitVector(this, to)
 
 /**
- * Called on an angle given in degrees.
+ * MagicLib: Called on an angle given in degrees.
  */
 fun Float.getUnitVectorAtDegreeAngle() = Misc.getUnitVectorAtDegreeAngle(this)
 
@@ -208,20 +214,20 @@ fun SectorEntityToken.getInterceptPointBasic(to: SectorEntityToken) =
  *
  * Returns whether the flag is still set after this method does its work.
  */
-fun MemoryAPI.setFlagWithReason(flagKey: String, reason: String?, value: Boolean, expire: Float) =
+fun MemoryAPI.setFlagWithReason(flagKey: String, reason: String, value: Boolean, expire: Float) =
     Misc.setFlagWithReason(this, flagKey, reason, value, expire)
 
-fun MemoryAPI.flagHasReason(flagKey: String, reason: String?) = Misc.flagHasReason(this, flagKey, reason)
+fun MemoryAPI.flagHasReason(flagKey: String, reason: String) = Misc.flagHasReason(this, flagKey, reason)
 
 fun MemoryAPI.clearFlag(flagKey: String) = Misc.clearFlag(this, flagKey)
 
-fun CampaignFleetAPI.makeLowRepImpact(reason: String?) = Misc.makeLowRepImpact(this, reason)
+fun CampaignFleetAPI.makeLowRepImpact(reason: String) = Misc.makeLowRepImpact(this, reason)
 
-fun CampaignFleetAPI.makeNoRepImpact(reason: String?) = Misc.makeNoRepImpact(this, reason)
+fun CampaignFleetAPI.makeNoRepImpact(reason: String) = Misc.makeNoRepImpact(this, reason)
 
 fun CampaignFleetAPI.makeHostile() = Misc.makeHostile(this)
 
-fun CampaignFleetAPI.makeNotLowRepImpact(reason: String?) = Misc.makeNotLowRepImpact(this, reason)
+fun CampaignFleetAPI.makeNotLowRepImpact(reason: String) = Misc.makeNotLowRepImpact(this, reason)
 
 fun Long.getAgoStringForTimestamp() = Misc.getAgoStringForTimestamp(this)
 
@@ -293,28 +299,28 @@ fun CampaignFleetAPI.isPlayerOrCombinedPlayerPrimary() = Misc.isPlayerOrCombined
 fun CampaignFleetAPI.isPlayerOrCombinedContainingPlayer() = Misc.isPlayerOrCombinedContainingPlayer(this)
 
 /**
- * Call on an asteroid.
+ * MagicLib: Call on an asteroid.
  */
 fun SectorEntityToken.getAsteroidSource() = Misc.getAsteroidSource(this)
 
 /**
- * Call on an asteroid.
+ * MagicLib: Call on an asteroid.
  */
 fun SectorEntityToken.setAsteroidSource(source: AsteroidSource?) =
     Misc.setAsteroidSource(this, source)
 
 /**
- * Call on an asteroid.
+ * MagicLib: Call on an asteroid.
  */
 fun SectorEntityToken.clearAsteroidSource() = Misc.clearAsteroidSource(this)
 
 /**
- * Call on a star.
+ * MagicLib: Call on a star.
  */
 fun PlanetAPI.getCoronaFor() = Misc.getCoronaFor(this)
 
 /**
- * Call on a star.
+ * MagicLib: Call on a star.
  */
 fun PlanetAPI.getPulsarFor() = Misc.getPulsarFor(this)
 
@@ -488,5 +494,475 @@ fun CampaignFleetAPI.giveStandardReturnAssignments(where: SectorEntityToken, tex
 
 // Skipping adjustRep, doesn't seem to make sense for an extension.
 
-fun CampaignFleetAPI.interruptAbilitiesWithTag(tag: String) =
-    Misc.interruptAbilitiesWithTag(this, tag)
+fun CampaignFleetAPI.interruptAbilitiesWithTag(tag: String) = Misc.interruptAbilitiesWithTag(this, tag)
+
+fun CampaignFleetAPI.getInterceptPoint(other: SectorEntityToken) = Misc.getInterceptPoint(this, other)
+
+// Could use a default param of maxSpeedFrom = getTravelSpeed() because Alex copy/pasted the method
+// but this is safer in case one of them changes in the future.
+fun CampaignFleetAPI.getInterceptPoint(other: SectorEntityToken, maxSpeedFrom: Float) =
+    Misc.getInterceptPoint(this, other, maxSpeedFrom)
+
+// Skipping getListOfResources, doesn't seem to make sense for an extension.
+// Skipping setColor, doesn't seem to make sense for an extension.
+
+fun SectorEntityToken.doesMarketHaveMissionImportantPeopleOrIsMarketMissionImportant() =
+    Misc.doesMarketHaveMissionImportantPeopleOrIsMarketMissionImportant(this)
+
+fun SectorEntityToken.makeImportant(reason: String, dur: Float = -1f) = Misc.makeImportant(this, reason, dur)
+
+fun PersonAPI.makeImportant(reason: String, dur: Float = -1f) = Misc.makeImportant(this, reason, dur)
+
+fun MemoryAPI.makeImportant(reason: String, dur: Float = -1f) = Misc.makeImportant(this, reason, dur)
+
+fun MemoryAPI.isImportantForReason(reason: String) = Misc.isImportantForReason(this, reason)
+
+fun SectorEntityToken.makeUnimportant(reason: String) = Misc.makeUnimportant(this, reason)
+
+fun PersonAPI.makeUnimportant(reason: String) = Misc.makeUnimportant(this, reason)
+
+fun MemoryAPI.makeUnimportant(reason: String) = Misc.makeUnimportant(this, reason)
+
+fun MemoryAPI.cleanUpMissionMemory(prefix: String) = Misc.cleanUpMissionMemory(this, prefix)
+
+// Skipping clearAreaAroundPlayer, doesn't seem to make sense for an extension.
+
+fun SectorEntityToken.getSalvageSeed() = Misc.getSalvageSeed(this)
+
+fun SectorEntityToken.getNameBasedSeed() = Misc.getNameBasedSeed(this)
+
+fun CampaignFleetAPI.forgetAboutTransponder() = Misc.forgetAboutTransponder(this)
+
+fun SectorEntityToken.setAbandonedStationMarket(marketId: String) = Misc.setAbandonedStationMarket(marketId, this)
+
+fun CampaignFleetAPI.getDesiredMoveDir() = Misc.getDesiredMoveDir(this)
+
+fun CampaignFleetAPI.isPermaKnowsWhoPlayerIs() = Misc.isPermaKnowsWhoPlayerIs(this)
+
+fun MarketAPI.getImmigrationPlugin() = Misc.getImmigrationPlugin(this)
+
+// Skipping getAICoreAdminPlugin, doesn't seem to make sense for an extension.
+// Skipping getAICoreOfficerPlugin, doesn't seem to make sense for an extension.
+
+fun MarketAPI.getAbandonMarketPlugin() = Misc.getAbandonMarketPlugin(this)
+
+fun MarketAPI.getStabilizeMarketPlugin() = Misc.getStabilizeMarketPlugin(this)
+
+fun CampaignFleetAPI.getInflater(params: Any) = Misc.getInflater(this, params)
+
+fun MarketAPI.playerHasStorageAccess() = Misc.playerHasStorageAccess(this)
+
+fun MarketAPI.getMarketSizeProgress() = Misc.getMarketSizeProgress(this)
+
+fun MarketAPI.getStorageCostPerMonth() = Misc.getStorageCostPerMonth(this)
+
+fun MarketAPI.getStorage() = Misc.getStorage(this)
+
+fun MarketAPI.getLocalResources() = Misc.getLocalResources(this)
+
+fun MarketAPI.getStorageCargo() = Misc.getStorageCargo(this)
+
+fun MarketAPI.getLocalResourcesCargo() = Misc.getLocalResourcesCargo(this)
+
+fun MarketAPI.getStorageTotalValue() = Misc.getStorageTotalValue(this)
+
+fun MarketAPI.getStorageCargoValue() = Misc.getStorageCargoValue(this)
+
+fun MarketAPI.getStorageShipValue() = Misc.getStorageShipValue(this)
+
+/**
+ * Returns true if it added anything to the tooltip.
+ */
+fun TooltipMakerAPI.addStorageInfo(
+    color: Color,
+    dark: Color,
+    market: MarketAPI,
+    includeLocalResources: Boolean,
+    addSectionIfEmpty: Boolean
+) = Misc.addStorageInfo(this, color, dark, market, includeLocalResources, addSectionIfEmpty)
+
+fun String.getTokenReplaced(entity: SectorEntityToken) = Misc.getTokenReplaced(this, entity)
+
+fun PersonAPI.getAdminSalary() = Misc.getAdminSalary(this)
+
+fun PersonAPI.getOfficerSalary(mercenary: Boolean = Misc.isMercenary(this)) = Misc.getOfficerSalary(this)
+
+/**
+ * MagicLib: Call on a variant id.
+ */
+fun String.getHullIdForVariantId() = Misc.getHullIdForVariantId(this)
+
+/**
+ * MagicLib: Call on a variant id.
+ */
+fun String.getFPForVariantId() = Misc.getFPForVariantId(this)
+
+/**
+ * MagicLib: Call on fleet points.
+ * MagicLib: Originally named getAdjustedStrength.
+ */
+fun Float.getAdjustedStrengthFromFp(market: MarketAPI) = Misc.getAdjustedStrength(this, market)
+
+/**
+ * MagicLib: Call on fleet points.
+ */
+fun Float.getAdjustedFP(market: MarketAPI) = Misc.getAdjustedFP(this, market)
+
+fun MarketAPI.getShipQuality(factionId: String? = null) = Misc.getShipQuality(this, factionId)
+
+fun MarketAPI.getShipPickMode(factionId: String? = null) = Misc.getShipPickMode(this, factionId)
+
+fun CampaignFleetAPI.isBusy() = Misc.isBusy(this)
+
+fun MarketAPI.getStationFleet() = Misc.getStationFleet(this)
+
+fun SectorEntityToken.getStationFleet() = Misc.getStationFleet(this)
+
+fun MarketAPI.getStationBaseFleet() = Misc.getStationBaseFleet(this)
+
+fun SectorEntityToken.getStationBaseFleet() = Misc.getStationBaseFleet(this)
+
+fun CampaignFleetAPI.getStationMarket() = Misc.getStationMarket(this)
+
+fun MarketAPI.getStationIndustry() = Misc.getStationIndustry(this)
+
+fun ShipVariantAPI.isActiveModule() = Misc.isActiveModule(this)
+
+fun ShipAPI.isActiveModule() = Misc.isActiveModule(this)
+
+// Skipping addCreditsMessage, doesn't seem to make sense for an extension.
+
+fun JumpPointAPI.getSystemJumpPointHyperExitLocation() = Misc.getSystemJumpPointHyperExitLocation(this)
+
+fun SectorEntityToken.isNear(hyperLoc: Vector2f) = Misc.isNear(this, hyperLoc)
+
+/**
+ * MagicLib: Call on a number in seconds.
+ */
+fun Float.getDays() = Misc.getDays(this)
+
+// Skipping getProbabilityMult, doesn't seem to make sense for an extension.
+
+fun SectorEntityToken.isHyperspaceAnchor() = Misc.isHyperspaceAnchor(this)
+
+fun SectorEntityToken.getStarSystemForAnchor() = Misc.getStarSystemForAnchor(this)
+
+fun TextPanelAPI.showCost(
+    title: String = "Resources: consumed (available)",
+    withAvailable: Boolean = true,
+    widthOverride: Float = -1f,
+    color: Color,
+    dark: Color,
+    res: Array<String>,
+    quantities: IntArray,
+    consumed: BooleanArray? = null
+) = Misc.showCost(this, title, withAvailable, widthOverride, color, dark, res, quantities, consumed)
+
+fun CampaignFleetAPI.isPatrol() = Misc.isPatrol(this)
+
+fun CampaignFleetAPI.isSmuggler() = Misc.isSmuggler(this)
+
+fun CampaignFleetAPI.isTrader() = Misc.isTrader(this)
+
+fun CampaignFleetAPI.isPirate() = Misc.isPirate(this)
+
+fun CampaignFleetAPI.isScavenger() = Misc.isScavenger(this)
+
+fun CampaignFleetAPI.isRaider() = Misc.isRaider(this)
+
+fun CampaignFleetAPI.isWarFleet() = Misc.isWarFleet(this)
+
+/**
+ * pair.one can be null if a stand-alone, non-market station is being returned in pair.two.
+ */
+fun CampaignFleetAPI.getNearestStationInSupportRange() = Misc.getNearestStationInSupportRange(this)
+
+fun CampaignFleetAPI.isStationInSupportRange(station: CampaignFleetAPI) = Misc.isStationInSupportRange(this, station)
+
+fun FleetMemberAPI.getMemberStrength(
+    withHull: Boolean = true,
+    withQuality: Boolean = true,
+    withCaptain: Boolean = true
+) = Misc.getMemberStrength(this, withHull, withQuality, withCaptain)
+
+fun MarketAPI.increaseMarketHostileTimeout(days: Float) = Misc.increaseMarketHostileTimeout(this, days)
+
+fun MarketAPI.removeRadioChatter() = Misc.removeRadioChatter(this)
+
+/**
+ * MagicLib: Call on a design type.
+ */
+fun String.getDesignTypeColor() = Misc.getDesignTypeColor(this)
+
+/**
+ * MagicLib: Call on a design type.
+ */
+fun String.getDesignTypeColorDim() = Misc.getDesignTypeColorDim(this)
+
+fun TooltipMakerAPI.addDesignTypePara(design: String, pad: Float) = Misc.addDesignTypePara(this, design, pad)
+
+fun CampaignFleetAPI.getFleetRadiusTerrainEffectMult() = Misc.getFleetRadiusTerrainEffectMult(this)
+
+fun CampaignFleetAPI.getBurnMultForTerrain() = Misc.getBurnMultForTerrain(this)
+
+fun LocationAPI.addHitGlow(
+    loc: Vector2f,
+    vel: Vector2f,
+    size: Float,
+    dur: Float = 1f + Math.random().toFloat(),
+    color: Color
+) = Misc.addHitGlow(this, loc, vel, size, dur, color)
+
+fun LocationAPI.addGlowyParticle(
+    loc: Vector2f,
+    vel: Vector2f,
+    size: Float,
+    rampUp: Float,
+    dur: Float,
+    color: Color
+) = Misc.addGlowyParticle(this, loc, vel, size, rampUp, dur, color)
+
+fun MarketAPI.getShippingCapacity(inFaction: Boolean) = Misc.getShippingCapacity(this, inFaction)
+
+/**
+ * MarketLib: getStrengthDesc
+ */
+fun Float.getStrengthDescForFP() = Misc.getStrengthDesc(this)
+
+fun MarketAPI.isMilitary() = Misc.isMilitary(this)
+
+fun MarketAPI.hasHeavyIndustry() = Misc.hasHeavyIndustry(this)
+
+fun MarketAPI.hasOrbitalStation() = Misc.hasOrbitalStation(this)
+
+fun SectorEntityToken.getClaimingFaction() = Misc.getClaimingFaction(this)
+
+fun MarketAPI.computeTotalShutdownRefund() = Misc.computeTotalShutdownRefund(this)
+
+fun MarketAPI.computeShutdownRefund(industry: Industry) = Misc.computeShutdownRefund(this, industry)
+
+/**
+ * MagicLib: Call on the center of the location, eg the star.
+ */
+fun SectorEntityToken.addWarningBeacon(gap: BaseThemeGenerator.OrbitGap, beaconTag: String) =
+    Misc.addWarningBeacon(this, gap, beaconTag)
+
+fun MemoryAPI.getTradeMode() = Misc.getTradeMode(this)
+
+fun MarketAPI.getSpaceport() = Misc.getSpaceport(this)
+
+fun Color.setBrightness(brightness: Int) = Misc.setBrightness(this, brightness)
+
+fun Color.scaleColorSaturate(factor: Float) = Misc.scaleColorSaturate(this, factor)
+
+fun CampaignFleetAPI.getMaxOfficers() = Misc.getMaxOfficers(this)
+
+fun CampaignFleetAPI.getNumNonMercOfficers() = Misc.getNumNonMercOfficers(this)
+
+fun CampaignFleetAPI.getMercs() = Misc.getMercs(this)
+
+fun MarketAPI.getMaxIndustries() = Misc.getMaxIndustries(this)
+
+fun MarketAPI.getNumIndustries() = Misc.getNumIndustries(this)
+
+fun MarketAPI.getNumImprovedIndustries() = Misc.getNumImprovedIndustries(this)
+
+fun StarSystemAPI.getNumStableLocations() = Misc.getNumStableLocations(this)
+
+fun MarketAPI.getCurrentlyBeingConstructed() = Misc.getCurrentlyBeingConstructed(this)
+
+fun Float.getRelColor() = Misc.getRelColor(this)
+
+fun CampaignFleetAPI.getDangerLevel() = Misc.getDangerLevel(this)
+
+// Skipping getHitGlowSize, doesn't seem to make sense for an extension.
+
+fun PersonAPI.getNumEliteSkills() = Misc.getNumEliteSkills(this)
+
+fun PersonAPI.isMentored() = Misc.isMentored(this)
+
+fun PersonAPI.setMentored(mentored: Boolean) = Misc.setMentored(this, mentored)
+
+fun PersonAPI.isMercenary() = Misc.isMercenary(this)
+
+fun PersonAPI.setMercHiredNow() = Misc.setMercHiredNow(this)
+
+fun PersonAPI.getMercDaysSinceHired() = Misc.getMercDaysSinceHired(this)
+
+fun PersonAPI.setMercenary(mercenary: Boolean) = Misc.setMercenary(this, mercenary)
+
+fun PersonAPI.isUnremovable() = Misc.isUnremovable(this)
+
+fun PersonAPI.setUnremovable(unremovable: Boolean) = Misc.setUnremovable(this, unremovable)
+
+fun MutableShipStatsAPI.isAutomated() = Misc.isAutomated(this)
+
+fun FleetMemberAPI.isAutomated() = Misc.isAutomated(this)
+
+fun ShipVariantAPI.isAutomated() = Misc.isAutomated(this)
+
+fun ShipAPI.isAutomated() = Misc.isAutomated(this)
+
+fun ShipAPI.getMaxPermanentMods() = Misc.getMaxPermanentMods(this)
+
+fun FleetMemberAPI.getMaxPermanentMods(stats: MutableCharacterStatsAPI) = Misc.getMaxPermanentMods(this, stats)
+
+fun HullModSpecAPI.getBuildInBonusXP(size: ShipAPI.HullSize) = Misc.getBuildInBonusXP(this, size)
+
+fun HullModSpecAPI.getOPCost(size: ShipAPI.HullSize) = Misc.getOPCost(this, size)
+
+fun ShipVariantAPI.isSpecialMod(spec: HullModSpecAPI) = Misc.isSpecialMod(this, spec)
+
+fun ShipVariantAPI.getCurrSpecialMods() = Misc.getCurrSpecialMods(this)
+
+fun ShipVariantAPI.getCurrSpecialModsList() = Misc.getCurrSpecialModsList(this)
+
+fun CampaignFleetAPI.isSlowMoving() = Misc.isSlowMoving(this)
+
+fun CampaignFleetAPI.getGoSlowBurnLevel() = Misc.getGoSlowBurnLevel(this)
+
+fun FleetMemberAPI.applyDamage(
+    random: Random, level: Misc.FleetMemberDamageLevel,
+    withCRDamage: Boolean, crDamageId: String, crDamageReason: String,
+    withMessage: Boolean, textPanel: TextPanelAPI,
+    messageText: String
+) = Misc.applyDamage(
+    this,
+    random,
+    level,
+    withCRDamage,
+    crDamageId,
+    crDamageReason,
+    withMessage,
+    textPanel,
+    messageText
+)
+
+fun FleetMemberAPI.applyDamage(
+    random: Random, damageMult: Float,
+    withCRDamage: Boolean, crDamageId: String, crDamageReason: String,
+    withMessage: Boolean, textPanel: TextPanelAPI,
+    messageText: String
+) = Misc.applyDamage(
+    this,
+    random,
+    damageMult,
+    withCRDamage,
+    crDamageId,
+    crDamageReason,
+    withMessage,
+    textPanel,
+    messageText
+)
+
+fun FleetMemberAPI.getBonusXPForRecovering() = Misc.getBonusXPForRecovering(this)
+
+fun FleetMemberAPI.getBonusXPForScuttling() = Misc.getBonusXPForScuttling(this)
+
+fun CampaignFleetAPI.getSpawnFPMult() = Misc.getSpawnFPMult(this)
+
+fun CampaignFleetAPI.setSpawnFPMult(mult: Float) = Misc.setSpawnFPMult(this, mult)
+
+fun FactionAPI.isDecentralized() = Misc.isDecentralized(this)
+
+fun PersonAPI.getPersonalityName() = Misc.getPersonalityName(this)
+
+fun MarketAPI.setRaidedTimestamp() = Misc.setRaidedTimestamp(this)
+
+fun MarketAPI.getDaysSinceLastRaided() = Misc.getDaysSinceLastRaided(this)
+
+fun CommodityOnMarketAPI.computeEconUnitChangeFromTradeModChange(quantity: Int) =
+    Misc.computeEconUnitChangeFromTradeModChange(this, quantity)
+
+fun CommodityOnMarketAPI.affectAvailabilityWithinReason(quantity: Int) =
+    Misc.affectAvailabilityWithinReason(this, quantity)
+
+fun StarSystemAPI.isOpenlyPopulated() = Misc.isOpenlyPopulated(this)
+
+fun Collection<String>.hasAtLeastOneOfTags(vararg other: String) = Misc.hasAtLeastOneOfTags(this, *other)
+
+fun MarketAPI.hasUnexploredRuins() = Misc.hasUnexploredRuins(this)
+
+fun MarketAPI.hasRuins() = Misc.hasRuins(this)
+
+fun MarketAPI.hasFarmland() = Misc.hasFarmland(this)
+
+fun CampaignFleetAPI.addDefeatTrigger(trigger: String) = Misc.addDefeatTrigger(this, trigger)
+
+fun CampaignFleetAPI.removeDefeatTrigger(trigger: String) = Misc.removeDefeatTrigger(this, trigger)
+
+fun CampaignFleetAPI.getDefeatTriggers(createIfNecessary: Boolean) = Misc.getDefeatTriggers(this, createIfNecessary)
+
+fun CampaignFleetAPI.clearDefeatTriggersIfNeeded() = Misc.clearDefeatTriggersIfNeeded(this)
+
+fun ShipAPI.shouldShowDamageFloaty(target: ShipAPI) = Misc.shouldShowDamageFloaty(this, target)
+
+// Skipping playSound, doesn't seem to make sense for an extension.
+
+fun ShipAPI.getShipWeight(adjustForNonCombat: Boolean = true) = Misc.getShipWeight(this, adjustForNonCombat)
+
+fun ShipAPI.getIncapacitatedTime() = Misc.getIncapacitatedTime(this)
+
+fun CampaignFleetAPI.isAvoidingPlayerHalfheartedly() = Misc.isAvoidingPlayerHalfheartedly(this)
+
+/**
+ * In vanilla, pirates and Luddic Path.
+ */
+fun FactionAPI.isPirateFaction() = Misc.isPirateFaction(this)
+
+/**
+ * Probably wrong sometimes...
+ *
+ * MagicLib: originally called getAOrAnFor.
+ *
+ * @return "a" or "an" for word.
+ */
+fun String.getAOrAnForWord() = Misc.getAOrAnFor(this)
+
+fun PersonAPI.moveToMarket(destination: MarketAPI, alwaysAddToCommDirectory: Boolean) =
+    Misc.moveToMarket(this, destination, alwaysAddToCommDirectory)
+
+fun MarketAPI.makeStoryCritical(reason: String) = Misc.makeStoryCritical(this, reason)
+
+fun MemoryAPI.makeStoryCritical(reason: String) = Misc.makeStoryCritical(this, reason)
+
+fun MarketAPI.makeNonStoryCritical(reason: String) = Misc.makeNonStoryCritical(this, reason)
+
+fun MemoryAPI.makeNonStoryCritical(reason: String) = Misc.makeNonStoryCritical(this, reason)
+
+fun MarketAPI.isStoryCritical() = Misc.isStoryCritical(this)
+
+fun MemoryAPI.isStoryCritical() = Misc.isStoryCritical(this)
+
+/**
+ * Whether it prevents salvage, surveying, etc. But NOT things that require only being
+ * seen to ruin them, such as SpySat deployments.
+ * @param fleet
+ * @return
+ */
+fun CampaignFleetAPI.isInsignificant() = Misc.isInsignificant(this)
+
+/**
+ * Mainly for avoiding stuff like "pirate fleet with 4 rustbuckets will run away from the player's
+ * 4 regular-quality frigates". Fleets that this evaluates to true for will avoid the player slowly.
+ * @param fleet
+ * @return
+ */
+fun CampaignFleetAPI.shouldNotWantRunFromPlayerEvenIfWeaker() = Misc.shouldNotWantRunFromPlayerEvenIfWeaker(this)
+
+fun FloatArray.findKth(k: Int) = Misc.findKth(this, k)
+
+fun Float.getAdjustedBaseRange(ship: ShipAPI, weapon: WeaponAPI) = Misc.getAdjustedBaseRange(this, ship, weapon)
+
+fun Vector2f.bezier(p1: Vector2f, p2: Vector2f, t: Float) = Misc.bezier(this, p1, p2, t)
+
+fun Vector2f.bezierCubic(p1: Vector2f, p2: Vector2f, p3: Vector2f, t: Float) = Misc.bezierCubic(this, p1, p2, p3, t)
+
+fun Vector2f.isInsideSlipstream(radius: Float, location: LocationAPI = Global.getSector().hyperspace) =
+    Misc.isInsideSlipstream(this, radius, location)
+
+fun SectorEntityToken.isInsideSlipstream() = Misc.isInsideSlipstream(this)
+
+fun Vector2f.isOutsideSector() = Misc.isOutsideSector(this)
+
+fun LocationAPI.crossesAnySlipstream(from: Vector2f, to: Vector2f) = Misc.crossesAnySlipstream(this, from, to)
