@@ -77,20 +77,26 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         ActiveBounty bounty = getBounty();
         if (bounty == null) return "";
 
+        String name;
+
         switch (bounty.getStage()) {
             case Succeeded:
-                return String.format(MagicTxt.getString("mb_intelTitleCompleted"), bounty.getSpec().job_name);
+                name = String.format(MagicTxt.getString("mb_intelTitleCompleted"), bounty.getSpec().job_name);
+                break;
             case ExpiredAfterAccepting:
             case Dismissed:
             case ExpiredWithoutAccepting:
             case EndedWithoutPlayerInvolvement:
             case FailedSalvagedFlagship:
-                return String.format(MagicTxt.getString("mb_intelTitleFailed"), bounty.getSpec().job_name);
+                name = String.format(MagicTxt.getString("mb_intelTitleFailed"), bounty.getSpec().job_name);
+                break;
             case Accepted:
             case NotAccepted:
             default:
-                return String.format(MagicTxt.getString("mb_intelTitleInProgress"), bounty.getSpec().job_name);
+                name = String.format(MagicTxt.getString("mb_intelTitleInProgress"), bounty.getSpec().job_name);
         }
+
+        return name;
     }
 
     /*

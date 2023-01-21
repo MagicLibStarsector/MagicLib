@@ -14,6 +14,6 @@
             "version": {"major":2, "minor":6, "patch":0}
         }
     ],
-    "jars": ["jars/MagicLib.jar"],
+    "jars": ["jars/MagicLib.jar", "jars/MagicLib-Kotlin.jar"],
     "modPlugin": "data.scripts.Magic_modPlugin"
 }

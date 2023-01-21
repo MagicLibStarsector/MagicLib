@@ -8,6 +8,10 @@
     <option name="WORKING_DIRECTORY" value="C:/Program Files (x86)/Fractal Softworks/Starsector/starsector-core" />
     <method v="2">
       <option name="MakeProject" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="MagicLib" />
+        <artifact name="MagicLib-Kotlin" />
+      </option>
     </method>
   </configuration>
 </component>
