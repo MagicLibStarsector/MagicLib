@@ -494,7 +494,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public Set<String> getIntelTags(SectorMapAPI map) {
         Set<String> tags = super.getIntelTags(map);
-        Collections.addAll(tags, Tags.INTEL_MISSIONS, Tags.INTEL_ACCEPTED);
+        Collections.addAll(tags, Tags.INTEL_MISSIONS, Tags.INTEL_ACCEPTED, Tags.INTEL_BOUNTY);
         ActiveBounty bounty = getBounty();
         if (bounty == null) return Collections.emptySet();
 
