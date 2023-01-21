@@ -233,7 +233,7 @@ public class MagicBountyHVB {
                             //String job_difficultyDescription,
                             "auto",
                             //int job_deadline,
-                            360,
+                            -1,
                             //int job_credit_reward,
                             row.getInt("creditReward"),
                             //float job_credit_scaling,
