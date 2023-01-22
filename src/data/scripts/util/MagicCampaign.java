@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
+import org.magiclib.MagicFleetBuilder;
 
 import java.util.*;
 
@@ -58,6 +59,19 @@ public class MagicCampaign {
     //                     //
     /////////////////////////
 
+    public static MagicFleetBuilder createFleetBuilder(String fleetName,
+                                                       String fleetFaction,
+                                                       String flagshipVariant,
+                                                       int minFP,
+                                                       String reinforcementFaction,
+                                                       boolean transponderOn) {
+        return new MagicFleetBuilder(fleetName,
+                fleetFaction,
+                flagshipVariant,
+                minFP,
+                reinforcementFaction,
+                transponderOn);
+    }
 
     /**
      * Creates a fleet with a defined flagship and optional escort
