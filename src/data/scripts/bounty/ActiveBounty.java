@@ -706,23 +706,24 @@ public final class ActiveBounty {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ActiveBounty{");
-        sb.append("bountyKey='").append(bountyKey).append('\'');
-        sb.append(", fleet=").append(fleet);
-        sb.append(", fleetSpawnLocation=").append(fleetSpawnLocation);
-        sb.append(", presetShipIds=").append(presetShipIds);
-        sb.append(", spec=").append(spec);
-        sb.append(", bountyCreatedTimestamp=").append(bountyCreatedTimestamp);
-        sb.append(", captain=").append(captain);
-        sb.append(", flagshipId='").append(flagshipId).append('\'');
-        sb.append(", initialBountyFleetPoints=").append(initialBountyFleetPoints);
-        sb.append(", acceptedBountyTimestamp=").append(acceptedBountyTimestamp);
-        sb.append(", bountyResult=").append(bountyResult);
-        sb.append(", bountySource=").append(bountySource);
-        sb.append(", stage=").append(stage);
-        sb.append(", rewardCredits=").append(rewardCredits);
-        sb.append(", rewardReputation=").append(rewardReputation);
-        sb.append(", rewardFaction='").append(rewardFaction).append('\'');
-        sb.append(", isDespawning=").append(isDespawning);
+        sb.append("\nbountyKey='").append(bountyKey).append('\'');
+        sb.append(", \nfleet=").append(fleet);
+        sb.append(", \nfleetSpawnLocation=").append(fleetSpawnLocation);
+        sb.append(", \npresetShipIds=").append(presetShipIds);
+        sb.append(", \nspec=").append(spec);
+        sb.append(", \nbountyCreatedTimestamp=").append(bountyCreatedTimestamp);
+        sb.append(", \ncaptain=").append(captain);
+        sb.append(", \nflagshipId='").append(flagshipId).append('\'');
+        sb.append(", \ninitialBountyFleetPoints=").append(initialBountyFleetPoints);
+        sb.append(", \nacceptedBountyTimestamp=").append(acceptedBountyTimestamp);
+        sb.append(", \nbountyResult=").append(bountyResult);
+        sb.append(", \nbountySource=").append(bountySource);
+        sb.append(", \nstage=").append(stage);
+        sb.append(", \nrewardCredits=").append(rewardCredits);
+        sb.append(", \nrewardReputation=").append(rewardReputation);
+        sb.append(", \nrewardFaction='").append(rewardFaction).append('\'');
+        sb.append(", \nisDespawning=").append(isDespawning);
+        sb.append(", \nhasNoIntel=").append(hasNoIntel);
         sb.append('}');
         return sb.toString();
     }

@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ListBountiesCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
         List<String> bountyKeys = new ArrayList<>(MagicBountyLoader.BOUNTIES.keySet());
+        bountyKeys.addAll(MagicBountyCoordinator.getInstance().getActiveBounties().keySet());
+        bountyKeys = new ArrayList<>(new HashSet<>(bountyKeys)); // Remove duplicates.
+
         Collections.sort(bountyKeys);
         String trimmedArgs = args.trim();
 
@@ -41,6 +41,13 @@ public class ListBountiesCommand implements BaseCommand {
 
         if (loadedBounties.isEmpty()) {
             Console.showMessage("No loaded bounties");
+        } else if (loadedBounties.size() == 1) {
+            String bountyKey = loadedBounties.get(0);
+            if (mbc.getActiveBounty(bountyKey) != null) {
+                Console.showMessage(String.format("  %s", mbc.getActiveBounty(bountyKey)));
+            } else if (MagicBountyLoader.BOUNTIES.get(bountyKey) != null) {
+                Console.showMessage(String.format("  %s", MagicBountyLoader.BOUNTIES.get(bountyKey)));
+            }
         } else {
             Console.showMessage("Loaded Bounties");
             for (String entry : loadedBounties) {

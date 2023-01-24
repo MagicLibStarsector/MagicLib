@@ -12,6 +12,7 @@ MagicLib
   - `job_reputation_reward` may now be negative. Failing a bounty with a negative rep reward will result in 0 rep change.
   - HVBs no longer have a time limit of 1 cycle (they have no time limit in Vayra's Sector).
   - `MagicLib_ListBounties` is now sorted alphabetically.
+  - `MagicLib_ListBounties <bountyKey>` now displays details for that bounty. 
   - Fixed bug reading HVBs where `neverSpawnWhenFactionHostile` used target faction instead of posting faction.
   - Fixed bug in `MagicList_ResetBounty` where the bounty wasn't reset if the Intel hadn't yet expired.
   - Fixed bug where resetting and re-accepting bounties with a typo in the faction caused a crash (typo wasn't corrected second time).
