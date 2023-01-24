@@ -23,7 +23,7 @@ import java.util.*;
  */
 public class MagicBountyData {
 
-    public static Map<String, bountyData> BOUNTIES = new HashMap<>();
+    public static Map<String, BountyData> BOUNTIES = new HashMap<>();
     public static boolean JSONfailed = false;
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
     private static JSONObject bounty_data;
@@ -35,13 +35,13 @@ public class MagicBountyData {
      * @param data      all the data
      * @param overwrite overwrite existing bounty with same id
      */
-    public static void addBountyData(String id, bountyData data, boolean overwrite) {
+    public static void addBountyData(String id, BountyData data, boolean overwrite) {
         if (overwrite || !BOUNTIES.containsKey(id)) {
             BOUNTIES.put(id, data);
         }
     }
 
-    public static bountyData getBountyData(String id) {
+    public static BountyData getBountyData(String id) {
         if (BOUNTIES.containsKey(id)) {
             return BOUNTIES.get(id);
         } else return null;
@@ -57,8 +57,8 @@ public class MagicBountyData {
         if (MagicVariables.verbose) {
             LOG.info("Cleaning bounty board");
         }
-        for (Iterator<Map.Entry<String, bountyData>> iterator = BOUNTIES.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry<String, bountyData> entry = iterator.next();
+        for (Iterator<Map.Entry<String, BountyData>> iterator = BOUNTIES.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, BountyData> entry = iterator.next();
             //cleanly remove the bounties that are NOT taken
             if (!Global.getSector().getMemoryWithoutUpdate().contains(entry.getValue().job_memKey)) {
                 iterator.remove();
@@ -213,7 +213,7 @@ public class MagicBountyData {
             //fixes for my own mistakes
             Integer minSize = getInt(bountyId, "fleet_min_FP", getInt(bountyId, "fleet_min_DP"));
 
-            bountyData this_bounty = new bountyData(
+            BountyData this_bounty = new BountyData(
                     getStringList(bountyId, "trigger_market_id"),
                     getStringList(bountyId, "trigger_marketFaction_any"),
                     getBoolean(bountyId, "trigger_marketFaction_alliedWith"),
@@ -318,7 +318,7 @@ public class MagicBountyData {
     /**
      * The code representation of a bounty json definition.
      */
-    public static class bountyData {
+    public static class BountyData {
 
         /**
          * trigger parameters
@@ -609,7 +609,7 @@ public class MagicBountyData {
          */
         public boolean location_defaultToAnyEntity;
 
-        public bountyData(
+        public BountyData(
                 List<String> trigger_market_id,
                 List<String> trigger_marketFaction_any,
                 boolean trigger_marketFaction_alliedWith,

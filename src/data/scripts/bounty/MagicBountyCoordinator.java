@@ -52,7 +52,7 @@ public final class MagicBountyCoordinator {
         LOG.info("\n ######################\n\n VALIDATING BOUNTIES \n\n ######################");
         int valid = 0;
         List<String> culling = new ArrayList<>();
-        for (Map.Entry<String, MagicBountyData.bountyData> dataEntry : MagicBountyData.BOUNTIES.entrySet()) {
+        for (Map.Entry<String, MagicBountyData.BountyData> dataEntry : MagicBountyData.BOUNTIES.entrySet()) {
             boolean isValid = validateAndCorrectIds(dataEntry.getKey(), dataEntry.getValue());
             if (isValid) {
                 valid++;
@@ -161,12 +161,12 @@ public final class MagicBountyCoordinator {
     }
 
     @NotNull
-    public Map<String, MagicBountyData.bountyData> getBountiesWithChanceToSpawnAtMarketById(@NotNull MarketAPI market) {
-        Map<String, MagicBountyData.bountyData> available = new HashMap<>();
+    public Map<String, MagicBountyData.BountyData> getBountiesWithChanceToSpawnAtMarketById(@NotNull MarketAPI market) {
+        Map<String, MagicBountyData.BountyData> available = new HashMap<>();
 
         // Run checks on each bounty to see if it should be displayed.
         for (String bountyKey : MagicBountyData.BOUNTIES.keySet()) {
-            MagicBountyData.bountyData bountySpec = MagicBountyData.BOUNTIES.get(bountyKey);
+            MagicBountyData.BountyData bountySpec = MagicBountyData.BOUNTIES.get(bountyKey);
 
             // If the bounty has been completed, don't offer it.
             if (getCompletedBounties().contains(bountyKey)) {
@@ -287,7 +287,7 @@ public final class MagicBountyCoordinator {
         return Objects.hash(memoryWithoutUpdate.getLong(key) + marketAPI.getId());
     }
 
-    public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.bountyData spec) {
+    public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.BountyData spec) {
 
         SectorEntityToken suitableTargetLocation = null;
         CampaignFleetAPI fleet = null;
@@ -429,7 +429,7 @@ public final class MagicBountyCoordinator {
         ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
         if (activeBounty != null) {
-            MagicBountyData.bountyData spec = activeBounty.getSpec();
+            MagicBountyData.BountyData spec = activeBounty.getSpec();
 
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
@@ -454,7 +454,7 @@ public final class MagicBountyCoordinator {
             // Then reload.
             MagicBountyData.loadBountiesFromJSON(false);
         } else {
-            MagicBountyData.bountyData spec = MagicBountyData.BOUNTIES.get(bountyKey);
+            MagicBountyData.BountyData spec = MagicBountyData.BOUNTIES.get(bountyKey);
 
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -478,7 +478,7 @@ public final class MagicBountyCoordinator {
      * the bounty fleet will be scaled to 175FP (100FP + 0.75 x 100FP of difference)
      * ```
      */
-    private static int calculateDesiredFP(MagicBountyData.bountyData spec) {
+    private static int calculateDesiredFP(MagicBountyData.BountyData spec) {
         if (spec.fleet_min_FP <= 0) {
             if (MagicVariables.verbose) {
                 LOG.info(
@@ -517,7 +517,7 @@ public final class MagicBountyCoordinator {
         return desiredFP;
     }
 
-    public static boolean validateAndCorrectIds(String bountyId, MagicBountyData.bountyData this_bounty) {
+    public static boolean validateAndCorrectIds(String bountyId, MagicBountyData.BountyData this_bounty) {
 
         try {
             // fleet_faction

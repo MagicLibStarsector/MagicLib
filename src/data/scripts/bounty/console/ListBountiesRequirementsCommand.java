@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.RepLevel;
 import data.scripts.bounty.MagicBountyCoordinator;
 import data.scripts.bounty.MagicBountyData;
-import data.scripts.bounty.MagicBountyData.bountyData;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
@@ -46,7 +45,7 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
         return CommandResult.SUCCESS;
     }
 
-    private void showRequirements(String bountyId, bountyData bounty) {
+    private void showRequirements(String bountyId, MagicBountyData.BountyData bounty) {
         Console.showMessage(bounty.job_name + " ( " + bountyId + " ):");
 
         //WHICH MARKET

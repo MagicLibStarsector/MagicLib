@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
+ * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.BountyData}.
  *
  * @author Wisp
  */
@@ -49,7 +49,7 @@ public final class ActiveBounty {
     /**
      * The original bounty spec, a mirror of the json definition.
      */
-    private final @NotNull MagicBountyData.bountyData spec;
+    private final @NotNull MagicBountyData.BountyData spec;
 
     /**
      * The timestamp of when the bounty was first created (not accepted).
@@ -109,7 +109,7 @@ public final class ActiveBounty {
                         @NotNull CampaignFleetAPI fleet,
                         @NotNull SectorEntityToken fleetSpawnLocation,
                         @NotNull List<String> presetShipIds,
-                        @NotNull MagicBountyData.bountyData spec) {
+                        @NotNull MagicBountyData.BountyData spec) {
         this.bountyKey = bountyKey;
         this.fleet = fleet;
         this.fleetSpawnLocation = fleetSpawnLocation;
@@ -379,7 +379,7 @@ public final class ActiveBounty {
         return fleet;
     }
 
-    public @NotNull MagicBountyData.bountyData getSpec() {
+    public @NotNull MagicBountyData.BountyData getSpec() {
         return spec;
     }
 

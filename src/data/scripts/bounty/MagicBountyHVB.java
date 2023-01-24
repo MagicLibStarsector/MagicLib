@@ -181,7 +181,7 @@ public class MagicBountyHVB {
                         level *= 0.5f;
                     }
 
-                    MagicBountyData.bountyData this_bounty = new MagicBountyData.bountyData(
+                    MagicBountyData.BountyData this_bounty = new MagicBountyData.BountyData(
                             //List <String> trigger_market_id,
                             new ArrayList<String>(),
                             //List <String> trigger_marketFaction_any,

@@ -103,7 +103,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 // Player accepted a bounty.
                 try {
                     String bountyKey = data.replaceFirst(acceptJobKeyPrefix, "");
-                    MagicBountyData.bountyData bounty = MagicBountyData
+                    MagicBountyData.BountyData bounty = MagicBountyData
                             .getBountyData(bountyKey);
                     //"Accepted job: "
                     text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_accepted") + bounty.job_name);
@@ -146,7 +146,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 for (String key : keysOfBountiesToShow) {
                     if (getBountyDescriptionOptionKey(key).equals(optionData) || getBountyDetailsOptionKey(key).equals(optionData)) {
                         // Player has selected to view the description or details of a bounty
-                        final MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
+                        final MagicBountyData.BountyData bounty = MagicBountyData.getBountyData(key);
 
                         if (bounty == null)
                             continue;
@@ -500,7 +500,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         }
 
         for (String key : keysOfBountiesToShow) {
-            MagicBountyData.bountyData bounty = MagicBountyData.getBountyData(key);
+            MagicBountyData.BountyData bounty = MagicBountyData.getBountyData(key);
 
             if (bounty != null) {
                 addOption(bounty.job_name, getBountyDescriptionOptionKey(key), null, null);
@@ -535,10 +535,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 ? bountiesAcceptedAtMarket.size()
                 : 0));
 
-        Map<String, MagicBountyData.bountyData> bountiesAtMarketById = instance.getBountiesWithChanceToSpawnAtMarketById(market);
+        Map<String, MagicBountyData.BountyData> bountiesAtMarketById = instance.getBountiesWithChanceToSpawnAtMarketById(market);
         WeightedRandomPicker<String> picker = new WeightedRandomPicker<>(new Random(instance.getMarketBountyBoardGenSeed(market)));
 
-        for (Map.Entry<String, MagicBountyData.bountyData> entry : bountiesAtMarketById.entrySet()) {
+        for (Map.Entry<String, MagicBountyData.BountyData> entry : bountiesAtMarketById.entrySet()) {
             picker.add(entry.getKey(), entry.getValue().trigger_weight_mult);
         }
 
@@ -567,8 +567,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         return "viewBountyDescDetails-" + key;
     }
 
-    private Map<String, MagicBountyData.bountyData> getBountiesToShow() {
-        Map<String, MagicBountyData.bountyData> ret = new HashMap<>(keysOfBountiesToShow.size());
+    private Map<String, MagicBountyData.BountyData> getBountiesToShow() {
+        Map<String, MagicBountyData.BountyData> ret = new HashMap<>(keysOfBountiesToShow.size());
 
         for (String key : keysOfBountiesToShow) {
             ret.put(key, MagicBountyData.BOUNTIES.get(key));
