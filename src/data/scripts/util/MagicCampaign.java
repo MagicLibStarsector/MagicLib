@@ -39,8 +39,8 @@ import org.json.JSONObject;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
-import org.magiclib.MagicFleetBuilder;
-import org.magiclib.MagicStringMatcher;
+import org.magiclib.campaign.MagicFleetBuilder;
+import org.magiclib.util.MagicStringMatcher;
 
 import java.util.*;
 

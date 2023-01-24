@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.*;
 
-import static data.scripts.bounty.MagicBountyData.BOUNTIES;
+import static data.scripts.bounty.MagicBountyLoader.BOUNTIES;
 
 public class MagicBountyHVB {
 
@@ -181,7 +181,7 @@ public class MagicBountyHVB {
                         level *= 0.5f;
                     }
 
-                    MagicBountyData.BountyData this_bounty = new MagicBountyData.BountyData(
+                    BountyData this_bounty = new BountyData(
                             //List <String> trigger_market_id,
                             new ArrayList<String>(),
                             //List <String> trigger_marketFaction_any,

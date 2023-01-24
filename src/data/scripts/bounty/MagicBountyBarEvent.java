@@ -103,7 +103,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 // Player accepted a bounty.
                 try {
                     String bountyKey = data.replaceFirst(acceptJobKeyPrefix, "");
-                    MagicBountyData.BountyData bounty = MagicBountyData
+                    BountyData bounty = MagicBountyLoader
                             .getBountyData(bountyKey);
                     //"Accepted job: "
                     text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_accepted") + bounty.job_name);
@@ -146,7 +146,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 for (String key : keysOfBountiesToShow) {
                     if (getBountyDescriptionOptionKey(key).equals(optionData) || getBountyDetailsOptionKey(key).equals(optionData)) {
                         // Player has selected to view the description or details of a bounty
-                        final MagicBountyData.BountyData bounty = MagicBountyData.getBountyData(key);
+                        final BountyData bounty = MagicBountyLoader.getBountyData(key);
 
                         if (bounty == null)
                             continue;
@@ -181,7 +181,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //TEST TO ADD LOCATION MAP
-                            if (bounty.job_show_distance == MagicBountyData.ShowDistance.Exact) {
+                            if (bounty.job_show_distance == MagicBountyLoader.ShowDistance.Exact) {
                                 dialog.getVisualPanel().showMapMarker(
                                         activeBounty.getFleetSpawnLocation(),
                                         null,
@@ -192,8 +192,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         null
                                 );
                             }
-                            if (bounty.job_show_distance == MagicBountyData.ShowDistance.Vanilla
-                                    || bounty.job_show_distance == MagicBountyData.ShowDistance.VanillaDistance) {
+                            if (bounty.job_show_distance == MagicBountyLoader.ShowDistance.Vanilla
+                                    || bounty.job_show_distance == MagicBountyLoader.ShowDistance.VanillaDistance) {
                                 dialog.getVisualPanel().showMapMarker(
                                         activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor(),
                                         null,
@@ -218,7 +218,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //OFFERING FACTION
 
-                            if (!bounty.job_show_captain && bounty.job_show_fleet == MagicBountyData.ShowFleet.None) {
+                            if (!bounty.job_show_captain && bounty.job_show_fleet == MagicBountyLoader.ShowFleet.None) {
                                 //"Posted by %s."
                                 if (bounty.job_forFaction != null) {
                                     FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
@@ -254,7 +254,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //DISTANCE
-                            if (bounty.job_show_distance != MagicBountyData.ShowDistance.None) {
+                            if (bounty.job_show_distance != MagicBountyLoader.ShowDistance.None) {
                                 switch (bounty.job_show_distance) {
                                     case Vague:
                                         float distance = activeBounty.getFleetSpawnLocation().getContainingLocation().getLocation().length();
@@ -335,9 +335,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //TARGET CAPTAIN
                             if (
-                                    bounty.job_show_fleet != MagicBountyData.ShowFleet.None //fleet shouldn't be displayed
+                                    bounty.job_show_fleet != MagicBountyLoader.ShowFleet.None //fleet shouldn't be displayed
                                             &&
-                                            bounty.job_show_fleet != MagicBountyData.ShowFleet.Text //only text should be displayed
+                                            bounty.job_show_fleet != MagicBountyLoader.ShowFleet.Text //only text should be displayed
                                             &&
                                             activeBounty.getFleet().getFlagship().getVariant().hasTag(Tags.SHIP_LIMITED_TOOLTIP) //Flagship shouldn't get displayed
                             ) {
@@ -438,7 +438,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //SHOW FLEET
-                            if (bounty.job_show_fleet != MagicBountyData.ShowFleet.None) {
+                            if (bounty.job_show_fleet != MagicBountyLoader.ShowFleet.None) {
                                 showFleet(
                                         text,
                                         dialog.getTextWidth(),
@@ -500,7 +500,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         }
 
         for (String key : keysOfBountiesToShow) {
-            MagicBountyData.BountyData bounty = MagicBountyData.getBountyData(key);
+            BountyData bounty = MagicBountyLoader.getBountyData(key);
 
             if (bounty != null) {
                 addOption(bounty.job_name, getBountyDescriptionOptionKey(key), null, null);
@@ -535,10 +535,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 ? bountiesAcceptedAtMarket.size()
                 : 0));
 
-        Map<String, MagicBountyData.BountyData> bountiesAtMarketById = instance.getBountiesWithChanceToSpawnAtMarketById(market);
+        Map<String, BountyData> bountiesAtMarketById = instance.getBountiesWithChanceToSpawnAtMarketById(market);
         WeightedRandomPicker<String> picker = new WeightedRandomPicker<>(new Random(instance.getMarketBountyBoardGenSeed(market)));
 
-        for (Map.Entry<String, MagicBountyData.BountyData> entry : bountiesAtMarketById.entrySet()) {
+        for (Map.Entry<String, BountyData> entry : bountiesAtMarketById.entrySet()) {
             picker.add(entry.getKey(), entry.getValue().trigger_weight_mult);
         }
 
@@ -567,11 +567,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
         return "viewBountyDescDetails-" + key;
     }
 
-    private Map<String, MagicBountyData.BountyData> getBountiesToShow() {
-        Map<String, MagicBountyData.BountyData> ret = new HashMap<>(keysOfBountiesToShow.size());
+    private Map<String, BountyData> getBountiesToShow() {
+        Map<String, BountyData> ret = new HashMap<>(keysOfBountiesToShow.size());
 
         for (String key : keysOfBountiesToShow) {
-            ret.put(key, MagicBountyData.BOUNTIES.get(key));
+            ret.put(key, MagicBountyLoader.BOUNTIES.get(key));
         }
 
         return ret;
@@ -588,7 +588,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             TextPanelAPI info,
             float width,
             Color factionBaseUIColor,
-            MagicBountyData.ShowFleet setting,
+            MagicBountyLoader.ShowFleet setting,
             List<FleetMemberAPI> ships,
             List<FleetMemberAPI> flagship,
             List<FleetMemberAPI> preset

@@ -2,7 +2,7 @@ package data.scripts.bounty.console;
 
 import data.scripts.bounty.ActiveBounty;
 import data.scripts.bounty.MagicBountyCoordinator;
-import data.scripts.bounty.MagicBountyData;
+import data.scripts.bounty.MagicBountyLoader;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class ListBountiesCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
-        List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
+        List<String> bountyKeys = new ArrayList<>(MagicBountyLoader.BOUNTIES.keySet());
         Collections.sort(bountyKeys);
         String trimmedArgs = args.trim();
 

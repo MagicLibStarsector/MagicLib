@@ -2,7 +2,6 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -19,7 +18,6 @@ import data.scripts.util.MagicVariables;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.magiclib.MagicStringMatcher;
 
 import java.util.*;
 
@@ -45,28 +43,7 @@ public final class MagicBountyCoordinator {
 
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
-        validateAndCullLoadedBounties();
-    }
-
-    private static void validateAndCullLoadedBounties() {
-        LOG.info("\n ######################\n\n VALIDATING BOUNTIES \n\n ######################");
-        int valid = 0;
-        List<String> culling = new ArrayList<>();
-        for (Map.Entry<String, MagicBountyData.BountyData> dataEntry : MagicBountyData.BOUNTIES.entrySet()) {
-            boolean isValid = validateAndCorrectIds(dataEntry.getKey(), dataEntry.getValue());
-            if (isValid) {
-                valid++;
-            } else {
-                culling.add(dataEntry.getKey());
-            }
-        }
-        if (!culling.isEmpty()) {
-            for (String id : culling) {
-                MagicBountyData.BOUNTIES.remove(id);
-            }
-        }
-        LOG.info("Successfully validated " + valid + " bounties!");
-        LOG.info("\n ######################\n\n  LOADING COMPLETED  \n\n ######################");
+        MagicBountyLoader.validateAndCullLoadedBounties();
     }
 
     @Nullable
@@ -161,12 +138,12 @@ public final class MagicBountyCoordinator {
     }
 
     @NotNull
-    public Map<String, MagicBountyData.BountyData> getBountiesWithChanceToSpawnAtMarketById(@NotNull MarketAPI market) {
-        Map<String, MagicBountyData.BountyData> available = new HashMap<>();
+    public Map<String, BountyData> getBountiesWithChanceToSpawnAtMarketById(@NotNull MarketAPI market) {
+        Map<String, BountyData> available = new HashMap<>();
 
         // Run checks on each bounty to see if it should be displayed.
-        for (String bountyKey : MagicBountyData.BOUNTIES.keySet()) {
-            MagicBountyData.BountyData bountySpec = MagicBountyData.BOUNTIES.get(bountyKey);
+        for (String bountyKey : MagicBountyLoader.BOUNTIES.keySet()) {
+            BountyData bountySpec = MagicBountyLoader.BOUNTIES.get(bountyKey);
 
             // If the bounty has been completed, don't offer it.
             if (getCompletedBounties().contains(bountyKey)) {
@@ -287,7 +264,7 @@ public final class MagicBountyCoordinator {
         return Objects.hash(memoryWithoutUpdate.getLong(key) + marketAPI.getId());
     }
 
-    public ActiveBounty createActiveBounty(String bountyKey, MagicBountyData.BountyData spec) {
+    public ActiveBounty createActiveBounty(String bountyKey, BountyData spec) {
 
         SectorEntityToken suitableTargetLocation = null;
         CampaignFleetAPI fleet = null;
@@ -380,7 +357,7 @@ public final class MagicBountyCoordinator {
             }
 
             // Add both a constant tag to the fleet as well as the bounty key that it is for.
-            fleet.addTag(MagicBountyData.BOUNTY_FLEET_TAG);
+            fleet.addTag(MagicBountyLoader.BOUNTY_FLEET_TAG);
             fleet.addTag(bountyKey);
 
             // Set fleet to max CR
@@ -423,13 +400,13 @@ public final class MagicBountyCoordinator {
 
         if (wasCompleted) {
             // Need to reload bounties to be able to get the `job_memKey` and remove it from memory.
-            MagicBountyData.loadBountiesFromJSON(false);
+            MagicBountyLoader.loadBountiesFromJSON(false);
         }
 
         ActiveBounty activeBounty = getActiveBounty(bountyKey);
 
         if (activeBounty != null) {
-            MagicBountyData.BountyData spec = activeBounty.getSpec();
+            BountyData spec = activeBounty.getSpec();
 
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
@@ -452,9 +429,9 @@ public final class MagicBountyCoordinator {
             // Then remove it from the list.
             getCompletedBounties().remove(bountyKey);
             // Then reload.
-            MagicBountyData.loadBountiesFromJSON(false);
+            MagicBountyLoader.loadBountiesFromJSON(false);
         } else {
-            MagicBountyData.BountyData spec = MagicBountyData.BOUNTIES.get(bountyKey);
+            BountyData spec = MagicBountyLoader.BOUNTIES.get(bountyKey);
 
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -478,7 +455,7 @@ public final class MagicBountyCoordinator {
      * the bounty fleet will be scaled to 175FP (100FP + 0.75 x 100FP of difference)
      * ```
      */
-    private static int calculateDesiredFP(MagicBountyData.BountyData spec) {
+    private static int calculateDesiredFP(BountyData spec) {
         if (spec.fleet_min_FP <= 0) {
             if (MagicVariables.verbose) {
                 LOG.info(
@@ -515,196 +492,5 @@ public final class MagicBountyCoordinator {
         }
 
         return desiredFP;
-    }
-
-    public static boolean validateAndCorrectIds(String bountyId, MagicBountyData.BountyData this_bounty) {
-
-        try {
-            // fleet_faction
-            if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_faction) != null) {
-                String fleetFactionId = this_bounty.fleet_faction;
-                FactionAPI faction = MagicStringMatcher.findBestFactionMatch(fleetFactionId);
-
-                if (faction == null) {
-                    //that faction couldn't be found, invalidating the bounty
-                    LOG.info(String.format("Unable to find faction '%s' from bounty %s. Bounty is INVALID!", fleetFactionId, bountyId));
-                    return false;
-                } else if (!Objects.equals(faction.getId(), fleetFactionId)) {
-                    LOG.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
-                    this_bounty.fleet_faction = faction.getId();
-                }
-            } else
-                //this is a mandatory value if the bounty is not placed on an existing fleet
-                if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
-                    LOG.info(String.format("Invalid '%s' bounty, missing fleet_faction", bountyId));
-                    return false;
-                }
-
-            // fleet_composition_faction
-            if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_composition_faction) != null) {
-                String compositionFactionId = this_bounty.fleet_composition_faction;
-                FactionAPI fleetCompositionFaction = MagicStringMatcher.findBestFactionMatch(compositionFactionId);
-
-                if (fleetCompositionFaction == null) {
-                    //that faction couldn't be found, invalidating the bounty
-                    LOG.info(String.format("Unable to find fleet_composition_faction '%s' from bounty %s. Bounty is INVALID!", compositionFactionId, bountyId));
-                    return false;
-                } else if (!Objects.equals(fleetCompositionFaction.getId(), compositionFactionId)) {
-                    LOG.info(String.format("Corrected fleet_composition_faction '%s' to '%s' in bounty %s.", compositionFactionId, fleetCompositionFaction.getId(), bountyId));
-                    this_bounty.fleet_composition_faction = fleetCompositionFaction.getId();
-                }
-            }
-
-            // job_forFaction
-            if (MagicTxt.nullStringIfEmpty(this_bounty.job_forFaction) != null) {
-                String job_forFactionId = this_bounty.job_forFaction;
-                FactionAPI job_forFaction = MagicStringMatcher.findBestFactionMatch(job_forFactionId);
-
-                if (job_forFaction == null) {
-                    //that faction couldn't be found, invalidating the bounty
-                    LOG.info(String.format("Unable to find job_forFaction '%s' from bounty %s. Bounty is INVALID!", job_forFactionId, bountyId));
-                    return false;
-                } else if (!Objects.equals(job_forFaction.getId(), job_forFactionId)) {
-                    LOG.info(String.format("Corrected job_forFactionId '%s' to '%s' in bounty %s.", job_forFactionId, job_forFaction.getId(), bountyId));
-                    this_bounty.job_forFaction = job_forFaction.getId();
-                }
-            }
-
-            // location_marketFactions
-            if (this_bounty.location_marketFactions != null && !this_bounty.location_marketFactions.isEmpty()) {
-                List<String> location_marketFactions = this_bounty.location_marketFactions;
-
-                for (int i = location_marketFactions.size() - 1; i >= 0; i--) {
-                    String location_marketFactionId = location_marketFactions.get(i);
-                    FactionAPI location_marketFaction = MagicStringMatcher.findBestFactionMatch(location_marketFactionId);
-
-                    if (location_marketFaction == null) {
-                        //that faction couldn't be found, invalidating the bounty
-                        LOG.info(String.format("Unable to find location_marketFactions '%s' from bounty %s. Bounty is INVALID!", location_marketFactionId, bountyId));
-                        return false;
-                    } else if (!Objects.equals(location_marketFaction.getId(), location_marketFactionId)) {
-                        LOG.info(String.format("Corrected location_marketFactionId '%s' to '%s' in bounty %s.", location_marketFactionId, location_marketFaction.getId(), bountyId));
-                        this_bounty.location_marketFactions.remove(i);
-                        this_bounty.location_marketFactions.add(location_marketFaction.getId());
-                    }
-                }
-            }
-
-            // trigger_marketFaction_any
-            if (this_bounty.trigger_marketFaction_any != null && !this_bounty.trigger_marketFaction_any.isEmpty()) {
-                List<String> trigger_marketFaction_any = this_bounty.trigger_marketFaction_any;
-
-                for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
-                    String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
-                    FactionAPI trigger_marketFaction = MagicStringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
-
-                    if (trigger_marketFaction == null) {
-                        //that faction couldn't be found, invalidating the bounty
-                        LOG.info(String.format("Unable to find trigger_marketFaction_any '%s' from bounty %s. Bounty is INVALID!", trigger_marketFaction_anyId, bountyId));
-                        return false;
-                    } else if (!Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
-                        LOG.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
-                        this_bounty.trigger_marketFaction_any.remove(i);
-                        this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
-                    }
-                }
-            }
-
-            // trigger_marketFaction_none
-            if (this_bounty.trigger_marketFaction_none != null && !this_bounty.trigger_marketFaction_none.isEmpty()) {
-                List<String> trigger_marketFaction_none = this_bounty.trigger_marketFaction_none;
-
-                for (int i = trigger_marketFaction_none.size() - 1; i >= 0; i--) {
-                    String trigger_marketFaction_noneId = trigger_marketFaction_none.get(i);
-                    FactionAPI trigger_marketFaction = MagicStringMatcher.findBestFactionMatch(trigger_marketFaction_noneId);
-
-                    if (trigger_marketFaction == null) {
-                        //that faction couldn't be found, invalidating the bounty
-                        LOG.info(String.format("Unable to find trigger_marketFaction_none '%s' from bounty %s. Bounty is INVALID!", trigger_marketFaction_noneId, bountyId));
-                        return false;
-                    } else if (!Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_noneId)) {
-                        LOG.info(String.format("Corrected trigger_marketFaction_none '%s' to '%s' in bounty %s.", trigger_marketFaction_noneId, trigger_marketFaction.getId(), bountyId));
-                        this_bounty.trigger_marketFaction_none.remove(i);
-                        this_bounty.trigger_marketFaction_none.add(trigger_marketFaction.getId());
-                    }
-                }
-            }
-
-            // trigger_playerRelationship_atLeast
-            if (this_bounty.trigger_playerRelationship_atLeast != null && !this_bounty.trigger_playerRelationship_atLeast.isEmpty()) {
-                Map<String, Float> trigger_playerRelationship_atLeast = this_bounty.trigger_playerRelationship_atLeast;
-                Map<String, Float> validIDs = new HashMap<>();
-                for (String f : trigger_playerRelationship_atLeast.keySet()) {
-                    FactionAPI trigger_playerRelationship_faction = MagicStringMatcher.findBestFactionMatch(f);
-
-                    if (trigger_playerRelationship_faction == null) {
-                        //that faction couldn't be found, invalidating the bounty
-                        LOG.info(String.format("Unable to find trigger_playerRelationship_atLeast '%s' from bounty %s. Bounty is INVALID!", f, bountyId));
-                        return false;
-                    } else {
-                        if (!Objects.equals(trigger_playerRelationship_faction.getId(), f)) {
-                            LOG.info(String.format("Corrected trigger_playerRelationship_atLeast '%s' to '%s' in bounty %s.", f, trigger_playerRelationship_faction.getId(), bountyId));
-                        }
-                        validIDs.put(trigger_playerRelationship_faction.getId(), trigger_playerRelationship_atLeast.get(f));
-                    }
-
-                }
-                this_bounty.trigger_playerRelationship_atLeast = validIDs;
-            }
-
-            // trigger_playerRelationship_atMost
-            if (this_bounty.trigger_playerRelationship_atMost != null && !this_bounty.trigger_playerRelationship_atMost.isEmpty()) {
-                Map<String, Float> trigger_playerRelationship_atMost = this_bounty.trigger_playerRelationship_atMost;
-                Map<String, Float> validIDs = new HashMap<>();
-                for (String f : trigger_playerRelationship_atMost.keySet()) {
-                    FactionAPI trigger_playerRelationship_faction = MagicStringMatcher.findBestFactionMatch(f);
-
-                    if (trigger_playerRelationship_faction == null) {
-                        //that faction couldn't be found, invalidating the bounty
-                        LOG.info(String.format("Unable to find trigger_playerRelationship_atMost '%s' from bounty %s. Bounty is INVALID!", f, bountyId));
-                        return false;
-                    } else {
-                        if (!Objects.equals(trigger_playerRelationship_faction.getId(), f)) {
-                            LOG.info(String.format("Corrected trigger_playerRelationship_atMost '%s' to '%s' in bounty %s.", f, trigger_playerRelationship_faction.getId(), bountyId));
-                        }
-                        validIDs.put(trigger_playerRelationship_faction.getId(), trigger_playerRelationship_atMost.get(f));
-                    }
-
-                }
-                this_bounty.trigger_playerRelationship_atMost = validIDs;
-            }
-
-            //OTHER REQUIREMENT CHECKS
-            if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
-                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null) {
-                    //No flagship variant, invalidating the bounty
-                    LOG.info(String.format("Missing fleet_flagship_variant from bounty %s. Bounty is INVALID!", bountyId));
-                    return false;
-                }
-
-                if (Global.getSettings().getVariant(this_bounty.fleet_flagship_variant) == null && MagicCampaign.loadVariant(MagicVariables.VARIANT_PATH + this_bounty.fleet_flagship_variant + ".variant") == null) {
-                    //that flagship variant couldn't be found, invalidating the bounty
-                    LOG.info(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
-                    return false;
-                }
-
-                if (this_bounty.fleet_preset_ships != null && !this_bounty.fleet_preset_ships.isEmpty()) {
-                    //check all reinforcement variants
-                    for (String v : this_bounty.fleet_preset_ships.keySet()) {
-                        if (Global.getSettings().getVariant(v) == null && MagicCampaign.loadVariant(MagicVariables.VARIANT_PATH + v + ".variant") == null) {
-                            //that reinforcement variant couldn't be found, invalidating the bounty
-                            LOG.info(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
-                            return false;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOG.warn("Something went wrong when validating " + bountyId, e);
-        }
-
-        LOG.info(bountyId + " : VALID");
-
-        return true;
     }
 }

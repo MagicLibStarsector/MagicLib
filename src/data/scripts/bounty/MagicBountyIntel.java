@@ -417,15 +417,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
-                if (bounty.getSpec().job_show_distance != MagicBountyData.ShowDistance.None) {
-                    if (bounty.getSpec().job_show_distance == MagicBountyData.ShowDistance.Exact) {
+                if (bounty.getSpec().job_show_distance != MagicBountyLoader.ShowDistance.None) {
+                    if (bounty.getSpec().job_show_distance == MagicBountyLoader.ShowDistance.Exact) {
                         info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
                     } else {
                         info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
                     }
                 }
 
-                if (bounty.getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
+                if (bounty.getSpec().job_show_fleet != MagicBountyLoader.ShowFleet.None) {
                     showFleet(
                             info,
                             width,
@@ -602,7 +602,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             TooltipMakerAPI info,
             float width,
             Color factionBaseUIColor,
-            MagicBountyData.ShowFleet setting,
+            MagicBountyLoader.ShowFleet setting,
             List<FleetMemberAPI> ships,
             List<FleetMemberAPI> flagship,
             List<FleetMemberAPI> preset

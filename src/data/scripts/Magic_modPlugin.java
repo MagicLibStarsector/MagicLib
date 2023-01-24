@@ -37,11 +37,11 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
         if (Global.getSettings().isDevMode()) {
-            MagicBountyData.loadBountiesFromJSON(false);
+            MagicBountyLoader.loadBountiesFromJSON(false);
 //            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
 //                MagicBountyHVB.convertHVBs(false);
 //            }
-            if (MagicBountyData.JSONfailed) {
+            if (MagicBountyLoader.JSONfailed) {
                 String message = System.lineSeparator()
                         + System.lineSeparator() + "Malformed MagicBounty_data.json detected"
                         + System.lineSeparator() + System.lineSeparator();
@@ -101,16 +101,16 @@ public class Magic_modPlugin extends BaseModPlugin {
         if (MagicVariables.getMagicBounty()) {
             if (newGame) {
                 //add all bounties on a new game
-                MagicBountyData.loadBountiesFromJSON(false);
+                MagicBountyLoader.loadBountiesFromJSON(false);
                 //convert the HVBs if necessary
                 if (!MagicVariables.getHVB()) MagicBountyHVB.convertHVBs(false);
             } else {
                 if (MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_reloadAll")) {
                     //force cleanup of all the bounties that have not been taken
-                    MagicBountyData.clearBountyData();
+                    MagicBountyLoader.clearBountyData();
                 }
                 //only add new bounties if there are any on a save load
-                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode());
+                MagicBountyLoader.loadBountiesFromJSON(!Global.getSettings().isDevMode());
                 if (!MagicVariables.getHVB()) MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode());
             }
 

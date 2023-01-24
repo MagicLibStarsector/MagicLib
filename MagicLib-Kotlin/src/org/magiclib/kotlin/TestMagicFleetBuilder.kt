@@ -1,7 +1,7 @@
 package org.magiclib.kotlin
 
 import com.fs.starfarer.api.Global
-import org.magiclib.MagicFleetBuilder
+import org.magiclib.campaign.MagicFleetBuilder
 
 object TestMagicFleetBuilder {
     fun testMagicFleetBuilder() {

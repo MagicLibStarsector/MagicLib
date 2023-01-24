@@ -8,3 +8,5 @@ data.scripts.plugins
 data.scripts.terrain
 data.scripts.util
 data.scripts.weapons
+org.magiclib.campaign
+org.magiclib.util
