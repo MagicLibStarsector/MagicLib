@@ -19,6 +19,7 @@ import data.scripts.util.MagicVariables;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.MagicStringMatcher;
 
 import java.util.*;
 
@@ -44,6 +45,10 @@ public final class MagicBountyCoordinator {
 
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
+        validateAndCullLoadedBounties();
+    }
+
+    private static void validateAndCullLoadedBounties() {
         LOG.info("\n ######################\n\n VALIDATING BOUNTIES \n\n ######################");
         int valid = 0;
         List<String> culling = new ArrayList<>();
@@ -91,6 +96,16 @@ public final class MagicBountyCoordinator {
             }
         }
 
+        cleanUpBounties();
+
+        return activeBountiesByKey;
+    }
+
+    /**
+     * Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
+     * Remove bounties that have completed and the intel has timed out and add them to the Completed Bounties list.
+     */
+    private void cleanUpBounties() {
         for (Iterator<Map.Entry<String, ActiveBounty>> iterator = activeBountiesByKey.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, ActiveBounty> entry = iterator.next();
             long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - entry.getValue().getBountyCreatedTimestamp());
@@ -111,8 +126,6 @@ public final class MagicBountyCoordinator {
                 getCompletedBounties().add(entry.getKey());
             }
         }
-
-        return activeBountiesByKey;
     }
 
     @NotNull
@@ -433,6 +446,13 @@ public final class MagicBountyCoordinator {
                 activeBounty.despawn();
             }
             activeBounty.endIntel();
+
+            // With the intel expired, move bounty to Completed list.
+            cleanUpBounties();
+            // Then remove it from the list.
+            getCompletedBounties().remove(bountyKey);
+            // Then reload.
+            MagicBountyData.loadBountiesFromJSON(false);
         } else {
             MagicBountyData.bountyData spec = MagicBountyData.BOUNTIES.get(bountyKey);
 
@@ -503,7 +523,7 @@ public final class MagicBountyCoordinator {
             // fleet_faction
             if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_faction) != null) {
                 String fleetFactionId = this_bounty.fleet_faction;
-                FactionAPI faction = StringMatcher.findBestFactionMatch(fleetFactionId);
+                FactionAPI faction = MagicStringMatcher.findBestFactionMatch(fleetFactionId);
 
                 if (faction == null) {
                     //that faction couldn't be found, invalidating the bounty
@@ -523,7 +543,7 @@ public final class MagicBountyCoordinator {
             // fleet_composition_faction
             if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_composition_faction) != null) {
                 String compositionFactionId = this_bounty.fleet_composition_faction;
-                FactionAPI fleetCompositionFaction = StringMatcher.findBestFactionMatch(compositionFactionId);
+                FactionAPI fleetCompositionFaction = MagicStringMatcher.findBestFactionMatch(compositionFactionId);
 
                 if (fleetCompositionFaction == null) {
                     //that faction couldn't be found, invalidating the bounty
@@ -538,7 +558,7 @@ public final class MagicBountyCoordinator {
             // job_forFaction
             if (MagicTxt.nullStringIfEmpty(this_bounty.job_forFaction) != null) {
                 String job_forFactionId = this_bounty.job_forFaction;
-                FactionAPI job_forFaction = StringMatcher.findBestFactionMatch(job_forFactionId);
+                FactionAPI job_forFaction = MagicStringMatcher.findBestFactionMatch(job_forFactionId);
 
                 if (job_forFaction == null) {
                     //that faction couldn't be found, invalidating the bounty
@@ -556,7 +576,7 @@ public final class MagicBountyCoordinator {
 
                 for (int i = location_marketFactions.size() - 1; i >= 0; i--) {
                     String location_marketFactionId = location_marketFactions.get(i);
-                    FactionAPI location_marketFaction = StringMatcher.findBestFactionMatch(location_marketFactionId);
+                    FactionAPI location_marketFaction = MagicStringMatcher.findBestFactionMatch(location_marketFactionId);
 
                     if (location_marketFaction == null) {
                         //that faction couldn't be found, invalidating the bounty
@@ -576,7 +596,7 @@ public final class MagicBountyCoordinator {
 
                 for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
                     String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
-                    FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
+                    FactionAPI trigger_marketFaction = MagicStringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
 
                     if (trigger_marketFaction == null) {
                         //that faction couldn't be found, invalidating the bounty
@@ -596,7 +616,7 @@ public final class MagicBountyCoordinator {
 
                 for (int i = trigger_marketFaction_none.size() - 1; i >= 0; i--) {
                     String trigger_marketFaction_noneId = trigger_marketFaction_none.get(i);
-                    FactionAPI trigger_marketFaction = StringMatcher.findBestFactionMatch(trigger_marketFaction_noneId);
+                    FactionAPI trigger_marketFaction = MagicStringMatcher.findBestFactionMatch(trigger_marketFaction_noneId);
 
                     if (trigger_marketFaction == null) {
                         //that faction couldn't be found, invalidating the bounty
@@ -615,7 +635,7 @@ public final class MagicBountyCoordinator {
                 Map<String, Float> trigger_playerRelationship_atLeast = this_bounty.trigger_playerRelationship_atLeast;
                 Map<String, Float> validIDs = new HashMap<>();
                 for (String f : trigger_playerRelationship_atLeast.keySet()) {
-                    FactionAPI trigger_playerRelationship_faction = StringMatcher.findBestFactionMatch(f);
+                    FactionAPI trigger_playerRelationship_faction = MagicStringMatcher.findBestFactionMatch(f);
 
                     if (trigger_playerRelationship_faction == null) {
                         //that faction couldn't be found, invalidating the bounty
@@ -637,7 +657,7 @@ public final class MagicBountyCoordinator {
                 Map<String, Float> trigger_playerRelationship_atMost = this_bounty.trigger_playerRelationship_atMost;
                 Map<String, Float> validIDs = new HashMap<>();
                 for (String f : trigger_playerRelationship_atMost.keySet()) {
-                    FactionAPI trigger_playerRelationship_faction = StringMatcher.findBestFactionMatch(f);
+                    FactionAPI trigger_playerRelationship_faction = MagicStringMatcher.findBestFactionMatch(f);
 
                     if (trigger_playerRelationship_faction == null) {
                         //that faction couldn't be found, invalidating the bounty

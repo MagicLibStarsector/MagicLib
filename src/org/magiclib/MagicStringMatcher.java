@@ -1,15 +1,16 @@
-package data.scripts.bounty;
+package org.magiclib;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * From Console Command's `CommandUtils`.
+ * Originally from Console Commands's `CommandUtils`.
  *
  * @author LazyWizard
+ * @since 0.45.3
  */
-class StringMatcher {
+public class MagicStringMatcher {
     @Nullable
     public static FactionAPI findBestFactionMatch(String name) {
         name = name.toLowerCase();

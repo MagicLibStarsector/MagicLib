@@ -9,6 +9,7 @@ import data.scripts.plugins.MagicAutoTrails;
 import data.scripts.terrain.MagicAsteroidBeltTerrainPlugin;
 import data.scripts.terrain.MagicAsteroidFieldTerrainPlugin;
 import data.scripts.util.*;
+import org.magiclib.kotlin.TestMagicFleetBuilder;
 
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
@@ -117,6 +118,10 @@ public class Magic_modPlugin extends BaseModPlugin {
             MagicBountyCoordinator.getInstance().configureBountyListeners();
 
             Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
+        }
+
+        if (Global.getSector().getPlayerPerson().getNameString().equalsIgnoreCase("ML Test")) {
+            TestMagicFleetBuilder.INSTANCE.testMagicFleetBuilder();
         }
     }
 

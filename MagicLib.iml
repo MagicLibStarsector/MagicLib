@@ -12,5 +12,6 @@
     <orderEntry type="library" name="Vayra's Sector" level="project" />
     <orderEntry type="library" name="SWP" level="application" />
     <orderEntry type="library" name="lw_Console" level="application" />
+    <orderEntry type="module" module-name="MagicLib-Kotlin" />
   </component>
 </module>

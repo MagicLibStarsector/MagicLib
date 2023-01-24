@@ -40,6 +40,7 @@ import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.MagicFleetBuilder;
+import org.magiclib.MagicStringMatcher;
 
 import java.util.*;
 
@@ -59,28 +60,15 @@ public class MagicCampaign {
     //                     //
     /////////////////////////
 
-    public static MagicFleetBuilder createFleetBuilder(String fleetName,
-                                                       String fleetFaction,
-                                                       String flagshipVariant,
-                                                       int minFP,
-                                                       String reinforcementFaction,
-                                                       boolean transponderOn) {
-        return new MagicFleetBuilder(fleetName,
-                fleetFaction,
-                flagshipVariant,
-                minFP,
-                reinforcementFaction,
-                transponderOn);
+    public static MagicFleetBuilder createFleetBuilder() {
+        return new MagicFleetBuilder();
     }
 
     /**
      * Creates a fleet with a defined flagship and optional escort
      *
-     * @param fleetName
-     * @param fleetFaction
      * @param fleetType            campaign.ids.FleetTypes, default to FleetTypes.PERSON_BOUNTY_FLEET
      * @param flagshipName         Optional flagship name
-     * @param flagshipVariant
      * @param captain              PersonAPI, can be NULL for random captain, otherwise use createCaptain()
      * @param supportFleet         map <variantId, number> Optional escort ship VARIANTS and their NUMBERS
      * @param minFP                Minimal fleet size, can be used to adjust to the player's power,         set to 0 to ignore
@@ -88,42 +76,35 @@ public class MagicCampaign {
      * @param qualityOverride      Optional ship quality override, default to 2 (no D-mods) if null or <0
      * @param spawnLocation        Where the fleet will spawn, default to assignmentTarget if NULL
      * @param assignment           campaign.FleetAssignment, default to orbit aggressive
-     * @param assignementTarget    where the fleet will go to execute its order, it will not spawn if NULL
-     * @param isImportant
-     * @param transponderOn
-     * @return
+     * @param assignmentTarget     where the fleet will go to execute its order, it will not spawn if NULL
      */
     public static CampaignFleetAPI createFleet(
-            String fleetName,
-            String fleetFaction,
+            @Nullable String fleetName,
+            @Nullable String fleetFaction,
             @Nullable String fleetType,
             @Nullable String flagshipName,
-            String flagshipVariant,
+            @Nullable String flagshipVariant,
             @Nullable PersonAPI captain,
             @Nullable Map<String, Integer> supportFleet,
             int minFP,
-            String reinforcementFaction,
+            @Nullable String reinforcementFaction,
             @Nullable Float qualityOverride,
             @Nullable SectorEntityToken spawnLocation,
             @Nullable FleetAssignment assignment,
-            @Nullable SectorEntityToken assignementTarget,
+            @Nullable SectorEntityToken assignmentTarget,
             boolean isImportant,
             boolean transponderOn
     ) {
-        CampaignFleetAPI result = createFleet(fleetName, fleetFaction, fleetType, flagshipName, flagshipVariant, false, false,
+        return createFleet(fleetName, fleetFaction, fleetType, flagshipName, flagshipVariant, false, false,
                 captain, supportFleet, true, minFP, reinforcementFaction, qualityOverride,
-                spawnLocation, assignment, assignementTarget, isImportant, transponderOn, null);
-        return result;
+                spawnLocation, assignment, assignmentTarget, isImportant, transponderOn, null);
     }
 
     /**
      * Creates a fleet with a defined flagship and optional escort
      *
-     * @param fleetName
-     * @param fleetFaction
      * @param fleetType            campaign.ids.FleetTypes, default to FleetTypes.PERSON_BOUNTY_FLEET
      * @param flagshipName         Optional flagship name
-     * @param flagshipVariant
      * @param captain              PersonAPI, can be NULL for random captain, otherwise use createCaptain()
      * @param supportFleet         map <variantId, number> Optional escort ship VARIANTS and their NUMBERS
      * @param minFP                Minimal fleet size, can be used to adjust to the player's power,         set to 0 to ignore
@@ -131,37 +112,50 @@ public class MagicCampaign {
      * @param qualityOverride      Optional ship quality override, default to 2 (no D-mods) if null or <0
      * @param spawnLocation        Where the fleet will spawn, default to assignmentTarget if NULL
      * @param assignment           campaign.FleetAssignment, default to orbit aggressive
-     * @param assignementTarget    where the fleet will go to execute its order, it will not spawn if NULL
-     * @param isImportant
-     * @param transponderOn
+     * @param assignmentTarget     where the fleet will go to execute its order, it will not spawn if NULL
      * @param variantsPath         If not null, the script will try to find missing variant files there.
      *                             Used to generate fleets using cross-mod variants that won't be loaded otherwise to avoid crashes.
      *                             The name of the variant files must match the ID of the variant.
-     * @return
      */
     public static CampaignFleetAPI createFleet(
-            String fleetName,
-            String fleetFaction,
+            @Nullable String fleetName,
+            @Nullable String fleetFaction,
             @Nullable String fleetType,
             @Nullable String flagshipName,
-            String flagshipVariant,
+            @Nullable String flagshipVariant,
             boolean flagshipRecovery,
             boolean flagshipAutofit,
             @Nullable PersonAPI captain,
             @Nullable Map<String, Integer> supportFleet,
             boolean supportAutofit,
             int minFP,
-            String reinforcementFaction,
+            @Nullable String reinforcementFaction,
             @Nullable Float qualityOverride,
             @Nullable SectorEntityToken spawnLocation,
             @Nullable FleetAssignment assignment,
-            @Nullable SectorEntityToken assignementTarget,
+            @Nullable SectorEntityToken assignmentTarget,
             boolean isImportant,
             boolean transponderOn,
             @Nullable String variantsPath
     ) {
-        //cleanup previous generation
+        // Clean up previous generation
         MagicVariables.presetShipIdsOfLastCreatedFleet.clear();
+
+        if (fleetName == null) {
+            FactionAPI faction = null;
+
+            if (fleetFaction != null) {
+                faction = MagicStringMatcher.findBestFactionMatch(fleetFaction);
+            } else if (reinforcementFaction != null) {
+                faction = MagicStringMatcher.findBestFactionMatch(reinforcementFaction);
+            }
+
+            if (faction != null) {
+                fleetName = faction.getDisplayName() + " Fleet";
+            } else {
+                fleetName = "Unknown Fleet";
+            }
+        }
 
         if (verbose) {
             log.error(" ");
@@ -178,13 +172,14 @@ public class MagicCampaign {
         }
 
         String extraShipsFaction = fleetFaction;
+
         if (reinforcementFaction != null) {
             extraShipsFaction = reinforcementFaction;
         } else if (verbose) {
             log.error("No reinforcement faction defined, defaulting to fleet faction.");
         }
 
-        SectorEntityToken location = assignementTarget;
+        SectorEntityToken location = assignmentTarget;
         if (spawnLocation != null) {
             location = spawnLocation;
         } else if (verbose) {
@@ -192,51 +187,49 @@ public class MagicCampaign {
         }
 
         FleetAssignment order = FleetAssignment.ORBIT_AGGRESSIVE;
+
         if (assignment != null) {
             order = assignment;
         } else if (verbose) {
             log.error("No assignment defined, defaulting to aggressive orbit.");
         }
 
-        Float quality = 1f;
+        float quality = 1f;
+
         if (qualityOverride != null && qualityOverride >= -1) {
             quality = qualityOverride;
         } else if (verbose) {
             log.error("No quality override defined, defaulting to highest quality.");
         }
 
-        //EMPTY FLEET
-        CampaignFleetAPI bountyFleet = FleetFactoryV3.createEmptyFleet(extraShipsFaction, type, null);
+        // EMPTY FLEET
+        CampaignFleetAPI newFleet = FleetFactoryV3.createEmptyFleet(extraShipsFaction, type, null);
 
-        //ADDING FLAGSHIP
-        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
-        if (flagship == null) {
-            log.error("Aborting " + fleetName + " generation");
-            return null;
-        }
-        bountyFleet.getFleetData().addFleetMember(flagship);
-        //renaming the ship if needed
-        if (flagshipName != null && !flagshipName.isEmpty()) {
-            flagship.setShipName(flagshipName);
-        }
-        flagship.setFlagship(true);
-        if (flagshipRecovery) {
-            flagship.getVariant().addTag(Tags.VARIANT_ALWAYS_RECOVERABLE);
-        }
-        MagicVariables.presetShipIdsOfLastCreatedFleet.add(flagship.getId());
+        // ADDING FLAGSHIP
+        FleetMemberAPI flagship = null;
+        if (flagshipVariant != null) {
+            flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
 
-        //ADDING PRESET SHIPS IF REQUIRED
+            if (flagship == null) {
+                log.error("Aborting " + fleetName + " generation. Reason: flagshipVariant was specified, but could not be created.");
+                return null;
+            }
+
+            newFleet.getFleetData().addFleetMember(flagship);
+        }
+
+        // ADDING PRESET SHIPS IF REQUIRED
         if (supportFleet != null && !supportFleet.isEmpty()) {
             List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, supportAutofit, verbose);
             for (FleetMemberAPI m : support) {
-                bountyFleet.getFleetData().addFleetMember(m);
+                newFleet.getFleetData().addFleetMember(m);
                 MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
             }
         }
 
-        int coreFP = bountyFleet.getFleetPoints();
+        int coreFP = newFleet.getFleetPoints();
 
-        //ADDING PROCGEN SHIPS IF REQUIRED
+        // ADDING PROCGEN SHIPS IF REQUIRED
         if (minFP > 0) {
             if (verbose) {
                 if (minFP < coreFP) {
@@ -251,10 +244,10 @@ public class MagicCampaign {
                 if (reinforcements != null) {
                     //KEEP THOSE DMODS!
                     if (reinforcements.getInflater() != null) {
-                        bountyFleet.setInflater(reinforcements.getInflater());
+                        newFleet.setInflater(reinforcements.getInflater());
                     }
                     if (verbose) {
-                        log.info("Fleet quality set to " + bountyFleet.getInflater().getQuality());
+                        log.info("Fleet quality set to " + newFleet.getInflater().getQuality());
                     }
 
                     //check for empty reinforcement fleet (the empty fleet is kept just for the quality stuff)
@@ -263,7 +256,7 @@ public class MagicCampaign {
                         if (membersInPriorityOrder != null && !membersInPriorityOrder.isEmpty()) {
                             for (FleetMemberAPI m : membersInPriorityOrder) {
                                 m.setCaptain(null);
-                                bountyFleet.getFleetData().addFleetMember(m);
+                                newFleet.getFleetData().addFleetMember(m);
                                 if (verbose) {
                                     log.info("adding " + m.getHullId());
                                 }
@@ -276,34 +269,60 @@ public class MagicCampaign {
             }
         }
 
-        //ensuring the flagship is properly set
-        bountyFleet.getFleetData().setFlagship(flagship);
+        // FINALIZE FLAGSHIP
+        // Choose a flagship if one wasn't specified
+        if (flagshipVariant == null) {
+            newFleet.getFleetData().sort();
+            // If there is no flagship, this will return the first ship in the fleet.
+            flagship = newFleet.getFlagship();
+        }
 
-        //ADDING OFFICERS
+        if (flagship == null) {
+            log.error("Aborting " + fleetName + " generation. Reason: no flagshipVariant was specified and none could be automatically chosen.");
+            return null;
+        }
+
+        // Rename the flagship if needed
+        if (flagshipName != null && !flagshipName.isEmpty()) {
+            flagship.setShipName(flagshipName);
+        }
+
+        flagship.setFlagship(true);
+
+        if (flagshipRecovery) {
+            flagship.getVariant().addTag(Tags.VARIANT_ALWAYS_RECOVERABLE);
+        }
+
+        MagicVariables.presetShipIdsOfLastCreatedFleet.add(flagship.getId());
+
+        // Ensure the flagship is properly set
+        newFleet.getFleetData().setFlagship(flagship);
+
+        // ADDING OFFICERS
         FleetParamsV3 fleetParams = new FleetParamsV3(
                 null,
                 new Vector2f(),
                 fleetFaction,
                 quality,
                 type,
-                bountyFleet.getFleetPoints(),
+                newFleet.getFleetPoints(),
                 0f, 0f, 0f, 0f, 0f, 0f
         );
-        FleetFactoryV3.addCommanderAndOfficersV2(bountyFleet, fleetParams, new Random());
+        FleetFactoryV3.addCommanderAndOfficersV2(newFleet, fleetParams, new Random());
 
-        //ensuring the flagship is properly set AGAIN!
-        bountyFleet.getFleetData().setFlagship(flagship);
+        // Ensure the flagship is properly set AGAIN!
+        newFleet.getFleetData().setFlagship(flagship);
 
-        //I swear those sneaky officers are messing up the flagship tags
+        // I swear those sneaky officers are messing up the flagship tags
         if (verbose) {
-            log.warn("Fleet flagship is " + bountyFleet.getFlagship().getHullId());
-            for (FleetMemberAPI m : bountyFleet.getMembersWithFightersCopy()) {
+            log.warn("Fleet flagship is " + newFleet.getFlagship().getHullId());
+            for (FleetMemberAPI m : newFleet.getMembersWithFightersCopy()) {
                 if (m.isFlagship()) {
                     log.warn(m.getHullId() + " has the Flagship tag");
                 }
             }
         }
-        for (FleetMemberAPI m : bountyFleet.getMembersWithFightersCopy()) {
+        for (FleetMemberAPI m : newFleet.getMembersWithFightersCopy()) {
             if (m == flagship) {
                 if (!m.isFlagship()) {
                     m.setFlagship(true);
@@ -319,26 +338,27 @@ public class MagicCampaign {
             }
         }
 
-        //add the defined captain to the flagship if needed
+        // add the defined captain to the flagship if needed
         if (captain != null) {
-            bountyFleet.getFlagship().setCaptain(captain);
-            bountyFleet.setCommander(flagship.getCaptain());
+            newFleet.getFlagship().setCaptain(captain);
+            newFleet.setCommander(flagship.getCaptain());
             if (verbose) {
                 log.warn("Assigning " + captain.getNameString() + " to the Flagship");
             }
         } else {
-            bountyFleet.getFlagship().setCaptain(bountyFleet.getCommander());
+            newFleet.getFlagship().setCaptain(newFleet.getCommander());
             if (verbose) {
                 log.warn("Moving random commander to the Flagship");
             }
         }
 
-        //apply skills to the fleet
-        FleetFactoryV3.addCommanderSkills(bountyFleet.getCommander(), bountyFleet, fleetParams, new Random());
+        // apply skills to the fleet
+        FleetFactoryV3.addCommanderSkills(newFleet.getCommander(), newFleet, fleetParams, new Random());
         if (verbose) {
             int admiral = 0;
             int elite = 0;
-            for (SkillLevelAPI skill : bountyFleet.getCommander().getStats().getSkillsCopy()) {
+
+            for (SkillLevelAPI skill : newFleet.getCommander().getStats().getSkillsCopy()) {
                 if (skill.getSkill().isAdmiralSkill()) {
                     admiral++;
                     if (skill.getLevel() > 1) {
@@ -346,34 +366,35 @@ public class MagicCampaign {
                     }
                 }
             }
+
             log.info("Applied " + admiral + " admiral skills ( " + elite + " elite ones) to the fleet.");
         }
 
         //cleanup name and faction
-        bountyFleet.setNoFactionInName(true);
-        bountyFleet.setFaction(fleetFaction, true);
-        if (fleetName != null && !fleetName.isEmpty()) bountyFleet.setName(fleetName);
+        newFleet.setNoFactionInName(true);
+        newFleet.setFaction(fleetFaction, true);
+        if (fleetName != null && !fleetName.isEmpty()) newFleet.setName(fleetName);
 
         //set standard 70% CR
-        List<FleetMemberAPI> members = bountyFleet.getFleetData().getMembersListCopy();
+        List<FleetMemberAPI> members = newFleet.getFleetData().getMembersListCopy();
         for (FleetMemberAPI member : members) {
             member.getRepairTracker().setCR(0.7f);
         }
 
         //FINISHING
-        bountyFleet.getFleetData().sort();
-        bountyFleet.getFleetData().setSyncNeeded();
-        bountyFleet.getFleetData().syncIfNeeded();
-//        bountyFleet.getFleetData().syncMemberLists();
-//        bountyFleet.setInflated(true);
-//        bountyFleet.inflateIfNeeded();
+        newFleet.getFleetData().sort();
+        newFleet.getFleetData().setSyncNeeded();
+        newFleet.getFleetData().syncIfNeeded();
+//        newFleet.getFleetData().syncMemberLists();
+//        newFleet.setInflated(true);
+//        newFleet.inflateIfNeeded();
 
-        //SPAWN if needed
+        // SPAWN if needed
         if (location != null) {
-            if (assignementTarget == null) {
+            if (assignmentTarget == null) {
                 //prevent a crash when the fleet is spawned at a location but without a target
                 spawnFleet(
-                        bountyFleet,
+                        newFleet,
                         location,
                         order,
                         location,
@@ -383,10 +404,10 @@ public class MagicCampaign {
                 );
             } else {
                 spawnFleet(
-                        bountyFleet,
+                        newFleet,
                         location,
                         order,
-                        assignementTarget,
+                        assignmentTarget,
                         isImportant,
                         transponderOn,
                         verbose
@@ -395,10 +416,10 @@ public class MagicCampaign {
         }
 
         if (verbose) {
-            log.warn(fleetName + " creation completed");
+            log.warn(fleetName + " creation completed.");
         }
 
-        return bountyFleet;
+        return newFleet;
     }
 
     /**
@@ -726,7 +747,7 @@ public class MagicCampaign {
         return variant;
     }
 
-    private static FleetMemberAPI generateShip(String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
+    private static FleetMemberAPI generateShip(@NotNull String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
         ShipVariantAPI thisVariant = Global.getSettings().getVariant(variant);
         //if the variant doesn't exist but a custom variant path is defined, try loading it
         if (thisVariant == null && variantsPath != null) {
@@ -769,7 +790,7 @@ public class MagicCampaign {
                 //fakeMarket(factionId, qualityOverride), //Fake market are actually not needed, one will be created by the FleetFactory
                 new Vector2f(),
                 factionId,
-                qualityOverride, //this is supposed to everride the default fleet quality without market of 0.5
+                qualityOverride, //this is supposed to override the default fleet quality without market of 0.5
                 fleetType,
                 fleetPoints * (1 - freightersAndTankersFraction),
                 fleetPoints * (freightersAndTankersFraction / 3),
@@ -797,7 +818,7 @@ public class MagicCampaign {
         }
 
         if (tempFleet.isEmpty()) {
-            log.warn("Procedural Support-Fleet is empty, requested fleet size is too small");
+            log.warn("Procedural Support-Fleet is empty, requested fleet size is too small (" + fleetPoints + "fp)");
         }
 
         return tempFleet;

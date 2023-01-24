@@ -11,6 +11,7 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -20,18 +21,20 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
         String trimmedArgs = args.trim();
 
+        List<String> completed = MagicBountyCoordinator.getInstance().getCompletedBounties();
+        Set<String> active = MagicBountyCoordinator.getInstance().getActiveBounties().keySet();
+        List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
+        Collections.sort(bountyKeys);
+
         if (trimmedArgs.isEmpty()) {
-            //no specified ID, show only the available bounties requirements            
-            List<String> completed = MagicBountyCoordinator.getInstance().getCompletedBounties();
-            Set<String> active = MagicBountyCoordinator.getInstance().getActiveBounties().keySet();
-            for (String bountyId : MagicBountyData.BOUNTIES.keySet()) {
-                if (!completed.contains(bountyId) && !active.contains(bountyId)) {
-                    showRequirements(bountyId, MagicBountyData.BOUNTIES.get(bountyId));
+            //no specified ID, show only the available bounties requirements
+            for (String bountyKey : bountyKeys) {
+                if (!completed.contains(bountyKey) && !active.contains(bountyKey)) {
+                    showRequirements(bountyKey, MagicBountyData.BOUNTIES.get(bountyKey));
                     Console.showMessage(" ");
                 }
             }
         } else {
-            List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
             if (bountyKeys.contains(trimmedArgs)) {
                 showRequirements(trimmedArgs, MagicBountyData.BOUNTIES.get(trimmedArgs));
             } else {

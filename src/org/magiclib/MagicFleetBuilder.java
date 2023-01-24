@@ -4,50 +4,46 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import data.scripts.util.MagicCampaign;
+import data.scripts.util.MagicVariables;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 /**
- * Creates a fleet with a defined flagship and optional escort
+ * Creates a fleet with a defined flagship and optional escort.
+ * @author Wisp
+ * @since 0.45.3
  */
+@SuppressWarnings("unused")
 public class MagicFleetBuilder {
-    private String fleetName;
-    private String fleetFaction;
+    private @Nullable String fleetName;
+    private @NotNull String fleetFaction = MagicVariables.BOUNTY_FACTION;
     private @Nullable String fleetType;
     private @Nullable String flagshipName;
-    private String flagshipVariant;
+    private @Nullable String flagshipVariant;
     private boolean flagshipRecovery;
     private boolean flagshipAutofit;
     private @Nullable PersonAPI captain;
     private @Nullable Map<String, Integer> supportFleet;
     private boolean supportAutofit;
-    private int minFP;
+    private int minFP = 50;
+    @Nullable
     private String reinforcementFaction;
     private @Nullable Float qualityOverride;
     private @Nullable SectorEntityToken spawnLocation;
     private @Nullable FleetAssignment assignment;
     private @Nullable SectorEntityToken assignmentTarget;
-    private boolean isImportant;
-    private boolean transponderOn;
+    private boolean isImportant = false;
+    private boolean transponderOn = false;
     private @Nullable String variantsPath;
 
-    public MagicFleetBuilder(String fleetName,
-                             String fleetFaction,
-                             String flagshipVariant,
-                             int minFP,
-                             String reinforcementFaction,
-                             boolean transponderOn) {
-        this.fleetName = fleetName;
-        this.fleetFaction = fleetFaction;
-        this.flagshipVariant = flagshipVariant;
-        this.minFP = minFP;
-        this.reinforcementFaction = reinforcementFaction;
-        this.transponderOn = transponderOn;
+    public MagicFleetBuilder() {
     }
 
-    public CampaignFleetAPI build() {
+    public CampaignFleetAPI create() {
         return MagicCampaign.createFleet(
                 fleetName,
                 fleetFaction,
@@ -70,11 +66,17 @@ public class MagicFleetBuilder {
                 variantsPath);
     }
 
+    /**
+     * Default: "<faction name> Fleet".
+     */
     public MagicFleetBuilder setFleetName(String fleetName) {
         this.fleetName = fleetName;
         return this;
     }
 
+    /**
+     * Default: MagicVariables.BOUNTY_FACTION.
+     */
     public MagicFleetBuilder setFleetFaction(String fleetFaction) {
         this.fleetFaction = fleetFaction;
         return this;
@@ -139,6 +141,7 @@ public class MagicFleetBuilder {
 
     /**
      * Reinforcement faction, if the fleet faction is a "neutral" faction without ships
+     * Default: fleetFaction.
      */
     public MagicFleetBuilder setReinforcementFaction(String reinforcementFaction) {
         this.reinforcementFaction = reinforcementFaction;
@@ -146,7 +149,8 @@ public class MagicFleetBuilder {
     }
 
     /**
-     * Optional ship quality override, default to 2 (no D-mods) if null or <0.
+     * Ship quality override.
+     * Default: 2 (no D-mods) if null or <0.
      */
     public MagicFleetBuilder setQualityOverride(@Nullable Float qualityOverride) {
         this.qualityOverride = qualityOverride;
@@ -190,6 +194,9 @@ public class MagicFleetBuilder {
         return this;
     }
 
+    /**
+     * Default: false.
+     */
     public MagicFleetBuilder setTransponderOn(boolean transponderOn) {
         this.transponderOn = transponderOn;
         return this;

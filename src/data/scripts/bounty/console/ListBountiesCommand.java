@@ -16,6 +16,7 @@ public class ListBountiesCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
         List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
+        Collections.sort(bountyKeys);
         String trimmedArgs = args.trim();
 
         if (trimmedArgs.isEmpty()) {

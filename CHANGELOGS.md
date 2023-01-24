@@ -2,11 +2,24 @@ MagicLib
 
 0.45.3 - (the first Wisp release 🤞)
 
-- MagicAsteroids
+- **New: Kotlin Extensions**
+  - Added a new jar, `MagicLib-Kotlin.jar`, containing Kotlin-only extension methods.
+    - To use, include the jar in your Kotlin-using project. There is no point for Java-only projects.
+- **MagicAsteroids**
   - No longer added to the save file.
   - Fixes a bug causing asteroid impacts to stop happening.
-- MagicBounty
+- **MagicBounty**
+  - `job_reputation_reward` may now be negative. Failing a bounty with a negative rep reward will result in gaining that rep instead.
+  - HVBs no longer have a time limit of 1 cycle (they have no time limit in Vayra's Sector).
+  - `MagicLib_ListBounties` is now sorted alphabetically.
   - Fixes bug reading HVBs where neverSpawnWhenFactionHostile used target faction instead of posting faction.
+  - Fixed bug in `MagicList_ResetBounty` where the bounty wasn't reset if the Intel hadn't yet expired.
+- **MagicCampaign**
+  - Added `org.magiclib.MagicFleetBuilder`, a new, more configurable way to build a fleet. 
+  - Added default values for all parameters in `createFleet`.
+- **Other**
+  - Changed MagicLib's `mod_info.json` version format to the `major/minor/patch` object format instead of just a string.
+    - Recommend changing to that as well in your `dependencies` section, as it fixes MagicLib updates showing as incompatible when only the minor version changes.
 
 0.45.2
 
