@@ -401,10 +401,10 @@ public final class ActiveBounty {
 
     /**
      * Rep penalty is the inverse of the reward, capped to -0.05.
-     * Or, if rep reward is negative, caps the rep reward for failure to 0.05.
+     * Or, if rep reward is negative, the rep penalty will be 0.
      */
     public @Nullable Float getFailureReputationPenalty() {
-        return Math.max(-0.05f, Math.min(0.05f, -getRewardReputation()));
+        return Math.max(-0.05f, Math.min(0.00f, -getRewardReputation()));
     }
 
     public @Nullable String getRewardFaction() {
