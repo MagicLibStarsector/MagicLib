@@ -72,6 +72,8 @@
 		"mb_credits":"Reward: %s",
 		"mb_time":"Time limit: %s days",
 		"mb_distance":"It is located roughly %s LY away from your current position.",
+		"mb_distance_system_bar":"It is located in the %s, roughly %s LY away from your current position.",
+		"mb_distance_system":"%s located in the %s.",
 		"mb_distance_vague":"The target is located somewhere %s.",
 		"mb_distance_core":"in the core worlds",
 		"mb_distance_close":"in the vicinity of the core worlds",

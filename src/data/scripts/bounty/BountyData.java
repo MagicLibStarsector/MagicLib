@@ -146,6 +146,7 @@ public class BountyData {
      * none: default
      * vague: "The target is located somewhere in the vicinity of the core worlds."
      * distance: "It is located roughly %s LY away from your current position."
+     * system: "The target is located in the <system> system."
      * vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation."
      * vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position."
      */
@@ -465,6 +466,8 @@ public class BountyData {
                 this.job_show_distance = MagicBountyLoader.ShowDistance.VanillaDistance;
             } else if (job_show_distance.equalsIgnoreCase("exact")) {
                 this.job_show_distance = MagicBountyLoader.ShowDistance.Exact;
+            } else if (job_show_distance.equalsIgnoreCase("system")) {
+                this.job_show_distance = MagicBountyLoader.ShowDistance.System;
             } else if (job_show_distance.equalsIgnoreCase("none")) {
                 this.job_show_distance = MagicBountyLoader.ShowDistance.None;
             } else {

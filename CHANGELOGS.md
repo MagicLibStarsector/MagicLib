@@ -11,6 +11,7 @@ MagicLib
 - **MagicBounty**
   - `job_reputation_reward` may now be negative. Failing a bounty with a negative rep reward will result in 0 rep change.
   - HVBs no longer have a time limit of 1 cycle (they have no time limit in Vayra's Sector).
+  - `job_show_distance` has a new option, `system`. "The target is located in the <system> system."
   - `MagicLib_ListBounties` is now sorted alphabetically.
   - `MagicLib_ListBounties <bountyKey>` now displays details for that bounty. 
   - Fixed bug reading HVBs where `neverSpawnWhenFactionHostile` used target faction instead of posting faction.

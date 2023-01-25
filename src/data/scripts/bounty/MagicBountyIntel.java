@@ -418,10 +418,20 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.getSpec().job_show_distance != MagicBountyLoader.ShowDistance.None) {
-                    if (bounty.getSpec().job_show_distance == MagicBountyLoader.ShowDistance.Exact) {
-                        info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
-                    } else {
-                        info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                    switch (bounty.getSpec().job_show_distance) {
+                        case Exact:
+                            info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
+                            break;
+                        case System:
+                            info.addPara(MagicTxt.getString("mb_distance_system"),
+                                    10f,
+                                    Misc.getTextColor(),
+                                    Misc.ucFirst(MagicBountyUtils.getPronoun(bounty.getCaptain())),
+                                    bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType());
+                            break;
+                        default:
+                            info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                            break;
                     }
                 }
 
@@ -449,12 +459,11 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         SectorEntityToken hideoutLocation = bounty.getFleetSpawnLocation();
 
         switch (bounty.getSpec().job_show_distance) {
-            case None:
+            case Exact:
+                return hideoutLocation;
+//            case None:
 //                return null; NOPE, the icon should always be placed somewhere otherwise there is no way to get the location information again.
-            case Vague:
-            case Vanilla:
-            case Distance:
-            case VanillaDistance:
+            default:
                 // From PersonBountyIntel.getMapLocation
                 Constellation c = hideoutLocation.getConstellation();
                 SectorEntityToken entity = null;
@@ -465,11 +474,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 if (entity == null) entity = hideoutLocation;
                 return entity;
-            case Exact:
-                return hideoutLocation;
         }
-
-        return null;
     }
 
     @Override

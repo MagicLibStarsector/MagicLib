@@ -97,6 +97,7 @@
                 # none: Do not show the distance.
                 # vague: "The target is located somewhere in the vicinity of the core worlds."
                 # distance: "It is located roughly %s LY away from your current position."
+                # system: "The target is located in the <system> system."
 				# vanilla: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation." Also shows a map during the bar dialog
                 # vanillaDistance: "The target is located near a giant in a system with a yellow primary star, in the Nebulon constellation. It is located roughly %s LY away from your current position." Also shows a map during the bar dialog
 				# exact: "The target is located near X in the Y system." Also shows a map during the bar dialog

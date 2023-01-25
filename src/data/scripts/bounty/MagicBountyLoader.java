@@ -850,6 +850,7 @@ public class MagicBountyLoader {
         Vague,
         Vanilla,
         Distance,
+        System,
         VanillaDistance,
         Exact
     }

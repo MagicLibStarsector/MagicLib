@@ -193,7 +193,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 );
                             }
                             if (bounty.job_show_distance == MagicBountyLoader.ShowDistance.Vanilla
-                                    || bounty.job_show_distance == MagicBountyLoader.ShowDistance.VanillaDistance) {
+                                    || bounty.job_show_distance == MagicBountyLoader.ShowDistance.VanillaDistance
+                                    || bounty.job_show_distance == MagicBountyLoader.ShowDistance.System) {
                                 dialog.getVisualPanel().showMapMarker(
                                         activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor(),
                                         null,
@@ -274,6 +275,14 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         text.addPara(MagicTxt.getString("mb_distance"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
+                                                Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
+                                        break;
+
+                                    case System:
+                                        text.addPara(MagicTxt.getString("mb_distance_system_bar"),
+                                                Misc.getTextColor(),
+                                                Misc.getHighlightColor(),
+                                                activeBounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType(),
                                                 Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                         break;
 

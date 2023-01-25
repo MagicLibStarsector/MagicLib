@@ -2,11 +2,13 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.FullName;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.util.MagicTxt;
 import data.scripts.util.StringCreator;
+import org.jetbrains.annotations.NotNull;
 
 class MagicBountyUtils {
 
@@ -243,13 +245,22 @@ class MagicBountyUtils {
         String loc = BreadcrumbSpecial.getLocatedString(bounty.getFleetSpawnLocation());
 //        loc = loc.replaceAll(getString("mb_distance_orbit"), getString("mb_distance_hidingNear"));
 //        loc = loc.replaceAll(getString("mb_distance_located"), getString("mb_distance_hidingIn"));
-        String sheIs = MagicTxt.getString("mb_distance_she");
-        if (bounty.getCaptain().getGender() == FullName.Gender.MALE) sheIs = MagicTxt.getString("mb_distance_he");
-        if (bounty.getCaptain().getGender() == FullName.Gender.ANY) sheIs = MagicTxt.getString("mb_distance_they");
+        String sheIs = getPronoun(bounty.getCaptain());
         if (bounty.getCaptain().isAICore()) sheIs = MagicTxt.getString("mb_distance_it");
         loc = sheIs + MagicTxt.getString("mb_distance_rumor") + loc + MagicTxt.getString(".");
 
         return loc;
+    }
+
+    static String getPronoun(@NotNull PersonAPI personAPI) {
+        switch (personAPI.getGender()) {
+            case FEMALE:
+                return MagicTxt.getString("mb_distance_she");
+            case MALE:
+                return MagicTxt.getString("mb_distance_he");
+            default:
+                return MagicTxt.getString("mb_distance_they");
+        }
     }
 
     static String createLocationPreciseText(final ActiveBounty bounty) {
