@@ -171,6 +171,9 @@ public final class ActiveBounty {
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
         }
 
+        // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
+        // Otherwise, this would still allow ships to retreat.
+        // See https://fractalsoftworks.com/forum/index.php?topic=5061.msg294053#msg294053.
         getFleet().getMemoryWithoutUpdate().set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
         getFleet().getMemoryWithoutUpdate().set(spec.job_memKey, true);

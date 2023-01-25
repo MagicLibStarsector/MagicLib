@@ -1461,17 +1461,6 @@ public class MagicCampaign {
         return true;
     }
 
-    /**
-     * @param player_minLevel
-     * @param min_days_elapsed
-     * @param min_fleet_size
-     * @param memKeys_all
-     * @param memKeys_any
-     * @param memKeys_none
-     * @param playerRelationship_atLeast
-     * @param playerRelationship_atMost
-     * @return
-     */
     public static boolean isAvailableToPlayer(
             int player_minLevel,
             int min_days_elapsed,

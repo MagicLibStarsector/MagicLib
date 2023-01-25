@@ -16,12 +16,13 @@ MagicLib
   - Fixed bug reading HVBs where `neverSpawnWhenFactionHostile` used target faction instead of posting faction.
   - Fixed bug in `MagicList_ResetBounty` where the bounty wasn't reset if the Intel hadn't yet expired.
   - Fixed bug where resetting and re-accepting bounties with a typo in the faction caused a crash (typo wasn't corrected second time).
+  - Fixed `fleet_no_retreat` allowing individual ships to retreat.
 - **MagicCampaign**
   - Added `org.magiclib.campaign.MagicFleetBuilder`, a new, more configurable way to build a fleet. 
   - Added default values for all parameters in `createFleet`.
 - **Other**
   - Changed MagicLib's `mod_info.json` version format to the `major/minor/patch` object format instead of just a string.
-    - Recommend changing to that as well in your `dependencies` section, as it fixes MagicLib updates showing as incompatible when only the minor version changes.
+    - Mod authors: I recommend changing to `"version": {"major":0, "minor":46, "patch":0}` in your `dependencies` section, as it fixes MagicLib updates showing as incompatible when only the minor version changes.
 
 0.45.2
 
