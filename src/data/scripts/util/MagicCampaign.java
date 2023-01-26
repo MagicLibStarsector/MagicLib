@@ -116,6 +116,8 @@ public class MagicCampaign {
      * @param variantsPath         If not null, the script will try to find missing variant files there.
      *                             Used to generate fleets using cross-mod variants that won't be loaded otherwise to avoid crashes.
      *                             The name of the variant files must match the ID of the variant.
+     *
+     * @deprecated Please move to org.magiclib.MagicFleetBuilder when possible. The logic is unchanged.
      */
     public static CampaignFleetAPI createFleet(
             @Nullable String fleetName,
@@ -273,7 +275,7 @@ public class MagicCampaign {
         // Choose a flagship if one wasn't specified
         if (flagshipVariant == null) {
             newFleet.getFleetData().sort();
-            // If there is no flagship, this will return the first ship in the fleet.
+            // If there is no flagship, this will return the first ship in the sorted fleet.
             flagship = newFleet.getFlagship();
         }
 

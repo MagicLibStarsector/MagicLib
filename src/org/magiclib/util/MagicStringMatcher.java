@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  * Originally from Console Commands's `CommandUtils`.
  *
  * @author LazyWizard
- * @since 0.45.3
+ * @since 0.46.0
  */
 public class MagicStringMatcher {
     @Nullable

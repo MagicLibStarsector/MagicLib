@@ -137,7 +137,7 @@ class MagicBountyUtils {
             }
         });
 
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himslefHerselfThemselves", new StringCreator() {
+        StringCreator reflexivePronounStringCreator = new StringCreator() {
             @Override
             public String create() {
                 if (bounty.getFleet().getCommander().isAICore()) {
@@ -153,7 +153,10 @@ class MagicBountyUtils {
                     }
                 }
             }
-        });
+        };
+        // Typo fixed in 0.46.0
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himslefHerselfThemselves", reflexivePronounStringCreator);
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$himselfHerselfThemselves", reflexivePronounStringCreator);
 
 
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$system", new StringCreator() {
