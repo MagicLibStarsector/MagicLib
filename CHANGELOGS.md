@@ -18,6 +18,7 @@ MagicLib
   - Fixed bug in `MagicList_ResetBounty` where the bounty wasn't reset if the Intel hadn't yet expired.
   - Fixed bug where resetting and re-accepting bounties with a typo in the faction caused a crash (typo wasn't corrected second time).
   - Fixed `fleet_no_retreat` allowing individual ships to retreat.
+  - Fixed `job_show_arrow` only displaying if `job_show_distance` was set to `exact`. 
 - **MagicCampaign**
   - Added `org.magiclib.campaign.MagicFleetBuilder`, a new, more configurable way to build a fleet. 
   - Added default values for all parameters in `createFleet`.

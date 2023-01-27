@@ -3,11 +3,13 @@ package data.scripts.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.impl.campaign.procgen.Constellation;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.util.*;
@@ -181,30 +183,35 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //TEST TO ADD LOCATION MAP
-                            if (bounty.job_show_distance == MagicBountyLoader.ShowDistance.Exact) {
-                                dialog.getVisualPanel().showMapMarker(
-                                        activeBounty.getFleetSpawnLocation(),
-                                        null,
-                                        null,
-                                        false,
-                                        null,
-                                        null,
-                                        null
-                                );
+                            SectorEntityToken arrowTarget = null;
+                            switch (bounty.job_show_distance) {
+                                case Exact:
+                                    arrowTarget = activeBounty.getFleetSpawnLocation();
+                                    break;
+                                case System:
+                                    arrowTarget = activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor();
+                                    break;
+                                case Vanilla:
+                                case VanillaDistance:
+                                    // From PersonBountyIntel.getMapLocation
+                                    Constellation c = activeBounty.getFleetSpawnLocation().getConstellation();
+                                    SectorEntityToken entity = null;
+
+                                    if (c != null && map != null) {
+                                        entity = c.;
+                                    }
+                                    break;
                             }
-                            if (bounty.job_show_distance == MagicBountyLoader.ShowDistance.Vanilla
-                                    || bounty.job_show_distance == MagicBountyLoader.ShowDistance.VanillaDistance
-                                    || bounty.job_show_distance == MagicBountyLoader.ShowDistance.System) {
-                                dialog.getVisualPanel().showMapMarker(
-                                        activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor(),
-                                        null,
-                                        null,
-                                        false,
-                                        null,
-                                        null,
-                                        null
-                                );
-                            }
+
+                            dialog.getVisualPanel().showMapMarker(
+                                    arrowTarget,
+                                    null,
+                                    null,
+                                    false,
+                                    null,
+                                    null,
+                                    null
+                            );
 
                             addOption(MagicTxt.getString("mb_continue"), getBountyDetailsOptionKey(key), null, null);
                             addOption(MagicTxt.getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);

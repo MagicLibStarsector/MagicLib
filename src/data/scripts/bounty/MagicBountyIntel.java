@@ -488,15 +488,6 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         SectorEntityToken target = bounty.getFleet();
 
-        switch (bounty.getSpec().job_show_distance) {
-            case None:
-            case Vague:
-            case Vanilla:
-            case Distance:
-            case VanillaDistance:
-                return null;
-        }
-
         ArrowData arrowData = new ArrowData(bounty.getBountySource(), target);
         arrowData.color = bounty.getGivingFactionTextColor();
         return Collections.singletonList(arrowData);
