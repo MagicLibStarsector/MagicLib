@@ -5,6 +5,9 @@ import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.getFloat
 
 
+/**
+ * @since 0.46.0
+ */
 fun JSONArray.toStringList(): List<String> {
     return MutableList(this.length()) {
         this.getString(it)
@@ -12,23 +15,38 @@ fun JSONArray.toStringList(): List<String> {
         .filterNotNull()
 }
 
+/**
+ * @since 0.46.0
+ */
 fun JSONArray.toLongList(): List<Long> {
     return MutableList(this.length()) {
         this.getLong(it)
     }
 }
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> JSONObject.getObj(key: String): T =
     getJsonObj(this, key)
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> JSONObject.tryGet(key: String, default: () -> T): T =
     kotlin.runCatching { getJsonObj<T>(this, key) }
         .getOrDefault(default())
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> JSONObject.optional(key: String, default: () -> T? = { null }): T? =
     kotlin.runCatching { getJsonObj<T>(this, key) }
         .getOrDefault(default())
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> JSONArray.forEach(
     transform: (JSONArray, Int) -> T = { json, i -> getJsonObjFromArray(json, i) },
     action: (T) -> Unit
@@ -37,6 +55,9 @@ inline fun <reified T> JSONArray.forEach(
         action.invoke(transform.invoke(this, i))
 }
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T, K> JSONArray.map(
     transform: (JSONArray, Int) -> T = { json, i -> getJsonObjFromArray(json, i) },
     action: (T) -> K
@@ -49,6 +70,9 @@ inline fun <reified T, K> JSONArray.map(
     return results
 }
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> JSONArray.filter(
     transform: (JSONArray, Int) -> T = { json, i -> getJsonObjFromArray(json, i) },
     predicate: (T) -> Boolean
@@ -66,6 +90,9 @@ inline fun <reified T> JSONArray.filter(
     return results
 }
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> getJsonObjFromArray(json: JSONArray, i: Int) =
     when (T::class) {
         String::class -> json.getString(i) as T
@@ -78,6 +105,9 @@ inline fun <reified T> getJsonObjFromArray(json: JSONArray, i: Int) =
         else -> json.getJSONObject(i) as T
     }
 
+/**
+ * @since 0.46.0
+ */
 inline fun <reified T> getJsonObj(json: JSONObject, key: String) =
     when (T::class) {
         String::class -> json.getString(key) as T

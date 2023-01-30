@@ -12,7 +12,7 @@ import java.util.*
 /**
  * @author SafariJohn
  */
-// Not ready for primetime yet
+// Not ready for primetime yet, I haven't looked it over
 private object FleetsHelper {
     enum class Category {
         COMBAT,

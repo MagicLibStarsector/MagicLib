@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * Creates a fleet with a defined flagship and optional escort.
+ *
  * @author Wisp
  * @since 0.46.0
  */

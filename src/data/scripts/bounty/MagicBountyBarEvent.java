@@ -172,7 +172,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //illustration panel
                             if (bounty.job_show_captain) {
-                                //diplaying the captain takes priority
+                                //displaying the captain takes priority
                                 dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
 //                            } else if(bounty.job_show_fleet != MagicBountyData.ShowFleet.None && bounty.job_show_fleet != MagicBountyData.ShowFleet.Text){
 //                                //displaying the flagship comes in second if the fleet is visible
@@ -193,13 +193,8 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                     break;
                                 case Vanilla:
                                 case VanillaDistance:
-                                    // From PersonBountyIntel.getMapLocation
-                                    Constellation c = activeBounty.getFleetSpawnLocation().getConstellation();
-                                    SectorEntityToken entity = null;
-
-                                    if (c != null && map != null) {
-                                        entity = c.;
-                                    }
+                                    // Can't find a way to get a Constellation SectorEntityToken to display here,
+                                    // so show nothing instead of the exact system (which is supposed to be obscured from the player).
                                     break;
                             }
 

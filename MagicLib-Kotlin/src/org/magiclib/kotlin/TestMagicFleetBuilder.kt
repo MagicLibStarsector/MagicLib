@@ -3,7 +3,7 @@ package org.magiclib.kotlin
 import com.fs.starfarer.api.Global
 import org.magiclib.campaign.MagicFleetBuilder
 
-object TestMagicFleetBuilder {
+internal object TestMagicFleetBuilder {
     fun testMagicFleetBuilder() {
         val sector = Global.getSector()
         val corvus = sector.getStarSystem("corvus")

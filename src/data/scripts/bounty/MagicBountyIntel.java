@@ -460,6 +460,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         switch (bounty.getSpec().job_show_distance) {
             case Exact:
+            case System:
                 return hideoutLocation;
 //            case None:
 //                return null; NOPE, the icon should always be placed somewhere otherwise there is no way to get the location information again.
@@ -486,7 +487,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             return null;
         }
 
-        SectorEntityToken target = bounty.getFleet();
+        SectorEntityToken target = getMapLocation(map);
 
         ArrowData arrowData = new ArrowData(bounty.getBountySource(), target);
         arrowData.color = bounty.getGivingFactionTextColor();

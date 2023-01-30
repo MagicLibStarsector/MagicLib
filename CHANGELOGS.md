@@ -2,13 +2,19 @@ MagicLib
 
 0.46.0 - (the first Wisp release 🤞)
 
-- **New: Kotlin Extensions**
+**Other**
+  - Changed MagicLib's `mod_info.json` version format to the `major/minor/patch` object format instead of just a string.
+    - Mod authors: I recommend changing to `"version": {"major":0, "minor":46, "patch":0}` in your `dependencies` section, as it fixes MagicLib updates showing as incompatible when only the minor version changes.
+
+**New: Kotlin Extensions**
   - Added a new jar, `MagicLib-Kotlin.jar`, containing Kotlin-only extension methods.
     - To use, include the jar in your Kotlin-using project. There is no point for Java-only projects.
-- **MagicAsteroids**
+
+**MagicAsteroids**
   - No longer added to the save file.
   - Fixes a bug causing asteroid impacts to stop happening.
-- **MagicBounty**
+
+**MagicBounty**
   - `job_reputation_reward` may now be negative. Failing a bounty with a negative rep reward will result in 0 rep change.
   - HVBs no longer have a time limit of 1 cycle (they have no time limit in Vayra's Sector).
   - `job_show_distance` has a new option, `system`. "The target is located in the <system> system."
@@ -18,13 +24,12 @@ MagicLib
   - Fixed bug in `MagicList_ResetBounty` where the bounty wasn't reset if the Intel hadn't yet expired.
   - Fixed bug where resetting and re-accepting bounties with a typo in the faction caused a crash (typo wasn't corrected second time).
   - Fixed `fleet_no_retreat` allowing individual ships to retreat.
-  - Fixed `job_show_arrow` only displaying if `job_show_distance` was set to `exact`. 
-- **MagicCampaign**
+  - Fixed `job_show_arrow` only displaying if `job_show_distance` was set to `exact`. Points to system or constellation depending on `job_show_distance`.
+  - Fixed a bounty offer showing the exact system if `job_show_distance` was `vanilla` or `vanilla_distance`. No longer shows map when offering bounty (can't point to constellation there).
+
+**MagicCampaign**
   - Added `org.magiclib.campaign.MagicFleetBuilder`, a new, more configurable way to build a fleet. 
   - Added default values for all parameters in `createFleet`.
-- **Other**
-  - Changed MagicLib's `mod_info.json` version format to the `major/minor/patch` object format instead of just a string.
-    - Mod authors: I recommend changing to `"version": {"major":0, "minor":46, "patch":0}` in your `dependencies` section, as it fixes MagicLib updates showing as incompatible when only the minor version changes.
 
 0.45.2
 
