@@ -432,14 +432,14 @@ public class MagicUI {
      * Draw a status bar at the desired position.
      * With a text of the left and the number on the right.
      *
-     * @param ship        Player ship.
+     * @param ship         Player ship.
      * @param statusBarLoc Where to draw the status bar.
-     * @param fill        Filling level of the bar. 0 to 1
-     * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
-     * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
-     * @param secondfill  Wider filling like the soft/hard-flux. 0 to 1.
-     * @param text        The text written to the left, automatically cut if too large. Set to null to ignore
-     * @param number      The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
+     * @param fill         Filling level of the bar. 0 to 1
+     * @param innerColor   Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor  Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondfill   Wider filling like the soft/hard-flux. 0 to 1.
+     * @param text         The text written to the left, automatically cut if too large. Set to null to ignore
+     * @param number       The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
      */
     public static void drawInterfaceStatusBar(ShipAPI ship, Vector2f statusBarLoc, float fill, Color innerColor, Color borderColor, float secondfill, String text, int number) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
@@ -609,7 +609,7 @@ public class MagicUI {
      *
      * @param ship        Ship concerned (the element will only be drawn if that ship
      *                    is the player ship)
-     * @param boxLoc         Where to draw the status bar.
+     * @param boxLoc      Where to draw the status bar.
      * @param fill        Filling level
      * @param innerColor  Color of the bar. If null, use the vanilla HUD color.
      * @param borderColor Color of the border. If null, use the vanilla HUD
@@ -655,8 +655,8 @@ public class MagicUI {
     /**
      * Draw the text with the font victor14.
      *
-     * @param ship The player ship
-     * @param text The text to write.
+     * @param ship    The player ship
+     * @param text    The text to write.
      * @param textLoc Where to draw the text.
      */
     private static void addInterfaceStatusText(ShipAPI ship, String text, Vector2f textLoc) {
