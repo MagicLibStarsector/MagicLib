@@ -95,10 +95,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         SectorAPI sector = Global.getSector();
         if (sector != null) {
             sector.addTransientListener(new MagicIndustryItemWrangler());
-
-            if (!sector.hasScript(MagicCampaignTrailPlugin.class)) {
-                sector.addScript(new MagicCampaignTrailPlugin());
-            }
+            sector.addTransientScript(new MagicCampaignTrailPlugin());
         }
 
         MagicVariables.checkBountySystems();
