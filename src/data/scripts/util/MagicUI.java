@@ -74,6 +74,36 @@ public class MagicUI {
      *                      for instant changes
      */
     public static void drawSystemBar(ShipAPI ship, Color intendedColor, float fill, float blendTime) {
+        if (!ship.isAlive() || ship != Global.getCombatEngine().getPlayerShip()) {
+            return;
+        }
+
+        if (Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+            return;
+        }
+
+        final Vector2f boxLoc = Vector2f.add(
+                new Vector2f(497f, 80f),
+                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()),
+                null
+        );
+
+        drawSystemBar(ship, boxLoc, intendedColor, fill, blendTime);
+    }
+
+    /**
+     * Draws a small UI bar at a given location.
+     *
+     * @param ship          Ship concerned (the element will only be drawn if that ship
+     *                      is the player ship)
+     * @param boxLoc        Where to draw the bar.
+     * @param intendedColor Color of the filling. If null, the filling will be
+     *                      UI-green
+     * @param fill          Filling level
+     * @param blendTime     Time to smoothly switch between colors. Can be set to 0
+     *                      for instant changes
+     */
+    public static void drawSystemBar(ShipAPI ship, Vector2f boxLoc, Color intendedColor, float fill, float blendTime) {
 
         if (!ship.isAlive() || ship != Global.getCombatEngine().getPlayerShip()) {
             return;
@@ -81,6 +111,13 @@ public class MagicUI {
 
         if (Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
             return;
+        }
+
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), boxLoc, null);
+
+        if (UIscaling != 1) {
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
         }
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
@@ -142,22 +179,6 @@ public class MagicUI {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glTranslatef(0.01f, 0.01f, 0);
-
-        final Vector2f boxLoc = Vector2f.add(
-                new Vector2f(497f, 80f),
-                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()),
-                null
-        );
-        final Vector2f shadowLoc = Vector2f.add(
-                new Vector2f(498f, 79f),
-                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()),
-                null
-        );
-
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
-        }
 
         // Render the drop shadow
         GL11.glBegin(GL11.GL_QUADS);
@@ -224,13 +245,44 @@ public class MagicUI {
      *                      for instant changes
      */
     public static void drawSystemBox(ShipAPI ship, Color intendedColor, float blendTime) {
-
         if (!ship.isAlive() || ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
 
         if (Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
             return;
+        }
+
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f, 80f),
+                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
+        drawSystemBox(ship, boxLoc, intendedColor, blendTime);
+    }
+
+    /**
+     * Draws a small UI box at a given location.
+     *
+     * @param ship          Ship concerned (the element will only be drawn if that ship
+     *                      is the player ship)
+     * @param boxLoc        Where to draw the box.
+     * @param intendedColor Color of the filling. If null, the filling will be
+     *                      UI-green
+     * @param blendTime     Time to smoothly switch between colors. Can be set to 0
+     *                      for instant changes
+     */
+    public static void drawSystemBox(ShipAPI ship, Vector2f boxLoc, Color intendedColor, float blendTime) {
+        if (!ship.isAlive() || ship != Global.getCombatEngine().getPlayerShip()) {
+            return;
+        }
+
+        if (Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+            return;
+        }
+
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), boxLoc, null);
+
+        if (UIscaling != 1) {
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
         }
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
@@ -290,16 +342,6 @@ public class MagicUI {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glTranslatef(0.01f, 0.01f, 0);
-
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(497f, 80f),
-                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(498f, 79f),
-                getInterfaceOffsetFromSystemBar(ship, ship.getVariant()), null);
-
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
-        }
 
         // Render the drop shadow
         GL11.glBegin(GL11.GL_QUADS);
@@ -382,13 +424,43 @@ public class MagicUI {
             return;
         }
 
-        addInterfaceStatusBar(ship, fill, innerColor, borderColor, secondfill);
+        final Vector2f statusBarLoc = getInterfaceOffsetFromStatusBars(ship, ship.getVariant());
+        drawInterfaceStatusBar(ship, statusBarLoc, fill, innerColor, borderColor, secondfill, text, number);
+    }
+
+    /**
+     * Draw a status bar at the desired position.
+     * With a text of the left and the number on the right.
+     *
+     * @param ship        Player ship.
+     * @param statusBarLoc Where to draw the status bar.
+     * @param fill        Filling level of the bar. 0 to 1
+     * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondfill  Wider filling like the soft/hard-flux. 0 to 1.
+     * @param text        The text written to the left, automatically cut if too large. Set to null to ignore
+     * @param number      The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
+     */
+    public static void drawInterfaceStatusBar(ShipAPI ship, Vector2f statusBarLoc, float fill, Color innerColor, Color borderColor, float secondfill, String text, int number) {
+        if (ship != Global.getCombatEngine().getPlayerShip()) {
+            return;
+        }
+
+        if (Global.getCombatEngine().getCombatUI() == null || Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+            return;
+        }
+
+        final Vector2f boxLoc = Vector2f.add(new Vector2f(224f, 120f), statusBarLoc, null);
+
+        addInterfaceStatusBar(ship, boxLoc, fill, innerColor, borderColor, secondfill);
         if (TODRAW14 != null) {
             if (text != null && !text.isEmpty()) {
-                addInterfaceStatusText(ship, text);
+                final Vector2f textLoc = Vector2f.add(new Vector2f(176f, 131f), statusBarLoc, null);
+                addInterfaceStatusText(ship, text, textLoc);
             }
             if (number >= 0) {
-                addInterfaceStatusNumber(ship, number);
+                final Vector2f numberLoc = Vector2f.add(new Vector2f(355f, 131f), statusBarLoc, null);
+                addInterfaceStatusNumber(ship, number, numberLoc);
             }
         }
 
@@ -474,7 +546,12 @@ public class MagicUI {
      * @return The offset who depends of weapon and wing.
      */
     public static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
-        return getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
+        Vector2f offset = getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
+        if (ship.getPhaseCloak() != null && !ship.getHullSpec().isPhase()) {
+            offset = Vector2f.add(new Vector2f(0f, 14f), offset, null);
+        }
+
+        return offset;
     }
 
     /**
@@ -524,7 +601,6 @@ public class MagicUI {
         }
     }
 
-
     /**
      * Draws a small UI bar above the flux bar. The HUD color change to blue
      * when the ship is not alive. Bug: When you left the battle, the hud
@@ -533,19 +609,18 @@ public class MagicUI {
      *
      * @param ship        Ship concerned (the element will only be drawn if that ship
      *                    is the player ship)
+     * @param boxLoc         Where to draw the status bar.
      * @param fill        Filling level
      * @param innerColor  Color of the bar. If null, use the vanilla HUD color.
      * @param borderColor Color of the border. If null, use the vanilla HUD
      *                    color.
      * @param secondfill  Like the hardflux of the fluxbar. 0 per default.
      */
-    private static void addInterfaceStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill) {
+    private static void addInterfaceStatusBar(ShipAPI ship, Vector2f boxLoc, float fill, Color innerColor, Color borderColor, float secondfill) {
 
         final float boxWidth = 79 * UIscaling;
         final float boxHeight = 7 * UIscaling;
-        final Vector2f element = getInterfaceOffsetFromStatusBars(ship, ship.getVariant());
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(224f, 120f), element, null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(225f, 119f), element, null);
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), boxLoc, null);
         if (UIscaling != 1) {
             boxLoc.scale(UIscaling);
             shadowLoc.scale(UIscaling);
@@ -582,8 +657,9 @@ public class MagicUI {
      *
      * @param ship The player ship
      * @param text The text to write.
+     * @param textLoc Where to draw the text.
      */
-    private static void addInterfaceStatusText(ShipAPI ship, String text) {
+    private static void addInterfaceStatusText(ShipAPI ship, String text, Vector2f textLoc) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
@@ -604,13 +680,12 @@ public class MagicUI {
                 alpha * (borderCol.getAlpha() / 255f)
                         * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(176f, 131f),
-                getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(177f, 130f),
-                getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
+
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1),
+                textLoc, null);
 
         if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
+            textLoc.scale(UIscaling);
             shadowLoc.scale(UIscaling);
             TODRAW14.setFontSize(14 * UIscaling);
         }
@@ -622,7 +697,7 @@ public class MagicUI {
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
         TODRAW14.setColor(color);
-        TODRAW14.draw(boxLoc);
+        TODRAW14.draw(textLoc);
         closeGL11ForText();
 
     }
@@ -634,7 +709,7 @@ public class MagicUI {
      * @param number The number displayed, bounded per the method to 0 at 999
      *               999.
      */
-    private static void addInterfaceStatusNumber(ShipAPI ship, int number) {
+    private static void addInterfaceStatusNumber(ShipAPI ship, int number, Vector2f numberPos) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
@@ -663,12 +738,10 @@ public class MagicUI {
                 alpha * (borderCol.getAlpha() / 255f)
                         * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(355f, 131f),
-                getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
-        final Vector2f shadowLoc = Vector2f.add(new Vector2f(356f, 130f),
-                getInterfaceOffsetFromStatusBars(ship, ship.getVariant()), null);
+
+        final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), numberPos, null);
         if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
+            numberPos.scale(UIscaling);
             shadowLoc.scale(UIscaling);
             TODRAW14.setFontSize(14 * UIscaling);
         }
@@ -679,7 +752,7 @@ public class MagicUI {
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc.x - width, shadowLoc.y);
         TODRAW14.setColor(color);
-        TODRAW14.draw(boxLoc.x - width, boxLoc.y);
+        TODRAW14.draw(numberPos.x - width, numberPos.y);
         closeGL11ForText();
     }
 
