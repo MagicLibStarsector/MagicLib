@@ -2,7 +2,7 @@ package data.scripts.bounty.console;
 
 import data.scripts.bounty.ActiveBounty;
 import data.scripts.bounty.MagicBountyCoordinator;
-import data.scripts.bounty.MagicBountyLoader;
+import data.scripts.bounty.MagicBountyData;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
@@ -12,7 +12,7 @@ import java.util.*;
 public class ListBountiesCommand implements BaseCommand {
     @Override
     public CommandResult runCommand(@NotNull String args, @NotNull BaseCommand.CommandContext context) {
-        List<String> bountyKeys = new ArrayList<>(MagicBountyLoader.BOUNTIES.keySet());
+        List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
         bountyKeys.addAll(MagicBountyCoordinator.getInstance().getActiveBounties().keySet());
         bountyKeys = new ArrayList<>(new HashSet<>(bountyKeys)); // Remove duplicates.
 
@@ -45,8 +45,8 @@ public class ListBountiesCommand implements BaseCommand {
             String bountyKey = loadedBounties.get(0);
             if (mbc.getActiveBounty(bountyKey) != null) {
                 Console.showMessage(String.format("  %s", mbc.getActiveBounty(bountyKey)));
-            } else if (MagicBountyLoader.BOUNTIES.get(bountyKey) != null) {
-                Console.showMessage(String.format("  %s", MagicBountyLoader.BOUNTIES.get(bountyKey)));
+            } else if (MagicBountyData.BOUNTIES.get(bountyKey) != null) {
+                Console.showMessage(String.format("  %s", MagicBountyData.BOUNTIES.get(bountyKey)));
             }
         } else {
             Console.showMessage("Loaded Bounties");

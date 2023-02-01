@@ -77,6 +77,7 @@ public class MagicCampaign {
      * @param spawnLocation        Where the fleet will spawn, default to assignmentTarget if NULL
      * @param assignment           campaign.FleetAssignment, default to orbit aggressive
      * @param assignmentTarget     where the fleet will go to execute its order, it will not spawn if NULL
+     * @deprecated Please move to org.magiclib.MagicFleetBuilder when possible. The logic is unchanged.
      */
     public static CampaignFleetAPI createFleet(
             @Nullable String fleetName,
@@ -116,7 +117,6 @@ public class MagicCampaign {
      * @param variantsPath         If not null, the script will try to find missing variant files there.
      *                             Used to generate fleets using cross-mod variants that won't be loaded otherwise to avoid crashes.
      *                             The name of the variant files must match the ID of the variant.
-     *
      * @deprecated Please move to org.magiclib.MagicFleetBuilder when possible. The logic is unchanged.
      */
     public static CampaignFleetAPI createFleet(
@@ -208,15 +208,13 @@ public class MagicCampaign {
         CampaignFleetAPI newFleet = FleetFactoryV3.createEmptyFleet(extraShipsFaction, type, null);
 
         // ADDING FLAGSHIP
-        FleetMemberAPI flagship = null;
-        if (flagshipVariant != null) {
-            flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
+        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
 
-            if (flagship == null) {
-                log.error("Aborting " + fleetName + " generation. Reason: flagshipVariant was specified, but could not be created.");
-                return null;
-            }
-
+        if (flagship == null) {
+            log.error("Warning during " + fleetName + " generation." +
+                    "\n\tReason: flagshipVariant " + flagshipVariant + " and variantsPath " + variantsPath + " was specified, but flagship could not be created." +
+                    "\n\tWill try to fall back to the first ship in the fleet.");
+        } else {
             newFleet.getFleetData().addFleetMember(flagship);
         }
 
@@ -273,7 +271,7 @@ public class MagicCampaign {
 
         // FINALIZE FLAGSHIP
         // Choose a flagship if one wasn't specified
-        if (flagshipVariant == null) {
+        if (flagship == null) {
             newFleet.getFleetData().sort();
             // If there is no flagship, this will return the first ship in the sorted fleet.
             flagship = newFleet.getFlagship();
@@ -749,7 +747,7 @@ public class MagicCampaign {
         return variant;
     }
 
-    private static FleetMemberAPI generateShip(@NotNull String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
+    private static FleetMemberAPI generateShip(@Nullable String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
         ShipVariantAPI thisVariant = Global.getSettings().getVariant(variant);
         //if the variant doesn't exist but a custom variant path is defined, try loading it
         if (thisVariant == null && variantsPath != null) {
