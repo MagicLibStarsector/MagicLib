@@ -9,7 +9,7 @@ import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import data.scripts.util.MagicRender;
-import data.scripts.util.MagicUI;
+import data.scripts.util.MagicUIInternal;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
@@ -42,7 +42,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
 
     @Override
     public void advance(float amount, List<InputEventAPI> events) {
-        MagicUI.drawStatusBarMap();
+        MagicUIInternal.callRenderMethods$MagicLib();
     }
 
     public static void addSingleframe(SpriteAPI sprite, Vector2f loc, CombatEngineLayers layer) {

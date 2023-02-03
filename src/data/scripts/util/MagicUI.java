@@ -538,9 +538,8 @@ public class MagicUI {
 
     /**
      * Draws the status bar map.
-     * This should only be called by MagicLib.
      */
-    public static void drawStatusBarMap() {
+    static void drawStatusBarMap() {
         ShipAPI playerShip = Global.getCombatEngine().getPlayerShip();
         if (playerShip != null) {
             Vector2f defaultStatusLocOffset = new Vector2f(0f, 0f);
