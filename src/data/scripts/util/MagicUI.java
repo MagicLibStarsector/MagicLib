@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.util.Misc;
+import data.scripts.util.ui.StatusBarData;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
@@ -12,9 +13,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Dark.Revenant, Tartiflette, LazyWizard, Snrasha
@@ -27,9 +27,10 @@ public class MagicUI {
     public static final Color BLUCOLOR;
     //Color of the HUD for the red color.
     public static final Color REDCOLOR;
-    private static DrawableString TODRAW14;
-    private static DrawableString TODRAW10;
+    public static DrawableString TODRAW14;
+    public static DrawableString TODRAW10;
 
+    private static final Map<String, StatusBarData> statusBars = new LinkedHashMap<>();
     private static Color lastColor;
     private static float lastUpdate;
 
@@ -37,8 +38,10 @@ public class MagicUI {
     private static final Vector2f SYSTEMBARVEC2 = new Vector2f(29f, 58f);
     private static final Vector2f PERCENTBARVEC1 = new Vector2f(21f, 0f); // Just 21 pixel of width of difference.
     private static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
+    private static final Vector2f PERCENTBARPAD = new Vector2f(0, 14f);
 
     private static final float UIscaling = Global.getSettings().getScreenScaleMult();
+
 
     static {
         GREENCOLOR = Global.getSettings().getColor("textFriendColor");
@@ -406,16 +409,19 @@ public class MagicUI {
     /**
      * Draw a third status bar above the Flux and Hull ones on the User Interface.
      * With a text of the left and the number on the right.
+     * This method automatically places the status bar above other ones if they are already being drawn.
+     * This must be called with the same text argument every couple of seconds to remain active.
+     * It's not recommended to change text when calling this method, as doing so will create another status bar.
      *
      * @param ship        Player ship.
      * @param fill        Filling level of the bar. 0 to 1
      * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
      * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
-     * @param secondfill  Wider filling like the soft/hard-flux. 0 to 1.
+     * @param secondFill  Wider filling like the soft/hard-flux. 0 to 1.
      * @param text        The text written to the left, automatically cut if too large. Set to null to ignore
      * @param number      The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
      */
-    public static void drawInterfaceStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill, String text, int number) {
+    public static void drawInterfaceStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
@@ -424,24 +430,26 @@ public class MagicUI {
             return;
         }
 
-        final Vector2f statusBarLoc = getInterfaceOffsetFromStatusBars(ship, ship.getVariant());
-        drawInterfaceStatusBar(ship, statusBarLoc, fill, innerColor, borderColor, secondfill, text, number);
+        drawInterfaceStatusBar(ship, text, fill, innerColor, borderColor, secondFill, text, number);
     }
 
     /**
      * Draw a status bar at the desired position.
      * With a text of the left and the number on the right.
+     * This method automatically places the status bar above other ones if they are already being drawn.
+     * This must be called with the same text argument every couple of seconds to remain active.
+     * It's not recommended to change text when calling this method, as doing so will create another status bar.
      *
-     * @param ship         Player ship.
+     * @param ship        Player ship.
      * @param statusBarLoc Where to draw the status bar.
-     * @param fill         Filling level of the bar. 0 to 1
-     * @param innerColor   Color of the bar. If null, the vanilla green UI color will be used.
-     * @param borderColor  Color of the border. If null, the vanilla green UI color will be used.
-     * @param secondfill   Wider filling like the soft/hard-flux. 0 to 1.
-     * @param text         The text written to the left, automatically cut if too large. Set to null to ignore
-     * @param number       The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
+     * @param fill        Filling level of the bar. 0 to 1
+     * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondFill  Wider filling like the soft/hard-flux. 0 to 1.
+     * @param text        The text written to the left, automatically cut if too large. Set to null to ignore
+     * @param number      The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
      */
-    public static void drawInterfaceStatusBar(ShipAPI ship, Vector2f statusBarLoc, float fill, Color innerColor, Color borderColor, float secondfill, String text, int number) {
+    public static void drawInterfaceStatusBar(ShipAPI ship, Vector2f statusBarLoc, float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
@@ -450,20 +458,109 @@ public class MagicUI {
             return;
         }
 
-        final Vector2f boxLoc = Vector2f.add(new Vector2f(224f, 120f), statusBarLoc, null);
+        drawInterfaceStatusBar(ship, text, statusBarLoc, fill, innerColor, borderColor, secondFill, text, number);
+    }
 
-        addInterfaceStatusBar(ship, boxLoc, fill, innerColor, borderColor, secondfill);
-        if (TODRAW14 != null) {
-            if (text != null && !text.isEmpty()) {
-                final Vector2f textLoc = Vector2f.add(new Vector2f(176f, 131f), statusBarLoc, null);
-                addInterfaceStatusText(ship, text, textLoc);
-            }
-            if (number >= 0) {
-                final Vector2f numberLoc = Vector2f.add(new Vector2f(355f, 131f), statusBarLoc, null);
-                addInterfaceStatusNumber(ship, number, numberLoc);
-            }
+    /**
+     * Draw a status bar above the Flux and Hull ones on the User Interface.
+     * With a text of the left and the number on the right.
+     * This method automatically places the status bar above other ones if they are already being drawn.
+     * This must be called every couple of seconds to remain active.
+     * This method's arguments explicitly define key, allowing for the text to change without generating another
+     * status bar.
+     *
+     * @param ship        Player ship.
+     * @param key         Key for the status. Should be unique to your mod and whatever this status bar is displaying.
+     * @param fill        Filling level of the bar. 0 to 1
+     * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondFill  Wider filling like the soft/hard-flux. 0 to 1.
+     * @param text        The text written to the left, automatically cut if too large. Set to null to ignore
+     * @param number      The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
+     */
+    public static void drawInterfaceStatusBar(ShipAPI ship, String key, float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
+        if (ship != Global.getCombatEngine().getPlayerShip()) {
+            return;
         }
 
+        if (Global.getCombatEngine().getCombatUI() == null || Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+            return;
+        }
+
+        if (statusBars.containsKey(key)) {
+            StatusBarData data = statusBars.get(key);
+            data.setData(fill, innerColor, borderColor, secondFill, text, number);
+            //refreshes the cleaning interval for this status bar as well.
+        } else {
+            StatusBarData data = new StatusBarData(ship, fill, innerColor, borderColor, secondFill, text, number);
+            statusBars.put(key, data);
+        }
+    }
+
+    /**
+     * Draw a status bar at the desired position.
+     * With a text of the left and the number on the right.
+     * This method automatically places the status bar above other ones if they are already being drawn.
+     * This must be called every couple of seconds to remain active.
+     * This method's arguments explicitly define key, allowing for the text to change without generating another
+     * status bar.
+     *
+     * @param ship         Player ship.
+     * @param key          Key for the status. Should be unique to your mod and whatever this status bar is displaying.
+     * @param statusBarLoc Where to draw the status bar.
+     * @param fill         Filling level of the bar. 0 to 1
+     * @param innerColor   Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor  Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondFill   Wider filling like the soft/hard-flux. 0 to 1.
+     * @param text         The text written to the left, automatically cut if too large. Set to null to ignore
+     * @param number       The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
+     */
+    public static void drawInterfaceStatusBar(ShipAPI ship, String key, Vector2f statusBarLoc, float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
+        if (ship != Global.getCombatEngine().getPlayerShip()) {
+            return;
+        }
+
+        if (Global.getCombatEngine().getCombatUI() == null || Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+            return;
+        }
+
+        if (statusBars.containsKey(key)) {
+            StatusBarData data = statusBars.get(key);
+            data.setOverridePos(statusBarLoc);
+            data.setData(fill, innerColor, borderColor, secondFill, text, number);
+            //refreshes the cleaning interval for this status bar as well.
+        } else {
+            StatusBarData data = new StatusBarData(ship, fill, innerColor, borderColor, secondFill, text, number);
+            data.setOverridePos(statusBarLoc);
+            statusBars.put(key, data);
+        }
+    }
+
+    /**
+     * Draws the status bar map.
+     */
+    static void drawStatusBarMap() {
+        ShipAPI playerShip = Global.getCombatEngine().getPlayerShip();
+        if (playerShip != null) {
+            Vector2f defaultStatusLocOffset = new Vector2f(0f, 0f);
+            Iterator<StatusBarData> dataIterator = statusBars.values().iterator();
+            while (dataIterator.hasNext()) {
+                StatusBarData data = dataIterator.next();
+
+                //clear status bars that have not been updated
+                if (Global.getCombatEngine().getTotalElapsedTime(true) - data.getLastRefreshed() >= 5f) {
+                    dataIterator.remove();
+                    continue;
+                }
+
+                data.drawToScreen(defaultStatusLocOffset);
+
+                //do not apply offset if data has its own render position set.
+                if (data.getOverridePos() == null) {
+                    defaultStatusLocOffset = Vector2f.add(PERCENTBARPAD, defaultStatusLocOffset, null);
+                }
+            }
+        }
     }
 
     /**
@@ -616,7 +713,7 @@ public class MagicUI {
      *                    color.
      * @param secondfill  Like the hardflux of the fluxbar. 0 per default.
      */
-    private static void addInterfaceStatusBar(ShipAPI ship, Vector2f boxLoc, float fill, Color innerColor, Color borderColor, float secondfill) {
+    public static void addInterfaceStatusBar(ShipAPI ship, Vector2f boxLoc, float fill, Color innerColor, Color borderColor, float secondfill) {
 
         final float boxWidth = 79 * UIscaling;
         final float boxHeight = 7 * UIscaling;
@@ -659,7 +756,7 @@ public class MagicUI {
      * @param text    The text to write.
      * @param textLoc Where to draw the text.
      */
-    private static void addInterfaceStatusText(ShipAPI ship, String text, Vector2f textLoc) {
+    public static void addInterfaceStatusText(ShipAPI ship, String text, Vector2f textLoc) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
@@ -709,7 +806,7 @@ public class MagicUI {
      * @param number The number displayed, bounded per the method to 0 at 999
      *               999.
      */
-    private static void addInterfaceStatusNumber(ShipAPI ship, int number, Vector2f numberPos) {
+    public static void addInterfaceStatusNumber(ShipAPI ship, int number, Vector2f numberPos) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
             return;
         }
