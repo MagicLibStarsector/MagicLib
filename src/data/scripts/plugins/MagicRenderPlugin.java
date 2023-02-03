@@ -6,8 +6,10 @@ package data.scripts.plugins;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.graphics.SpriteAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import data.scripts.util.MagicRender;
+import data.scripts.util.MagicUI;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
@@ -36,6 +38,11 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         //Creates our layered rendering script
         CombatLayeredRenderingPlugin layerRenderer = new MagicRenderer(this);
         engine.addLayeredRenderingPlugin(layerRenderer);
+    }
+
+    @Override
+    public void advance(float amount, List<InputEventAPI> events) {
+        MagicUI.drawStatusBarMap();
     }
 
     public static void addSingleframe(SpriteAPI sprite, Vector2f loc, CombatEngineLayers layer) {
