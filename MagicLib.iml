@@ -13,5 +13,6 @@
     <orderEntry type="library" name="SWP" level="application" />
     <orderEntry type="library" name="lw_Console" level="application" />
     <orderEntry type="module" module-name="MagicLib-Kotlin" />
+    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
   </component>
 </module>

@@ -14,6 +14,7 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.events.BaseEventPlugin
+import com.fs.starfarer.api.impl.campaign.ids.Terrain
 import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
 import com.fs.starfarer.api.impl.campaign.procgen.StarAge
 import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator
@@ -513,7 +514,22 @@ inline fun Float.getAngleDiff(to: Float) = Misc.getAngleDiff(this, to)
 
 // Skipping isInArc, doesn't seem to make sense for an extension.
 // Skipping isInArc, doesn't seem to make sense for an extension.
-// Skipping addNebulaFromPNG, doesn't seem to make sense for an extension.
+
+/**
+ * @since 0.46.0
+ */
+inline fun LocationAPI.addNebulaFromPNG(
+    image: String,
+    centerX: Float,
+    centerY: Float,
+    category: String,
+    key: String,
+    tilesWide: Int,
+    tilesHigh: Int,
+    terrainType: String = Terrain.NEBULA,
+    age: StarAge
+) = Misc.addNebulaFromPNG(image, centerX, centerY, this, category, key, tilesWide, tilesHigh, terrainType, age)
+
 // Skipping renderQuad, doesn't seem to make sense for an extension.
 
 /**

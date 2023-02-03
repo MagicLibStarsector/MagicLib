@@ -1,9 +1,13 @@
 package data.scripts.util
 
-import data.scripts.util.MagicUI
-
+/**
+ * @since 0.46.0
+ */
 class MagicUIInternal {
     companion object {
+        /**
+         * @since 0.46.0
+         */
         @JvmStatic
         internal fun callRenderMethods() {
             MagicUI.drawStatusBarMap()

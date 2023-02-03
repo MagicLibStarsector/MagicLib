@@ -1153,7 +1153,8 @@ public class MagicCampaign {
     }
 
     /**
-     * Shorthand to add custom jump-point
+     * Shorthand to add custom jump-point.
+     * Make sure to call `system.autogenerateHyperspaceJumpPoints` after this to generate the hyperspace side.
      *
      * @param id              jump point's internal ID
      * @param name            jump point's displayed name
@@ -1162,13 +1163,13 @@ public class MagicCampaign {
      * @param orbitStartAngle orbit starting angle
      * @param orbitRadius     orbit radius
      * @param orbitDays       orbit period
-     * @return
+     * @since 0.46.0
      */
-    public static SectorEntityToken createJumpPoint(
-            String id,
-            String name,
+    public static SectorEntityToken addJumpPoint(
+            @NotNull String id,
+            @NotNull String name,
             @Nullable SectorEntityToken linkedPlanet,
-            SectorEntityToken orbitCenter,
+            @NotNull SectorEntityToken orbitCenter,
             float orbitStartAngle,
             float orbitRadius,
             float orbitDays
@@ -1182,6 +1183,30 @@ public class MagicCampaign {
         orbitCenter.getStarSystem().addEntity(jumpPoint);
 
         return jumpPoint;
+    }
+
+    /**
+     * Shorthand to add custom jump-point
+     *
+     * @param id              jump point's internal ID
+     * @param name            jump point's displayed name
+     * @param linkedPlanet    planet displayed from hyperspace, can be null
+     * @param orbitCenter     entity orbited
+     * @param orbitStartAngle orbit starting angle
+     * @param orbitRadius     orbit radius
+     * @param orbitDays       orbit period
+     * @deprecated Renamed to `addJumpPoint`.
+     */
+    public static SectorEntityToken createJumpPoint(
+            String id,
+            String name,
+            @Nullable SectorEntityToken linkedPlanet,
+            SectorEntityToken orbitCenter,
+            float orbitStartAngle,
+            float orbitRadius,
+            float orbitDays
+    ) {
+        return addJumpPoint(id, name, linkedPlanet, orbitCenter, orbitStartAngle, orbitRadius, orbitDays);
     }
 
     /**
