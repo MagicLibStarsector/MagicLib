@@ -12,7 +12,7 @@ public class MagicTrailObject {
     //Private, non-varying values
     protected float inDuration = 0f;
     protected float mainDuration = 0f;
-    float outDuration = 0f;
+    protected float outDuration = 0f;
     protected float startSize = 0f;
     protected float endSize = 0f;
     protected float startAngleVelocity = 0f;

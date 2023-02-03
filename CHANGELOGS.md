@@ -31,6 +31,13 @@ MagicLib
   - Added `org.magiclib.campaign.MagicFleetBuilder`, a new, more configurable way to build a fleet. 
   - Added default values for all parameters in `createFleet`.
 
+**MagicTrail**
+  - Fixed campaign trails (by President Matt Damon). 
+
+**MagicUI**
+  - Added overloads for manually positioning status and system bar (by President Matt Damon and Timid).
+  - Fixed dual system ships having overlap with custom status bar (by President Matt Damon and Timid).
+
 0.45.2
 
 - MagicBounties:

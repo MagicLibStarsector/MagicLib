@@ -3,9 +3,8 @@ package data.scripts.bounty.console;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.RepLevel;
-import data.scripts.bounty.BountyData;
 import data.scripts.bounty.MagicBountyCoordinator;
-import data.scripts.bounty.MagicBountyLoader;
+import data.scripts.bounty.MagicBountyData;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
@@ -23,20 +22,20 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
 
         List<String> completed = MagicBountyCoordinator.getInstance().getCompletedBounties();
         Set<String> active = MagicBountyCoordinator.getInstance().getActiveBounties().keySet();
-        List<String> bountyKeys = new ArrayList<>(MagicBountyLoader.BOUNTIES.keySet());
+        List<String> bountyKeys = new ArrayList<>(MagicBountyData.BOUNTIES.keySet());
         Collections.sort(bountyKeys);
 
         if (trimmedArgs.isEmpty()) {
             //no specified ID, show only the available bounties requirements
             for (String bountyKey : bountyKeys) {
                 if (!completed.contains(bountyKey) && !active.contains(bountyKey)) {
-                    showRequirements(bountyKey, MagicBountyLoader.BOUNTIES.get(bountyKey));
+                    showRequirements(bountyKey, MagicBountyData.BOUNTIES.get(bountyKey));
                     Console.showMessage(" ");
                 }
             }
         } else {
             if (bountyKeys.contains(trimmedArgs)) {
-                showRequirements(trimmedArgs, MagicBountyLoader.BOUNTIES.get(trimmedArgs));
+                showRequirements(trimmedArgs, MagicBountyData.BOUNTIES.get(trimmedArgs));
             } else {
                 //bounty id does not exist
                 Console.showMessage(String.format("Couldn't find '%s'", trimmedArgs));
@@ -46,7 +45,7 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
         return CommandResult.SUCCESS;
     }
 
-    private void showRequirements(String bountyId, BountyData bounty) {
+    private void showRequirements(String bountyId, MagicBountyData.bountyData bounty) {
         Console.showMessage(bounty.job_name + " ( " + bountyId + " ):");
 
         //WHICH MARKET

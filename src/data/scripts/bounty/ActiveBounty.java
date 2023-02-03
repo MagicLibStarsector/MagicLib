@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link BountyData}.
+ * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
  *
  * @author Wisp
  */
@@ -49,7 +49,7 @@ public final class ActiveBounty {
     /**
      * The original bounty spec, a mirror of the json definition.
      */
-    private final @NotNull BountyData spec;
+    private final @NotNull MagicBountyData.bountyData spec;
 
     /**
      * The timestamp of when the bounty was first created (not accepted).
@@ -109,7 +109,7 @@ public final class ActiveBounty {
                         @NotNull CampaignFleetAPI fleet,
                         @NotNull SectorEntityToken fleetSpawnLocation,
                         @NotNull List<String> presetShipIds,
-                        @NotNull BountyData spec) {
+                        @NotNull MagicBountyData.bountyData spec) {
         this.bountyKey = bountyKey;
         this.fleet = fleet;
         this.fleetSpawnLocation = fleetSpawnLocation;
@@ -382,7 +382,7 @@ public final class ActiveBounty {
         return fleet;
     }
 
-    public @NotNull BountyData getSpec() {
+    public @NotNull MagicBountyData.bountyData getSpec() {
         return spec;
     }
 
@@ -463,7 +463,7 @@ public final class ActiveBounty {
     @Nullable
     public FactionAPI getTargetFaction() {
         FactionAPI target = null;
-        if (getSpec().job_show_captain != false || getSpec().job_show_fleet != MagicBountyLoader.ShowFleet.None) {
+        if (getSpec().job_show_captain != false || getSpec().job_show_fleet != MagicBountyData.ShowFleet.None) {
             target = Global.getSector().getFaction(getSpec().fleet_faction);
         }
         return target;
