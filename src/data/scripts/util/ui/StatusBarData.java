@@ -8,7 +8,8 @@ import org.lwjgl.util.vector.Vector2f;
 import java.awt.Color;
 
 public class StatusBarData {
-    private final ShipAPI ship;
+
+    private ShipAPI ship;
     private float fill;
     private Color innerColor;
     private Color borderColor;
@@ -29,7 +30,8 @@ public class StatusBarData {
         refresh();
     }
 
-    public void setData(float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
+    public void setData(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
+        this.ship = ship;
         this.fill = fill;
         this.innerColor = innerColor;
         this.borderColor = borderColor;
@@ -87,6 +89,10 @@ public class StatusBarData {
                 MagicUI.addInterfaceStatusNumber(ship, number, numberLoc);
             }
         }
+    }
+
+    public ShipAPI getShip() {
+        return ship;
     }
 
     @Override

@@ -489,7 +489,7 @@ public class MagicUI {
 
         if (statusBars.containsKey(key)) {
             StatusBarData data = statusBars.get(key);
-            data.setData(fill, innerColor, borderColor, secondFill, text, number);
+            data.setData(ship, fill, innerColor, borderColor, secondFill, text, number);
             //refreshes the cleaning interval for this status bar as well.
         } else {
             StatusBarData data = new StatusBarData(ship, fill, innerColor, borderColor, secondFill, text, number);
@@ -527,7 +527,7 @@ public class MagicUI {
         if (statusBars.containsKey(key)) {
             StatusBarData data = statusBars.get(key);
             data.setOverridePos(statusBarLoc);
-            data.setData(fill, innerColor, borderColor, secondFill, text, number);
+            data.setData(ship, fill, innerColor, borderColor, secondFill, text, number);
             //refreshes the cleaning interval for this status bar as well.
         } else {
             StatusBarData data = new StatusBarData(ship, fill, innerColor, borderColor, secondFill, text, number);
@@ -547,8 +547,9 @@ public class MagicUI {
             while (dataIterator.hasNext()) {
                 StatusBarData data = dataIterator.next();
 
-                //clear status bars that have not been updated
-                if (Global.getCombatEngine().getTotalElapsedTime(true) - data.getLastRefreshed() >= 5f) {
+                //clear status bars that have not been updated or are not for the current ship
+                if (data.getShip() != playerShip
+                        || Global.getCombatEngine().getTotalElapsedTime(true) - data.getLastRefreshed() >= 5f) {
                     dataIterator.remove();
                     continue;
                 }
