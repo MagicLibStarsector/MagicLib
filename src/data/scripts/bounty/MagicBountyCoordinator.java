@@ -54,6 +54,7 @@ public final class MagicBountyCoordinator {
     private final static String COMPLETED_BOUNTIES_MEMORY_KEY = "$MagicBounties_completed_keys";
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
+    // Default 90
     private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
             MagicSettings.getInteger(MagicVariables.MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
@@ -89,7 +90,7 @@ public final class MagicBountyCoordinator {
 
             // Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
             if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted) {
-                Global.getLogger(MagicBountyCoordinator.class).info(
+                LOG.info(
                         String.format("Removing expired bounty '%s' (not accepted after %d days), \"%s\"",
                                 entry.getKey(),
                                 timestampSinceBountyCreated / MILLIS_PER_DAY,

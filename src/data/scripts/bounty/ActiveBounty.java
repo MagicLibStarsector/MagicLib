@@ -1,5 +1,6 @@
 package data.scripts.bounty;
 
+import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
@@ -341,10 +342,14 @@ public final class ActiveBounty {
         InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
         boolean didCreateDialog = false;
 
-        if (dialog == null) {
-            Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
-            dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
-            didCreateDialog = true;
+        if (dialog == null && Global.getCurrentState() == GameState.CAMPAIGN) {
+            try {
+                Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
+                dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+                didCreateDialog = true;
+            } catch (Exception e) {
+                LOG.warn("Unable to create a dialog", e);
+            }
         }
 
         boolean flagSetting = DebugFlags.PRINT_RULES_DEBUG_INFO;
@@ -353,7 +358,11 @@ public final class ActiveBounty {
             DebugFlags.PRINT_RULES_DEBUG_INFO = true;
         }
 
-        FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+        if (dialog != null) {
+            FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+        } else {
+            FireBest.fire(null, null, null, scriptRuleId);
+        }
 
         // Turn it on for FireBest, then set it back to whatever it was.
         DebugFlags.PRINT_RULES_DEBUG_INFO = flagSetting;
