@@ -3,6 +3,7 @@
     "modName":"MagicLib",
     "modThreadId":"25868",
     # "modNexusId":"10",
+    "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/0.46.0/MagicLib-0.46.0.zip",
     "modVersion":
     {
         "major":"0",
