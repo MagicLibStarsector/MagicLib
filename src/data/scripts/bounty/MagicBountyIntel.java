@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.fs.starfarer.api.util.Misc.random;
-import static data.scripts.util.MagicTxt.getString;
 
 /**
  * Displays MagicLib Bounties to the player.
@@ -78,20 +77,26 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         ActiveBounty bounty = getBounty();
         if (bounty == null) return "";
 
+        String name;
+
         switch (bounty.getStage()) {
             case Succeeded:
-                return String.format(getString("mb_intelTitleCompleted"), bounty.getSpec().job_name);
+                name = String.format(MagicTxt.getString("mb_intelTitleCompleted"), bounty.getSpec().job_name);
+                break;
             case ExpiredAfterAccepting:
             case Dismissed:
             case ExpiredWithoutAccepting:
             case EndedWithoutPlayerInvolvement:
             case FailedSalvagedFlagship:
-                return String.format(getString("mb_intelTitleFailed"), bounty.getSpec().job_name);
+                name = String.format(MagicTxt.getString("mb_intelTitleFailed"), bounty.getSpec().job_name);
+                break;
             case Accepted:
             case NotAccepted:
             default:
-                return String.format(getString("mb_intelTitleInProgress"), bounty.getSpec().job_name);
+                name = String.format(MagicTxt.getString("mb_intelTitleInProgress"), bounty.getSpec().job_name);
         }
+
+        return name;
     }
 
     /*
@@ -123,7 +128,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.hasCreditReward()) {
                     bullet(info);
                     //"%s credits received"
-                    info.addPara(getString("mb_intelRewarded"),
+                    info.addPara(MagicTxt.getString("mb_intelRewarded"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -144,7 +149,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getGivingFaction() != null) {
                     bullet(info);
                     //"Faction: %s"
-                    info.addPara(getString("mb_intelFaction"),
+                    info.addPara(MagicTxt.getString("mb_intelFaction"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             bounty.getGivingFactionTextColor(),
@@ -155,7 +160,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getTargetFaction() != null) {
                     bullet(info);
                     //"Target: %s"
-                    info.addPara(getString("mb_intelTarget"),
+                    info.addPara(MagicTxt.getString("mb_intelTarget"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             bounty.getTargetFactionTextColor(),
@@ -166,7 +171,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.hasCreditReward() && bounty.hasExpiration()) {
                     bullet(info);
                     //"%s reward, %s days remaining"
-                    info.addPara(getString("mb_intelRewardRemaining"),
+                    info.addPara(MagicTxt.getString("mb_intelRewardRemaining"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -176,7 +181,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 } else if (bounty.hasCreditReward()) {
                     bullet(info);
                     //"%s reward"
-                    info.addPara(getString("mb_intelReward"),
+                    info.addPara(MagicTxt.getString("mb_intelReward"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -185,7 +190,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 } else if (bounty.hasExpiration()) {
                     bullet(info);
                     //"%s days remaining"
-                    info.addPara(getString("mb_intelRemaining"),
+                    info.addPara(MagicTxt.getString("mb_intelRemaining"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor(),
@@ -221,13 +226,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case Succeeded:
 
                 //"You have successfully completed this bounty."
-                info.addPara(getString("mb_descSuccess"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_descSuccess"), PADDING_DESC);
 
                 //adding optional success text:
                 if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_success),
+                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_success),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -237,7 +242,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.hasCreditReward()) {
                     //"%s credits received"
                     info.addPara(
-                            getString("mb_descRewarded"),
+                            MagicTxt.getString("mb_descRewarded"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
@@ -252,13 +257,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
             case FailedSalvagedFlagship:
                 //"You have failed this bounty."
-                info.addPara(getString("mb_descFailure"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_descFailure"), PADDING_DESC);
 
                 //adding optional failure text:
                 if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_failure),
+                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_failure),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -266,19 +271,19 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasReputationReward()) {
-                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.min(-0.05f, -bounty.getRewardReputation()));
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getFailureReputationPenalty());
                 }
                 break;
 
             case ExpiredAfterAccepting:
                 //"You have failed this bounty."
-                info.addPara(getString("mb_descExpired"), 0f);
+                info.addPara(MagicTxt.getString("mb_descExpired"), 0f);
 
                 //adding optional failure text:
                 if (bounty.getSpec().job_intel_expired != null && !bounty.getSpec().job_intel_expired.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty,bounty.getSpec().job_intel_expired),
+                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_expired),
                             PADDING_DESC,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor()
@@ -286,14 +291,14 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 }
 
                 if (bounty.hasReputationReward()) {
-                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), Math.max(-0.05f, -bounty.getRewardReputation()));
+                    addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), bounty.getFailureReputationPenalty());
                 }
                 break;
 
             case EndedWithoutPlayerInvolvement:
 
                 //"Someone else completed this mission."
-                info.addPara(getString("mb_descUninvolved"), 0f);
+                info.addPara(MagicTxt.getString("mb_descUninvolved"), 0f);
 
                 if (bounty.hasReputationReward()) {
                     addRepMessage(info, PADDING_DESC, bounty.getGivingFaction(), 0);
@@ -308,85 +313,85 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     switch (bounty.getSpec().job_type) {
                         case Assassination:
                             if (bounty.getTargetFaction() == null) {
-                                info.addPara(getString("mb_intelType"),
+                                info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
                                         Misc.getHighlightColor(),
-                                        getString("mb_type_assassination1")
+                                        MagicTxt.getString("mb_type_assassination1")
                                 );
                             } else {
                                 LabelAPI label = info.addPara(
-                                        getString("mb_intelType0") +
-                                                getString("mb_type_assassination1") +
-                                                getString("mb_intelType1") +
+                                        MagicTxt.getString("mb_intelType0") +
+                                                MagicTxt.getString("mb_type_assassination1") +
+                                                MagicTxt.getString("mb_intelType1") +
                                                 bounty.getTargetFaction().getDisplayName() +
-                                                getString("mb_intelType2"),
+                                                MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(getString("mb_type_assassination1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_assassination1"), bounty.getTargetFaction().getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
                         case Destruction:
                             if (bounty.getTargetFaction() == null) {
-                                info.addPara(getString("mb_intelType"),
+                                info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
                                         Misc.getHighlightColor(),
-                                        getString("mb_type_destruction1")
+                                        MagicTxt.getString("mb_type_destruction1")
                                 );
                             } else {
                                 LabelAPI label = info.addPara(
-                                        getString("mb_intelType0") +
-                                                getString("mb_type_destruction1") +
-                                                getString("mb_intelType1") +
+                                        MagicTxt.getString("mb_intelType0") +
+                                                MagicTxt.getString("mb_type_destruction1") +
+                                                MagicTxt.getString("mb_intelType1") +
                                                 bounty.getTargetFaction().getDisplayName() +
-                                                getString("mb_intelType2"),
+                                                MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(getString("mb_type_destruction1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_destruction1"), bounty.getTargetFaction().getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
                         case Obliteration:
                             if (bounty.getTargetFaction() == null) {
-                                info.addPara(getString("mb_intelType"),
+                                info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
                                         Misc.getHighlightColor(),
-                                        getString("mb_type_obliteration1")
+                                        MagicTxt.getString("mb_type_obliteration1")
                                 );
                             } else {
                                 LabelAPI label = info.addPara(
-                                        getString("mb_intelType0") +
-                                                getString("mb_type_obliteration1") +
-                                                getString("mb_intelType1") +
+                                        MagicTxt.getString("mb_intelType0") +
+                                                MagicTxt.getString("mb_type_obliteration1") +
+                                                MagicTxt.getString("mb_intelType1") +
                                                 bounty.getTargetFaction().getDisplayName() +
-                                                getString("mb_intelType2"),
+                                                MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(getString("mb_type_obliteration1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_obliteration1"), bounty.getTargetFaction().getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
                         case Neutralisation:
                             if (bounty.getTargetFaction() == null) {
-                                info.addPara(getString("mb_intelType"),
+                                info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
                                         Misc.getHighlightColor(),
-                                        getString("mb_type_neutralisation1")
+                                        MagicTxt.getString("mb_type_neutralisation1")
                                 );
                             } else {
                                 LabelAPI label = info.addPara(
-                                        getString("mb_intelType0") +
-                                                getString("mb_type_neutralisation1") +
-                                                getString("mb_intelType1") +
+                                        MagicTxt.getString("mb_intelType0") +
+                                                MagicTxt.getString("mb_type_neutralisation1") +
+                                                MagicTxt.getString("mb_intelType1") +
                                                 bounty.getTargetFaction().getDisplayName() +
-                                                getString("mb_intelType2"),
+                                                MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(getString("mb_type_neutralisation1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_neutralisation1"), bounty.getTargetFaction().getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
@@ -397,7 +402,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.hasCreditReward()) {
                     bullet(info);
                     //"%s reward"
-                    info.addPara(getString("mb_descReward"),
+                    info.addPara(MagicTxt.getString("mb_descReward"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
@@ -408,15 +413,25 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.hasExpiration()) {
                     bullet(info);
                     //"remaining"
-                    addDays(info, getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
+                    addDays(info, MagicTxt.getString("mb_descRemaining"), Math.round(bounty.getDaysRemainingToComplete()), Misc.getTextColor());
                     unindent(info);
                 }
 
                 if (bounty.getSpec().job_show_distance != MagicBountyData.ShowDistance.None) {
-                    if (bounty.getSpec().job_show_distance == MagicBountyData.ShowDistance.Exact) {
-                        info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
-                    } else {
-                        info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                    switch (bounty.getSpec().job_show_distance) {
+                        case Exact:
+                            info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
+                            break;
+                        case System:
+                            info.addPara(MagicTxt.getString("mb_distance_system"),
+                                    10f,
+                                    Misc.getTextColor(),
+                                    Misc.ucFirst(MagicBountyUtils.getPronoun(bounty.getCaptain())),
+                                    bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType());
+                            break;
+                        default:
+                            info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                            break;
                     }
                 }
 
@@ -444,12 +459,12 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         SectorEntityToken hideoutLocation = bounty.getFleetSpawnLocation();
 
         switch (bounty.getSpec().job_show_distance) {
-            case None:
+            case Exact:
+            case System:
+                return hideoutLocation;
+//            case None:
 //                return null; NOPE, the icon should always be placed somewhere otherwise there is no way to get the location information again.
-            case Vague:
-            case Vanilla:
-            case Distance:
-            case VanillaDistance:
+            default:
                 // From PersonBountyIntel.getMapLocation
                 Constellation c = hideoutLocation.getConstellation();
                 SectorEntityToken entity = null;
@@ -460,11 +475,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 if (entity == null) entity = hideoutLocation;
                 return entity;
-            case Exact:
-                return hideoutLocation;
         }
-
-        return null;
     }
 
     @Override
@@ -476,16 +487,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             return null;
         }
 
-        SectorEntityToken target = bounty.getFleet();
-
-        switch (bounty.getSpec().job_show_distance) {
-            case None:
-            case Vague:
-            case Vanilla:
-            case Distance:
-            case VanillaDistance:
-                return null;
-        }
+        SectorEntityToken target = getMapLocation(map);
 
         ArrowData arrowData = new ArrowData(bounty.getBountySource(), target);
         arrowData.color = bounty.getGivingFactionTextColor();
@@ -495,7 +497,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Override
     public Set<String> getIntelTags(SectorMapAPI map) {
         Set<String> tags = super.getIntelTags(map);
-        Collections.addAll(tags, Tags.INTEL_MISSIONS, Tags.INTEL_ACCEPTED);
+        Collections.addAll(tags, Tags.INTEL_MISSIONS, Tags.INTEL_ACCEPTED, Tags.INTEL_BOUNTY);
         ActiveBounty bounty = getBounty();
         if (bounty == null) return Collections.emptySet();
 
@@ -519,20 +521,20 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         Color deltaColor = Misc.getPositiveHighlightColor();
         Color relationColor = faction.getRelColor(player.getId());
 
-        String deltaString = getString("mb_descRepGood") + deltaInt;
-        String standing = "" + repInt + getString("mb_descRepStanding") + getString("(") + repLevel.getDisplayName().toLowerCase() + getString(")");
+        String deltaString = MagicTxt.getString("mb_descRepGood") + deltaInt;
+        String standing = "" + repInt + MagicTxt.getString("mb_descRepStanding") + MagicTxt.getString("(") + repLevel.getDisplayName().toLowerCase() + MagicTxt.getString(")");
 
         if (change < 0) {
             deltaColor = Misc.getNegativeHighlightColor();
-            deltaString = getString("mb_descRepBad") + deltaInt;
+            deltaString = MagicTxt.getString("mb_descRepBad") + deltaInt;
         } else if (change == 0) {
-            deltaString = getString("mb_descRepNothing");
+            deltaString = MagicTxt.getString("mb_descRepNothing");
             deltaColor = Misc.getTextColor();
         }
 
         Color[] highlightColors = {factionColor, deltaColor, relationColor};
         //"Relationship with %s %s, currently at %s",
-        info.addPara(getString("mb_descRep"), pad, highlightColors, factionName, deltaString, standing);
+        info.addPara(MagicTxt.getString("mb_descRep"), pad, highlightColors, factionName, deltaString, standing);
     }
 
     @Override
@@ -563,7 +565,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         ActiveBounty bounty = getBounty();
 
         if (bounty != null) {
-             if(bounty.getSpec().existing_target_memkey==null || bounty.getSpec().existing_target_memkey.isEmpty()){
+            if (bounty.getSpec().existing_target_memkey == null || bounty.getSpec().existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 bounty.despawn();
             }
@@ -610,7 +612,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 int num = ships.size();
                 if (num < 5) {
                     num = 5;
-                    info.addPara(getString("mb_fleet6"),
+                    info.addPara(MagicTxt.getString("mb_fleet6"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
@@ -621,7 +623,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet5"),
+                info.addPara(MagicTxt.getString("mb_fleet5"),
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
@@ -629,7 +631,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 );
             case Flagship:
                 //show the flagship
-                info.addPara(getString("mb_fleet0") + getString("mb_fleet"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_fleet0") + MagicTxt.getString("mb_fleet"), PADDING_DESC);
                 info.addShipList(
                         columns,
                         1,
@@ -641,7 +643,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 break;
             case FlagshipText:
                 //show the flagship
-                info.addPara(getString("mb_fleet0") + getString("mb_fleet"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_fleet0") + MagicTxt.getString("mb_fleet"), PADDING_DESC);
                 info.addShipList(
                         columns,
                         1,
@@ -654,7 +656,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 num = ships.size() - 1;
                 num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
                 if (num < 5) {
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -664,7 +666,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet3"),
+                info.addPara(MagicTxt.getString("mb_fleet3"),
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
@@ -673,7 +675,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 break;
             case Preset:
                 //show the preset fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_fleet1") + MagicTxt.getString("mb_fleet"), PADDING_DESC);
                 info.addShipList(
                         columns,
                         (int) Math.round(Math.ceil((double) preset.size() / columns)),
@@ -685,7 +687,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 break;
             case PresetText:
                 //show the preset fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_fleet1") + MagicTxt.getString("mb_fleet"), PADDING_DESC);
                 List<FleetMemberAPI> toShow = preset;
 //                toShow.addAll(preset);
                 info.addShipList(
@@ -700,7 +702,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 num = ships.size() - toShow.size();
                 num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
                 if (num < 5) {
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -710,7 +712,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet3"),
+                info.addPara(MagicTxt.getString("mb_fleet3"),
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
@@ -719,7 +721,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 break;
             case Vanilla:
                 //show the Flagship and the 6 biggest ships in the fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_fleet1") + MagicTxt.getString("mb_fleet"), PADDING_DESC);
 
                 //there are less than 7 ships total, all will be shown
                 if (ships.size() <= columns) {
@@ -746,7 +748,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             toShow,
                             10f
                     );
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -781,7 +783,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 num = ships.size() - columns;
                 num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
                 if (num < 5) {
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -791,7 +793,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet3"),
+                info.addPara(MagicTxt.getString("mb_fleet3"),
                         PADDING_DESC,
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
@@ -800,7 +802,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 break;
             case All:
                 //show the full fleet
-                info.addPara(getString("mb_fleet2") + getString("mb_fleet"), PADDING_DESC);
+                info.addPara(MagicTxt.getString("mb_fleet2") + MagicTxt.getString("mb_fleet"), PADDING_DESC);
                 toShow = new ArrayList<>();
                 //add flagship first
                 for (FleetMemberAPI m : ships) {

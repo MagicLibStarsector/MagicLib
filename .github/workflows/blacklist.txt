@@ -1,0 +1,12 @@
+.psd$
+.ai$
+.afphoto$
+^.circleci
+DO_NOT_USE
+.gradle
+^gradle
+.flac$
+^.github/
+banner.png$
+^doc/
+^media/

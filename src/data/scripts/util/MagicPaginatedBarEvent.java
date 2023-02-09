@@ -26,10 +26,14 @@ public abstract class MagicPaginatedBarEvent extends BaseBarEvent {
     public static final String OPTION_PREV_PAGE = "core_option_prev_page";
 
     public static class MagicPaginatedOption {
-        @NotNull public final String text;
-        @NotNull public final Object id;
-        @Nullable public final String tooltip;
-        @Nullable public final Integer hotkey;
+        @NotNull
+        public final String text;
+        @NotNull
+        public final Object id;
+        @Nullable
+        public final String tooltip;
+        @Nullable
+        public final Integer hotkey;
 
         /**
          * @param hotkey org.lwjgl.input.Keyboard

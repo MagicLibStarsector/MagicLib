@@ -8,48 +8,48 @@ import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.combat.CombatFleetManager;
 import com.fs.starfarer.combat.CombatFleetManager.O0;
+
 import java.util.List;
 
 // Works around battle not ending if ship with modules retreats
-public class MagicModuleRetreatCleaner extends BaseEveryFrameCombatPlugin  {
-    
+public class MagicModuleRetreatCleaner extends BaseEveryFrameCombatPlugin {
+
     public static final String CUSTOM_DATA_KEY = "shared_module_retreat_cleaner_plugin";
-	
+
     protected IntervalUtil interval = new IntervalUtil(0.4f, 0.6f);
     protected CombatEngineAPI engine;
-    protected boolean running = true;	// turn off if another such plugin is running
-    
+    protected boolean running = true;    // turn off if another such plugin is running
+
     @Override
     public void advance(float amount, List<InputEventAPI> events) {
-	if (!running) return;
+        if (!running) return;
         interval.advance(amount);
         if (interval.intervalElapsed()) {
             validateDeployedShips(FleetSide.PLAYER);
             validateDeployedShips(FleetSide.ENEMY);
         }
     }
-    
+
     @Override
     public void init(CombatEngineAPI engine) {
         this.engine = engine;
         if (engine.getCustomData().containsKey(CUSTOM_DATA_KEY)) {
             Global.getLogger(this.getClass()).info("Another module retreat cleaner already running, suspending plugin");
             running = false;
-        }
-        else {
+        } else {
             engine.getCustomData().put(CUSTOM_DATA_KEY, this);
         }
     }
-    
+
     public void validateDeployedShips(FleetSide side) {
         if (engine == null) return;
-        
-        CombatFleetManager manager = (CombatFleetManager)engine.getFleetManager(side);
+
+        CombatFleetManager manager = (CombatFleetManager) engine.getFleetManager(side);
         boolean anyNonModule = false;
-        
+
         if (manager.getDeployed().isEmpty())
             return;
-        
+
         for (O0 deployed : manager.getDeployed()) {
             if (!deployed.isStationModule()) {
                 anyNonModule = true;
@@ -62,9 +62,9 @@ public class MagicModuleRetreatCleaner extends BaseEveryFrameCombatPlugin  {
             manager.getDeployed().clear();
         }
     }
-    
+
     /* Debugging methods */
-    
+
 //    // runcode data.scripts.everyframe.SWP_ModuleRetreatCleaner.queryBattleState()
 //    public static void queryBattleState() {
 //        CombatEngine engine = (CombatEngine)Global.getCombatEngine();

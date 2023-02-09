@@ -6,11 +6,12 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import data.scripts.bounty.*;
 import data.scripts.plugins.MagicAutoTrails;
-import data.scripts.util.MagicIncompatibleHullmods;
-import data.scripts.util.MagicIndustryItemWrangler;
-import data.scripts.util.MagicInterference;
-import data.scripts.util.MagicSettings;
-import data.scripts.util.MagicVariables;
+import data.scripts.plugins.MagicCampaignTrailPlugin;
+import data.scripts.terrain.MagicAsteroidBeltTerrainPlugin;
+import data.scripts.terrain.MagicAsteroidFieldTerrainPlugin;
+import data.scripts.util.*;
+import org.magiclib.kotlin.MagicKotlinModPlugin;
+
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 public class Magic_modPlugin extends BaseModPlugin {
@@ -34,9 +35,9 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
 
-        
+
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
-        if(Global.getSettings().isDevMode()){
+        if (Global.getSettings().isDevMode()) {
             MagicBountyData.loadBountiesFromJSON(false);
 //            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
 //                MagicBountyHVB.convertHVBs(false);
@@ -54,10 +55,10 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         //gather trail data
         MagicAutoTrails.getTrailData();
-        
+
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();
-        MagicVariables.verbose=Global.getSettings().isDevMode();
+        MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
     }
 
@@ -69,13 +70,13 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         //gather trail data
         MagicAutoTrails.getTrailData();
-        
+
         //Check for other bounty systems
         MagicVariables.checkBountySystems();
-        
+
         //gather mod's system themes
         MagicVariables.loadThemesBlacklist();
-        MagicVariables.verbose=Global.getSettings().isDevMode();
+        MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_test_mode");
     }
 
@@ -89,29 +90,30 @@ public class Magic_modPlugin extends BaseModPlugin {
     public void onGameLoad(boolean newGame) {
 //        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
-        
+
         //Add industry item wrangler
         SectorAPI sector = Global.getSector();
-        if( sector != null ) {
-                sector.addTransientListener( new MagicIndustryItemWrangler() );
+        if (sector != null) {
+            sector.addTransientListener(new MagicIndustryItemWrangler());
+            sector.addTransientScript(new MagicCampaignTrailPlugin());
         }
-        
+
         MagicVariables.checkBountySystems();
-        
+
         if (MagicVariables.getMagicBounty()) {
-            if (newGame) {  
+            if (newGame) {
                 //add all bounties on a new game
                 MagicBountyData.loadBountiesFromJSON(false);
                 //convert the HVBs if necessary
-                if(!MagicVariables.getHVB())MagicBountyHVB.convertHVBs(false);
+                if (!MagicVariables.getHVB()) MagicBountyHVB.convertHVBs(false);
             } else {
-                if(MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_reloadAll")){
+                if (MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_reloadAll")) {
                     //force cleanup of all the bounties that have not been taken
                     MagicBountyData.clearBountyData();
                 }
                 //only add new bounties if there are any on a save load
-                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode()); 
-                if(!MagicVariables.getHVB())MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode()); 
+                MagicBountyData.loadBountiesFromJSON(!Global.getSettings().isDevMode());
+                if (!MagicVariables.getHVB()) MagicBountyHVB.convertHVBs(!Global.getSettings().isDevMode());
             }
 
             MagicBountyCoordinator.onGameLoad();
@@ -119,11 +121,14 @@ public class Magic_modPlugin extends BaseModPlugin {
 
             Global.getSector().registerPlugin(new MagicBountyCampaignPlugin());
         }
+
+        MagicKotlinModPlugin.INSTANCE.onGameLoad(newGame);
     }
 
     /**
      * Define how classes are named in the save xml, allowing class renaming without
      * breaking saves.
+     *
      * @param x
      */
     @Override
@@ -136,6 +141,11 @@ public class Magic_modPlugin extends BaseModPlugin {
         x.alias("MagicBountyFleetEncounterContext", MagicBountyFleetEncounterContext.class);
         x.alias("MagicBountyFleetInteractionDialogPlugin", MagicBountyFleetInteractionDialogPlugin.class);
         x.alias("MagicCampaignPlugin", MagicBountyCampaignPlugin.class);
+
+        // Keep the Magic replacements out of the save file.
+        // The game will automatically swap to the Magic replacements on load because `terrain.json` replaces the vanilla ones.
+        x.alias("AsteroidBeltTerrainPlugin", MagicAsteroidBeltTerrainPlugin.class);
+        x.alias("AsteroidFieldTerrainPlugin", MagicAsteroidFieldTerrainPlugin.class);
     }
 
     //    //debugging magic bounties

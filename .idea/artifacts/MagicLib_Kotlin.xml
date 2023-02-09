@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="MagicLib-Kotlin">
+    <output-path>$PROJECT_DIR$/jars</output-path>
+    <root id="archive" name="MagicLib-Kotlin.jar">
+      <element id="module-output" name="MagicLib-Kotlin" />
+      <element id="module-source" name="MagicLib-Kotlin" />
+    </root>
+  </artifact>
+</component>

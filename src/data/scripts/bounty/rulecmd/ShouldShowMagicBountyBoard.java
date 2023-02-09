@@ -8,10 +8,11 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.bounty.MagicBountyCoordinator;
 import data.scripts.util.MagicSettings;
-import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 import java.util.List;
 import java.util.Map;
+
+import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 /**
  * Returns true iff there are available bounties at the current market.

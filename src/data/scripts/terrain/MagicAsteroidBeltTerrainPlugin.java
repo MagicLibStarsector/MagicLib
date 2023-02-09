@@ -1,28 +1,41 @@
 package data.scripts.terrain;
 
-import java.awt.Color;
-import java.util.Random;
-
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.AsteroidAPI;
-import com.fs.starfarer.api.campaign.CampaignEngineLayers;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.LocationAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.TerrainAIFlags;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.impl.campaign.terrain.*;
-import com.fs.starfarer.api.impl.campaign.terrain.AsteroidBeltTerrainPlugin.AsteroidBeltParams;
+import com.fs.starfarer.api.impl.campaign.terrain.AsteroidBeltTerrainPlugin;
+import com.fs.starfarer.api.impl.campaign.terrain.RingRenderer;
+import com.fs.starfarer.api.impl.campaign.terrain.RingSystemTerrainPlugin;
 import com.fs.starfarer.api.loading.Description.Type;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import static data.scripts.util.MagicTxt.getString;
+import data.scripts.util.MagicTxt;
 
+import java.awt.*;
+import java.util.Random;
+
+/**
+ * This is a drop-in replacement for the vanilla AsteroidBeltTerrainPlugin.
+ * <br />
+ * It allows configuration of:
+ * <ul>
+ * <li>chance of impact</li>
+ * <li>movement force</li>
+ * <li>chance of damaging impact</li>
+ * <li>chance of damaging impact per ship</li>
+ * <li>impact damage</li>
+ * <li>impact damage per ship</li>
+ * </ul>
+ * <p>
+ * For example usage, see Roider Union by SafariJohn.
+ *
+ * @author SafariJohn, Tartiflette
+ */
 public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
 
     // Stats
@@ -120,7 +133,7 @@ public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
             name = params.name;
             if (name == null) {
                 //"af_beltName" : "Asteroid Belt",
-                name = getString("af_beltName");
+                name = MagicTxt.getString("af_beltName");
             }
         }
     }
@@ -142,7 +155,7 @@ public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
         if (Misc.isSlowMoving(fleet)) {
             fleet.getStats().addTemporaryModMult(0.1f, getModId() + "_2",
                     //"af_hiding" : "Hiding inside ",
-                    getString("af_hiding") + getNameForTooltip().toLowerCase(),
+                    MagicTxt.getString("af_hiding") + getNameForTooltip().toLowerCase(),
                     RingSystemTerrainPlugin.getVisibilityMult(fleet),
                     fleet.getStats().getDetectedRangeMod());
         }
@@ -258,12 +271,12 @@ public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
     @Override
     public String getNameForTooltip() {
         //"af_beltName" : "Asteroid Belt",
-        return getString("af_beltName");
+        return MagicTxt.getString("af_beltName");
     }
 
     @Override
     public String getNameAOrAn() {
-        return getString("an");
+        return MagicTxt.getString("an");
     }
 
     @Override
@@ -282,28 +295,28 @@ public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
         }
         //"af_impact1" : "Chance of asteroid impacts that briefly knock the fleet off course and ",
         //"af_impact2" : "may occasionally impact ships directly, dealing moderate damage.",
-        tooltip.addPara(getString("af_impact1")
-                + getString("af_impact2"), nextPad);
+        tooltip.addPara(MagicTxt.getString("af_impact1")
+                + MagicTxt.getString("af_impact2"), nextPad);
         //"af_impact3" : "Smaller fleets are usually able to avoid the heavier impacts, ",
         //"af_impact4" : "and slow-moving fleets do not risk impacts at all.",
         //"af_impact5" : "slow-moving",
-        tooltip.addPara(getString("af_impact3")
-                + getString("af_impact4"), pad,
+        tooltip.addPara(MagicTxt.getString("af_impact3")
+                        + MagicTxt.getString("af_impact4"), pad,
                 highlight,
-                getString("af_impact5")
+                MagicTxt.getString("af_impact5")
         );
 
         String stop = Global.getSettings().getControlStringForEnumName("GO_SLOW");
 
         //"af_sensor1" : "Reduces the range at which stationary or slow-moving* fleets inside it can be detected by %s.",
-        tooltip.addPara(getString("af_sensor1"), nextPad,
+        tooltip.addPara(MagicTxt.getString("af_sensor1"), nextPad,
                 highlight,
-                "" + (int) ((1f - RingSystemTerrainPlugin.getVisibilityMult(Global.getSector().getPlayerFleet())) * 100) + getString("%")
+                "" + (int) ((1f - RingSystemTerrainPlugin.getVisibilityMult(Global.getSector().getPlayerFleet())) * 100) + MagicTxt.getString("%")
         );
         //"af_sensor2" : "*Press and hold %s to stop; combine with holding the left mouse button down to move slowly. ",
         //"af_sensor3" : "A slow-moving fleet moves at a burn level of half that of its slowest ship.",
-        tooltip.addPara(getString("af_sensor2")
-                + getString("af_sensor3"), nextPad,
+        tooltip.addPara(MagicTxt.getString("af_sensor2")
+                        + MagicTxt.getString("af_sensor3"), nextPad,
                 Misc.getGrayColor(), highlight,
                 stop
         );
@@ -311,8 +324,8 @@ public class MagicAsteroidBeltTerrainPlugin extends AsteroidBeltTerrainPlugin {
         if (expanded) {
             //"af_combat1" : "Combat",
             //"af_combat2" : "Numerous asteroids present on the battlefield. Large enough to be an in-combat navigational hazard.",
-            tooltip.addSectionHeading(getString("af_combat1"), Alignment.MID, pad);
-            tooltip.addPara(getString("af_combat2"), small);
+            tooltip.addSectionHeading(MagicTxt.getString("af_combat1"), Alignment.MID, pad);
+            tooltip.addPara(MagicTxt.getString("af_combat2"), small);
         }
     }
 

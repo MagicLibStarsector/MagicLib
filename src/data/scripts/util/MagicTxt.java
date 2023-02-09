@@ -85,7 +85,7 @@ public class MagicTxt {
     }
 
     /**
-     * Takes a string with the format "This is a ==highlighted word== string." and returns {@link data.scripts.util.MagicTxt.MagicDisplayableText}.
+     * Takes a string with the format "This is a ==highlighted word== string." and returns {@link MagicDisplayableText}.
      */
     public static MagicDisplayableText createMagicDisplayableText(@NotNull String str) {
         return new MagicDisplayableText(str);

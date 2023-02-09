@@ -12,6 +12,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
+import data.scripts.util.MagicTrailObject;
 import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
@@ -31,10 +32,10 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     private static float usedCutterIDs = -1f;
 
     //Map which handles all the trails: takes in an integer (the texture) and a map of NicToyCustomTrailTrackers, identified by a unique ID which must be tracked for each source independently
-    private Map<Integer, Map<Float, NicToyCustomCampaignTrailTracker>> mainMap = new HashMap<>();
+    private Map<Integer, Map<Float, MagicCampaignTrailTracker>> mainMap = new HashMap<>();
 
     //Map similar to mainMap, but for animated trails
-    private Map<Float, NicToyCustomCampaignTrailTracker> animMap = new HashMap<>();
+    private Map<Float, MagicCampaignTrailTracker> animMap = new HashMap<>();
 
     //Map for "cutting" trails: if a trail belongs to an entity (it hasn't already been cut) its ID is here
     private Map<Integer, Map<SectorEntityToken, List<Float>>> cuttingMap = new HashMap<>();
@@ -56,9 +57,10 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             if (associatedEntity != null) {
                 associatedEntity.getContainingLocation().removeEntity(associatedEntity);
             }
-            associatedEntity = Global.getSector().getPlayerFleet().getContainingLocation().addCustomEntity("nictoy_unique_custom_trail_tracker_object", "YOU SHOULD NOT SEE THIS",
-                                                                                                           "nictoy_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
-            associatedEntity.setFixedLocation(Global.getSector().getPlayerFleet().getLocation().x, Global.getSector().getPlayerFleet().getLocation().y);
+            associatedEntity = Global.getSector().getPlayerFleet().getContainingLocation().addCustomEntity("magiclib_campaign_trail_tracker_object", "YOU SHOULD NOT SEE THIS",
+                    "magiclib_campaign_trail_custom_entity", Factions.INDEPENDENT, this);
+            associatedEntity.setFixedLocation(-100000, -100000);
+            associatedEntity.setRadius(0);
         }
 
         //Ticks the main map
@@ -162,7 +164,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberSimpleInternal(linkedEntity, ID, sprite, position, speed, angle,
-                                                                                           startSize, endSize, color, opacity, duration, additive, offsetVelocity);
+                        startSize, endSize, color, opacity, duration, additive, offsetVelocity);
             }
         }
     }
@@ -172,10 +174,10 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
         int texID = sprite.getTextureId();
         if (mainMap.get(texID) == null) {
-            mainMap.put(texID, new HashMap<Float, NicToyCustomCampaignTrailTracker>());
+            mainMap.put(texID, new HashMap<Float, MagicCampaignTrailTracker>());
         }
         if (mainMap.get(texID).get(ID) == null) {
-            mainMap.get(texID).put(ID, new NicToyCustomCampaignTrailTracker());
+            mainMap.get(texID).put(ID, new MagicCampaignTrailTracker());
         }
         if (linkedEntity != null) {
             if (cuttingMap.get(texID) == null) {
@@ -189,11 +191,6 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             }
         }
 
-        //Gives our tracker the correct LocationAPI (we'll have to guess it's the player's current location [and if that doesn't exist? don't change the location])
-        if (Global.getSector() == null || Global.getSector().getPlayerFleet() == null || Global.getSector().getPlayerFleet().getContainingLocation() == null) {
-            mainMap.get(texID).get(ID).locationAPI = Global.getSector().getPlayerFleet().getContainingLocation();
-        }
-
         //Converts our additive/non-additive option to true openGL stuff
         int srcBlend = GL_SRC_ALPHA;
         int destBlend = GL_ONE_MINUS_SRC_ALPHA;
@@ -202,9 +199,15 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             destBlend = GL_ONE;
         }
 
+        //Gives our tracker the correct LocationAPI (we'll have to guess it's the player's current location [and if that doesn't exist? don't change the location])
+        if (Global.getSector() != null && Global.getSector().getPlayerFleet() != null && Global.getSector().getPlayerFleet().getContainingLocation() != null) {
+            mainMap.get(texID).get(ID).locationAPI = Global.getSector().getPlayerFleet().getContainingLocation();
+        }
+
         //Creates the custom object we want
-        NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
-                                                                                          opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, offsetVelocity);
+        MagicTrailObject objectToAdd = new MagicTrailObject(0f, 0f, duration, startSize, endSize, 0f, 0f,
+                opacity, srcBlend, destBlend, speed, speed, color, color, angle, position, -1f, 0, offsetVelocity,
+                0f, 0f);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -279,9 +282,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAdvancedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
-                                                                                             startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
-                                                                                             inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                                                                                             offsetVelocity, locationAPICulling, locationAPI);
+                        startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                        inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                        offsetVelocity, locationAPICulling, locationAPI);
             }
         }
     }
@@ -293,10 +296,10 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         //Finds the correct maps, and ensures they are actually instantiated
         int texID = sprite.getTextureId();
         if (mainMap.get(texID) == null) {
-            mainMap.put(texID, new HashMap<Float, NicToyCustomCampaignTrailTracker>());
+            mainMap.put(texID, new HashMap<Float, MagicCampaignTrailTracker>());
         }
         if (mainMap.get(texID).get(ID) == null) {
-            mainMap.get(texID).put(ID, new NicToyCustomCampaignTrailTracker());
+            mainMap.get(texID).put(ID, new MagicCampaignTrailTracker());
         }
         if (linkedEntity != null) {
             if (cuttingMap.get(texID) == null) {
@@ -318,8 +321,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         mainMap.get(texID).get(ID).scrollSpeed = textureScrollSpeed;
 
         //Creates the custom object we want
-        NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                                                                                          opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
+        MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, 0, offsetVelocity,
+                0f, 0f);
 
         //And finally add it to the correct location in our maps
         mainMap.get(texID).get(ID).addNewTrailObject(objectToAdd);
@@ -395,9 +399,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAnimatedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
-                                                                                             startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
-                                                                                             inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
-                                                                                             offsetVelocity, locationAPICulling, locationAPI);
+                        startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                        inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                        offsetVelocity, locationAPICulling, locationAPI);
                 break;
             }
         }
@@ -409,7 +413,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                                                 Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Finds the correct maps, and ensures they are actually instantiated
         if (animMap.get(ID) == null) {
-            animMap.put(ID, new NicToyCustomCampaignTrailTracker());
+            animMap.put(ID, new MagicCampaignTrailTracker());
         }
         if (linkedEntity != null) {
             if (cuttingMapAnimated.get(linkedEntity) == null) {
@@ -433,8 +437,9 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         animMap.get(ID).currentAnimRenderTexture = texID;
 
         //Creates the custom object we want
-        NicToyCustomCampaignTrailObject objectToAdd = new NicToyCustomCampaignTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
-                                                                                          opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, offsetVelocity);
+        MagicTrailObject objectToAdd = new MagicTrailObject(inDuration, mainDuration, outDuration, startSize, endSize, startAngularVelocity, endAngularVelocity,
+                opacity, blendModeSRC, blendModeDEST, startSpeed, endSpeed, startColor, endColor, angle, position, textureLoopLength, 0, offsetVelocity,
+                0f, 0f);
 
         //And finally add it to the correct location in our maps
         animMap.get(ID).addNewTrailObject(objectToAdd);
@@ -507,7 +512,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     // ---------------------------------------- UTILITY CLASS DECLARATIONS --------------------------------------------
 
     /*-- Trail tracker class; close to how the in-combat implementation works, with the twist of keeping track of auto-culling, render layers and other minor adjustments --*/
-    private class NicToyCustomCampaignTrailTracker {
+    private class MagicCampaignTrailTracker {
         //For scrolling textures - NOTE: we always use the most recent scroll speed for the trail, if it for some reason changes mid-trail
         private float scrollingTextureOffset = 0f;
         private float scrollSpeed = 0f;
@@ -523,12 +528,12 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         //For tracking the render layer
         private CampaignEngineLayers renderLayer = CampaignEngineLayers.ABOVE;
 
-        private List<NicToyCustomCampaignTrailObject> allTrailParts = new ArrayList<>();
-        private NicToyCustomCampaignTrailObject latestTrailObject;
+        private List<MagicTrailObject> allTrailParts = new ArrayList<>();
+        private MagicTrailObject latestTrailObject;
 
 
         //Adds a new object to the trail, at the end (start visually) of our existing ones
-        private void addNewTrailObject(NicToyCustomCampaignTrailObject objectToAdd) {
+        private void addNewTrailObject(MagicTrailObject objectToAdd) {
             allTrailParts.add(objectToAdd);
         }
 
@@ -538,7 +543,8 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             clearAllDeadObjects();
 
             //Then, if we have too few segments to render properly, cancel the function
-            if (allTrailParts.size() <= 1) {
+            int size = allTrailParts.size();
+            if (size <= 1) {
                 return;
             }
 
@@ -550,24 +556,30 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
             //Otherwise, we actually render the thing
             //This part instantiates OpenGL
+            glPushMatrix();
             glEnable(GL_BLEND);
             glEnable(GL_TEXTURE_2D);
             glBlendFunc(allTrailParts.get(allTrailParts.size() - 1).blendModeSRC, allTrailParts.get(allTrailParts.size() - 1).blendModeDEST); //NOTE: uses the most recent blend mode added to the trail
             glBindTexture(GL_TEXTURE_2D, trueTextureID);
             glBegin(GL_QUADS);
 
-            //Iterate through all trail parts except the most recent one: the idea is that each part renders in relation to the *next* part
+
+            //Iterate through all trail parts except the oldest one: the idea is that each part renders in relation to the *previous* part
+            //Note that this behaviour is inverted compared to forward-propagating render (the old method)
             float texDistTracker = 0f;
-            for (int i = 0; i < allTrailParts.size() - 1; i++) {
+            float texLocator = 0f;
+            for (int i = size - 1; i > 0; i--) {
                 //First, get a handle for our parts so we can make the code shorter
-                NicToyCustomCampaignTrailObject part1 = allTrailParts.get(i);   //Current part
-                NicToyCustomCampaignTrailObject part2 = allTrailParts.get(i + 1); //Next part
+                MagicTrailObject part1 = allTrailParts.get(i);    //Current part
+                MagicTrailObject part2 = allTrailParts.get(i - 1);    //Next part
 
                 //Then, determine the corner points of both this and the next trail part
-                Vector2f point1Left = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part1.angle + 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part1.angle + 90))));
-                Vector2f point1Right = new Vector2f(part1.currentLocation.x + ((part1.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part1.angle - 90))), part1.currentLocation.y + ((part1.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part1.angle - 90))));
-                Vector2f point2Left = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part2.angle + 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part2.angle + 90))));
-                Vector2f point2Right = new Vector2f(part2.currentLocation.x + ((part2.currentSize / 2) * (float) FastTrig.cos(Math.toRadians(part2.angle - 90))), part2.currentLocation.y + ((part2.currentSize / 2) * (float) FastTrig.sin(Math.toRadians(part2.angle - 90))));
+                float partRadius = part1.currentSize * 0.5f;
+                Vector2f point1Left = MathUtils.getPointOnCircumference(part1.currentLocation, partRadius, part1.angle - 90f);
+                Vector2f point1Right = MathUtils.getPointOnCircumference(part1.currentLocation, partRadius, part1.angle + 90f);
+                partRadius = part2.currentSize * 0.5f;
+                Vector2f point2Left = MathUtils.getPointOnCircumference(part2.currentLocation, partRadius, part2.angle - 90f);
+                Vector2f point2Right = MathUtils.getPointOnCircumference(part2.currentLocation, partRadius, part2.angle + 90f);
 
                 //Saves an easy value for the distance between the current two parts
                 float partDistance = MathUtils.getDistance(part1.currentLocation, part2.currentLocation);
@@ -579,7 +591,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                     //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                     //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
                     if (part1.textureLoopLength <= 0f) {
-                        texDistTracker = (float) (i + 1) / (float) allTrailParts.size();
+                        texDistTracker = (float) (i - 1) / (float) size;
                     } else {
                         texDistTracker += partDistance / part1.textureLoopLength;
                     }
@@ -591,57 +603,65 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 float opacityMult = 1f;
                 if (i < 2) {
                     opacityMult *= ((float) i / 2f);
-                } else if (i > allTrailParts.size() - 3) {
-                    opacityMult *= ((float) allTrailParts.size() - 1f - (float) i) / 2f;
+                } else if (i > size - 3) {
+                    opacityMult *= ((float) size - 1f - (float) i) / 2f;
                 }
 
                 //Sets the current render color
                 glColor4ub((byte) part1.currentColor.getRed(), (byte) part1.currentColor.getGreen(), (byte) part1.currentColor.getBlue(), (byte) (part1.currentOpacity * opacityMult * 255));
 
+                texLocator = texDistTracker + scrollingTextureOffset;
+
                 //Sets corner 1, or the first left corner
-                glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
+                glTexCoord2f(0f, texLocator);
                 glVertex2f(point1Left.getX(), point1Left.getY());
 
                 //Sets corner 2, or the first right corner
-                glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
+                glTexCoord2f(1f, texLocator);
                 glVertex2f(point1Right.getX(), point1Right.getY());
 
                 //Change our texture distance tracker depending on looping mode
                 //  -If we have -1 as loop length, we ensure that the entire texture is used over the entire trail
                 //  -Otherwise, we adjust the texture distance upward to account for how much distance there is between our two points
                 if (part1.textureLoopLength <= 0f) {
-                    texDistTracker = (float) (i + 1) / (float) allTrailParts.size();
+                    texDistTracker = (float) (i - 1) / (float) size;
                 } else {
                     texDistTracker += partDistance / part1.textureLoopLength;
                 }
 
                 //Changes opacity slightly at beginning and end: the last and first 2 segments have lower opacity
                 opacityMult = 1f;
-                if ((i + 1) < 2) {
-                    opacityMult *= ((float) (i + 1) / 2f);
-                } else if ((i + 1) > allTrailParts.size() - 3) {
-                    opacityMult *= ((float) allTrailParts.size() - 2f - (float) i) / 2f;
+                if ((i - 1) < 2) {
+                    opacityMult *= ((float) (i - 1) / 2f);
+                } else if ((i - 1) > size - 3) {
+                    opacityMult *= ((float) size - 1f - ((float) i - 1f)) / 2f;
                 }
 
                 //Changes render color to our next segment's opacity
-                glColor4ub((byte) part2.currentColor.getRed(), (byte) part2.currentColor.getGreen(), (byte) part2.currentColor.getBlue(), (byte) (part2.currentOpacity * opacityMult * 255));
+                glColor4ub((byte) part2.currentColor.getRed(),
+                        (byte) part2.currentColor.getGreen(),
+                        (byte) part2.currentColor.getBlue(),
+                        (byte) (part2.currentOpacity * opacityMult * 255));
+
+                texLocator = texDistTracker + scrollingTextureOffset;
 
                 //Sets corner 3, or the second right corner
-                glTexCoord2f(1, texDistTracker + scrollingTextureOffset);
+                glTexCoord2f(1f, texLocator);
                 glVertex2f(point2Right.getX(), point2Right.getY());
 
                 //Sets corner 4, or the second left corner
-                glTexCoord2f(0, texDistTracker + scrollingTextureOffset);
+                glTexCoord2f(0f, texLocator);
                 glVertex2f(point2Left.getX(), point2Left.getY());
             }
 
             //And finally stops OpenGL
             glEnd();
+            glPopMatrix();
         }
 
         //Quickhand function to tick down all trail objects at once, by an equal amount of time. Also ticks texture scrolling, if we have it
         private void tickTimersInTrail(float amount) {
-            for (NicToyCustomCampaignTrailObject part : allTrailParts) {
+            for (MagicTrailObject part : allTrailParts) {
                 part.tick(amount);
             }
 
@@ -651,8 +671,8 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Quickhand function to remove all trail objects which has timed out
         private void clearAllDeadObjects() {
-            List<NicToyCustomCampaignTrailObject> toRemove = new ArrayList<NicToyCustomCampaignTrailObject>();
-            for (NicToyCustomCampaignTrailObject part : allTrailParts) {
+            List<MagicTrailObject> toRemove = new ArrayList<>();
+            for (MagicTrailObject part : allTrailParts) {
                 if (part.getSpentLifetime() >= part.getTotalLifetime()) {
                     toRemove.add(part);
                 }
@@ -660,7 +680,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
             //If there is a new trail object, the texture will scroll back to make sure they keep in the same place
             if (allTrailParts.size() > 0) {
-                NicToyCustomCampaignTrailObject currentLatestTrailObject = allTrailParts.get(allTrailParts.size() - 1);
+                MagicTrailObject currentLatestTrailObject = allTrailParts.get(allTrailParts.size() - 1);
                 if (latestTrailObject == null) {
                     latestTrailObject = currentLatestTrailObject;
                 } else if (latestTrailObject != currentLatestTrailObject) {
@@ -671,7 +691,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 }
             }
 
-            for (NicToyCustomCampaignTrailObject partToRemove : toRemove) {
+            for (MagicTrailObject partToRemove : toRemove) {
                 allTrailParts.remove(partToRemove);
             }
         }

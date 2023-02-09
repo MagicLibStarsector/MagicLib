@@ -1,10 +1,7 @@
 package data.scripts.bounty;
 
 import com.fs.starfarer.api.PluginPick;
-import com.fs.starfarer.api.campaign.BaseCampaignPlugin;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.*;
 
 import java.util.Collection;
 
@@ -24,18 +21,37 @@ public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
 
     @Override
     public PluginPick<InteractionDialogPlugin> pickInteractionDialogPlugin(SectorEntityToken interactionTarget) {
+        if (isInteractionWithActiveBounty(interactionTarget)) {
+            return new PluginPick<InteractionDialogPlugin>(new MagicBountyFleetInteractionDialogPlugin(), PickPriority.MOD_SPECIFIC);
+        } else {
+            return super.pickInteractionDialogPlugin(interactionTarget);
+        }
+    }
+
+    @Override
+    public PluginPick<BattleCreationPlugin> pickBattleCreationPlugin(SectorEntityToken opponent) {
+        if (isInteractionWithActiveBounty(opponent)) {
+            return new PluginPick<BattleCreationPlugin>(new MagicBountyBattleCreationPlugin(), PickPriority.MOD_SPECIFIC);
+        } else {
+            return super.pickBattleCreationPlugin(opponent);
+        }
+    }
+
+    /**
+     * Whether the player is interacting with a fleet whose flagship has an active bounty.
+     */
+    private static boolean isInteractionWithActiveBounty(SectorEntityToken interactionTarget) {
         Collection<ActiveBounty> bounties = MagicBountyCoordinator.getInstance().getActiveBounties().values();
 
-        // If the player is interacting with a fleet whose flagship has an active bounty.
         if (bounties.size() > 0 && interactionTarget instanceof CampaignFleetAPI) {
             for (ActiveBounty bounty : bounties) {
                 if (bounty.getFlagshipId() != null
                         && bounty.getFlagshipId().equals(((CampaignFleetAPI) interactionTarget).getFlagship().getId())) {
-                    return new PluginPick<InteractionDialogPlugin>(new MagicBountyFleetInteractionDialogPlugin(), PickPriority.MOD_SPECIFIC);
+                    return true;
                 }
             }
         }
 
-        return super.pickInteractionDialogPlugin(interactionTarget);
+        return false;
     }
 }

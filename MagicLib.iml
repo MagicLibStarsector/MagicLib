@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="starfarer.api" level="project" />
+    <orderEntry type="library" name="LazyLib" level="project" />
+    <orderEntry type="library" name="Vayra's Sector" level="project" />
+    <orderEntry type="library" name="SWP" level="application" />
+    <orderEntry type="library" name="lw_Console" level="application" />
+    <orderEntry type="module" module-name="MagicLib-Kotlin" />
+    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
+  </component>
+</module>

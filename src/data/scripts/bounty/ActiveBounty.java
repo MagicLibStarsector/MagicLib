@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-
 /**
  * Represents a bounty that has been at least viewed by the player. Can be considered an inflated/instantiated version of {@link MagicBountyData.bountyData}.
  *
@@ -96,7 +94,7 @@ public final class ActiveBounty {
     private @Nullable Float rewardCredits;
     private @Nullable Float rewardReputation;
     private @Nullable String rewardFaction;
-    private boolean isDespawning = false, hasNoIntel=false;
+    private boolean isDespawning = false, hasNoIntel = false;
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
 
     /**
@@ -143,7 +141,7 @@ public final class ActiveBounty {
         this.bountySource = bountySource;
 
         //CHECK IF THE FLEET EXIST
-        if(getFleet().getCurrentAssignment()==null){
+        if (getFleet().getCurrentAssignment() == null) {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
             systemLocation.addEntity(getFleet());
             getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
@@ -156,10 +154,11 @@ public final class ActiveBounty {
                     null);
 
             //if needed set the bounty faction to neutral with everyone but the player.
-            if(spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)){
+            if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
                 FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
-                for(FactionAPI f : Global.getSector().getAllFactions()){
-                    if(f!=bountyFaction && f!=Global.getSector().getPlayerFaction())f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                for (FactionAPI f : Global.getSector().getAllFactions()) {
+                    if (f != bountyFaction && f != Global.getSector().getPlayerFaction())
+                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
                 }
             }
         }
@@ -167,11 +166,14 @@ public final class ActiveBounty {
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
         // Add comm reply if needed
-        if(MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null){
+        if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null) {
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
         }
 
+        // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
+        // Otherwise, this would still allow ships to retreat.
+        // See https://fractalsoftworks.com/forum/index.php?topic=5061.msg294053#msg294053.
         getFleet().getMemoryWithoutUpdate().set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
         getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
         getFleet().getMemoryWithoutUpdate().set(spec.job_memKey, true);
@@ -249,7 +251,9 @@ public final class ActiveBounty {
             stage = Stage.ExpiredAfterAccepting;
             //reputation penalty
             if (hasReputationReward()) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.min(0.05f, getRewardReputation()));
+                Global.getSector().getPlayerFaction().adjustRelationship(
+                        getRewardFaction(),
+                        getFailureReputationPenalty());
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -260,7 +264,7 @@ public final class ActiveBounty {
             stage = Stage.ExpiredWithoutAccepting;
         } else if (result instanceof BountyResult.DismissedPermanently) {
             stage = Stage.Dismissed;
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 getFleet().despawn();
             }
@@ -273,7 +277,9 @@ public final class ActiveBounty {
             stage = Stage.FailedSalvagedFlagship;
             //reputation penalty
             if (hasReputationReward()) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), -Math.max(0.05f, getRewardReputation()));
+                Global.getSector().getPlayerFaction().adjustRelationship(
+                        getRewardFaction(),
+                        getFailureReputationPenalty());
             }
             //set the relevant outcome memkey
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
@@ -290,7 +296,7 @@ public final class ActiveBounty {
 
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-            if(spec.existing_target_memkey==null || spec.existing_target_memkey.isEmpty()){
+            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets if it simply expired
                 despawn();
             }
@@ -317,9 +323,9 @@ public final class ActiveBounty {
             isDespawning = true;
         }
     }
-    
-    void endIntel(){
-        if(!hasNoIntel){
+
+    void endIntel() {
+        if (!hasNoIntel) {
             MagicBountyIntel intel = getIntel();
 
             if (intel != null) {
@@ -327,34 +333,46 @@ public final class ActiveBounty {
                     intel.endAfterDelay();
                 }
             }
-            hasNoIntel=true;
+            hasNoIntel = true;
         }
     }
 
     private void runRuleScript(String scriptRuleId) {
-        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
-        boolean didCreateDialog = false;
-
-        if (dialog == null) {
-            Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
-            dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
-            didCreateDialog = true;
-        }
-
+//        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+//        boolean didCreateDialog = false;
+//
+//        if (dialog == null && Global.getCurrentState() == GameState.CAMPAIGN) {
+//            try {
+//                Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
+//                dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+//                didCreateDialog = true;
+//            } catch (Exception e) {
+//                LOG.warn("Unable to create a dialog", e);
+//            }
+//        }
+//
         boolean flagSetting = DebugFlags.PRINT_RULES_DEBUG_INFO;
 
         if (Global.getSettings().isDevMode()) {
             DebugFlags.PRINT_RULES_DEBUG_INFO = true;
         }
 
-        FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+//        if (dialog != null) {
+//            FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+//        } else {
+        try {
+            FireBest.fire(null, null, null, scriptRuleId);
+        } catch (Exception e) {
+            LOG.warn("Error running " + scriptRuleId, e);
+        }
+//        }
 
         // Turn it on for FireBest, then set it back to whatever it was.
         DebugFlags.PRINT_RULES_DEBUG_INFO = flagSetting;
 
-        if (didCreateDialog && Global.getSector().getCampaignUI().getCurrentInteractionDialog() != null) {
-            Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
-        }
+//        if (didCreateDialog && Global.getSector().getCampaignUI().getCurrentInteractionDialog() != null) {
+//            Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
+//        }
     }
 
     /**
@@ -394,6 +412,14 @@ public final class ActiveBounty {
 
     public @Nullable Float getRewardReputation() {
         return rewardReputation;
+    }
+
+    /**
+     * Rep penalty is the inverse of the reward, capped to -0.05.
+     * Or, if rep reward is negative, the rep penalty will be 0.
+     */
+    public @Nullable Float getFailureReputationPenalty() {
+        return Math.max(-0.05f, Math.min(0.00f, -getRewardReputation()));
     }
 
     public @Nullable String getRewardFaction() {
@@ -477,7 +503,7 @@ public final class ActiveBounty {
             return null;
         }
 
-        if(getSpec().job_credit_scaling<=0 || getSpec().fleet_min_FP<=0){
+        if (getSpec().job_credit_scaling <= 0 || getSpec().fleet_min_FP <= 0) {
             float rewardRoundedToNearest100 = Math.round(getSpec().job_credit_reward / 100.0) * 100;
             LOG.info(
                     String.format(
@@ -493,7 +519,7 @@ public final class ActiveBounty {
         float playerFleetScale = MagicCampaign.PlayerFleetSizeMultiplier(getSpec().fleet_min_FP) - 1;
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
 
-        if(playerFleetScale>0){
+        if (playerFleetScale > 0) {
             float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;
             float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
             float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
@@ -503,7 +529,7 @@ public final class ActiveBounty {
                             rewardRoundedToNearest100,
                             getKey(),
                             getSpec().job_credit_reward,
-                            playerFleetScale+1,
+                            playerFleetScale + 1,
                             getSpec().job_credit_scaling,
                             playerFleetScale
                     )
@@ -516,7 +542,7 @@ public final class ActiveBounty {
                             "Base reward of %sc for bounty '%s'. No scaling due to the player fleet being %s times as large as the minimum target fleet.",
                             rewardRoundedToNearest100,
                             getKey(),
-                            1+playerFleetScale
+                            1 + playerFleetScale
                     )
             );
             return rewardRoundedToNearest100;
@@ -570,7 +596,6 @@ public final class ActiveBounty {
 
     public boolean hasReputationReward() {
         return getRewardReputation() != null
-                && getRewardReputation() > 0
                 && getRewardFaction() != null
                 && !getRewardFaction().isEmpty()
                 && Global.getSector().getFaction(getRewardFaction()) != null;
@@ -613,7 +638,7 @@ public final class ActiveBounty {
     }
 
     private void addDescriptionToTextPanelInternal(Object text, Color color, float padding) {
-        if (nullStringIfEmpty(spec.job_description) != null) {
+        if (MagicTxt.nullStringIfEmpty(spec.job_description) != null) {
             String replacedString = MagicBountyUtils.replaceStringVariables(this, spec.job_description);
             String[] replacedParas = replacedString.split("/n|\\n");
 
@@ -630,7 +655,6 @@ public final class ActiveBounty {
     /**
      * The current stage of the bounty.
      * CAUTION: ORDER MATTERS.
-     *
      */
     public enum Stage {
         /**
@@ -697,23 +721,24 @@ public final class ActiveBounty {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ActiveBounty{");
-        sb.append("bountyKey='").append(bountyKey).append('\'');
-        sb.append(", fleet=").append(fleet);
-        sb.append(", fleetSpawnLocation=").append(fleetSpawnLocation);
-        sb.append(", presetShipIds=").append(presetShipIds);
-        sb.append(", spec=").append(spec);
-        sb.append(", bountyCreatedTimestamp=").append(bountyCreatedTimestamp);
-        sb.append(", captain=").append(captain);
-        sb.append(", flagshipId='").append(flagshipId).append('\'');
-        sb.append(", initialBountyFleetPoints=").append(initialBountyFleetPoints);
-        sb.append(", acceptedBountyTimestamp=").append(acceptedBountyTimestamp);
-        sb.append(", bountyResult=").append(bountyResult);
-        sb.append(", bountySource=").append(bountySource);
-        sb.append(", stage=").append(stage);
-        sb.append(", rewardCredits=").append(rewardCredits);
-        sb.append(", rewardReputation=").append(rewardReputation);
-        sb.append(", rewardFaction='").append(rewardFaction).append('\'');
-        sb.append(", isDespawning=").append(isDespawning);
+        sb.append("\nbountyKey='").append(bountyKey).append('\'');
+        sb.append(", \nfleet=").append(fleet);
+        sb.append(", \nfleetSpawnLocation=").append(fleetSpawnLocation);
+        sb.append(", \npresetShipIds=").append(presetShipIds);
+        sb.append(", \nspec=").append(spec);
+        sb.append(", \nbountyCreatedTimestamp=").append(bountyCreatedTimestamp);
+        sb.append(", \ncaptain=").append(captain);
+        sb.append(", \nflagshipId='").append(flagshipId).append('\'');
+        sb.append(", \ninitialBountyFleetPoints=").append(initialBountyFleetPoints);
+        sb.append(", \nacceptedBountyTimestamp=").append(acceptedBountyTimestamp);
+        sb.append(", \nbountyResult=").append(bountyResult);
+        sb.append(", \nbountySource=").append(bountySource);
+        sb.append(", \nstage=").append(stage);
+        sb.append(", \nrewardCredits=").append(rewardCredits);
+        sb.append(", \nrewardReputation=").append(rewardReputation);
+        sb.append(", \nrewardFaction='").append(rewardFaction).append('\'');
+        sb.append(", \nisDespawning=").append(isDespawning);
+        sb.append(", \nhasNoIntel=").append(hasNoIntel);
         sb.append('}');
         return sb.toString();
     }

@@ -10,22 +10,22 @@ import java.awt.*;
 
 public class MagicTrailObject {
     //Private, non-varying values
-    private float inDuration = 0f;
-    private float mainDuration = 0f;
-    private float outDuration = 0f;
-    private float startSize = 0f;
-    private float endSize = 0f;
-    private float startAngleVelocity = 0f;
-    private float endAngleVelocity = 0f;
-    private float mainOpacity = 0f;
-    private float startSpeed = 0f;
-    private float endSpeed = 0f;
-    private Color startColor = new Color(255, 255, 255);
-    private Color endColor = new Color(255, 255, 255);
-    private Vector2f offsetVelocity = new Vector2f(0f, 0f);
-    private float sizePulseWidth = 0f;
-    private float sizePulseCount = 0;
-    
+    protected float inDuration = 0f;
+    protected float mainDuration = 0f;
+    protected float outDuration = 0f;
+    protected float startSize = 0f;
+    protected float endSize = 0f;
+    protected float startAngleVelocity = 0f;
+    protected float endAngleVelocity = 0f;
+    protected float mainOpacity = 0f;
+    protected float startSpeed = 0f;
+    protected float endSpeed = 0f;
+    protected Color startColor = new Color(255, 255, 255);
+    protected Color endColor = new Color(255, 255, 255);
+    protected Vector2f offsetVelocity = new Vector2f(0f, 0f);
+    protected float sizePulseWidth = 0f;
+    protected float sizePulseCount = 0;
+
     //Public, non-varying values
     public int blendModeSRC = 0;
     public int blendModeDEST = 0;
@@ -50,8 +50,8 @@ public class MagicTrailObject {
             float startAngleVelocity, float endAngleVelocity,
             float mainOpacity, int blendModeSRC, int blendModeDEST,
             float startSpeed, float endSpeed,
-            Color startColor, Color endColor, 
-            float angle, Vector2f spawnLocation, 
+            Color startColor, Color endColor,
+            float angle, Vector2f spawnLocation,
             float textureLoopLength, float textureoffset,
             Vector2f offsetVelocity,
             float sizePulseWidth, float sizePulseCount) {
@@ -148,25 +148,25 @@ public class MagicTrailObject {
 
     public MagicTrailObject copy() {
         return new MagicTrailObject(inDuration,
-                                    mainDuration,
-                                    outDuration,
-                                    startSize,
-                                    endSize,
-                                    startAngleVelocity,
-                                    endAngleVelocity,
-                                    mainOpacity,
-                                    blendModeSRC,
-                                    blendModeDEST,
-                                    startSpeed,
-                                    endSpeed,
-                                    startColor,
-                                    endColor,
-                                    angle,
-                                    currentLocation,
-                                    textureLoopLength,
-                                    textureOffset,
-                                    offsetVelocity,
-                                    sizePulseWidth,
-                                    sizePulseCount);
+                mainDuration,
+                outDuration,
+                startSize,
+                endSize,
+                startAngleVelocity,
+                endAngleVelocity,
+                mainOpacity,
+                blendModeSRC,
+                blendModeDEST,
+                startSpeed,
+                endSpeed,
+                startColor,
+                endColor,
+                angle,
+                currentLocation,
+                textureLoopLength,
+                textureOffset,
+                offsetVelocity,
+                sizePulseWidth,
+                sizePulseCount);
     }
 }

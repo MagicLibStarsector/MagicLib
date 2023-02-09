@@ -4,9 +4,9 @@
 		"defaultRadius":85, # used if radius<0 in addCustomEntity()
 		"iconWidth":1,
 		"iconHeight":1,
-		"renderShadow":false, #true,
+		"renderShadow":false,
 		"useLightColor":true,
-		"showInCampaign":false,
+		"showInCampaign":true,
 		"showIconOnMap":false,
 		"showNameOnMap":false,
 		"scaleNameWithZoom":false,

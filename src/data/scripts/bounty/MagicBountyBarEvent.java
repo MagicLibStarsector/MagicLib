@@ -1,20 +1,17 @@
 package data.scripts.bounty;
 
 import com.fs.starfarer.api.Global;
-//import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-//import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import data.scripts.util.MagicPaginatedBarEvent;
-import data.scripts.util.MagicSettings;
-import data.scripts.util.MagicVariables;
+import data.scripts.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
@@ -23,9 +20,6 @@ import java.util.List;
 import java.util.*;
 
 import static com.fs.starfarer.api.util.Misc.random;
-import static data.scripts.util.MagicCampaign.RelativeEffectiveStrength;
-import static data.scripts.util.MagicTxt.getString;
-import static data.scripts.util.MagicTxt.nullStringIfEmpty;
 import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 
 /**
@@ -49,11 +43,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     public void addPromptAndOption(InteractionDialogAPI dialog, Map<String, MemoryAPI> memoryMap) {
         // Display the text that will appear when the player first enters the bar and looks around
         //"A subroutine from your implant informs you that this establishment is broadcasting an informal job board."
-        dialog.getTextPanel().addPara(getString("mb_greeting"));
+        dialog.getTextPanel().addPara(MagicTxt.getString("mb_greeting"));
 
         // Display the option that lets the player choose to investigate our bar event
         //"Connect to the local unsanctioned bounty board."
-        dialog.getOptionPanel().addOption(getString("mb_connect"), this);
+        dialog.getOptionPanel().addOption(MagicTxt.getString("mb_connect"), this);
     }
 
     /**
@@ -113,10 +107,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     MagicBountyData.bountyData bounty = MagicBountyData
                             .getBountyData(bountyKey);
                     //"Accepted job: "
-                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_accepted") + bounty.job_name);
+                    text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_accepted") + bounty.job_name);
 
                     ActiveBounty activeBounty = bountyCoordinator.getActiveBounty(bountyKey);
-                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), (float) bounty.job_reputation_reward, bounty.job_forFaction);
+                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), bounty.job_reputation_reward, bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -127,12 +121,12 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 // Player chose to dismiss a bounty (but needs to confirm the dismissal).
                 try {
                     String bountyKey = data.replaceFirst(dismissJobKeyPrefix, "");
-                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_permDismissConfirm"));
+                    text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_permDismissConfirm"));
                     options.clear();
                     optionsAllPages.clear();
-                    addOption(getString("mb_permDismissConfirmOpt"), confirmDismissJobKeyPrefix + bountyKey, null, null);
-                    addOption(getString("mb_returnBounty"), getBountyDetailsOptionKey(bountyKey), null, null);
-                    addOption(getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
+                    addOption(MagicTxt.getString("mb_permDismissConfirmOpt"), confirmDismissJobKeyPrefix + bountyKey, null, null);
+                    addOption(MagicTxt.getString("mb_returnBounty"), getBountyDetailsOptionKey(bountyKey), null, null);
+                    addOption(MagicTxt.getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                 } catch (Exception e) {
                     Global.getLogger(this.getClass()).error(e.getMessage(), e);
                 }
@@ -142,7 +136,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     String bountyKey = data.replaceFirst(confirmDismissJobKeyPrefix, "");
                     MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey).endBounty(new ActiveBounty.BountyResult.DismissedPermanently());
                     removeBountyFromBoard(bountyKey);
-                    text.addPara("%s", Misc.getHighlightColor(), getString("mb_permDismissConfirmed"));
+                    text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_permDismissConfirmed"));
                     options.clear();
                     optionsAllPages.clear();
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -174,10 +168,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //FLAVOR TEXT
                             activeBounty.addDescriptionToTextPanel(text);
-                            
+
                             //illustration panel
                             if (bounty.job_show_captain) {
-                                //diplaying the captain takes priority
+                                //displaying the captain takes priority
                                 dialog.getVisualPanel().showPersonInfo(activeBounty.getFleet().getCommander());
 //                            } else if(bounty.job_show_fleet != MagicBountyData.ShowFleet.None && bounty.job_show_fleet != MagicBountyData.ShowFleet.Text){
 //                                //displaying the flagship comes in second if the fleet is visible
@@ -186,34 +180,35 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 //otherwise, just keep the board illustration
                                 dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
                             }
-                            
+
                             //TEST TO ADD LOCATION MAP
-                            if (bounty.job_show_distance== MagicBountyData.ShowDistance.Exact){
-                                dialog.getVisualPanel().showMapMarker(
-                                        activeBounty.getFleetSpawnLocation(), 
-					null,
-                                        null, 
-					false,
-                                        null,
-                                        null,
-                                        null
-                                );
-                            } 
-                            if (bounty.job_show_distance== MagicBountyData.ShowDistance.Vanilla
-                                    ||bounty.job_show_distance== MagicBountyData.ShowDistance.VanillaDistance ){
-                                dialog.getVisualPanel().showMapMarker(
-                                        activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor(), 
-					null,
-                                        null, 
-					false,
-                                        null,
-                                        null,
-                                        null
-                                );
+                            SectorEntityToken arrowTarget = null;
+                            switch (bounty.job_show_distance) {
+                                case Exact:
+                                    arrowTarget = activeBounty.getFleetSpawnLocation();
+                                    break;
+                                case System:
+                                    arrowTarget = activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor();
+                                    break;
+                                case Vanilla:
+                                case VanillaDistance:
+                                    // Can't find a way to get a Constellation SectorEntityToken to display here,
+                                    // so show nothing instead of the exact system (which is supposed to be obscured from the player).
+                                    break;
                             }
-                            
-                            addOption(getString("mb_continue"), getBountyDetailsOptionKey(key), null, null);
-                            addOption(getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
+
+                            dialog.getVisualPanel().showMapMarker(
+                                    arrowTarget,
+                                    null,
+                                    null,
+                                    false,
+                                    null,
+                                    null,
+                                    null
+                            );
+
+                            addOption(MagicTxt.getString("mb_continue"), getBountyDetailsOptionKey(key), null, null);
+                            addOption(MagicTxt.getString("mb_returnBoard"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                         } else if (getBountyDetailsOptionKey(key).equals(optionData)) {
 
                             //HVB STYLE TARGET DESCRIPTION
@@ -225,24 +220,24 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //OFFERING FACTION
 
-                            if (bounty.job_show_captain == false && bounty.job_show_fleet == MagicBountyData.ShowFleet.None) {
+                            if (!bounty.job_show_captain && bounty.job_show_fleet == MagicBountyData.ShowFleet.None) {
                                 //"Posted by %s."
                                 if (bounty.job_forFaction != null) {
                                     FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
-                                    text.addPara(getString("mb_from"), faction.getBaseUIColor(), faction.getDisplayNameWithArticle());
+                                    text.addPara(MagicTxt.getString("mb_from"), faction.getBaseUIColor(), faction.getDisplayNameWithArticle());
                                 } else {
-                                    text.addPara(getString("mb_from"), Misc.getHighlightColor(), getString("mb_unknown"));
+                                    text.addPara(MagicTxt.getString("mb_from"), Misc.getHighlightColor(), MagicTxt.getString("mb_unknown"));
                                 }
                             } else {
                                 //"Posted by %s, against %s."
                                 if (bounty.job_forFaction != null) {
                                     FactionAPI faction = Global.getSector().getFaction(bounty.job_forFaction);
                                     FactionAPI target = activeBounty.getFleet().getFaction();
-                                    text.addPara(getString("mb_fromAgainst"), Misc.getHighlightColor(), faction.getDisplayNameWithArticle(), target.getDisplayNameWithArticle());
+                                    text.addPara(MagicTxt.getString("mb_fromAgainst"), Misc.getHighlightColor(), faction.getDisplayNameWithArticle(), target.getDisplayNameWithArticle());
                                     text.setHighlightColorsInLastPara(faction.getBaseUIColor(), target.getBaseUIColor());
                                 } else {
                                     FactionAPI target = activeBounty.getFleet().getFaction();
-                                    text.addPara(getString("mb_fromAgainst"), Misc.getHighlightColor(), getString("mb_unknown"), target.getDisplayNameWithArticle());
+                                    text.addPara(MagicTxt.getString("mb_fromAgainst"), Misc.getHighlightColor(), MagicTxt.getString("mb_unknown"), target.getDisplayNameWithArticle());
                                     text.setHighlightColorsInLastPara(Misc.getHighlightColor(), target.getBaseUIColor());
                                 }
                             }
@@ -251,13 +246,13 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             Float creditReward = activeBounty.calculateCreditReward();
                             if (creditReward != null) {
                                 //"Reward: %s"
-                                text.addPara(getString("mb_credits"), Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));
+                                text.addPara(MagicTxt.getString("mb_credits"), Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));
                             }
 
                             //DEADLINE
                             if (bounty.job_deadline > 0) {
                                 //"Time limit: %s days"
-                                text.addPara(getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
+                                text.addPara(MagicTxt.getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                             }
 
                             //DISTANCE
@@ -265,22 +260,30 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 switch (bounty.job_show_distance) {
                                     case Vague:
                                         float distance = activeBounty.getFleetSpawnLocation().getContainingLocation().getLocation().length();
-                                        String vague = getString("mb_distance_core");
+                                        String vague = MagicTxt.getString("mb_distance_core");
                                         if (distance > MagicVariables.getSectorSize() * 0.66f) {
-                                            vague = getString("mb_distance_far");
+                                            vague = MagicTxt.getString("mb_distance_far");
                                         } else if (distance > MagicVariables.getSectorSize() * 0.33f) {
-                                            vague = getString("mb_distance_close");
+                                            vague = MagicTxt.getString("mb_distance_close");
                                         }
-                                        text.addPara(getString("mb_distance_vague"),
+                                        text.addPara(MagicTxt.getString("mb_distance_vague"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
                                                 vague);
                                         break;
 
                                     case Distance:
-                                        text.addPara(getString("mb_distance"),
+                                        text.addPara(MagicTxt.getString("mb_distance"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
+                                                Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
+                                        break;
+
+                                    case System:
+                                        text.addPara(MagicTxt.getString("mb_distance_system_bar"),
+                                                Misc.getTextColor(),
+                                                Misc.getHighlightColor(),
+                                                activeBounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType(),
                                                 Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                         break;
 
@@ -289,7 +292,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         break;
 
                                     case VanillaDistance:
-                                        text.addPara(MagicBountyUtils.createLocationEstimateText(activeBounty) + " " + getString("mb_distance"),
+                                        text.addPara(MagicBountyUtils.createLocationEstimateText(activeBounty) + " " + MagicTxt.getString("mb_distance"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
                                                 Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
@@ -310,44 +313,44 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             if (bounty.job_show_type) {
                                 switch (bounty.job_type) {
                                     case Assassination:
-                                        text.addPara(getString("mb_type"),
+                                        text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
-                                                getString("mb_type_assassination1"), getString("mb_type_assassination2")
+                                                MagicTxt.getString("mb_type_assassination1"), MagicTxt.getString("mb_type_assassination2")
                                         );
                                         break;
                                     case Destruction:
-                                        text.addPara(getString("mb_type"),
+                                        text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
-                                                getString("mb_type_destruction1"), getString("mb_type_destruction2")
+                                                MagicTxt.getString("mb_type_destruction1"), MagicTxt.getString("mb_type_destruction2")
                                         );
                                         break;
                                     case Obliteration:
-                                        text.addPara(getString("mb_type"),
+                                        text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
-                                                getString("mb_type_obliteration1"), getString("mb_type_obliteration2")
+                                                MagicTxt.getString("mb_type_obliteration1"), MagicTxt.getString("mb_type_obliteration2")
                                         );
                                         break;
                                     case Neutralisation:
-                                        text.addPara(getString("mb_type"),
+                                        text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
-                                                getString("mb_type_neutralisation1"), getString("mb_type_neutralisation2") + Math.round(100 * MagicSettings.getFloat(MAGICLIB_ID, "bounty_neutralisationThreshold")) + getString("mb_type_neutralisation3")
+                                                MagicTxt.getString("mb_type_neutralisation1"), MagicTxt.getString("mb_type_neutralisation2") + Math.round(100 * MagicSettings.getFloat(MAGICLIB_ID, "bounty_neutralisationThreshold")) + MagicTxt.getString("mb_type_neutralisation3")
                                         );
                                         break;
                                 }
                             }
 
                             //TARGET CAPTAIN
-                            if(
+                            if (
                                     bounty.job_show_fleet != MagicBountyData.ShowFleet.None //fleet shouldn't be displayed
-                                    && 
-                                    bounty.job_show_fleet != MagicBountyData.ShowFleet.Text //only text should be displayed
-                                    && 
-                                    activeBounty.getFleet().getFlagship().getVariant().hasTag(Tags.SHIP_LIMITED_TOOLTIP) //Flagship shouldn't get displayed
-                                    ){
+                                            &&
+                                            bounty.job_show_fleet != MagicBountyData.ShowFleet.Text //only text should be displayed
+                                            &&
+                                            activeBounty.getFleet().getFlagship().getVariant().hasTag(Tags.SHIP_LIMITED_TOOLTIP) //Flagship shouldn't get displayed
+                            ) {
                                 //displaying the flagship takes priority if possible
                                 dialog.getVisualPanel().showFleetMemberInfo(activeBounty.getFleet().getFlagship());
                             } else if (bounty.job_show_captain) {
@@ -379,9 +382,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //DIFFICULTY
                             if (
-                                    bounty.job_difficultyDescription != null 
-                                    && bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentAuto"))
-                                    ){
+                                    bounty.job_difficultyDescription != null
+                                            && bounty.job_difficultyDescription.equals(MagicTxt.getString("mb_threatAssesmentAuto"))
+                            ) {
                                 /*
                                 int playerFleetStrength = Math.round(Global.getSector().getPlayerFleet().getEffectiveStrength());
                                 float bountyFleetStrength = activeBounty.getFleet().getEffectiveStrength();
@@ -409,38 +412,38 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 } else {
                                     dangerStringPhrase = getString("mb_threatLevel0"); 
                                 }
-                                */     
-                                
-                                float threatLevel = RelativeEffectiveStrength(activeBounty.getFleet());       
-                                       
+                                */
+
+                                float threatLevel = MagicCampaign.RelativeEffectiveStrength(activeBounty.getFleet());
+
                                 String dangerStringPhrase;
-                                                                                    //"an extreme danger"
-                                       if (threatLevel < 0.5f) {
-                                    dangerStringPhrase = getString("mb_threatLevel6");
-                                                                                    //"a deadly peril"
+                                //"an extreme danger"
+                                if (threatLevel < 0.5f) {
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel6");
+                                    //"a deadly peril"
                                 } else if (threatLevel < 0.70f) {
-                                    dangerStringPhrase = getString("mb_threatLevel5"); 
-                                                                                    //"a significant challenge"
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel5");
+                                    //"a significant challenge"
                                 } else if (threatLevel < 1.85f) {
-                                    dangerStringPhrase = getString("mb_threatLevel4"); 
-                                                                                    //"a moderate hazard"
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel4");
+                                    //"a moderate hazard"
                                 } else if (threatLevel < 1.00f) {
-                                    dangerStringPhrase = getString("mb_threatLevel3"); 
-                                                                                    //"a minor threat"
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel3");
+                                    //"a minor threat"
                                 } else if (threatLevel < 1.15f) {
-                                    dangerStringPhrase = getString("mb_threatLevel2"); 
-                                                                                    //"a negligible inconvenience" 
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel2");
+                                    //"a negligible inconvenience"
                                 } else if (threatLevel < 1.3f) {
-                                    dangerStringPhrase = getString("mb_threatLevel1"); 
-                                                                                    //"no risk whatsoever" 
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel1");
+                                    //"no risk whatsoever"
                                 } else {
-                                    dangerStringPhrase = getString("mb_threatLevel0"); 
-                                }      
-                                 
+                                    dangerStringPhrase = MagicTxt.getString("mb_threatLevel0");
+                                }
+
                                 //"Your intelligence officer informs you that the target poses "
-                                text.addPara(getString("mb_threat1") + getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);
-                            } else if (nullStringIfEmpty(bounty.job_difficultyDescription) != null
-                                    && !bounty.job_difficultyDescription.equals(getString("mb_threatAssesmentNone"))) {
+                                text.addPara(MagicTxt.getString("mb_threat1") + MagicTxt.getString("mb_threat2"), Misc.getHighlightColor(), dangerStringPhrase);
+                            } else if (MagicTxt.nullStringIfEmpty(bounty.job_difficultyDescription) != null
+                                    && !bounty.job_difficultyDescription.equals(MagicTxt.getString("mb_threatAssesmentNone"))) {
                                 text.addPara(bounty.job_difficultyDescription);
                             }
 
@@ -456,14 +459,14 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         activeBounty.getPresetShipsInFleet()
                                 );
                             }
-                            
+
                             options.clear();
                             optionsAllPages.clear();
                             addOption(bounty.job_pick_option != null && !bounty.job_pick_option.isEmpty()
                                     ? bounty.job_pick_option
-                                    : getString("mb_accept"), acceptJobKeyPrefix + key, null, null);
-                            addOption(getString("mb_permDismissOpt"), dismissJobKeyPrefix + key, null, null);
-                            addOption(getString("mb_return"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
+                                    : MagicTxt.getString("mb_accept"), acceptJobKeyPrefix + key, null, null);
+                            addOption(MagicTxt.getString("mb_permDismissOpt"), dismissJobKeyPrefix + key, null, null);
+                            addOption(MagicTxt.getString("mb_return"), OptionId.BACK_TO_BOARD, null, Keyboard.KEY_ESCAPE);
                         }
                     }
                 }
@@ -475,17 +478,17 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
     private void showBountyBoard(MagicBountyCoordinator instance, TextPanelAPI text) {
         options.clear();
-        
+
 //        InteractionDialogImageVisual visual = new InteractionDialogImageVisual("graphics/magic/icons/ml_bountyBoard.png", 128, 128);
 //        visual.setShowRandomSubImage(false);
 //        dialog.getVisualPanel().showImageVisual(visual);
         dialog.getVisualPanel().showImagePortion("intel", "magicBoard", 128, 128, 0, 0, 256, 256);
-        
+
 //        dialog.getVisualPanel().saveCurrentVisual();                
         refreshBounties(market);
 
         //"jobs are available on the bounty board."
-        text.addPara("%s " + (keysOfBountiesToShow.size() == 1 ? getString("mb_job") : getString("mb_jobs")) + getString("mb_available"),
+        text.addPara("%s " + (keysOfBountiesToShow.size() == 1 ? MagicTxt.getString("mb_job") : MagicTxt.getString("mb_jobs")) + MagicTxt.getString("mb_available"),
                 Misc.getHighlightColor(),
                 Integer.toString(keysOfBountiesToShow.size()));
         if (Global.getSettings().isDevMode()) {
@@ -514,7 +517,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
             }
         }
         //"Close the board."
-        addOptionAllPages(getString("mb_close"), OptionId.CLOSE, getString("mb_closed"), Keyboard.KEY_ESCAPE);
+        addOptionAllPages(MagicTxt.getString("mb_close"), OptionId.CLOSE, MagicTxt.getString("mb_closed"), Keyboard.KEY_ESCAPE);
     }
 
     private void removeBountyFromBoard(String bountyKey) {
@@ -608,7 +611,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 int num = ships.size();
                 if (num < 5) {
                     num = 5;
-                    info.addPara(getString("mb_fleet6"),
+                    info.addPara(MagicTxt.getString("mb_fleet6"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor(),
                             "" + num
@@ -618,14 +621,14 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet5"),
+                info.addPara(MagicTxt.getString("mb_fleet5"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
                         "" + num
                 );
             case Flagship:
                 //show the flagship
-                info.addPara(getString("mb_fleet0") + getString("mb_fleet"));
+                info.addPara(MagicTxt.getString("mb_fleet0") + MagicTxt.getString("mb_fleet"));
                 info.beginTooltip().addShipList(
                         columns,
                         1,
@@ -638,7 +641,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 break;
             case FlagshipText:
                 //show the flagship
-                info.addPara(getString("mb_fleet0") + getString("mb_fleet"));
+                info.addPara(MagicTxt.getString("mb_fleet0") + MagicTxt.getString("mb_fleet"));
                 info.beginTooltip().addShipList(
                         columns,
                         1,
@@ -653,7 +656,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 num = ships.size() - 1;
                 num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
                 if (num < 5) {
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
@@ -662,7 +665,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet3"),
+                info.addPara(MagicTxt.getString("mb_fleet3"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
                         "" + num
@@ -671,7 +674,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
             case Preset:
                 //show the preset fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
+                info.addPara(MagicTxt.getString("mb_fleet1") + MagicTxt.getString("mb_fleet"));
 
                 info.beginTooltip().addShipList(
                         columns,
@@ -686,7 +689,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
             case PresetText:
                 //show the preset fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
+                info.addPara(MagicTxt.getString("mb_fleet1") + MagicTxt.getString("mb_fleet"));
                 List<FleetMemberAPI> toShow = preset;
                 info.beginTooltip().addShipList(
                         columns,
@@ -701,7 +704,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 num = ships.size() - toShow.size();
                 num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
                 if (num < 5) {
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
@@ -710,7 +713,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet3"),
+                info.addPara(MagicTxt.getString("mb_fleet3"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
                         "" + num
@@ -719,7 +722,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
             case Vanilla:
                 //show the Flagship and the 6 biggest ships in the fleet
-                info.addPara(getString("mb_fleet1") + getString("mb_fleet"));
+                info.addPara(MagicTxt.getString("mb_fleet1") + MagicTxt.getString("mb_fleet"));
 
                 //there are less than 7 ships total, all will be shown
                 if (ships.size() <= columns) {
@@ -747,7 +750,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             10f
                     );
                     info.addTooltip();
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
@@ -782,7 +785,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 num = ships.size() - columns;
                 num = Math.round((float) num * (1f + random.nextFloat() * 0.5f));
                 if (num < 5) {
-                    info.addPara(getString("mb_fleet4"),
+                    info.addPara(MagicTxt.getString("mb_fleet4"),
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
                     );
@@ -791,7 +794,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 else if (num < 20) num = 10;
                 else if (num < 30) num = 20;
                 else num = 30;
-                info.addPara(getString("mb_fleet3"),
+                info.addPara(MagicTxt.getString("mb_fleet3"),
                         Misc.getTextColor(),
                         Misc.getHighlightColor(),
                         "" + num
@@ -799,7 +802,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 break;
             case All:
                 //show the full fleet
-                info.addPara(getString("mb_fleet2") + getString("mb_fleet"));
+                info.addPara(MagicTxt.getString("mb_fleet2") + MagicTxt.getString("mb_fleet"));
                 toShow = new ArrayList<>();
                 //add flagship first
                 for (FleetMemberAPI m : ships) {
