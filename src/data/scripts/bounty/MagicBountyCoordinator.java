@@ -96,7 +96,11 @@ public final class MagicBountyCoordinator {
                                 timestampSinceBountyCreated / MILLIS_PER_DAY,
                                 entry.getValue().getSpec().job_name));
                 entry.getValue().endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
-                iterator.remove();
+                try {
+                    iterator.remove();
+                } catch (Exception e) {
+                    LOG.error("Error removing bounty " + entry.getKey(), e);
+                }
             } else if (entry.getValue().getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
                     && entry.getValue().getIntel() == null) {
                 // Remove bounties that have completed and the intel has timed out.

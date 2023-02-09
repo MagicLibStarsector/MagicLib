@@ -1,6 +1,5 @@
 package data.scripts.bounty;
 
-import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
@@ -339,37 +338,41 @@ public final class ActiveBounty {
     }
 
     private void runRuleScript(String scriptRuleId) {
-        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
-        boolean didCreateDialog = false;
-
-        if (dialog == null && Global.getCurrentState() == GameState.CAMPAIGN) {
-            try {
-                Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
-                dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
-                didCreateDialog = true;
-            } catch (Exception e) {
-                LOG.warn("Unable to create a dialog", e);
-            }
-        }
-
+//        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+//        boolean didCreateDialog = false;
+//
+//        if (dialog == null && Global.getCurrentState() == GameState.CAMPAIGN) {
+//            try {
+//                Global.getSector().getCampaignUI().showInteractionDialog(Global.getSector().getPlayerFleet());
+//                dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+//                didCreateDialog = true;
+//            } catch (Exception e) {
+//                LOG.warn("Unable to create a dialog", e);
+//            }
+//        }
+//
         boolean flagSetting = DebugFlags.PRINT_RULES_DEBUG_INFO;
 
         if (Global.getSettings().isDevMode()) {
             DebugFlags.PRINT_RULES_DEBUG_INFO = true;
         }
 
-        if (dialog != null) {
-            FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
-        } else {
+//        if (dialog != null) {
+//            FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+//        } else {
+        try {
             FireBest.fire(null, null, null, scriptRuleId);
+        } catch (Exception e) {
+            LOG.warn("Error running " + scriptRuleId, e);
         }
+//        }
 
         // Turn it on for FireBest, then set it back to whatever it was.
         DebugFlags.PRINT_RULES_DEBUG_INFO = flagSetting;
 
-        if (didCreateDialog && Global.getSector().getCampaignUI().getCurrentInteractionDialog() != null) {
-            Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
-        }
+//        if (didCreateDialog && Global.getSector().getCampaignUI().getCurrentInteractionDialog() != null) {
+//            Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
+//        }
     }
 
     /**
