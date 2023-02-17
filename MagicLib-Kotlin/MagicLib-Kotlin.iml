@@ -9,8 +9,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="LazyLib" level="project" />
     <orderEntry type="library" name="starfarer.api" level="project" />
-    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
     <orderEntry type="library" name="LazyLib-Kotlin" level="application" />
     <orderEntry type="module" module-name="MagicLib" />
+    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
   </component>
 </module>

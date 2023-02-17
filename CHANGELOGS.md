@@ -1,5 +1,17 @@
 MagicLib
 
+0.46.1
+
+**Other**
+  - Added HMI themes to blacklist so that they are considered "already occupied".
+  - Reduced some logspam with devmode on (error -> info/warn).
+**MagicCampaign**
+  - Added `createCaptainBuilder` as a replacement to `createCaptain` (non-breaking change).
+**MagicBounty**
+  - List Requirements command now shows `trigger_memKeys_none`.
+**Kotlin**
+  - Added `prepareShipForRecovery` extension.
+
 0.46.0 - (the first Wisp release 🤞)
 
 **Other**

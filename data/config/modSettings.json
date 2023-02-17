@@ -53,7 +53,9 @@
 
 		"merged_themes_blacklist":[
 			#adds custom system themes to the generic "theme_already_occupied" blacklist umbrella that is used by MagicBounties and other campaign scripts
+			# Seeker
 			"theme_plaguebearers",
+			# DME
 			"theme_breakers",
 			"theme_breakers_main",
 			"theme_breakers_secondary",
@@ -63,6 +65,7 @@
 			"theme_breakers_resurgent",
 			"theme_breakers_homeworld",
 
+			# Magellan
 			"theme_magellan_leveller",
 			"theme_magellan_leveller_home_nebula",
 
@@ -70,6 +73,13 @@
 			"theme_oci_small",
 			"theme_oci_large",
 			"theme_oci_core",
+
+			# HMI
+			"theme_domres",
+			"theme_hmi_nightmare",
+			"theme_hmi_mess_remnant",
+			"theme_messrem",
+			"theme_domresboss",
 		],
 		"bounty_market_blacklist":[
 			#Markets that for some reason have a regular bar but should NOT offer any job

@@ -125,7 +125,7 @@ public class MagicFleetBuilder {
     }
 
     /**
-     * Can be null for a random captain, otherwise use MagicCampaign.createCaptain()
+     * Can be null for a random captain, otherwise use MagicCampaign.createCaptainBuilder()
      */
     public MagicFleetBuilder setCaptain(@Nullable PersonAPI captain) {
         this.captain = captain;

@@ -315,45 +315,41 @@ public final class MagicBountyCoordinator {
                 return null;
             }
 
-            PersonAPI captain = MagicCampaign.createCaptain(
+            PersonAPI captain = MagicCampaign.createCaptainBuilder(MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction))
                     // because apparently putting null in the json shows up as "null", a string...
-                    spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"),
-                    spec.target_aiCoreId,
-                    MagicTxt.nullStringIfEmpty(spec.target_first_name),
-                    MagicTxt.nullStringIfEmpty(spec.target_last_name),
-                    MagicTxt.nullStringIfEmpty(spec.target_portrait),
-                    spec.target_gender,
-                    MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction),
-                    MagicTxt.nullStringIfEmpty(spec.target_rank),
-                    MagicTxt.nullStringIfEmpty(spec.target_post),
-                    MagicTxt.nullStringIfEmpty(spec.target_personality),
-                    spec.target_level,
-                    spec.target_elite_skills,
-                    spec.target_skill_preference,
-                    spec.target_skills
-            );
+                    .setIsAI(spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"))
+                    .setAICoreType(spec.target_aiCoreId)
+                    .setFirstName(MagicTxt.nullStringIfEmpty(spec.target_first_name))
+                    .setLastName(MagicTxt.nullStringIfEmpty(spec.target_last_name))
+                    .setPortraitId(MagicTxt.nullStringIfEmpty(spec.target_portrait))
+                    .setGender(spec.target_gender)
+                    .setRankId(MagicTxt.nullStringIfEmpty(spec.target_rank))
+                    .setPostId(MagicTxt.nullStringIfEmpty(spec.target_post))
+                    .setPersonality(MagicTxt.nullStringIfEmpty(spec.target_personality))
+                    .setLevel(spec.target_level)
+                    .setEliteSkillsOverride(spec.target_elite_skills)
+                    .setSkillPreference(spec.target_skill_preference)
+                    .setSkillLevels(spec.target_skills)
+                    .create();
 
-            fleet = MagicCampaign.createFleet(
-                    spec.fleet_name,
-                    spec.fleet_faction,
-                    FleetTypes.PERSON_BOUNTY_FLEET,
-                    spec.fleet_flagship_name,
-                    spec.fleet_flagship_variant,
-                    false,
-                    spec.fleet_flagship_autofit,
-                    captain,
-                    spec.fleet_preset_ships,
-                    spec.fleet_preset_autofit,
-                    calculateDesiredFP(spec),
-                    spec.fleet_composition_faction,
-                    spec.fleet_composition_quality,
-                    null,
-                    spec.fleet_behavior,
-                    null,
-                    false,
-                    spec.fleet_transponder,
-                    MagicVariables.VARIANT_PATH
-            );
+            fleet = MagicCampaign.createFleetBuilder()
+                    .setFleetName(spec.fleet_name)
+                    .setFleetFaction(spec.fleet_faction)
+                    .setFleetType(FleetTypes.PERSON_BOUNTY_FLEET)
+                    .setFlagshipName(spec.fleet_flagship_name)
+                    .setFlagshipVariant(spec.fleet_flagship_variant)
+                    .setFlagshipAutofit(spec.fleet_flagship_autofit)
+                    .setCaptain(captain)
+                    .setSupportFleet(spec.fleet_preset_ships)
+                    .setSupportAutofit(spec.fleet_preset_autofit)
+                    .setMinFP(calculateDesiredFP(spec))
+                    .setReinforcementFaction(spec.fleet_composition_faction)
+                    .setQualityOverride(spec.fleet_composition_quality)
+                    .setAssignment(spec.fleet_behavior)
+                    .setTransponderOn(spec.fleet_transponder)
+                    .setVariantsPath(MagicVariables.VARIANT_PATH)
+                    .create();
+
             presetShipIds = new ArrayList<>(MagicVariables.presetShipIdsOfLastCreatedFleet);
 
             if (fleet == null) {

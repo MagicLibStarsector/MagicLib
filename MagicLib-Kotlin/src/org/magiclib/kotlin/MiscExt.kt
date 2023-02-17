@@ -13,6 +13,7 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
 import com.fs.starfarer.api.impl.campaign.events.BaseEventPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
 import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
@@ -979,7 +980,22 @@ inline fun CampaignFleetAPI.giveStandardReturnToSourceAssignments(withClear: Boo
 inline fun CampaignFleetAPI.giveStandardReturnAssignments(where: SectorEntityToken, text: String, withClear: Boolean) =
     Misc.giveStandardReturnAssignments(this, where, text, withClear)
 
-// Skipping adjustRep, doesn't seem to make sense for an extension.
+/**
+ * MagicLib: Adjust the player's reputation with the specified faction and/or person.
+ *
+ * MagicLib: A non-0 `repChangeWithFaction` is required.
+ *
+ * @since 0.46.1
+ * @see Misc.adjustRep
+ */
+fun TextPanelAPI.adjustReputation(
+    repChangeWithFaction: Float,
+    limit: RepLevel?,
+    factionId: String?,
+    repChangeWithPerson: Float,
+    personLimit: RepLevel?,
+    person: PersonAPI?
+) = Misc.adjustRep(repChangeWithFaction, limit, factionId, repChangeWithPerson, personLimit, person, this)
 
 /**
  * @since 0.46.0
