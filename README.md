@@ -4,7 +4,7 @@ The goal of MagicLib is to create a community-built library of useful (and well 
 
 To get your stuff added to MagicLib, please contact Wisp
 
-...or on the Unofficial Starsector Discord:
+...on the Unofficial Starsector Discord:
 http://fractalsoftworks.com/forum/index.php?topic=11488.0
 
 ...on the official forum:
