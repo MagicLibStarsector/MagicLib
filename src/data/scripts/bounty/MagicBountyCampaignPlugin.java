@@ -2,6 +2,7 @@ package data.scripts.bounty;
 
 import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -21,7 +22,7 @@ public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
 
     @Override
     public PluginPick<InteractionDialogPlugin> pickInteractionDialogPlugin(SectorEntityToken interactionTarget) {
-        if (isInteractionWithActiveBounty(interactionTarget)) {
+        if (getBountyKeyForInteractionTarget(interactionTarget) != null) {
             return new PluginPick<InteractionDialogPlugin>(new MagicBountyFleetInteractionDialogPlugin(), PickPriority.MOD_SPECIFIC);
         } else {
             return super.pickInteractionDialogPlugin(interactionTarget);
@@ -30,8 +31,10 @@ public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
 
     @Override
     public PluginPick<BattleCreationPlugin> pickBattleCreationPlugin(SectorEntityToken opponent) {
-        if (isInteractionWithActiveBounty(opponent)) {
-            return new PluginPick<BattleCreationPlugin>(new MagicBountyBattleCreationPlugin(), PickPriority.MOD_SPECIFIC);
+        String bountyKey = getBountyKeyForInteractionTarget(opponent);
+
+        if (bountyKey != null) {
+            return new PluginPick<BattleCreationPlugin>(new MagicBountyBattleCreationPlugin(bountyKey), PickPriority.MOD_SPECIFIC);
         } else {
             return super.pickBattleCreationPlugin(opponent);
         }
@@ -39,19 +42,21 @@ public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
 
     /**
      * Whether the player is interacting with a fleet whose flagship has an active bounty.
+     * Returns the bounty key if there is one.
      */
-    private static boolean isInteractionWithActiveBounty(SectorEntityToken interactionTarget) {
+    @Nullable
+    private static String getBountyKeyForInteractionTarget(SectorEntityToken interactionTarget) {
         Collection<ActiveBounty> bounties = MagicBountyCoordinator.getInstance().getActiveBounties().values();
 
         if (bounties.size() > 0 && interactionTarget instanceof CampaignFleetAPI) {
             for (ActiveBounty bounty : bounties) {
                 if (bounty.getFlagshipId() != null
                         && bounty.getFlagshipId().equals(((CampaignFleetAPI) interactionTarget).getFlagship().getId())) {
-                    return true;
+                    return bounty.getKey();
                 }
             }
         }
 
-        return false;
+        return null;
     }
 }

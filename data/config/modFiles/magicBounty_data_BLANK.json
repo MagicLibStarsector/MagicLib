@@ -81,6 +81,7 @@
         "fleet_transponder": false,
 		"fleet_no_retreat": false,
         "fleet_behavior": "PASSIVE",
+        "fleet_musicSetId": null,
         
         #LOCATION
         

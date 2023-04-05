@@ -265,7 +265,7 @@ public class MagicBountyHVB {
                             "$HVB_" + bountyId,
                             //String job_conclusion_script,
                             null,
-                            //String existing_target_memkey; 
+                            //String existing_target_memkey;
                             null,
                             //String target_first_name,
                             row.getString("firstName"),
@@ -301,11 +301,11 @@ public class MagicBountyHVB {
                             row.getString("flagshipName"),
                             //boolean fleet_flagship_recoverable,
                             row.optDouble("chanceToAutoRecover", 1.0f) > 0f,
-                            //boolean fleet_flagship_autofit; 
+                            //boolean fleet_flagship_autofit;
                             false,
                             //Map <String,Integer> fleet_preset_ships,
                             fleetMap,
-                            //public boolean fleet_preset_autofit;   
+                            //public boolean fleet_preset_autofit;
                             false,
                             //float fleet_scaling_multiplier,
                             (float) row.getDouble("playerFPScalingFactor"),
@@ -321,6 +321,7 @@ public class MagicBountyHVB {
                             true,
                             //FleetAssignment fleet_behavior,
                             FleetAssignment.DEFEND_LOCATION,
+                            null,
                             //List<String> location_marketIDs,
                             null,
                             //List<String> location_marketFactions,

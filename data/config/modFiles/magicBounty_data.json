@@ -83,6 +83,7 @@
 		"fleet_composition_quality":2,
 		"fleet_transponder":false,
 		"fleet_behavior":"ROAMING",
+		"fleet_musicSetId": null,
 
 		#"location_marketIDs":[],
 		#"location_marketFactions":[],

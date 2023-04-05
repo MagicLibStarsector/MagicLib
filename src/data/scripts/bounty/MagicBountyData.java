@@ -289,6 +289,7 @@ public class MagicBountyData {
                     getBoolean(bountyId, "fleet_transponder"),
                     getBoolean(bountyId, "fleet_no_retreat"),
                     order,
+                    getString(bountyId, "fleet_musicSetId"),
 
                     locations,
                     getStringList(bountyId, "location_marketFactions"),
@@ -1119,6 +1120,11 @@ public class MagicBountyData {
          * PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED (campaign.FleetAssignment.orbit_aggressive)
          */
         public FleetAssignment fleet_behavior;
+        /**
+         * The musicSetId to use for the fleet, default to the faction's default music set.
+         * IMPORTANT: This must be added to the mod's `sounds.json` file. See "music_soe_fight" in the vanilla `sounds.json` for an example.
+         */
+        public String fleet_musicSetId;
 
         // Section: location
 
@@ -1228,6 +1234,7 @@ public class MagicBountyData {
                 boolean fleet_transponder,
                 boolean fleet_no_retreat,
                 FleetAssignment fleet_behavior,
+                String fleet_musicSetId,
                 List<String> location_marketIDs,
                 List<String> location_marketFactions,
                 String location_distance,
@@ -1370,6 +1377,7 @@ public class MagicBountyData {
             this.fleet_transponder = fleet_transponder;
             this.fleet_no_retreat = fleet_no_retreat;
             this.fleet_behavior = fleet_behavior;
+            this.fleet_musicSetId = fleet_musicSetId;
             this.location_marketIDs = location_marketIDs;
             this.location_marketFactions = location_marketFactions;
             this.location_distance = location_distance;
@@ -1452,6 +1460,7 @@ public class MagicBountyData {
             sb.append(", \nfleet_transponder=").append(fleet_transponder);
             sb.append(", \nfleet_no_retreat=").append(fleet_no_retreat);
             sb.append(", \nfleet_behavior=").append(fleet_behavior);
+            sb.append(", \nfleet_musicSetId=").append(fleet_musicSetId);
             sb.append(", \nlocation_marketIDs=").append(location_marketIDs);
             sb.append(", \nlocation_marketFactions=").append(location_marketFactions);
             sb.append(", \nlocation_distance='").append(location_distance).append('\'');

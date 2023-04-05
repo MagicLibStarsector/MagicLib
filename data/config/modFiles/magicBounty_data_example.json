@@ -3,8 +3,8 @@
     
         "required_mods_id": ["modA", "modB"], # Default: no values. List the required mods for this bounty
         #TRIGGERS (ALL OPTIONAL)
-        
-        "trigger_market_id": ["market_name"], # Default: no values. Can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode. 
+
+        "trigger_market_id": ["market_name"], # Default: no values. Can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
                                               # This beats all other conditions; a job will ALWAYS show in this market, even if other conditions fail.
         "trigger_marketFaction_any": ["faction"], # Default: no values. markets of these factions will show the bounty (if other conditions are met).
         "trigger_marketFaction_alliedWith": true, # Default: false. if true, markets of all factions whose relationship is at least FAVORABLE to ANY ONE of the factions above will show the bounty (if other conditions are met).
@@ -12,7 +12,7 @@
         "trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
         "trigger_market_minSize": 3, # Default: 0. The minimum size of the market.
         "trigger_player_minLevel": 15, # Default: 0. The minimum level of the player.
-        "trigger_min_fleet_size": 25, # Default: 0. The minimum player fleet "power" based on Fleet Points (not Deployment Points) with some multipliers for officers and player levels. Can be used to prevent exploits such as picking ships in storage to reduce the size of the bounty fleet. 
+        "trigger_min_fleet_size": 25, # Default: 0. The minimum player fleet "power" based on Fleet Points (not Deployment Points) with some multipliers for officers and player levels. Can be used to prevent exploits such as picking ships in storage to reduce the size of the bounty fleet.
         "trigger_min_days_elapsed": 360, # Default: 0. The minimum number of days that must have elapsed.
         "trigger_weight_mult": 0.25, # Default: -1. Simple frequency multiplier when several bounties compete for limited board slots. Weights are added together, then one is picked at random, with higher weights having a higher chance. Default bounty memKeys of note:
 		"trigger_memKeys_all": { # Default: no values. The job will only show if ALL of the listed memKeys exist with the specified boolean value.
@@ -30,17 +30,17 @@
         },
         "trigger_playerRelationship_atMost": { # Default: no values. This job will require the player to have the specified relationship or LOWER with the specified faction(s).
             "factionDislikedId":-0.5,
-        },		
-        
+        },
+
         #BOUNTY DESCRIPTION
-        
+
         "job_name": "job name", # Default: "Unnamed job". Job name shown in the dialog pick list
         "job_description": "Long form description of the job", # Default: blank. The description shown upon selecting the job.
                                                                # \n creates a line break, for example "Line one.\nLine two."
 															   # \" adds quotation marks.
                                                                # == brackets create a highlight, for example "Text ==highlight== text."
                                                                # ^ uppercase the following letter of a text variable, for example "^$heIsSheIsTheyAre turning angry."
-                                                               # %% allow the use of %, otherwise it will be interpreted as an escape character. 
+                                                               # %% allow the use of %, otherwise it will be interpreted as an escape character.
                                                                # $sonDaughterChild based on bounty commander gender.
                                                                # $fatherMotherParent
                                                                # $manWomanPerson
@@ -59,7 +59,7 @@
                                                                # $lastName The last name of the bounty commander.
                                                                # $constellation The constellation that the bounty fleet is in.
                                                                # $shipFleet base on either the target being a ship alone, or a fleet.
-        "job_comm_reply": "Reply of the enemy to your hail", # Default: none. The text shown if the player opens comms with the bounty fleet, 
+        "job_comm_reply": "Reply of the enemy to your hail", # Default: none. The text shown if the player opens comms with the bounty fleet,
                                                              # If set as an empty string, displays "The other $shipOrFleet does not answer to your hails."
                                                              # If not set, defaults to the regular comm reply for the fleet's faction.
         "job_intel_success": "Short text displayed in the intel", # Default: not shown. Short conclusion text shown in the intel object after the job has been COMPLETED SUCCESSFULLY.
@@ -73,7 +73,7 @@
         "job_item_reward": { # Default: no item rewards. Lists special items that will be added to the post-battle loot. First value is the item id, second is the number to give the player.
             # Using the same syntax as Console Commands, blueprints may be added. ["fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"]
             "item_A":1,
-            "ship_bp shipId": 1 
+            "ship_bp shipId": 1
         },
         "job_type":"assassination", # Default: assassination.
                 # assassination: required only to disable the flagship, may recover it.
@@ -107,13 +107,13 @@
         "job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
         "job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed.
         "job_conclusion_script":"data.script.FancyScriptThatDoStuff", # Default: no script. Can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
-        
+
         #TARGET EXISTING FLEET
 
 		"existing_target_memkey":"$memKey",
 
         #TARGET COMMANDER (OPTIONAL)
-        
+
         "target_first_name":"Firstname", # Default: randomly selected based on faction.
         "target_last_name":"Lastname", # Default: randomly selected based on faction.
         "target_portrait":"portraitId", # Default: randomly selected based on faction. Id of the sprite in settings.json/graphics/characters or full file path.
@@ -124,7 +124,7 @@
         "target_aiCoreId": null, # Default: null (not an AI). The AI Core id of the bounty commander. Core will be dropped as loot. Options: [ null, "gamma_core", "beta_core", "alpha_core" ]
         "target_level": 1, # Default: 0. The level of the bounty commander
         "target_elite_skills":2, # Default: vanilla setting (2 by default). Overrides the regular number of elite skills, set to 0 to not use elite skills.
-        "target_skill_preference": "ANY", # Default: "ANY". 
+        "target_skill_preference": "ANY", # Default: "ANY".
 		    # YES_ENERGY_YES_BALLISTIC_YES_MISSILE_YES_DEFENSE,
 		    # YES_ENERGY_YES_BALLISTIC_NO_MISSILE_YES_DEFENSE,
 		    # YES_ENERGY_YES_BALLISTIC_YES_MISSILE_NO_DEFENSE,
@@ -146,11 +146,11 @@
             "skillnameA":1,
             "skillnameB":2,
             "skillnameC":1,
-        }, 
-    
-    
+        },
+
+
         #TARGET FLEET
-        
+
         "fleet_name":"Fleet Name", # Default: no name.
         "fleet_faction": "ML_bounty", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
         # MagicLib includes a utility bounty faction that is forced to be neutral to everyone but the player under the id ["ML_bounty"].
@@ -161,7 +161,7 @@
         "fleet_flagship_autofit": false, # Default: false. Whether the flagship will be autofitted. When false, the Flagship does not receive D-mods or S-mods from the quality override.
 		"fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
             "ship_variant1":1,
-            "ship_variant2":3,			
+            "ship_variant2":3,
         },
         "fleet_preset_autofit": true, # Default: false. Whether the preset ships will be autofitted. When false, the preset ships do not receive D-mods or S-mods from the quality override.
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
@@ -171,15 +171,18 @@
         "fleet_transponder": false, # Default: true.
 		"fleet_no_retreat": false, #Default: false.
         "fleet_behavior": "PASSIVE", # Default:"GUARDED". The fleet's behavior on the campaign layer. Options: ["PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING"].
-    
+        # The musicSetId to use for the battle, defaults to no custom music.
+        # IMPORTANT: This must be added to the mod's `sounds.json` file. See "music_combat" in the vanilla `sounds.json` for an example.
+        "fleet_musicSetId": "music_combat",
+
         #LOCATION
-        
+
         "location_entitiesID": [  # Default: no preset. Preset locations to spawn the bounty fleet, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
             "location1",
             "location2",
         ],
         "location_marketFactions": [  # Default: no faction specified. Markets of specified faction for the fleet to spawn at. Adding a faction market supersedes all other parameters except location_id.
-            "faction" 
+            "faction"
         ],
         "location_distance": "CLOSE", # Default: no preference. How far from the center to spawn the bounty fleet. Options: "CORE", "CLOSE", "FAR" or just left empty to ignore.
         "location_themes": [ # Default: no preference. System themes that are valid to spawn the fleet at.
@@ -187,7 +190,7 @@
             "theme_core_populated",
             "theme_core",
             "theme_interesting",
-            "theme_interesting_minor",	
+            "theme_interesting_minor",
             "theme_ruins",
             "theme_ruins_main",
             "theme_ruins_secondary",
@@ -204,12 +207,12 @@
             "theme_remnant_destroyed",
             "theme_remnant_suppressed",
             "theme_remnant_resurgent",
-            
+
             "procgen_no_theme", #not so special bounties should add this attribute
             "procgen_no_theme_pulsar_blackhole", #or this one
         ],
         "location_themes_blacklist": [ # Default: none. System themes to never spawn the fleet at.
-            "theme_already_occupied", #Will avoid systems with "hostile" themes taken from a merged list between mods. Includes all Remnant, Plague-Bearer, OCI, Blade-Breaker systems 
+            "theme_already_occupied", #Will avoid systems with "hostile" themes taken from a merged list between mods. Includes all Remnant, Plague-Bearer, OCI, Blade-Breaker systems
             "theme_already_colonized", #Will explicitely exclude systems with active markets, kind of mandatory for pirate bounties given that faction colonize otherwise interesting systems with Nexerelin
             "theme_hidden", #Used by that one story system
 			"no_pulsar_blackhole",
