@@ -278,7 +278,9 @@ public class MagicBountyData {
                     getString(bountyId, "fleet_faction"),
                     flagship,
                     getString(bountyId, "fleet_flagship_name"),
-                    getBoolean(bountyId, "fleet_flagship_recoverable"),
+                    // Renamed to fleet_flagship_alwaysRecoverable, keeping previous for backwards compat.
+                    // If either is true, the flagship is always recoverable.
+                    getBoolean(bountyId, "fleet_flagship_recoverable") || getBoolean(bountyId, "fleet_flagship_alwaysRecoverable"),
                     getBoolean(bountyId, "fleet_flagship_autofit"),
                     getIntMap(bountyId, "fleet_preset_ships"),
                     getBoolean(bountyId, "fleet_preset_autofit"),
@@ -1085,7 +1087,7 @@ public class MagicBountyData {
         public String fleet_faction;
         public String fleet_flagship_variant;
         public String fleet_flagship_name;
-        public boolean fleet_flagship_recoverable;
+        public boolean fleet_flagship_alwaysRecoverable;
         /**
          * if false the weapons won't get changed, but no D-mod will be added at low quality either
          */
@@ -1223,7 +1225,7 @@ public class MagicBountyData {
                 String fleet_faction,
                 String fleet_flagship_variant,
                 String fleet_flagship_name,
-                boolean fleet_flagship_recoverable,
+                boolean fleet_flagship_alwaysRecoverable,
                 boolean fleet_flagship_autofit,
                 Map<String, Integer> fleet_preset_ships,
                 boolean fleet_preset_autofit,
@@ -1366,7 +1368,7 @@ public class MagicBountyData {
             this.fleet_faction = fleet_faction;
             this.fleet_flagship_variant = fleet_flagship_variant;
             this.fleet_flagship_name = fleet_flagship_name;
-            this.fleet_flagship_recoverable = fleet_flagship_recoverable;
+            this.fleet_flagship_alwaysRecoverable = fleet_flagship_alwaysRecoverable;
             this.fleet_flagship_autofit = fleet_flagship_autofit;
             this.fleet_preset_ships = fleet_preset_ships;
             this.fleet_preset_autofit = fleet_preset_autofit;
@@ -1449,7 +1451,7 @@ public class MagicBountyData {
             sb.append(", \nfleet_faction='").append(fleet_faction).append('\'');
             sb.append(", \nfleet_flagship_variant='").append(fleet_flagship_variant).append('\'');
             sb.append(", \nfleet_flagship_name='").append(fleet_flagship_name).append('\'');
-            sb.append(", \nfleet_flagship_recoverable=").append(fleet_flagship_recoverable);
+            sb.append(", \nfleet_flagship_alwaysRecoverable=").append(fleet_flagship_alwaysRecoverable);
             sb.append(", \nfleet_flagship_autofit=").append(fleet_flagship_autofit);
             sb.append(", \nfleet_preset_ships=").append(fleet_preset_ships);
             sb.append(", \nfleet_preset_autofit=").append(fleet_preset_autofit);

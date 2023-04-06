@@ -54,17 +54,17 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 continue;
             }
 
-            boolean isRecoverableFlagship = false;
+            boolean isFlagshipAlwaysRecoverable = false;
 
             for (ActiveBounty bounty : bounties) {
                 if (data.getMember().getId().equals(bounty.getFlagshipId())
-                        && bounty.getSpec().fleet_flagship_recoverable) {
-                    isRecoverableFlagship = true;
+                        && bounty.getSpec().fleet_flagship_alwaysRecoverable) {
+                    isFlagshipAlwaysRecoverable = true;
                     break;
                 }
             }
 
-            if (!isRecoverableFlagship) continue;
+            if (!isFlagshipAlwaysRecoverable) continue;
 
             if (playerContribFraction > 0f) {
                 // Create a new captain

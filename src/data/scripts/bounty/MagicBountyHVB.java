@@ -299,7 +299,7 @@ public class MagicBountyHVB {
                             row.getString("flagshipVariantId"),
                             //String fleet_flagship_name,
                             row.getString("flagshipName"),
-                            //boolean fleet_flagship_recoverable,
+                            //boolean fleet_flagship_alwaysRecoverable,
                             row.optDouble("chanceToAutoRecover", 1.0f) > 0f,
                             //boolean fleet_flagship_autofit;
                             false,

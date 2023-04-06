@@ -9,6 +9,8 @@ MagicLib
   - Added `createCaptainBuilder` as a replacement to `createCaptain` (non-breaking change).
 **MagicBounty**
   - Added `fleet_musicSetId` for custom bounty battle music (suggested/contributed to by NiaTahl).
+    - See `data/config/magicBounty_data_example.json` for usage. 
+  - Renamed `fleet_flagship_recoverable` to `fleet_flagship_alwaysRecoverable` (backwards compatible).
   - List Requirements command now shows `trigger_memKeys_none`.
 **Kotlin**
   - Added `prepareShipForRecovery` extension.

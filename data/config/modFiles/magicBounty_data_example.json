@@ -157,7 +157,7 @@
         "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]
         # Variant files that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
         "fleet_flagship_name":"Flagship", # Default: Random.
-        "fleet_flagship_recoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
+        "fleet_flagship_alwaysRecoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
         "fleet_flagship_autofit": false, # Default: false. Whether the flagship will be autofitted. When false, the Flagship does not receive D-mods or S-mods from the quality override.
 		"fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
             "ship_variant1":1,
