@@ -12,6 +12,7 @@ MagicLib
     - See `data/config/magicBounty_data_example.json` for usage. 
   - Renamed `fleet_flagship_recoverable` to `fleet_flagship_alwaysRecoverable` (backwards compatible).
   - List Requirements command now shows `trigger_memKeys_none`.
+  - Fixed `Tags.VARIANT_ALWAYS_RECOVERABLE` not being added to the flagship when `fleet_flagship_alwaysRecoverable` is `true`.
 **Kotlin**
   - Added `prepareShipForRecovery` extension.
 

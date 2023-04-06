@@ -339,6 +339,7 @@ public final class MagicBountyCoordinator {
                     .setFlagshipName(spec.fleet_flagship_name)
                     .setFlagshipVariant(spec.fleet_flagship_variant)
                     .setFlagshipAutofit(spec.fleet_flagship_autofit)
+                    .setFlagshipAlwaysRecoverable(spec.fleet_flagship_alwaysRecoverable)
                     .setCaptain(captain)
                     .setSupportFleet(spec.fleet_preset_ships)
                     .setSupportAutofit(spec.fleet_preset_autofit)

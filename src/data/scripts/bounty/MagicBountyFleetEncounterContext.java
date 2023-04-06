@@ -78,7 +78,7 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 data.getMember().setVariant(variant, false, true);
 
                 // Add some D-mods to the damaged ship
-                Random dModRandom = new Random(1000000 * data.getMember().getId().hashCode() + Global.getSector().getPlayerBattleSeed());
+                Random dModRandom = new Random(1000000L * data.getMember().getId().hashCode() + Global.getSector().getPlayerBattleSeed());
                 dModRandom = Misc.getRandom(dModRandom.nextLong(), 5);
                 DModManager.addDMods(data, false, Global.getSector().getPlayerFleet(), dModRandom);
                 if (DModManager.getNumDMods(variant) > 0) {
