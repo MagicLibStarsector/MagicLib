@@ -307,18 +307,18 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         break;
 
                                     case Vanilla:
-                                        text.addPara(MagicBountyUtils.createLocationEstimateText(activeBounty));
+                                        text.addPara(MagicBountyUtilsInternal.createLocationEstimateText(activeBounty));
                                         break;
 
                                     case VanillaDistance:
-                                        text.addPara(MagicBountyUtils.createLocationEstimateText(activeBounty) + " " + MagicTxt.getString("mb_distance"),
+                                        text.addPara(MagicBountyUtilsInternal.createLocationEstimateText(activeBounty) + " " + MagicTxt.getString("mb_distance"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
                                                 Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                         break;
 
                                     case Exact:
-                                        text.addPara(MagicBountyUtils.createLocationPreciseText(activeBounty));
+                                        text.addPara(MagicBountyUtilsInternal.createLocationPreciseText(activeBounty));
                                         text.highlightLastInLastPara(activeBounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType(), Misc.getHighlightColor());
                                         break;
 

@@ -232,7 +232,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_success != null && !bounty.getSpec().job_intel_success.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_success),
+                            MagicBountyUtilsInternal.replaceStringVariables(bounty, bounty.getSpec().job_intel_success),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -263,7 +263,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_failure != null && !bounty.getSpec().job_intel_failure.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_failure),
+                            MagicBountyUtilsInternal.replaceStringVariables(bounty, bounty.getSpec().job_intel_failure),
                             PADDING_DESC,
                             Misc.getTextColor(),
                             Misc.getHighlightColor()
@@ -283,7 +283,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_intel_expired != null && !bounty.getSpec().job_intel_expired.isEmpty()) {
                     MagicTxt.addPara(
                             info,
-                            MagicBountyUtils.replaceStringVariables(bounty, bounty.getSpec().job_intel_expired),
+                            MagicBountyUtilsInternal.replaceStringVariables(bounty, bounty.getSpec().job_intel_expired),
                             PADDING_DESC,
                             Misc.getGrayColor(),
                             Misc.getHighlightColor()
@@ -420,17 +420,17 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                 if (bounty.getSpec().job_show_distance != MagicBountyData.ShowDistance.None) {
                     switch (bounty.getSpec().job_show_distance) {
                         case Exact:
-                            info.addPara(MagicBountyUtils.createLocationPreciseText(bounty), 10f);
+                            info.addPara(MagicBountyUtilsInternal.createLocationPreciseText(bounty), 10f);
                             break;
                         case System:
                             info.addPara(MagicTxt.getString("mb_distance_system"),
                                     10f,
                                     Misc.getTextColor(),
-                                    Misc.ucFirst(MagicBountyUtils.getPronoun(bounty.getCaptain())),
+                                    Misc.ucFirst(MagicBountyUtilsInternal.getPronoun(bounty.getCaptain())),
                                     bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType());
                             break;
                         default:
-                            info.addPara(MagicBountyUtils.createLocationEstimateText(bounty), 10f);
+                            info.addPara(MagicBountyUtilsInternal.createLocationEstimateText(bounty), 10f);
                             break;
                     }
                 }

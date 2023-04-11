@@ -14,6 +14,7 @@ MagicLib
   - List Requirements command now shows `trigger_memKeys_none`.
   - Fixed `Tags.VARIANT_ALWAYS_RECOVERABLE` not being added to the flagship when `fleet_flagship_alwaysRecoverable` is `true`.
   - `vanilla` and `vanillaDistance` target distance options now point to the constellation in the bar event (suggested by Avanitia).
+  - Comms replies now support highlights (same syntax, wrap with `==`) (suggested by raycrasher).
 **Kotlin**
   - Added `prepareShipForRecovery` extension.
 

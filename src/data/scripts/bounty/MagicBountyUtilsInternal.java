@@ -1,7 +1,6 @@
 package data.scripts.bounty;
 
 import com.fs.starfarer.api.campaign.FleetAssignment;
-import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
@@ -10,13 +9,17 @@ import data.scripts.util.MagicTxt;
 import data.scripts.util.StringCreator;
 import org.jetbrains.annotations.NotNull;
 
-class MagicBountyUtils {
+/**
+ * Do not use this.
+ * It is only public because it is used in the data.scripts.bounty.rulecmd package.
+ */
+public class MagicBountyUtilsInternal {
 
 
     /**
      * Replaces variables in the given string with data from the bounty and splits it into paragraphs using `\n`.
      */
-    static String replaceStringVariables(final ActiveBounty bounty, String text) {
+    public static String replaceStringVariables(final ActiveBounty bounty, String text) {
         String replaced = text;
 
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$sonDaughterChild", new StringCreator() {
