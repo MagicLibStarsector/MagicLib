@@ -449,7 +449,6 @@ public class MagicCampaign {
      * @param eliteSkillsOverride Overrides the regular number of elite skills, set to -1 to ignore.
      * @param skillPreference     GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
      * @param skillLevels         Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
-     *
      * @deprecated Please switch to {@code MagicCampaign.createCaptainBuilder("factionId")}
      */
     public static PersonAPI createCaptain(
@@ -993,17 +992,18 @@ public class MagicCampaign {
     }
 
     /**
-     * Creates a derelict ship at the desired emplacement
+     * Creates a derelict ship at the desired emplacement.
      *
-     * @param variantId       spawned ship variant
-     * @param condition       condition of the derelict,                                               better conditions means less D-mods but also more weapons from the variant
-     * @param discoverable    awards XP when found
+     * @param variantId       Spawned ship variant
+     * @param condition       Condition of the derelict. Better conditions means fewer D-mods but also more weapons from the variant
+     * @param discoverable    Awards XP when found
      * @param discoveryXp     XP awarded when found (<0 to use the default)
-     * @param recoverable     can be salvaged
-     * @param orbitCenter     entity orbited
-     * @param orbitStartAngle orbit starting angle
-     * @param orbitRadius     orbit radius
-     * @param orbitDays       orbit period
+     * @param recoverable     Can be salvaged as long as the hull it's possible for the player to salvage this hull
+     *                        (eg Automated ships still require the skill).
+     * @param orbitCenter     Entity orbited
+     * @param orbitStartAngle Orbit starting angle
+     * @param orbitRadius     Orbit radius
+     * @param orbitDays       Orbit period
      * @return
      */
     public static SectorEntityToken createDerelict(
@@ -1017,7 +1017,8 @@ public class MagicCampaign {
             float orbitRadius,
             float orbitDays
     ) {
-        DerelictShipEntityPlugin.DerelictShipData params = new DerelictShipEntityPlugin.DerelictShipData(new ShipRecoverySpecial.PerShipData(variantId, condition), false);
+        ShipRecoverySpecial.PerShipData shipData = new ShipRecoverySpecial.PerShipData(variantId, condition);
+        DerelictShipEntityPlugin.DerelictShipData params = new DerelictShipEntityPlugin.DerelictShipData(shipData, false);
         SectorEntityToken ship = BaseThemeGenerator.addSalvageEntity(orbitCenter.getStarSystem(), Entities.WRECK, Factions.NEUTRAL, params);
         ship.setDiscoverable(discoverable);
         if (discoveryXp != null && discoveryXp >= 0) {
