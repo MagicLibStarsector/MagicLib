@@ -1088,6 +1088,8 @@ public class MagicBountyData {
         public String fleet_flagship_variant;
         public String fleet_flagship_name;
         public boolean fleet_flagship_alwaysRecoverable;
+        @Deprecated // Kept for backwards compat (used by BetterVariants). Switch to fleet_flagship_alwaysRecoverable.
+        public boolean fleet_flagship_recoverable;
         /**
          * if false the weapons won't get changed, but no D-mod will be added at low quality either
          */
@@ -1169,6 +1171,7 @@ public class MagicBountyData {
 
         // Legacy, used by BetterVariants.
         // TODO remove this, convert to builder or something.
+        @Deprecated
         public bountyData(
                 List<String> trigger_market_id,
                 List<String> trigger_marketFaction_any,
@@ -1528,6 +1531,7 @@ public class MagicBountyData {
             this.fleet_flagship_variant = fleet_flagship_variant;
             this.fleet_flagship_name = fleet_flagship_name;
             this.fleet_flagship_alwaysRecoverable = fleet_flagship_alwaysRecoverable;
+            this.fleet_flagship_recoverable = fleet_flagship_alwaysRecoverable;
             this.fleet_flagship_autofit = fleet_flagship_autofit;
             this.fleet_preset_ships = fleet_preset_ships;
             this.fleet_preset_autofit = fleet_preset_autofit;
