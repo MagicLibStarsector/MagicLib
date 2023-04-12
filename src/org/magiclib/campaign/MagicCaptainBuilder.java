@@ -38,7 +38,7 @@ public class MagicCaptainBuilder {
 
     public PersonAPI create() {
         return MagicCampaign.createCaptain(
-                isAI,
+                Boolean.TRUE.equals(isAI),
                 aiCoreType,
                 firstName,
                 lastName,

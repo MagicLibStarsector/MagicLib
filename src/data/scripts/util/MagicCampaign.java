@@ -452,7 +452,7 @@ public class MagicCampaign {
      * @deprecated Please switch to {@code MagicCampaign.createCaptainBuilder("factionId")}
      */
     public static PersonAPI createCaptain(
-            @Nullable Boolean isAI,
+            boolean isAI,
             @Nullable String AICoreType,
             @Nullable String firstName,
             @Nullable String lastName,
@@ -470,9 +470,6 @@ public class MagicCampaign {
 
         if (eliteSkillsOverride == null)
             eliteSkillsOverride = 0;
-
-        if (isAI == null)
-            isAI = false;
 
         if (skillLevels != null && !skillLevels.isEmpty() && (level == null || level < 1)) {
             level = skillLevels.size();
