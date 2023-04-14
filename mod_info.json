@@ -11,7 +11,7 @@
         {
             "id": "lw_lazylib",
             "name": "LazyLib",
-            "version": {"major":2, "minor":6, "patch":0}
+            "version": {"major":2, "minor":7, "patch":"b"}
         }
     ],
     "jars": ["jars/MagicLib.jar", "jars/MagicLib-Kotlin.jar"],
