@@ -9,8 +9,10 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.impl.campaign.procgen.Constellation;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
+import com.fs.starfarer.campaign.BaseLocation;
 import data.scripts.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
@@ -30,6 +32,8 @@ import static data.scripts.util.MagicVariables.MAGICLIB_ID;
 public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
     private List<String> keysOfBountiesToShow;
     private MarketAPI market;
+    // Temp token for bounty constellation that the map can point to. Clean up when bar event is done.
+    private SectorEntityToken tempConstellationToken;
 
     /**
      * This method is not called, as the Bar Event is triggered directly in ShowMagicBountyBoardCmd.
@@ -94,6 +98,11 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                 case CLOSE:
                     noContinue = true;
                     done = true;
+                    // Clean up temp constellation token if it exists
+                    if (tempConstellationToken != null) {
+                        tempConstellationToken.getContainingLocation().removeEntity(tempConstellationToken);
+                        tempConstellationToken = null;
+                    }
                     break;
                 default:
             }
@@ -194,6 +203,16 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                 case VanillaDistance:
                                     // Can't find a way to get a Constellation SectorEntityToken to display here,
                                     // so show nothing instead of the exact system (which is supposed to be obscured from the player).
+                                    if (activeBounty.getFleetSpawnLocation().getStarSystem().isInConstellation()) {
+                                        Constellation constellation = activeBounty.getFleetSpawnLocation().getStarSystem().getConstellation();
+                                        tempConstellationToken = new BaseLocation.LocationToken(
+                                                Global.getSector().getHyperspace(),
+                                                constellation.getLocation().x,
+                                                constellation.getLocation().y);
+                                        arrowTarget = tempConstellationToken;
+                                    } else if (activeBounty.getFleetSpawnLocation().getStarSystem() != null) {
+                                        arrowTarget = activeBounty.getFleetSpawnLocation().getStarSystem().getHyperspaceAnchor();
+                                    }
                                     break;
                             }
 
@@ -288,18 +307,18 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         break;
 
                                     case Vanilla:
-                                        text.addPara(MagicBountyUtils.createLocationEstimateText(activeBounty));
+                                        text.addPara(MagicBountyUtilsInternal.createLocationEstimateText(activeBounty));
                                         break;
 
                                     case VanillaDistance:
-                                        text.addPara(MagicBountyUtils.createLocationEstimateText(activeBounty) + " " + MagicTxt.getString("mb_distance"),
+                                        text.addPara(MagicBountyUtilsInternal.createLocationEstimateText(activeBounty) + " " + MagicTxt.getString("mb_distance"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),
                                                 Math.round(Misc.getDistanceLY(market.getPrimaryEntity(), activeBounty.getFleetSpawnLocation())) + "");
                                         break;
 
                                     case Exact:
-                                        text.addPara(MagicBountyUtils.createLocationPreciseText(activeBounty));
+                                        text.addPara(MagicBountyUtilsInternal.createLocationPreciseText(activeBounty));
                                         text.highlightLastInLastPara(activeBounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType(), Misc.getHighlightColor());
                                         break;
 

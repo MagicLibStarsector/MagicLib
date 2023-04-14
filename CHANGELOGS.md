@@ -1,5 +1,23 @@
 MagicLib
 
+0.46.1
+
+**Other**
+  - Added HMI themes to blacklist so that they are considered "already occupied".
+  - Reduced some logspam with devmode on (error -> info/warn).
+**MagicCampaign**
+  - Added `createCaptainBuilder` as a replacement to `createCaptain` (non-breaking change).
+**MagicBounty**
+  - Added `fleet_musicSetId` for custom bounty battle music (suggested/contributed to by NiaTahl).
+    - See `data/config/magicBounty_data_example.json` for usage. 
+  - Renamed `fleet_flagship_recoverable` to `fleet_flagship_alwaysRecoverable` (backwards compatible).
+  - List Requirements command now shows `trigger_memKeys_none`.
+  - Fixed `Tags.VARIANT_ALWAYS_RECOVERABLE` not being added to the flagship when `fleet_flagship_alwaysRecoverable` is `true`.
+  - `vanilla` and `vanillaDistance` target distance options now point to the constellation in the bar event (suggested by Avanitia).
+  - Comms replies now support highlights (same syntax, wrap with `==`) (suggested by raycrasher).
+**Kotlin**
+  - Added `prepareShipForRecovery` extension.
+
 0.46.0 - (the first Wisp release 🤞)
 
 **Other**

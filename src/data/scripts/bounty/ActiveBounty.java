@@ -168,7 +168,6 @@ public final class ActiveBounty {
         // Add comm reply if needed
         if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null) {
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
-            getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_comm_reply", MagicBountyUtils.replaceStringVariables(this, spec.job_comm_reply));
         }
 
         // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
@@ -639,7 +638,7 @@ public final class ActiveBounty {
 
     private void addDescriptionToTextPanelInternal(Object text, Color color, float padding) {
         if (MagicTxt.nullStringIfEmpty(spec.job_description) != null) {
-            String replacedString = MagicBountyUtils.replaceStringVariables(this, spec.job_description);
+            String replacedString = MagicBountyUtilsInternal.replaceStringVariables(this, spec.job_description);
             String[] replacedParas = replacedString.split("/n|\\n");
 
             for (String replacedPara : replacedParas) {

@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
+import org.magiclib.campaign.MagicCaptainBuilder;
 import org.magiclib.campaign.MagicFleetBuilder;
 import org.magiclib.util.MagicStringMatcher;
 
@@ -77,7 +78,7 @@ public class MagicCampaign {
      * @param spawnLocation        Where the fleet will spawn, default to assignmentTarget if NULL
      * @param assignment           campaign.FleetAssignment, default to orbit aggressive
      * @param assignmentTarget     where the fleet will go to execute its order, it will not spawn if NULL
-     * @deprecated Please move to org.magiclib.MagicFleetBuilder when possible. The logic is unchanged.
+     * @deprecated Please move to MagicCampaign.createFleetBuilder() when possible. The logic is unchanged.
      */
     public static CampaignFleetAPI createFleet(
             @Nullable String fleetName,
@@ -117,7 +118,7 @@ public class MagicCampaign {
      * @param variantsPath         If not null, the script will try to find missing variant files there.
      *                             Used to generate fleets using cross-mod variants that won't be loaded otherwise to avoid crashes.
      *                             The name of the variant files must match the ID of the variant.
-     * @deprecated Please move to org.magiclib.MagicFleetBuilder when possible. The logic is unchanged.
+     * @deprecated Please move to MagicCampaign.createFleetBuilder() when possible. The logic is unchanged.
      */
     public static CampaignFleetAPI createFleet(
             @Nullable String fleetName,
@@ -160,9 +161,9 @@ public class MagicCampaign {
         }
 
         if (verbose) {
-            log.error(" ");
-            log.error("SPAWNING " + fleetName);
-            log.error(" ");
+            log.info(" ");
+            log.info("SPAWNING " + fleetName);
+            log.info(" ");
         }
 
         //Setup defaults
@@ -170,7 +171,7 @@ public class MagicCampaign {
         if (fleetType != null && !fleetType.equals("")) {
             type = fleetType;
         } else if (verbose) {
-            log.error("No fleet type defined, defaulting to bounty fleet.");
+            log.info("No fleet type defined, defaulting to bounty fleet.");
         }
 
         String extraShipsFaction = fleetFaction;
@@ -178,14 +179,14 @@ public class MagicCampaign {
         if (reinforcementFaction != null) {
             extraShipsFaction = reinforcementFaction;
         } else if (verbose) {
-            log.error("No reinforcement faction defined, defaulting to fleet faction.");
+            log.info("No reinforcement faction defined, defaulting to fleet faction.");
         }
 
         SectorEntityToken location = assignmentTarget;
         if (spawnLocation != null) {
             location = spawnLocation;
         } else if (verbose) {
-            log.error("No spawn location defined, defaulting to assignment target.");
+            log.info("No spawn location defined, defaulting to assignment target.");
         }
 
         FleetAssignment order = FleetAssignment.ORBIT_AGGRESSIVE;
@@ -193,7 +194,7 @@ public class MagicCampaign {
         if (assignment != null) {
             order = assignment;
         } else if (verbose) {
-            log.error("No assignment defined, defaulting to aggressive orbit.");
+            log.info("No assignment defined, defaulting to aggressive orbit.");
         }
 
         float quality = 1f;
@@ -201,7 +202,7 @@ public class MagicCampaign {
         if (qualityOverride != null && qualityOverride >= -1) {
             quality = qualityOverride;
         } else if (verbose) {
-            log.error("No quality override defined, defaulting to highest quality.");
+            log.info("No quality override defined, defaulting to highest quality.");
         }
 
         // EMPTY FLEET
@@ -211,7 +212,7 @@ public class MagicCampaign {
         FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
 
         if (flagship == null) {
-            log.error("Warning during " + fleetName + " generation." +
+            log.warn("Warning during " + fleetName + " generation." +
                     "\n\tReason: flagshipVariant " + flagshipVariant + " and variantsPath " + variantsPath + " was specified, but flagship could not be created." +
                     "\n\tWill try to fall back to the first ship in the fleet.");
         } else {
@@ -262,7 +263,7 @@ public class MagicCampaign {
                                 }
                             }
                         } else {
-                            log.error("FAILED reinforcement generation");
+                            log.warn("FAILED reinforcement generation");
                         }
                     }
                 }
@@ -278,7 +279,7 @@ public class MagicCampaign {
         }
 
         if (flagship == null) {
-            log.error("Aborting " + fleetName + " generation. Reason: no flagshipVariant was specified and none could be automatically chosen.");
+            log.warn("Aborting " + fleetName + " generation. Reason: no flagshipVariant was specified and none could be automatically chosen.");
             return null;
         }
 
@@ -423,6 +424,15 @@ public class MagicCampaign {
     }
 
     /**
+     * Creates a captain PersonAPI.
+     *
+     * @since 0.46.1
+     */
+    public static MagicCaptainBuilder createCaptainBuilder(@NotNull String factionId) {
+        return new MagicCaptainBuilder(factionId);
+    }
+
+    /**
      * Creates a captain PersonAPI
      *
      * @param isAI
@@ -439,7 +449,7 @@ public class MagicCampaign {
      * @param eliteSkillsOverride Overrides the regular number of elite skills, set to -1 to ignore.
      * @param skillPreference     GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
      * @param skillLevels         Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
-     * @return
+     * @deprecated Please switch to {@code MagicCampaign.createCaptainBuilder("factionId")}
      */
     public static PersonAPI createCaptain(
             boolean isAI,
@@ -452,18 +462,28 @@ public class MagicCampaign {
             @Nullable String rankId,
             @Nullable String postId,
             @Nullable String personality,
-            Integer level,
-            Integer eliteSkillsOverride,
+            @Nullable Integer level,
+            @Nullable Integer eliteSkillsOverride,
             @Nullable OfficerManagerEvent.SkillPickPreference skillPreference,
             @Nullable Map<String, Integer> skillLevels
     ) {
 
-        if (skillLevels != null && !skillLevels.isEmpty() && level < 1) {
+        if (eliteSkillsOverride == null)
+            eliteSkillsOverride = 0;
+
+        if (skillLevels != null && !skillLevels.isEmpty() && (level == null || level < 1)) {
             level = skillLevels.size();
             eliteSkillsOverride = 0;
             for (String s : skillLevels.keySet()) {
                 if (skillLevels.get(s) == 2) eliteSkillsOverride++;
             }
+        }
+
+        if (level == null)
+            level = 1;
+
+        if (skillPreference == null) {
+            skillPreference = OfficerManagerEvent.SkillPickPreference.ANY;
         }
 
         PersonAPI person = OfficerManagerEvent.createOfficer(
@@ -514,9 +534,9 @@ public class MagicCampaign {
         }
 
         if (verbose) {
-            log.error(" ");
-            log.error(" Creating captain " + person.getNameString());
-            log.error(" ");
+            log.info(" ");
+            log.info(" Creating captain " + person.getNameString());
+            log.info(" ");
         }
 
         if (nullStringIfEmpty(portraitId) != null) {
@@ -524,13 +544,13 @@ public class MagicCampaign {
                 if (Global.getSettings().getSprite(portraitId) != null) {
                     person.setPortraitSprite(portraitId);
                 } else {
-                    log.error("Missing portrait at " + portraitId);
+                    log.warn("Missing portrait at " + portraitId);
                 }
             } else {
                 if (Global.getSettings().getSprite("characters", portraitId) != null) {
                     person.setPortraitSprite(Global.getSettings().getSpriteName("characters", portraitId));
                 } else {
-                    log.error("Missing portrait id " + portraitId);
+                    log.warn("Missing portrait id " + portraitId);
                 }
             }
         }
@@ -539,7 +559,7 @@ public class MagicCampaign {
             person.setPersonality(personality);
         }
         if (verbose) {
-            log.error("     They are " + person.getPersonalityAPI().getDisplayName());
+            log.info("     They are " + person.getPersonalityAPI().getDisplayName());
         }
 
         if (nullStringIfEmpty(rankId) != null) {
@@ -570,8 +590,8 @@ public class MagicCampaign {
                 }
                 //log
 
-                log.error("     " + "level effective: " + person.getStats().getLevel());
-                log.error("     " + "level requested: " + level);
+                log.info("     " + "level effective: " + person.getStats().getLevel());
+                log.info("     " + "level requested: " + level);
                 for (SkillLevelAPI skill : person.getStats().getSkillsCopy()) {
                     if (skill.getSkill().isAptitudeEffect()) continue;
                     if (skill.getLevel() > 0) {
@@ -583,10 +603,10 @@ public class MagicCampaign {
                 for (SkillLevelAPI skill : person.getStats().getSkillsCopy()){
                     if(skillLevels.keySet().contains(skill.getSkill().getId())){
                         person.getStats().setSkillLevel(skill.getSkill().getId(),skillLevels.get(skill.getSkill().getId()));
-                        log.error("     "+ skill.getSkill().getName() +" : "+ skillLevels.get(skill.getSkill().getId()));
+                        log.info("     "+ skill.getSkill().getName() +" : "+ skillLevels.get(skill.getSkill().getId()));
                     } else {
                         person.getStats().setSkillLevel(skill.getSkill().getId(),0);                        
-                        log.error("     "+ skill.getSkill().getName() +" : 0");
+                        log.info("     "+ skill.getSkill().getName() +" : 0");
                     }
                 }
                 */
@@ -612,7 +632,7 @@ public class MagicCampaign {
             person.getStats().refreshCharacterStatsEffects();
         } else if (verbose) {
             // list assigned random skills
-            log.error("     " + "level: " + person.getStats().getLevel());
+            log.info("     " + "level: " + person.getStats().getLevel());
             for (MutableCharacterStatsAPI.SkillLevelAPI skill : person.getStats().getSkillsCopy()) {
                 if (skill.getSkill().isAptitudeEffect()) continue;
                 if (skill.getLevel() > 0) {
@@ -736,7 +756,7 @@ public class MagicCampaign {
                 }
             }
         } catch (Exception e) {
-            log.info("could not load ship variant at " + path);
+            log.warn("could not load ship variant at " + path, e);
         }
 
         //Maintain the S-mods through salvage
@@ -764,11 +784,11 @@ public class MagicCampaign {
             if (!autofit) {
                 ship.getVariant().addTag("no_autofit");
             }
-            if (verbose) log.warn("Created " + variant);
+            if (verbose) log.info("Created " + variant);
             return ship;
         }
 
-        log.error("Failed to create " + variant);
+        log.warn("Failed to create " + variant);
         return null;
     }
 
@@ -874,8 +894,8 @@ public class MagicCampaign {
         fleet.setTransponderOn(transponderOn);
 
         if (verbose) {
-            log.warn("Spawned " + fleet.getName() + " around " + location.getId() + " in the " + location.getStarSystem().getId() + " system.");
-            log.warn("Order: " + order.name() + ", target: " + target.getId() + " in the " + target.getStarSystem().getId() + " system.");
+            log.info("Spawned " + fleet.getName() + " around " + location.getId() + " in the " + location.getStarSystem().getId() + " system.");
+            log.info("Order: " + order.name() + ", target: " + target.getId() + " in the " + target.getStarSystem().getId() + " system.");
         }
     }
 
@@ -969,17 +989,18 @@ public class MagicCampaign {
     }
 
     /**
-     * Creates a derelict ship at the desired emplacement
+     * Creates a derelict ship at the desired emplacement.
      *
-     * @param variantId       spawned ship variant
-     * @param condition       condition of the derelict,                                               better conditions means less D-mods but also more weapons from the variant
-     * @param discoverable    awards XP when found
+     * @param variantId       Spawned ship variant
+     * @param condition       Condition of the derelict. Better conditions means fewer D-mods but also more weapons from the variant
+     * @param discoverable    Awards XP when found
      * @param discoveryXp     XP awarded when found (<0 to use the default)
-     * @param recoverable     can be salvaged
-     * @param orbitCenter     entity orbited
-     * @param orbitStartAngle orbit starting angle
-     * @param orbitRadius     orbit radius
-     * @param orbitDays       orbit period
+     * @param recoverable     Can be salvaged as long as the hull it's possible for the player to salvage this hull
+     *                        (eg Automated ships still require the skill).
+     * @param orbitCenter     Entity orbited
+     * @param orbitStartAngle Orbit starting angle
+     * @param orbitRadius     Orbit radius
+     * @param orbitDays       Orbit period
      * @return
      */
     public static SectorEntityToken createDerelict(
@@ -993,7 +1014,8 @@ public class MagicCampaign {
             float orbitRadius,
             float orbitDays
     ) {
-        DerelictShipEntityPlugin.DerelictShipData params = new DerelictShipEntityPlugin.DerelictShipData(new ShipRecoverySpecial.PerShipData(variantId, condition), false);
+        ShipRecoverySpecial.PerShipData shipData = new ShipRecoverySpecial.PerShipData(variantId, condition);
+        DerelictShipEntityPlugin.DerelictShipData params = new DerelictShipEntityPlugin.DerelictShipData(shipData, false);
         SectorEntityToken ship = BaseThemeGenerator.addSalvageEntity(orbitCenter.getStarSystem(), Entities.WRECK, Factions.NEUTRAL, params);
         ship.setDiscoverable(discoverable);
         if (discoveryXp != null && discoveryXp >= 0) {
@@ -1762,8 +1784,8 @@ public class MagicCampaign {
             boolean verbose) {
 
         if (verbose) {
-            log.error("Find Suitable Target log");
-            log.error("Checking marketIDs");
+            log.info("Find Suitable Target log");
+            log.info("Checking marketIDs");
         }
         //first priority, check if the preset location(s) exist(s)
         if (entityIDs != null && !entityIDs.isEmpty()) {
@@ -1771,7 +1793,7 @@ public class MagicCampaign {
             if (entityIDs.size() == 1 && Global.getSector().getEntityById(entityIDs.get(0)) != null) {
                 if (verbose) {
                     SectorEntityToken t = Global.getSector().getEntityById(entityIDs.get(0));
-                    log.error("Selecting " + t.getName() + ", in the " + t.getContainingLocation().getName() + " system, " + t.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), t.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                    log.info("Selecting " + t.getName() + ", in the " + t.getContainingLocation().getName() + " system, " + t.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), t.getContainingLocation().getLocation()) + " LY) from the sector's center");
                 }
                 return Global.getSector().getEntityById(entityIDs.get(0));
             }
@@ -1782,13 +1804,13 @@ public class MagicCampaign {
             }
 
             if (verbose) {
-                log.error("There are " + picker.getTotal() + " available market ids for pick");
+                log.info("There are " + picker.getTotal() + " available market ids for pick");
             }
 
             if (!picker.isEmpty()) {
                 if (verbose) {
                     SectorEntityToken picked = picker.pick();
-                    log.error("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
                     return picked;
                 } else return picker.pick();
             }
@@ -1796,7 +1818,7 @@ public class MagicCampaign {
 
 
         if (verbose) {
-            log.error("Checking market factions");
+            log.info("Checking market factions");
         }
         //second priority is faction markets
         if (marketFactions != null && !marketFactions.isEmpty()) {
@@ -1808,13 +1830,13 @@ public class MagicCampaign {
             }
 
             if (verbose) {
-                log.error("There are " + picker.getTotal() + " available faction markets for pick");
+                log.info("There are " + picker.getTotal() + " available faction markets for pick");
             }
 
             if (!picker.isEmpty()) {
                 if (verbose) {
                     SectorEntityToken picked = picker.pick();
-                    log.error("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
                     return picked;
                 } else return picker.pick();
             }
@@ -1835,11 +1857,11 @@ public class MagicCampaign {
         float sector_width = MagicVariables.getSectorSize();
 
         if (verbose) {
-            log.error("Checking preferences");
-            log.error("Sector width = " + sector_width);
+            log.info("Checking preferences");
+            log.info("Sector width = " + sector_width);
         }
         if (verbose) {
-            log.error("Finding system with required themes");
+            log.info("Finding system with required themes");
         }
         //start with the themes preferences
         List<StarSystemAPI> systems_core = new ArrayList<>();
@@ -1913,7 +1935,7 @@ public class MagicCampaign {
             } else {
                 //all lists are empty, no fallback option for systems
                 if (verbose) {
-                    log.error("No valid system theme found");
+                    log.warn("No valid system theme found");
                 }
                 return null;
             }
@@ -2006,9 +2028,9 @@ public class MagicCampaign {
         }
 
         if (verbose) {
-            log.error("There are " + systems_core.size() + " themed systems in the core");
-            log.error("There are " + systems_close.size() + " themed systems close to the core");
-            log.error("There are " + systems_far.size() + " themed systems far from the core");
+            log.info("There are " + systems_core.size() + " themed systems in the core");
+            log.info("There are " + systems_close.size() + " themed systems close to the core");
+            log.info("There are " + systems_far.size() + " themed systems far from the core");
         }
 
         //now order the selected system lists by distance preferences
@@ -2087,7 +2109,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.error("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -2113,7 +2135,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.error("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -2135,7 +2157,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.error("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -2174,7 +2196,7 @@ public class MagicCampaign {
 
                 if (verbose) {
                     SectorEntityToken picked = selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size() - 1));
-                    log.error("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
                     return picked;
                 } else
                     return selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size() - 1));
@@ -2184,7 +2206,7 @@ public class MagicCampaign {
         }
         //apparently none of the systems had any suitable target for the given filters, looks like this is a fail
         if (verbose) {
-            log.error("No valid system found");
+            log.warn("No valid system found");
         }
         return null;
     }

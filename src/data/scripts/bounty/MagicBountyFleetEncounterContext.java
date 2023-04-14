@@ -54,17 +54,17 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 continue;
             }
 
-            boolean isRecoverableFlagship = false;
+            boolean isFlagshipAlwaysRecoverable = false;
 
             for (ActiveBounty bounty : bounties) {
                 if (data.getMember().getId().equals(bounty.getFlagshipId())
-                        && bounty.getSpec().fleet_flagship_recoverable) {
-                    isRecoverableFlagship = true;
+                        && bounty.getSpec().fleet_flagship_alwaysRecoverable) {
+                    isFlagshipAlwaysRecoverable = true;
                     break;
                 }
             }
 
-            if (!isRecoverableFlagship) continue;
+            if (!isFlagshipAlwaysRecoverable) continue;
 
             if (playerContribFraction > 0f) {
                 // Create a new captain
@@ -78,7 +78,7 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                 data.getMember().setVariant(variant, false, true);
 
                 // Add some D-mods to the damaged ship
-                Random dModRandom = new Random(1000000 * data.getMember().getId().hashCode() + Global.getSector().getPlayerBattleSeed());
+                Random dModRandom = new Random(1000000L * data.getMember().getId().hashCode() + Global.getSector().getPlayerBattleSeed());
                 dModRandom = Misc.getRandom(dModRandom.nextLong(), 5);
                 DModManager.addDMods(data, false, Global.getSector().getPlayerFleet(), dModRandom);
                 if (DModManager.getNumDMods(variant) > 0) {

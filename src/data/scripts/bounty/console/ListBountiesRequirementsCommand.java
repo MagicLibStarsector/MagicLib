@@ -220,12 +220,13 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
             if (!relationship) valid = false;
         }
 
-        //WHEN ALL MEMKEYS ARE SET        
+        //WHEN 'ALL' MEMKEYS ARE SET
         if (bounty.trigger_memKeys_all != null && !bounty.trigger_memKeys_all.isEmpty()) {
             Console.showMessage(" - " + "Requires all the following MemKey(s): ");
             for (String k : bounty.trigger_memKeys_all.keySet()) {
-                Console.showMessage("   . " + k + " : " + bounty.trigger_memKeys_all.get(k));
-                if (Global.getSector().getMemoryWithoutUpdate().contains(k) && Global.getSector().getMemoryWithoutUpdate().getBoolean(k) == bounty.trigger_memKeys_all.get(k)) {
+                Boolean value = bounty.trigger_memKeys_all.get(k);
+                Console.showMessage("   . " + k + " : " + value);
+                if (Global.getSector().getMemoryWithoutUpdate().contains(k) && Global.getSector().getMemoryWithoutUpdate().getBoolean(k) == value) {
                     Console.showMessage("     " + "PASS");
                 } else {
                     Console.showMessage("     " + "FAIL");
@@ -234,13 +235,31 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
             }
         }
 
-        //WHEN ANY MEMKEYS ARE SET        
+        //WHEN 'ANY' MEMKEYS ARE SET
         if (bounty.trigger_memKeys_any != null && !bounty.trigger_memKeys_any.isEmpty()) {
             Console.showMessage(" - " + "Requires one of the following MemKey(s): ");
             boolean key = false;
             for (String k : bounty.trigger_memKeys_any.keySet()) {
-                Console.showMessage("   . " + k + " : " + bounty.trigger_memKeys_any.get(k));
-                if (Global.getSector().getMemoryWithoutUpdate().contains(k) && Global.getSector().getMemoryWithoutUpdate().getBoolean(k) == bounty.trigger_memKeys_any.get(k)) {
+                Boolean value = bounty.trigger_memKeys_any.get(k);
+                Console.showMessage("   . " + k + " : " + value);
+                if (Global.getSector().getMemoryWithoutUpdate().contains(k) && Global.getSector().getMemoryWithoutUpdate().getBoolean(k) == value) {
+                    Console.showMessage("     " + "PASS");
+                    key = true;
+                } else {
+                    Console.showMessage("     " + "FAIL");
+                }
+            }
+            if (!key) valid = false;
+        }
+
+        //WHEN 'NONE' MEMKEYS ARE SET
+        if (bounty.trigger_memKeys_none != null && !bounty.trigger_memKeys_none.isEmpty()) {
+            Console.showMessage(" - " + "Requires none of the following MemKey(s): ");
+            boolean key = false;
+            for (String k : bounty.trigger_memKeys_none.keySet()) {
+                Boolean value = bounty.trigger_memKeys_none.get(k);
+                Console.showMessage("   . " + k + " : " + value);
+                if (!Global.getSector().getMemoryWithoutUpdate().contains(k) || Global.getSector().getMemoryWithoutUpdate().getBoolean(k) != value) {
                     Console.showMessage("     " + "PASS");
                     key = true;
                 } else {

@@ -69,7 +69,7 @@
 		#"fleet_flagship_variant":"hyperion_Strike",
 		"fleet_flagship_variant":"mb_aurora_bounty",
 		"fleet_flagship_name":"Conqueror of the Stars",
-		"fleet_flagship_recoverable":true,
+		"fleet_flagship_alwaysRecoverable":false,
 		"fleet_preset_ships":{
 			"tempest_Attack":2,
 			#"shade_Assault":1,
@@ -83,6 +83,7 @@
 		"fleet_composition_quality":2,
 		"fleet_transponder":false,
 		"fleet_behavior":"ROAMING",
+		"fleet_musicSetId": null,
 
 		#"location_marketIDs":[],
 		#"location_marketFactions":[],

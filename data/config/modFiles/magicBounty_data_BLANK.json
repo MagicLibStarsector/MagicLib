@@ -70,7 +70,7 @@
         "fleet_faction": "ML_bounty",
         "fleet_flagship_variant":"",
         "fleet_flagship_name":"",
-        "fleet_flagship_recoverable": true,
+        "fleet_flagship_alwaysRecoverable": true,
         "fleet_flagship_autofit": false,
         "fleet_preset_ships": {"variant":1,},
         "fleet_preset_autofit": false,
@@ -81,6 +81,7 @@
         "fleet_transponder": false,
 		"fleet_no_retreat": false,
         "fleet_behavior": "PASSIVE",
+        "fleet_musicSetId": null,
         
         #LOCATION
         

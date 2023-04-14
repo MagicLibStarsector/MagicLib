@@ -1,0 +1,3 @@
+- Run game with:
+  - BetterVariants
+  - Tart's mods

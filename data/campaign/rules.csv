@@ -3,6 +3,7 @@ id,trigger,conditions,script,text,options,notes
 magiclib_bountyboard_addevent,AddBarEvents,"ShouldShowMagicBountyBoard","AddBarEvent magiclib_bountyboard_selected ""Connect to the local unsanctioned bounty board.""  ""A subroutine from your implant informs you that this establishment is broadcasting an informal job board.""",,,
 magiclib_bountyboard_selected,DialogOptionSelected,"$option == magiclib_bountyboard_selected","ShowMagicBountyBoardCmd",,,
 magiclib_bountyCommText,OpenCommLink,"$entity.MagicLib_Bounty_target_hasReply score:1000
-!$entity.ignorePlayerCommRequests",$entity.ignorePlayerCommRequests = true,$MagicLib_Bounty_comm_reply,cutCommLinkNoText:Continue,
+!$entity.ignorePlayerCommRequests","$entity.ignorePlayerCommRequests = true
+MagicBountyCommsReplyCmd",,cutCommLinkNoText:Continue,
 #magiclib_test_bounty_completed,"magiclib_test_bounty_completed",,"BountyScriptTest",,,
 

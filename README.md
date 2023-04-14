@@ -1,11 +1,14 @@
-# README #
+# README
 
-The goal of MagicLib is to create an Open Source, community driven "library" of useful (and well documented) scripts and plugins that can be leveraged and contributed to by every modder.
+The goal of MagicLib is to create a community-built library of useful (and well documented) scripts and plugins that can be leveraged and contributed to by every modder.
 
-All contributions are welcome! To get your stuff released within MagicLib, please contact Tartiflette on the official Forum:
-http://fractalsoftworks.com/forum/index.php?topic=13718.0
-Or on the Unofficial Discord:
+To get your stuff added to MagicLib, please contact Wisp
+
+...on the Unofficial Starsector Discord:
 http://fractalsoftworks.com/forum/index.php?topic=11488.0
 
-All contributions have to be fully documented on the Wiki and given proper Javadocs
+...on the official forum:
+https://fractalsoftworks.com/forum/index.php?topic=25868.0
+
+All contributions must be fully documented on the Wiki and given proper Javadocs:
 https://starsector.wikia.com/wiki/MagicLib

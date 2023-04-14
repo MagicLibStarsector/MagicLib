@@ -278,7 +278,9 @@ public class MagicBountyData {
                     getString(bountyId, "fleet_faction"),
                     flagship,
                     getString(bountyId, "fleet_flagship_name"),
-                    getBoolean(bountyId, "fleet_flagship_recoverable"),
+                    // Renamed to fleet_flagship_alwaysRecoverable, keeping previous for backwards compat.
+                    // If either is true, the flagship is always recoverable.
+                    getBoolean(bountyId, "fleet_flagship_recoverable") || getBoolean(bountyId, "fleet_flagship_alwaysRecoverable"),
                     getBoolean(bountyId, "fleet_flagship_autofit"),
                     getIntMap(bountyId, "fleet_preset_ships"),
                     getBoolean(bountyId, "fleet_preset_autofit"),
@@ -289,6 +291,7 @@ public class MagicBountyData {
                     getBoolean(bountyId, "fleet_transponder"),
                     getBoolean(bountyId, "fleet_no_retreat"),
                     order,
+                    getString(bountyId, "fleet_musicSetId"),
 
                     locations,
                     getStringList(bountyId, "location_marketFactions"),
@@ -1084,6 +1087,8 @@ public class MagicBountyData {
         public String fleet_faction;
         public String fleet_flagship_variant;
         public String fleet_flagship_name;
+        public boolean fleet_flagship_alwaysRecoverable;
+        @Deprecated // Kept for backwards compat (used by BetterVariants). Switch to fleet_flagship_alwaysRecoverable.
         public boolean fleet_flagship_recoverable;
         /**
          * if false the weapons won't get changed, but no D-mod will be added at low quality either
@@ -1119,6 +1124,11 @@ public class MagicBountyData {
          * PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED (campaign.FleetAssignment.orbit_aggressive)
          */
         public FleetAssignment fleet_behavior;
+        /**
+         * The musicSetId to use for the fleet, default to the faction's default music set.
+         * IMPORTANT: This must be added to the mod's `sounds.json` file. See "music_soe_fight" in the vanilla `sounds.json` for an example.
+         */
+        public String fleet_musicSetId;
 
         // Section: location
 
@@ -1158,6 +1168,166 @@ public class MagicBountyData {
          * if false, the script will ignore the distance requirement to attempt to find a suitable system
          */
         public boolean location_defaultToAnyEntity;
+
+        // Legacy, used by BetterVariants.
+        // TODO remove this, convert to builder or something.
+        @Deprecated
+        public bountyData(
+                List<String> trigger_market_id,
+                List<String> trigger_marketFaction_any,
+                boolean trigger_marketFaction_alliedWith,
+                List<String> trigger_marketFaction_none,
+                boolean trigger_marketFaction_enemyWith,
+                int trigger_market_minSize,
+                int trigger_player_minLevel,
+                int trigger_min_days_elapsed,
+                int trigger_min_fleet_size,
+                float trigger_weight_mult,
+                Map<String, Boolean> trigger_memKeys_all,
+                Map<String, Boolean> trigger_memKeys_any,
+                Map<String, Boolean> trigger_memKeys_none,
+                Map<String, Float> trigger_playerRelationship_atLeast,
+                Map<String, Float> trigger_playerRelationship_atMost,
+                Float trigger_giverTargetRelationship_atLeast,
+                Float trigger_giverTargetRelationship_atMost,
+                String job_name,
+                String job_description,
+                String job_comm_reply,
+                String job_intel_success,
+                String job_intel_failure,
+                String job_intel_expired,
+                String job_forFaction,
+                String job_difficultyDescription,
+                int job_deadline,
+                int job_credit_reward,
+                float job_credit_scaling,
+                float job_reputation_reward,
+                Map<String, Integer> job_item_reward,
+                String job_type,
+                boolean job_show_type,
+                boolean job_show_captain,
+                String job_show_fleet,
+                String job_show_distance,
+                boolean job_show_arrow,
+                String job_pick_option,
+                String job_pick_script,
+                String job_memKey,
+                String job_conclusion_script,
+                String existing_target_memkey,
+                String target_first_name,
+                String target_last_name,
+                String target_portrait,
+                FullName.Gender target_gender,
+                String target_rank,
+                String target_post,
+                String target_personality,
+                String target_aiCoreId,
+                int target_level,
+                int target_elite_skills,
+                SkillPickPreference target_skill_preference,
+                Map<String, Integer> target_skills,
+                String fleet_name,
+                String fleet_faction,
+                String fleet_flagship_variant,
+                String fleet_flagship_name,
+                boolean fleet_flagship_alwaysRecoverable,
+                boolean fleet_flagship_autofit,
+                Map<String, Integer> fleet_preset_ships,
+                boolean fleet_preset_autofit,
+                float fleet_scaling_multiplier,
+                int fleet_min_FP,
+                String fleet_composition_faction,
+                float fleet_composition_quality,
+                boolean fleet_transponder,
+                boolean fleet_no_retreat,
+                FleetAssignment fleet_behavior,
+                List<String> location_marketIDs,
+                List<String> location_marketFactions,
+                String location_distance,
+                List<String> location_themes,
+                List<String> location_themes_blacklist,
+                List<String> location_entities,
+                boolean location_prioritizeUnexplored,
+                //boolean location_defaultToAnySystem,
+                boolean location_defaultToAnyEntity) {
+            this(trigger_market_id,
+                    trigger_marketFaction_any,
+                    trigger_marketFaction_alliedWith,
+                    trigger_marketFaction_none,
+                    trigger_marketFaction_enemyWith,
+                    trigger_market_minSize,
+                    trigger_player_minLevel,
+                    trigger_min_days_elapsed,
+                    trigger_min_fleet_size,
+                    trigger_weight_mult,
+                    trigger_memKeys_all,
+                    trigger_memKeys_any,
+                    trigger_memKeys_none,
+                    trigger_playerRelationship_atLeast,
+                    trigger_playerRelationship_atMost,
+                    trigger_giverTargetRelationship_atLeast,
+                    trigger_giverTargetRelationship_atMost,
+                    job_name,
+                    job_description,
+                    job_comm_reply,
+                    job_intel_success,
+                    job_intel_failure,
+                    job_intel_expired,
+                    job_forFaction,
+                    job_difficultyDescription,
+                    job_deadline,
+                    job_credit_reward,
+                    job_credit_scaling,
+                    job_reputation_reward,
+                    job_item_reward,
+                    job_type,
+                    job_show_type,
+                    job_show_captain,
+                    job_show_fleet,
+                    job_show_distance,
+                    job_show_arrow,
+                    job_pick_option,
+                    job_pick_script,
+                    job_memKey,
+                    job_conclusion_script,
+                    existing_target_memkey,
+                    target_first_name,
+                    target_last_name,
+                    target_portrait,
+                    target_gender,
+                    target_rank,
+                    target_post,
+                    target_personality,
+                    target_aiCoreId,
+                    target_level,
+                    target_elite_skills,
+                    target_skill_preference,
+                    target_skills,
+                    fleet_name,
+                    fleet_faction,
+                    fleet_flagship_variant,
+                    fleet_flagship_name,
+                    fleet_flagship_alwaysRecoverable,
+                    fleet_flagship_autofit,
+                    fleet_preset_ships,
+                    fleet_preset_autofit,
+                    fleet_scaling_multiplier,
+                    fleet_min_FP,
+                    fleet_composition_faction,
+                    fleet_composition_quality,
+                    fleet_transponder,
+                    fleet_no_retreat,
+                    fleet_behavior,
+                    null,
+                    location_marketIDs,
+                    location_marketFactions,
+                    location_distance,
+                    location_themes,
+                    location_themes_blacklist,
+                    location_entities,
+                    location_prioritizeUnexplored,
+                    location_defaultToAnyEntity);
+        }
 
         public bountyData(
                 List<String> trigger_market_id,
@@ -1217,7 +1387,7 @@ public class MagicBountyData {
                 String fleet_faction,
                 String fleet_flagship_variant,
                 String fleet_flagship_name,
-                boolean fleet_flagship_recoverable,
+                boolean fleet_flagship_alwaysRecoverable,
                 boolean fleet_flagship_autofit,
                 Map<String, Integer> fleet_preset_ships,
                 boolean fleet_preset_autofit,
@@ -1228,6 +1398,7 @@ public class MagicBountyData {
                 boolean fleet_transponder,
                 boolean fleet_no_retreat,
                 FleetAssignment fleet_behavior,
+                String fleet_musicSetId,
                 List<String> location_marketIDs,
                 List<String> location_marketFactions,
                 String location_distance,
@@ -1359,7 +1530,8 @@ public class MagicBountyData {
             this.fleet_faction = fleet_faction;
             this.fleet_flagship_variant = fleet_flagship_variant;
             this.fleet_flagship_name = fleet_flagship_name;
-            this.fleet_flagship_recoverable = fleet_flagship_recoverable;
+            this.fleet_flagship_alwaysRecoverable = fleet_flagship_alwaysRecoverable;
+            this.fleet_flagship_recoverable = fleet_flagship_alwaysRecoverable;
             this.fleet_flagship_autofit = fleet_flagship_autofit;
             this.fleet_preset_ships = fleet_preset_ships;
             this.fleet_preset_autofit = fleet_preset_autofit;
@@ -1370,6 +1542,7 @@ public class MagicBountyData {
             this.fleet_transponder = fleet_transponder;
             this.fleet_no_retreat = fleet_no_retreat;
             this.fleet_behavior = fleet_behavior;
+            this.fleet_musicSetId = fleet_musicSetId;
             this.location_marketIDs = location_marketIDs;
             this.location_marketFactions = location_marketFactions;
             this.location_distance = location_distance;
@@ -1441,7 +1614,7 @@ public class MagicBountyData {
             sb.append(", \nfleet_faction='").append(fleet_faction).append('\'');
             sb.append(", \nfleet_flagship_variant='").append(fleet_flagship_variant).append('\'');
             sb.append(", \nfleet_flagship_name='").append(fleet_flagship_name).append('\'');
-            sb.append(", \nfleet_flagship_recoverable=").append(fleet_flagship_recoverable);
+            sb.append(", \nfleet_flagship_alwaysRecoverable=").append(fleet_flagship_alwaysRecoverable);
             sb.append(", \nfleet_flagship_autofit=").append(fleet_flagship_autofit);
             sb.append(", \nfleet_preset_ships=").append(fleet_preset_ships);
             sb.append(", \nfleet_preset_autofit=").append(fleet_preset_autofit);
@@ -1452,6 +1625,7 @@ public class MagicBountyData {
             sb.append(", \nfleet_transponder=").append(fleet_transponder);
             sb.append(", \nfleet_no_retreat=").append(fleet_no_retreat);
             sb.append(", \nfleet_behavior=").append(fleet_behavior);
+            sb.append(", \nfleet_musicSetId=").append(fleet_musicSetId);
             sb.append(", \nlocation_marketIDs=").append(location_marketIDs);
             sb.append(", \nlocation_marketFactions=").append(location_marketFactions);
             sb.append(", \nlocation_distance='").append(location_distance).append('\'');
