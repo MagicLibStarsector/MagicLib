@@ -12,7 +12,7 @@
 		"scaleNameWithZoom":false,
 		"scaleIconWithZoom":true,
 		"layers":[ABOVE, FLEETS, ASTEROIDS, JUMP_POINTS, PLANETS, RINGS, STATIONS, TERRAIN_7A], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
-		"pluginClass":"data.scripts.util.MagicCustomCampaignTrailEntityScript",
+		"pluginClass":"org.magiclib.util.MagicCustomCampaignTrailEntityScript",
 	},
 }
 
