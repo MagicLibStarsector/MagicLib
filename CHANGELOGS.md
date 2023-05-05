@@ -1,5 +1,12 @@
 MagicLib
 
+1.0.0
+
+**MagicBounty**
+- Fixed intel showing # ships changing each time it's viewed (reported by Selkie).
+- `\n` now creates new paragraphs consistently (reported by vicegrip).
+- 
+
 0.46.1
 
 **Other**

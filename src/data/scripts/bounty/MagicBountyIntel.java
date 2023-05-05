@@ -19,12 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-
-import static com.fs.starfarer.api.util.Misc.random;
 
 /**
  * Displays MagicLib Bounties to the player.
@@ -606,6 +602,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     ) {
 
         int columns = 7;
+        Random random;
+        if (flagship == null || flagship.get(0) == null || flagship.get(0).getCaptain() == null) {
+            random = new Random(4); // chosen by fair dice roll. guaranteed to be random.
+        } else {
+            random = new Random(flagship.get(0).getCaptain().getNameString().hashCode() * 170000);
+        }
+
         switch (setting) {
             case Text:
                 //write the number of ships

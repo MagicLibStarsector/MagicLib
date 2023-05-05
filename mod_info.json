@@ -4,14 +4,14 @@
     "author": "Modding Community: Dark.Revenant, LazyWizard, Nicke, Originem, Rubi, Schaf-Unschaf, Snrasha, Tartiflette, Wisp, Wyvern...",
     "utility": "true",
     # Using the long version format lets the game correctly compare major/minor/patch versions.
-    "version": {"major":'0', "minor":'46', "patch":'1-rc03'},
+    "version": {"major":'0', "minor":'46', "patch":'2-dev01'},
     "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
     "gameVersion": "0.95.1a-RC6",
     "dependencies": [
         {
             "id": "lw_lazylib",
             "name": "LazyLib",
-            "version": {"major":2, "minor":7, "patch":"b"}
+            "version": "2.7b"
         }
     ],
     "jars": ["jars/MagicLib.jar", "jars/MagicLib-Kotlin.jar"],

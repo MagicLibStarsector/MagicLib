@@ -43,10 +43,17 @@ public class MagicIncompatibleWarning extends BaseHullMod {
 
             try {
                 removed = Global.getSettings().getHullModSpec(removed).getDisplayName();
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "MagicLib was unable to find the following hull mod spec: " + removed + ".",
+                        e);
+            }
+
+            try {
                 cause = Global.getSettings().getHullModSpec(cause).getDisplayName();
             } catch (Exception e) {
                 throw new RuntimeException(
-                        "MagicLib was unable to find one of the following hull mod specs: " + removed + " or " + cause + ".",
+                        "MagicLib was unable to find the following hull mod spec: " + cause + ".",
                         e);
             }
 

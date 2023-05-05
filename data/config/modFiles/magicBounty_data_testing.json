@@ -1,9 +1,9 @@
 {
 	"test_bounty":{
 
-		#"required_mods_id": ["do_not_load"],
+        #"required_mods_id": ["do_not_load"],
 
-		"trigger_market_id":["asharu"],
+        "trigger_market_id":["asharu"],
 		"trigger_marketFaction_any":["independent"],
 		"trigger_marketFaction_alliedWith":true,
 		#"trigger_marketFaction_none":["pirates"],
@@ -22,7 +22,7 @@
 		"job_name":"Take down a pirate upstart",
 		"job_description":"The son of some TT bigwig has made very public their dislike for a sheltered lavish life of luxure and decided to invest \"their\" money to form a merry band of \"pirates\" and enjoy a more eventful existence. They even went as far as to make an announcement when entering the $system_name system! This is an outrage, and proof of the utter disregard from the rich about the 99%% yadda yadda yadda.\nThe part that interests me, and by extension the reader of this note, is that in the Tri-Tachyon influential spheres there is always something to gain from shining a light on the antics of one's troublesome heir. Find the fleet, destroy it. The target's survival is irrelevant, we will have our media coverage ready before the deed is done.\nTime is of the essence here.",
 		#"job_description":"error?",
-		"job_comm_reply":"Finally, time for some ==action==! Come at me dude, ==I'll show you== what this baby can do!",
+		"job_comm_reply":"Finally, time for some action! Come at me dude, I'll show you what this baby can do!",
 		#"job_comm_reply":"error?",
 		"job_intel_success": "Minutes after the battle your comm officer signals you the reception an anonymous payment, along a link to a StellNet article describing the damning actions of one rising TT exec's child and their gruelling end at the hand of a courageous mercenary outfit.",
 		#"job_intel_success": "error?",
@@ -43,8 +43,8 @@
 		"job_type":"assassination",
 		"job_show_type":true,
 		"job_show_captain":true,
-		"job_show_fleet":"FlagshipText",
-		"job_show_distance":"vanilla",
+		"job_show_fleet":"presetText",
+		"job_show_distance":"vague",
 		"job_show_arrow":true,
 		"job_pick_option":"Accept the job",
 		#"job_pick_script":"magiclib_test_bounty_completed",
@@ -87,9 +87,9 @@
 
 		#"location_marketIDs":[],
 		#"location_marketFactions":[],
-		"location_distance":"",
+		"location_distance":"CORE",
 		"location_themes":[
-			,
+			"theme_core_unpopulated",
 		],
 		#"location_themes_blacklist":[],
 		"location_entities":[
@@ -101,12 +101,11 @@
 			"comm_relay",
 			"nav_buoy",
 			"sensor_array",
-			"gas_giant",
+            "gas_giant",
 			"planet",
 			"jump_point"
 		],
-		"location_prioritizeUnexplored":true,
+		"location_prioritizeUnexplored":false,
 		"location_defaultToAnyEntity":true
-	},
+        },
 }
-k

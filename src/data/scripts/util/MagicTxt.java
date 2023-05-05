@@ -124,15 +124,19 @@ public class MagicTxt {
             return;
         }
 
-        MagicDisplayableText magicText = new MagicDisplayableText(str);
+        String[] paras = str.split("\\n");
 
-        text.addPara(
-                magicText.format,
-                padding,
-                textColor,
-                highlightColor,
-                magicText.highlights
-        );
+        for (String para : paras) {
+            MagicDisplayableText magicText = new MagicDisplayableText(para);
+
+            text.addPara(
+                    magicText.format,
+                    padding,
+                    textColor,
+                    highlightColor,
+                    magicText.highlights
+            );
+        }
     }
 
     private static String replaceStringHighlightsWithSymbol(@NotNull String str) {
