@@ -29,13 +29,31 @@ import java.util.Random;
 
 /**
  * Creates a fleet with a defined flagship and optional escort.
+ * <p>
+ * Not all fields are required. Each `set` method has a comment showing the default value for if it is not used.
+ * <p>
+ * Example usage:
+ * <pre>
+ * MagicCampaign.createFleetBuilder()
+ *         .setFleetName("Hegemony Attack Fleet")
+ *         .setFleetFaction(Factions.HEGEMONY)
+ *         .setFleetType(FleetTypes.TASK_FORCE)
+ *         .setFlagshipName("HSS Onslaught")
+ *         .setFlagshipVariant("onslaught_xiv_Elite")
+ *         .setFlagshipAlwaysRecoverable(false)
+ *         .setFlagshipAutofit(true)
+ *         .setCaptain(theCaptain)
+ *         .setSupportAutofit(true)
+ *         .setReinforcementFaction(Factions.HEGEMONY)
+ *         .create()
+ * </pre>
  *
  * @author Wisp
  * @since 0.46.0
  */
 @SuppressWarnings("unused")
 public class MagicFleetBuilder {
-    public static Logger log = Global.getLogger(MagicFleetBuilder.class);
+    protected static Logger log = Global.getLogger(MagicFleetBuilder.class);
 
     private @Nullable String fleetName;
     private @NotNull String fleetFaction = MagicVariables.BOUNTY_FACTION;

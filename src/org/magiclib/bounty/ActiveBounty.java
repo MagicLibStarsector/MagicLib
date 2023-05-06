@@ -495,23 +495,30 @@ public final class ActiveBounty {
     /**
      * Calculates and returns the number of credits that will be awarded upon completion, if any.
      * Includes any scaling factor.
+     *
+     * @param preScalingMultiplier The multiplier to apply BEFORE any other scaling is applied.
+     * @param postScalingMultiplier The multiplier to apply AFTER all other scaling is applied.
      */
     @Nullable
-    Float calculateCreditReward() {
-        if (spec.job_credit_reward <= 0) {
+    Float calculateCreditReward(float preScalingMultiplier, float postScalingMultiplier) {
+        int jobCreditReward = (int) (spec.job_credit_reward * preScalingMultiplier);
+
+        if (jobCreditReward <= 0) {
             return null;
         }
 
+        // Reward including the post-scaling multiplier, rounded to the nearest 100.
+        long postScaledRewardRoundedToNearest100 = Math.round((jobCreditReward * postScalingMultiplier) / 100.0) * 100;
+
         if (getSpec().job_credit_scaling <= 0 || getSpec().fleet_min_FP <= 0) {
-            float rewardRoundedToNearest100 = Math.round(getSpec().job_credit_reward / 100.0) * 100;
             LOG.info(
                     String.format(
                             "Base reward of %sc for bounty '%s'. No reward scaling defined or no target min FP.",
-                            rewardRoundedToNearest100,
+                            (float) postScaledRewardRoundedToNearest100,
                             getKey()
                     )
             );
-            return rewardRoundedToNearest100;
+            return (float) postScaledRewardRoundedToNearest100;
         }
 
         //Reward scaling is a mult applied to the size ratio between the player fleet and the min target fleet
@@ -519,15 +526,15 @@ public final class ActiveBounty {
         // Math.max in case the scaling ends up negative, we don't want to subtract from the base reward.
 
         if (playerFleetScale > 0) {
-            float bonusCreditsFromScaling = getSpec().job_credit_reward * getSpec().job_credit_scaling * playerFleetScale;
-            float reward = Math.round(getSpec().job_credit_reward + bonusCreditsFromScaling);
+            float bonusCreditsFromScaling = jobCreditReward * getSpec().job_credit_scaling * playerFleetScale;
+            float reward = Math.round((jobCreditReward + bonusCreditsFromScaling) * postScalingMultiplier);
             float rewardRoundedToNearest100 = Math.round(reward / 100.0) * 100;
             LOG.info(
                     String.format(
                             "Rounded reward of %sc for bounty '%s'. Base reward of %sc, scaled by %s (%s credit scaling, %s player fleet size mult)",
                             rewardRoundedToNearest100,
                             getKey(),
-                            getSpec().job_credit_reward,
+                            jobCreditReward,
                             playerFleetScale + 1,
                             getSpec().job_credit_scaling,
                             playerFleetScale
@@ -535,16 +542,15 @@ public final class ActiveBounty {
             );
             return rewardRoundedToNearest100;
         } else {
-            float rewardRoundedToNearest100 = Math.round(getSpec().job_credit_reward / 100.0) * 100;
             LOG.info(
                     String.format(
                             "Base reward of %sc for bounty '%s'. No scaling due to the player fleet being %s times as large as the minimum target fleet.",
-                            rewardRoundedToNearest100,
+                            (float) postScaledRewardRoundedToNearest100,
                             getKey(),
                             1 + playerFleetScale
                     )
             );
-            return rewardRoundedToNearest100;
+            return (float) postScaledRewardRoundedToNearest100;
         }
     }
 

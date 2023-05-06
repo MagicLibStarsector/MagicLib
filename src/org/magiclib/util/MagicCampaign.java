@@ -43,9 +43,12 @@ import java.util.Map;
 
 import static com.fs.starfarer.api.util.Misc.MAX_OFFICER_LEVEL;
 
+/**
+ * A collection of methods to help do things on the campaign layer.
+ */
 public class MagicCampaign {
 
-    public static Logger log = Global.getLogger(MagicCampaign.class);
+    protected static Logger log = Global.getLogger(MagicCampaign.class);
 
 
     /////////////////////////
@@ -56,6 +59,24 @@ public class MagicCampaign {
 
     /**
      * Creates a fleet with a defined flagship and optional escort.
+     * <p>
+     * Not all fields are required. Each `set` method has a comment showing the default value for if it is not used.
+     * <p>
+     * Example usage:
+     * <pre>
+     * MagicCampaign.createFleetBuilder()
+     *         .setFleetName("Hegemony Attack Fleet")
+     *         .setFleetFaction(Factions.HEGEMONY)
+     *         .setFleetType(FleetTypes.TASK_FORCE)
+     *         .setFlagshipName("HSS Onslaught")
+     *         .setFlagshipVariant("onslaught_xiv_Elite")
+     *         .setFlagshipAlwaysRecoverable(false)
+     *         .setFlagshipAutofit(true)
+     *         .setCaptain(theCaptain)
+     *         .setSupportAutofit(true)
+     *         .setReinforcementFaction(Factions.HEGEMONY)
+     *         .create()
+     * </pre>
      *
      * @author Wisp
      * @since 0.46.0
@@ -66,6 +87,16 @@ public class MagicCampaign {
 
     /**
      * Creates a captain PersonAPI.
+     * <p>
+     * Not all fields are required. Each `set` method has a comment showing the default value for if it is not used.
+     * <p>
+     * Usage:
+     * <pre>
+     * MagicCampaign.createCaptainBuilder(Factions.LUDDIC_CHURCH)
+     *             .setFirstName("David")
+     *             .setLastName("Rengel")
+     *             .setGender(FullName.Gender.MALE)
+     * </pre>
      *
      * @since 0.46.1
      */

@@ -197,7 +197,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             }
 
             //Then, actually spawn a trail
-            MagicTrailPlugin.AddTrailMemberAdvanced(
+            MagicTrailPlugin.addTrailMemberAdvanced(
                     proj,
                     trailIDs.get(i),
                     spriteToUse,

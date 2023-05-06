@@ -139,7 +139,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param additive     Whether this trail will use additive blending or not. Does not support being changed in
      *                     the middle of a trail
      */
-    public static void AddTrailMemberSimple(
+    public static void addTrailMemberSimple(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float speed, float angle,
             float startSize, float endSize,
@@ -245,7 +245,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
      *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAdvanced(
+    public static void addTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -261,7 +261,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
 
-        AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
+        addTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
                 startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, textureOffset,
                 offsetVelocity, advancedOptions, layerToRenderOn, frameOffsetMult);
     }
@@ -339,7 +339,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
      *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAdvanced(
+    public static void addTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -497,7 +497,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
      *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAdvanced(
+    public static void addTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -513,7 +513,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
 
-        AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
+        addTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
                 startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
                 offsetVelocity, advancedOptions, layerToRenderOn, frameOffsetMult);
     }
@@ -591,7 +591,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             adjust trail offset at different speeds. Default: 1f
      */
     @Deprecated
-    public static void AddTrailMemberAdvanced(
+    public static void addTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -732,7 +732,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             changed mid-trail
      */
     @Deprecated
-    public static void AddTrailMemberAdvanced(
+    public static void addTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -742,7 +742,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             int blendModeSRC, int blendModeDEST,
             float textureLoopLength, float textureScrollSpeed,
             Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions) {
-        AddTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
+        addTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize,
                 startColor, endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
                 offsetVelocity, advancedOptions, CombatEngineLayers.CONTRAILS_LAYER, 1f);
     }
@@ -818,7 +818,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             CANNOT change mid-trail, under any circumstance
      */
     @Deprecated
-    public static void AddTrailMemberAdvanced(
+    public static void addTrailMemberAdvanced(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -946,7 +946,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
      *                             adjust trail offset at different speeds. Default: 1f
      */
-    public static void AddTrailMemberAnimated(
+    public static void addTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -962,7 +962,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
 
-        AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
+        addTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
                 endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, textureOffset, offsetVelocity,
                 advancedOptions, layerToRenderOn, frameOffsetMult);
     }
@@ -1042,7 +1042,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      * @param frameOffsetMult      The per-frame multiplier for the per-frame velocity offset magnitude. Used to finely
      *                             adjust trail offset at different speeds
      */
-    public static void AddTrailMemberAnimated(
+    public static void addTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -1189,7 +1189,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             changed mid-trail
      */
     @Deprecated
-    public static void AddTrailMemberAnimated(
+    public static void addTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -1205,7 +1205,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
         int blendModeSRC = GL_SRC_ALPHA;
         int blendModeDEST = additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
 
-        AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
+        addTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
                 endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
                 advancedOptions, layerToRenderOn, frameOffsetMult);
     }
@@ -1285,7 +1285,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             adjust trail offset at different speeds
      */
     @Deprecated
-    public static void AddTrailMemberAnimated(
+    public static void addTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -1416,7 +1416,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             changed mid-trail
      */
     @Deprecated
-    public static void AddTrailMemberAnimated(
+    public static void addTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,
@@ -1426,7 +1426,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
             int blendModeSRC, int blendModeDEST,
             float textureLoopLength, float textureScrollSpeed,
             Vector2f offsetVelocity, @Nullable Map<String, Object> advancedOptions) {
-        AddTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
+        addTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor,
                 endColor, opacity, inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity,
                 advancedOptions, CombatEngineLayers.BELOW_INDICATORS_LAYER, 1f);
     }
@@ -1503,7 +1503,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
      *                             CANNOT change mid-trail, under any circumstance
      */
     @Deprecated
-    public static void AddTrailMemberAnimated(
+    public static void addTrailMemberAnimated(
             CombatEntityAPI linkedEntity, float ID, SpriteAPI sprite,
             Vector2f position, float startSpeed, float endSpeed,
             float angle, float startAngularVelocity, float endAngularVelocity,

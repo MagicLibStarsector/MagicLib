@@ -59,6 +59,18 @@ public final class MagicBountyCoordinator {
             MagicSettings.getInteger(MagicVariables.MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
     /**
+     * The multiplier to apply BEFORE any other scaling is applied.
+     * May be modified by other mods. It is reset onGameLoad.
+     */
+    private float preScalingCreditRewardMultiplier = 1f;
+
+    /**
+     * The multiplier to apply AFTER all other scaling is applied.
+     * May be modified by other mods. It is reset onGameLoad.
+     */
+    private float postScalingCreditRewardMultiplier = 1f;
+
+    /**
      * Returns a map (bounty key, bounty) of all active bounties. Note that this does not necessarily mean that they have
      * been accepted, just that they've been inflated from json (like being instantiated).
      */
@@ -494,5 +506,21 @@ public final class MagicBountyCoordinator {
         }
 
         return desiredFP;
+    }
+
+    public float getPreScalingCreditRewardMultiplier() {
+        return preScalingCreditRewardMultiplier;
+    }
+
+    public void setPreScalingCreditRewardMultiplier(float preScalingCreditRewardMultiplier) {
+        this.preScalingCreditRewardMultiplier = preScalingCreditRewardMultiplier;
+    }
+
+    public float getPostScalingCreditRewardMultiplier() {
+        return postScalingCreditRewardMultiplier;
+    }
+
+    public void setPostScalingCreditRewardMultiplier(float postScalingCreditRewardMultiplier) {
+        this.postScalingCreditRewardMultiplier = postScalingCreditRewardMultiplier;
     }
 }

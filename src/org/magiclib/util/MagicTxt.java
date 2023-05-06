@@ -15,12 +15,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Contains some String-related utility functions.
+ */
 public class MagicTxt {
 
     public static String getString(String id) {
         return Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id);
     }
 
+    /**
+     * If the input is an empty string, returns null. Otherwise, returns the input.
+     */
     public static String nullStringIfEmpty(@Nullable String input) {
         return input != null && !input.isEmpty() ? input : null;
     }
@@ -89,6 +95,11 @@ public class MagicTxt {
         return new MagicDisplayableText(str);
     }
 
+    /**
+     * Uses {@link MagicDisplayableText} to add a paragraph to the given {@link TextPanelAPI}.
+     * \n may be used to add multiple paragraphs.
+     * You can use Misc.getTextColor() and Misc.getHighlightColor() to get default colors.
+     */
     public static void addPara(
             @NotNull TextPanelAPI text,
             @Nullable String str,
@@ -100,16 +111,25 @@ public class MagicTxt {
             return;
         }
 
-        MagicDisplayableText magicText = new MagicDisplayableText(str);
+        String[] paras = str.split("\\n");
 
-        text.addPara(
-                magicText.format,
-                textColor,
-                highlightColor,
-                magicText.highlights
-        );
+        for (String para : paras) {
+            MagicDisplayableText magicText = new MagicDisplayableText(para);
+
+            text.addPara(
+                    magicText.format,
+                    textColor,
+                    highlightColor,
+                    magicText.highlights
+            );
+        }
     }
 
+    /**
+     * Uses {@link MagicDisplayableText} to add a paragraph to the given {@link TooltipMakerAPI}.
+     * \n may be used to add multiple paragraphs.
+     * You can use Misc.getTextColor() and Misc.getHighlightColor() to get default colors.
+     */
     public static void addPara(
             @NotNull TooltipMakerAPI text,
             @Nullable String str,

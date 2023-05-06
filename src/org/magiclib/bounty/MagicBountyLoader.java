@@ -16,10 +16,15 @@ import java.io.IOException;
 import java.util.*;
 
 /**
+ * Loads {@link MagicBountySpec} from JSON file and stores them in BOUNTIES Map.
+ *
  * @author Tartiflette
  */
 public class MagicBountyLoader {
 
+    /**
+     * {@link MagicBountySpec} Map containing all the bounties loaded from JSON file, key is the bounty unique id.
+     */
     public static Map<String, MagicBountySpec> BOUNTIES = new HashMap<>();
     public static boolean JSONfailed = false;
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";

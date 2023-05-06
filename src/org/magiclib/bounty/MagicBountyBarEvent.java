@@ -118,7 +118,10 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     text.addPara("%s", Misc.getHighlightColor(), MagicTxt.getString("mb_accepted") + bounty.job_name);
 
                     ActiveBounty activeBounty = bountyCoordinator.getActiveBounty(bountyKey);
-                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(), bounty.job_reputation_reward, bounty.job_forFaction);
+                    activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(
+                                    MagicBountyCoordinator.getInstance().getPreScalingCreditRewardMultiplier(),
+                                    MagicBountyCoordinator.getInstance().getPostScalingCreditRewardMultiplier()),
+                            bounty.job_reputation_reward, bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -261,7 +264,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //REWARD
-                            Float creditReward = activeBounty.calculateCreditReward();
+                            Float creditReward = activeBounty.calculateCreditReward(
+                                    MagicBountyCoordinator.getInstance().getPreScalingCreditRewardMultiplier(),
+                                    MagicBountyCoordinator.getInstance().getPostScalingCreditRewardMultiplier());
                             if (creditReward != null) {
                                 //"Reward: %s"
                                 text.addPara(MagicTxt.getString("mb_credits"), Misc.getHighlightColor(), Misc.getDGSCredits(creditReward));

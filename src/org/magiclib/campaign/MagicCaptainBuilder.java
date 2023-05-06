@@ -18,13 +18,21 @@ import static org.magiclib.util.MagicTxt.nullStringIfEmpty;
 
 /**
  * Creates a captain PersonAPI.
+ * <p>
+ * Not all fields are required. Each `set` method has a comment showing the default value for if it is not used.
+ * <p>
  * Usage:
- * <pre>new MagicCaptainBuilder("factionId").setFirstName("John").setLastName("Smith").create();</pre>
+ * <pre>
+ * MagicCampaign.createCaptainBuilder(Factions.LUDDIC_CHURCH)
+ *             .setFirstName("David")
+ *             .setLastName("Rengel")
+ *             .setGender(FullName.Gender.MALE)
+ * </pre>
  *
  * @since 0.46.1
  */
 public class MagicCaptainBuilder {
-    public static Logger log = Global.getLogger(MagicCaptainBuilder.class);
+    protected static Logger log = Global.getLogger(MagicCaptainBuilder.class);
 
     private @Nullable Boolean isAI = false;
     private @Nullable String aiCoreType;

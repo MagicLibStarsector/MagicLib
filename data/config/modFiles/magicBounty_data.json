@@ -1,7 +1,7 @@
 {
 	"test_bounty":{
 
-		#"required_mods_id": ["do_not_load"],
+		"required_mods_id": ["do_not_load"],
 
 		"trigger_market_id":["asharu"],
 		"trigger_marketFaction_any":["independent"],

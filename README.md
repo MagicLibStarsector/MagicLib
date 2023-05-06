@@ -12,3 +12,5 @@ https://fractalsoftworks.com/forum/index.php?topic=25868.0
 
 All contributions must be fully documented on the Wiki and given proper Javadocs:
 https://starsector.wikia.com/wiki/MagicLib
+
+View the Javadoc: https://magiclibstarsector.github.io/MagicLib/

@@ -321,36 +321,51 @@ public class MagicFakeBeam {
             float ID = MagicTrailPlugin.getUniqueID();
             SpriteAPI texture = Global.getSettings().getSprite("fx", textureCore);
 
-            MagicTrailPlugin.AddTrailMemberAdvanced(
-                    null, ID, texture,
-                    from, 0, 0,
-                    angle, 0, 0,
-                    widthIn / 3, widthIn / 3 + growth,
-                    core, fringe, 1,
-                    0, full, fading,
-                    GL_SRC_ALPHA, GL_ONE,
-                    textureLength, textureScroll,
-                    new Vector2f(), null,
-                    CombatEngineLayers.BELOW_INDICATORS_LAYER, 1
+            MagicTrailPlugin.addTrailMemberAdvanced(
+                    null,
+                    ID,
+                    texture,
+                    from,
+                    0,
+                    0,
+                    angle,
+                    0,
+                    0,
+                    widthIn / 3,
+                    widthIn / 3 + growth,
+                    core,
+                    fringe,
+                    1,
+                    0,
+                    full,
+                    fading,
+                    GL_SRC_ALPHA,
+                    GL_ONE,
+                    textureLength,
+                    textureScroll,
+                    new Vector2f(),
+                    null,
+                    CombatEngineLayers.BELOW_INDICATORS_LAYER,
+                    1
             );
 
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(from, smoothIn, angle), 0, 0, angle, 0, 0, widthIn / 2, widthIn * 0.75f + growth, core, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(from, smoothIn, angle), 0, 0, angle, 0, 0, widthIn / 2, widthIn * 0.75f + growth, core, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(end, smoothOut, angle + 180), 0, 0, angle, 0, 0, widthOut / 2, widthOut * 0.75f + growth, core, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(end, smoothOut, angle + 180), 0, 0, angle, 0, 0, widthOut / 2, widthOut * 0.75f + growth, core, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, end, 0, 0, angle, 0, 0, widthOut / 3, widthOut / 3 + growth, core, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, end, 0, 0, angle, 0, 0, widthOut / 3, widthOut / 3 + growth, core, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
 
             ID = MagicTrailPlugin.getUniqueID();
             texture = Global.getSettings().getSprite("fx", textureFringe);
 
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, from, 0, 0, angle, 0, 0, widthIn / 2, widthIn / 2 + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, from, 0, 0, angle, 0, 0, widthIn / 2, widthIn / 2 + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(from, smoothIn, angle), 0, 0, angle, 0, 0, widthIn, widthIn + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(from, smoothIn, angle), 0, 0, angle, 0, 0, widthIn, widthIn + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(end, smoothOut, angle + 180), 0, 0, angle, 0, 0, widthOut, widthOut + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, MathUtils.getPoint(end, smoothOut, angle + 180), 0, 0, angle, 0, 0, widthOut, widthOut + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
-            MagicTrailPlugin.AddTrailMemberAdvanced(null, ID, texture, end, 0, 0, angle, 0, 0, widthOut / 2, widthOut / 2 + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
+            MagicTrailPlugin.addTrailMemberAdvanced(null, ID, texture, end, 0, 0, angle, 0, 0, widthOut / 2, widthOut / 2 + growth, fringe, fringe, 1, 0, full, fading, GL_SRC_ALPHA, GL_ONE, textureLength, textureScroll, new Vector2f(), null,
                     CombatEngineLayers.BELOW_INDICATORS_LAYER, 1);
         }
     }
