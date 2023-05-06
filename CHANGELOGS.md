@@ -2,10 +2,36 @@ MagicLib
 
 1.0.0
 
+**Other**
+- BREAKING: Changed package of all classes from `data.scripts` to `org.magiclib`.
+- Created a javadoc site at <https://magiclibstarsector.github.io/MagicLib/>.
+
 **MagicBounty**
 - Fixed intel showing # ships changing each time it's viewed (reported by Selkie).
 - `\n` now creates new paragraphs consistently (reported by vicegrip).
-- 
+- Added methods to `MagicBountyCoordinator` to set global scalars for MagicBounty rewards.
+- BREAKING: Renamed `MagicBountyData` to `MagicBountyDataLoader`.
+- BREAKING: Renamed `bountyData` to `BountySpec`.
+
+**MagicCampaign**
+- BREAKING: Removed `createFleet` method. Use `createFleetBuilder` instead.
+- BREAKING: Removed `createCaptain` method. Use `createCaptainBuilder` instead.
+- BREAKING: Removed `createJumpPoint` method. Use `addJumpPoint` instead.
+- BREAKING: Removed an overload of `addCustomPerson` method. Use new `addCustomPerson` instead.
+
+**MagicAnim**
+- BREAKING: Removed `AS`. Use `arbitrarySmooth` instead.
+- BREAKING: Removed `range`. Use `offsetToRange` instead.
+- BREAKING: Removed `offset`. Use `normalizeRange` instead.
+- BREAKING: Removed `SO`. Use `smoothNormalizeRange` instead.
+- BREAKING: Removed `RSO`. Use `smoothReturnNormalizeRange` instead.
+
+**MagicTrailPlugin**
+- BREAKING: Removed some deprecated methods.
+- BREAKING: Lowercased some method names to match Java conventions.
+
+**MagicRender**
+- BREAKING: Removed some deprecated method overloads: `battlespace`, `objectspace`, `screenspace`.
 
 0.46.1
 
