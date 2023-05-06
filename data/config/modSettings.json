@@ -4,6 +4,7 @@
         "magicTrail_files":[
             # The default trail data file is "data/config/modFiles/magicTrail_data.csv"
             # Mods that do not want to use the shared modFiles folder can point to their own file here
+			# "data/trails/trail_data.csv" is kept for backwards compatibility for mods that don't use "data/config/modFiles/magicTrail_data.csv"
             "data/trails/trail_data.csv",
         ],
 
