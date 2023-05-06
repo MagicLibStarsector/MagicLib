@@ -1,12 +1,12 @@
 {
     "plugins":{
-        "ML_fakeBeamPlugin":"data.scripts.plugins.MagicFakeBeamPlugin",
-        "ML_spriteRenderManager":"data.scripts.plugins.MagicRenderPlugin",       
-        "MagicCampaignTrailPlugin":"data.scripts.plugins.MagicCampaignTrailPlugin",     
-        "MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin", 
-        "MagicAutoTrails":"data.scripts.plugins.MagicAutoTrails",
-        #"MagicModuleRetreatFix":"data.scripts.plugins.MagicModuleRetreatCleaner",
-		#"MagicNebula":"data.scripts.plugins.MagicNebula",
+        "ML_fakeBeamPlugin":"org.magiclib.plugins.MagicFakeBeamPlugin",
+        "ML_spriteRenderManager":"org.magiclib.plugins.MagicRenderPlugin",
+        "MagicCampaignTrailPlugin":"org.magiclib.plugins.MagicCampaignTrailPlugin",
+        "MagicTrailPlugin":"org.magiclib.plugins.MagicTrailPlugin",
+        "MagicAutoTrails":"org.magiclib.plugins.MagicAutoTrails",
+        #"MagicModuleRetreatFix":"org.magiclib.plugins.MagicModuleRetreatCleaner",
+		#"MagicNebula":"org.magiclib.plugins.MagicNebula",
     },
 
     "graphics":{
@@ -37,6 +37,6 @@
 		},
     },
     "ruleCommandPackages": [
-        "data.scripts.bounty.rulecmd"
+        "org.magiclib.bounty.rulecmd"
     ]
 }

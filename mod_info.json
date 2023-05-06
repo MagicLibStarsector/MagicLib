@@ -1,19 +1,19 @@
 {
-    "id": "MagicLib",
-    "name": "MagicLib",
-    "author": "Modding Community: Dark.Revenant, LazyWizard, Nicke, Originem, Rubi, Schaf-Unschaf, Snrasha, Tartiflette, Wisp, Wyvern...",
-    "utility": "true",
-    # Using the long version format lets the game correctly compare major/minor/patch versions.
-    "version": {"major":'0', "minor":'46', "patch":'1-rc03'},
-    "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
-    "gameVersion": "0.95.1a-RC6",
-    "dependencies": [
-        {
-            "id": "lw_lazylib",
-            "name": "LazyLib",
-            "version": {"major":2, "minor":7, "patch":"b"}
-        }
-    ],
-    "jars": ["jars/MagicLib.jar", "jars/MagicLib-Kotlin.jar"],
-    "modPlugin": "data.scripts.Magic_modPlugin"
+  "id": "MagicLib",
+  "name": "MagicLib",
+  "author": "Modding Community: Dark.Revenant, LazyWizard, Nicke, Originem, Rubi, Schaf-Unschaf, Snrasha, Tartiflette, Wisp, Wyvern...",
+  "utility": "true",
+  # Using the long version format lets the game correctly compare major/minor/patch versions.
+  "version": { "major": '1', "minor": '0', "patch": '0' },
+  "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
+  "gameVersion": "0.96a-RC7",
+  "dependencies": [
+    {
+      "id": "lw_lazylib",
+      "name": "LazyLib",
+      "version": "2.8"
+    }
+  ],
+  "jars": [ "jars/MagicLib.jar", "jars/MagicLib-Kotlin.jar" ],
+  "modPlugin": "org.magiclib.Magic_modPlugin"
 }

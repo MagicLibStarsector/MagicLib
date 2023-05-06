@@ -1,9 +1,9 @@
 name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sprite
-INTERFERENCES,ML_interferenceWarning,,,,special,,,,TRUE,,0,0,0,0,data.scripts.hullmods.MagicInterferenceWarning,"%s, multiple weapons that interfere with each other are installed, disrupting the flux grid.
+INTERFERENCES,ML_interferenceWarning,,,,special,,,,TRUE,,0,0,0,0,org.magiclib.hullmods.MagicInterferenceWarning,"%s, multiple weapons that interfere with each other are installed, disrupting the flux grid.
 
 Special weapons of great power can have unwanted interactions with each other and cause disruptions of the ship's flux grid.
 
 Those weapons interferences are rated %s, %s or %s. They reduce the ship's passive flux dissipation by a flat %s/%s/%s, for every other interfering weapon installed.
 
 That effect can be reduced by %s when installing the %s hullmod.",,graphics/magic/hullmods/interference.png
-HULLMOD CONFLICT,ML_incompatibleHullmodWarning,,,,,,,,TRUE,,0,0,0,0,data.scripts.hullmods.MagicIncompatibleWarning,"%s, this hullmod cannot be installed on this ship or conflict with another previously installed hullmod.",,graphics/icons/intel/investigation.png
+HULLMOD CONFLICT,ML_incompatibleHullmodWarning,,,,,,,,TRUE,,0,0,0,0,org.magiclib.hullmods.MagicIncompatibleWarning,"%s, this hullmod cannot be installed on this ship or conflict with another previously installed hullmod.",,graphics/icons/intel/investigation.png

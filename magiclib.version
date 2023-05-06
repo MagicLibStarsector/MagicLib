@@ -1,13 +1,14 @@
 {
-    "masterVersionFile":"https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/magiclib.version",
-    "modName":"MagicLib",
-    "modThreadId":"25868",
-    # "modNexusId":"10",
-    "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/0.46.1-rc03/MagicLib-0.46.1-rc03.zip",
-    "modVersion":
+  "masterVersionFile": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/magiclib.version",
+  "modName": "MagicLib",
+  "modThreadId": "25868",
+  # "modNexusId":"10",
+  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.0.0/MagicLib-1.0.0.zip",
+  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/1.0.0/CHANGELOGS.md",
+  "modVersion":
     {
-        "major":"0",
-        "minor":"46",
-        "patch":"1-rc03"
+      "major": "1",
+      "minor": "0",
+      "patch": "0"
     }
 }
