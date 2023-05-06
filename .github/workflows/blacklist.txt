@@ -10,3 +10,5 @@ DO_NOT_USE
 banner.png$
 ^doc/
 ^media/
+
+^release_checklist.md$
