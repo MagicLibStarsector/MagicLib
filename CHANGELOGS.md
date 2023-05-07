@@ -1,5 +1,9 @@
 MagicLib
 
+1.0.1
+**MagicCampaign**
+- Fixed a crash on new game (caused by trying to set fleet min fp to the player fleet, which didn't exist yet).
+
 1.0.0
 
 **Other**

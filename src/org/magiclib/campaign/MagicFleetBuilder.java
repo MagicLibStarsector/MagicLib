@@ -65,7 +65,7 @@ public class MagicFleetBuilder {
     private @Nullable PersonAPI captain;
     private @Nullable Map<String, Integer> supportFleet;
     private boolean supportAutofit;
-    private int minFP = Global.getSector().getPlayerFleet().getFleetPoints();
+    private int minFP;
     @Nullable
     private String reinforcementFaction;
     private @Nullable Float qualityOverride;
@@ -192,8 +192,8 @@ public class MagicFleetBuilder {
     }
 
     /**
-     * Minimal fleet size, can be used to adjust to the player's power. Set to -1 to ignore.
-     * Default: current player fleet FP.
+     * Minimal fleet size, can be used to adjust to the player's power. Set to 0 to ignore.
+     * Default: 0.
      */
     public MagicFleetBuilder setMinFP(int minFP) {
         this.minFP = minFP;
