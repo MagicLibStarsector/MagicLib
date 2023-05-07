@@ -1,10 +1,10 @@
 MagicLib
 
-1.0.1
+Version 1.0.1
 **MagicCampaign**
 - Fixed a crash on new game (caused by trying to set fleet min fp to the player fleet, which didn't exist yet).
 
-1.0.0
+Version 1.0.0
 
 **Other**
 - BREAKING: Changed package of all classes from `data.scripts` to `org.magiclib`.
@@ -37,7 +37,7 @@ MagicLib
 **MagicRender**
 - BREAKING: Removed some deprecated method overloads: `battlespace`, `objectspace`, `screenspace`.
 
-0.46.1
+Version 0.46.1
 
 **Other**
   - Added HMI themes to blacklist so that they are considered "already occupied".
@@ -55,7 +55,7 @@ MagicLib
 **Kotlin**
   - Added `prepareShipForRecovery` extension.
 
-0.46.0 - (the first Wisp release 🤞)
+Version 0.46.0 - (the first Wisp release 🤞)
 
 **Other**
   - Changed MagicLib's `mod_info.json` version format to the `major/minor/patch` object format instead of just a string.
@@ -93,18 +93,18 @@ MagicLib
   - Added overloads for manually positioning status and system bar (by President Matt Damon and Timid).
   - Fixed dual system ships having overlap with custom status bar (by President Matt Damon and Timid).
 
-0.45.2
+Version 0.45.2
 
 - MagicBounties:
   - Fixed accidentally-introduced backwards incompatibility.
 
-0.45.1
+Version 0.45.1
 
 - MagicAsteroid plugins updated for SafariJohn
 - MagicCampaign/MagicBounty:
   - Finding target objects now supports defaulting to any system if requested themes could not be found.
 
-0.44.1
+Version 0.44.1
 
 - Added MagicAsteroid plugins to restore functionalities related to asteroids that have been removed in the vanilla game (by SafariJohn)
 - MagicIncompatibleHullmod:
@@ -116,7 +116,7 @@ MagicLib
 - MagicBounty: 
   - Hopefully fixed the log spam after a bounty expired.
 
-0.43.1
+Version 0.43.1
 
 - [RC3] fixed a typo that prevented hvb's from showing up after loading a save.
 
@@ -136,7 +136,7 @@ MagicLib
 MagicIndustryItemWrangler: 
   - Code cleanup.
 
-0.42
+Version 0.42
 
 - [RC6] Fixed an issue with time threshold evaluation for bounties (that one is on Alex' undocumented API!)
 - [RC5] Fixed a crash occurring when bounties have a smaller reinforcement size than their preset size.
@@ -154,7 +154,7 @@ MagicIndustryItemWrangler:
 - MagicCampaign:
   - Fixed an issue when generating captains with custom skill sets that prevented all skills from being assigned.
 
-0.41
+Version 0.41
 
 [RC2]
 - MagicBounties:
@@ -189,7 +189,7 @@ MagicIndustryItemWrangler:
   - Fixed an issue with the quality setting that was modifying the Flagship and Preset ships loadouts to fit its value,
   - Flagship and escort ships now keep their original variants unless the autofitter is specifically allowed to alter them.
 
-0.4
+Version 0.4
 
 [RC3]
 - MagicCampaign.placeOnStableOrbit(): Fixed not one but two effing stupid mistakes! Affected both the Diable Avionics unique ships and the Plague-Bearer ones.
@@ -214,7 +214,7 @@ MagicIndustryItemWrangler:
 - MagicUI: the widgets texts can be null to be ignored, same for numbers if they are negative.
 
 
-0.34
+Version 0.34
 
 - MagicRender: Singleframe render is now maintained while the game is paused
 - Magic UI: Should be displayed sharp at 100% UI scaling
@@ -228,7 +228,7 @@ MagicIndustryItemWrangler:
 
 - Added some test plugin to add depth to combat nebulae. Disabled by default due to its jankyness, but can be enabled in the settings if you so desire.
 
-0.33
+Version 0.33
 
 - MagicUI: Should work with UI scalling now
 - MagicCampaign:
@@ -236,12 +236,12 @@ MagicIndustryItemWrangler:
  - Deprecated the old captain declaration that still works for human officers
  - Added support for 0.95 automatic levels and skills.
 
-0.32
+Version 0.32
 
 - Basic 0.95 compatibility update
 - MagicUI is probably broken to hell and back due to the UI scaling, gotta fix that soon
 
-0.31
+Version 0.31
 
 - Added MagicCampaign:
   - A collection of methods that are handy to create systems and spawn stuff in them.
@@ -250,7 +250,7 @@ MagicIndustryItemWrangler:
 - Consolidated a lot of methods with incrementally more detailed declaration variable into fewer ones, 
 the old methods are still available to maintain compatibility but are now tagged as deprecated and will be removed in a future update.
 
-0.30
+Version 0.30
 
 - Added MagicSettings:
   - A collections of methods to easily read variables and lists from a shared modSettings.json file.
@@ -273,7 +273,7 @@ the old methods are still available to maintain compatibility but are now tagged
   - Fixed minor error in the Interference hullmod tooltip.
   - Added a non-verbose implementation used when not in dev Mode.
 
-0.29
+Version 0.29
 
 - Added MagicInterferencePlugin
   - Makes exceptionally strong weapons with the "Interference" trait have negative effects when more that one is mounted on a given ship.
@@ -296,7 +296,7 @@ the old methods are still available to maintain compatibility but are now tagged
 - MagicUI:
   - Fixed crash when used the first frame in combat.
 
-0.28
+Version 0.28
 
 - Added MagicGuidedProjectileScript loose weapon script
 
@@ -304,7 +304,7 @@ the old methods are still available to maintain compatibility but are now tagged
   - Added cycle(float x, float min, float max)
 
 
-0.27
+Version 0.27
 
 - MagicRender:
   - Fixed screencheck culling being overly aggressive.
@@ -314,7 +314,7 @@ the old methods are still available to maintain compatibility but are now tagged
 
 
 
-0.26
+Version 0.26
 
 - MagicTrail:
   - Now supports render order overrides.
@@ -324,10 +324,10 @@ the old methods are still available to maintain compatibility but are now tagged
 
 - MagicTrail CSV plugin:
   - Added renderBelowExplosion boolean to automatically render the trail under the FX layer
-  
 
 
-0.25
+
+Version 0.25
 
 RC2
 
@@ -345,7 +345,7 @@ RC2
 
 
 
-0.24
+Version 0.24
 
 - MagicTrail CSV plugin:
   - Added a velocity randomization parameter.
@@ -355,7 +355,7 @@ RC2
 
 
 
-0.23
+Version 0.23
 
 RC3
 
@@ -377,7 +377,7 @@ RC3
 
 
 
-0.22
+Version 0.22
 
 - MagicTargeting:
   - Missile targeting now ignores missiles without collisions
@@ -386,7 +386,7 @@ RC3
 
 
 
-0.20
+Version 0.20
 
 - Compiled for Starsector 0.9.0a
 
@@ -397,7 +397,7 @@ CONTENT:
 
 
 
-0.12
+Version 0.12
 
 CONTENT:
 
@@ -414,7 +414,7 @@ BUGFIXES/IMPROVEMENTS:
 
 
 
-0.10
+Version 0.10
 
 CONTENT:
 
