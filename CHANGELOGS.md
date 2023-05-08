@@ -37,6 +37,83 @@ Version 1.0.0
 **MagicRender**
 - BREAKING: Removed some deprecated method overloads: `battlespace`, `objectspace`, `screenspace`.
 
+**For mod authors**
+
+Paths to replace:
+```java
+import data.scripts.Magic -> import org.magiclib.Magic
+import data.scripts.util.Magic -> import org.magiclib.util.Magic
+import data.scripts.terrain.Magic-> import org.magiclib.terrain.Magic
+import data.scripts.ai.Magic-> import org.magiclib.ai.Magic
+import data.scripts.bounty.Magic-> import org.magiclib.bounty.Magic
+import data.scripts.campaign.Magic-> import org.magiclib.campaign.Magic
+import data.scripts.hullmods.Magic-> import org.magiclib.hullmods.Magic
+import data.scripts.plugins.Magic-> import org.magiclib.plugins.Magic
+import data.scripts.weapons.Magic-> import org.magiclib.weapons.Magic
+```
+`createFleet` and `createCaptain` templates:
+```java
+// Long createFleet method
+MagicCampaign.createFleetBuilder()
+        .setFleetName()
+        .setFleetFaction()
+        .setFleetType()
+        .setFlagshipName()
+        .setFlagshipVariant()
+        .setFlagshipAlwaysRecoverable()
+        .setFlagshipAutofit()
+        .setCaptain()
+        .setSupportFleet()
+        .setSupportAutofit()
+        .setMinFP()
+        .setReinforcementFaction()
+        .setQualityOverride()
+        .setSpawnLocation()
+        .setAssignment()
+        .setAssignmentTarget()
+        .setIsImportant()
+        .setTransponderOn()
+        .setVariantsPath()
+        .create();
+
+// Shorter createFleet method
+MagicCampaign.createFleetBuilder()
+        .setFleetName()
+        .setFleetFaction()
+        .setFleetType()
+        .setFlagshipName()
+        .setFlagshipVariant()
+        .setCaptain()
+        .setSupportFleet()
+        .setMinFP()
+        .setReinforcementFaction()
+        .setQualityOverride()
+        .setSpawnLocation()
+        .setAssignment()
+        .setAssignmentTarget()
+        .setIsImportant()
+        .setTransponderOn()
+        .create();
+
+// createCaptain
+MagicCampaign.createCaptainBuilder()
+        .setIsAI()
+        .setAICoreType()
+        .setFirstName()
+        .setLastName()
+        .setPortraitId()
+        .setGender()
+        .setFactionId()
+        .setRankId()
+        .setPostId()
+        .setPersonality()
+        .setLevel()
+        .setEliteSkillsOverride()
+        .setSkillPreference()
+        .setSkillLevels()
+        .create();
+```
+
 Version 0.46.1
 
 **Other**
