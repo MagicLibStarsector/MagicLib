@@ -3,8 +3,8 @@
   "modName": "MagicLib",
   "modThreadId": "25868",
   # "modNexusId":"10",
-  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.0.0/MagicLib-1.0.0.zip",
-  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/1.0.0/CHANGELOGS.md",
+  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.0.1/MagicLib-1.0.1.zip",
+  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/magiclib.version",
   "modVersion":
     {
       "major": "1",
