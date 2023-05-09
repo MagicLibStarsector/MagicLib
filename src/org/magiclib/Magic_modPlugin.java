@@ -23,6 +23,7 @@ public class Magic_modPlugin extends BaseModPlugin {
 
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
+        data.scripts.Magic_modPlugin.onApplicationLoad();
 
         MagicSettings.loadModSettings();
 
@@ -62,6 +63,8 @@ public class Magic_modPlugin extends BaseModPlugin {
 
     @Override
     public void onDevModeF8Reload() {
+        data.scripts.Magic_modPlugin.onDevModeF8Reload();
+
         MagicSettings.loadModSettings();
         //gather interference data
         MagicInterference.loadInterference();
@@ -86,6 +89,8 @@ public class Magic_modPlugin extends BaseModPlugin {
 
     @Override
     public void onGameLoad(boolean newGame) {
+        data.scripts.Magic_modPlugin.onGameLoad(newGame);
+
 //        MagicAutoTrails.getTrailData();
         MagicIncompatibleHullmods.clearData();
 
@@ -132,6 +137,8 @@ public class Magic_modPlugin extends BaseModPlugin {
     @Override
     public void configureXStream(XStream x) {
         super.configureXStream(x);
+        data.scripts.Magic_modPlugin.configureXStream(x);
+
         x.alias("MagicBountyBarEvent", MagicBountyBarEvent.class);
         x.alias("MagicBountyActiveBounty", ActiveBounty.class);
         x.alias("MagicBountyBattleListener", MagicBountyBattleListener.class);

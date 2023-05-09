@@ -1,5 +1,10 @@
 MagicLib
 
+Version 1.1.0
+**Other**
+- Somewhat experimental backwards-compatibility.
+  - Translation: older mods should now work with this version of MagicLib.
+
 Version 1.0.1
 **MagicCampaign**
 - Fixed a crash on new game (caused by trying to set fleet min fp to the player fleet, which didn't exist yet).

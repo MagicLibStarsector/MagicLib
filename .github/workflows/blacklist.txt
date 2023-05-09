@@ -6,9 +6,7 @@ DO_NOT_USE
 .gradle
 ^gradle
 .flac$
-^.github/
 banner.png$
-^doc/
-^media/
-
+.github/
+media/
 ^release_checklist.md$
