@@ -106,7 +106,7 @@ public class MagicCaptainBuilder {
 
     /**
      * Id of the sprite in settings.json/graphics/characters.
-     * Default: randomly chosen from faction names.
+     * Default: randomly chosen from faction.
      */
     public MagicCaptainBuilder setPortraitId(@Nullable String portraitId) {
         this.portraitId = portraitId;
