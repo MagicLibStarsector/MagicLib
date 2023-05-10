@@ -1,5 +1,3 @@
-//By Nicke535
-//Special entity script which runs "behind the scenes" to make the campaign trail plugin work
 package org.magiclib.util;
 
 import com.fs.starfarer.api.campaign.CampaignEngineLayers;
@@ -8,6 +6,11 @@ import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin;
 import org.magiclib.plugins.MagicCampaignTrailPlugin;
 
+/**
+ * Special entity script which runs "behind the scenes" to make the campaign trail plugin work
+ *
+ * @author Nicke535
+ */
 public class MagicCustomCampaignTrailEntityScript extends BaseCustomEntityPlugin {
 
     //Which plugin does this script belong to?

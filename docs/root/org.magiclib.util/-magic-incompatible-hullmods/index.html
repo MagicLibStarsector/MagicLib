@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>MagicIncompatibleHullmods</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="root::org.magiclib.util/MagicIncompatibleHullmods///PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.util</a><span class="delimiter">/</span><span class="current">MagicIncompatibleHullmods</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Magic</span><wbr></wbr><span>Incompatible</span><wbr></wbr><span><span>Hullmods</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">MagicIncompatibleHullmods</a></div><p class="paragraph">Proposes a universal solution for hullmod incompatibilities when they can't be avoided through isApplicableToShip. When called, it will remove the offending hullmod, and add a &quot;WARNING&quot; hullmod detailing which hullmod was removed and why. Please note that it is best practice to remove the hullmod that was just added due to the presence of a previously installed one rather than the opposite.  Weapons must be added to data/config/modSetting.json in the MagicLib.interferences_weapons section. </p><p class="paragraph"> - id: weapon id from weapon_data.csv - intensity: defines the amount of interference generated. By default it can be &quot;WEAK&quot;, &quot;MILD&quot; or &quot;STRONG, but mods can add new ratings in modSettings.json, although those will not be mentioned in the hullmod description.  By default, weak = -20 flux dissipation for each other interference weapon installed, mild = -40 and strong = -80  Then the weapon must have an everyframeWeaponScript to trigger the interference check: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">    if(weapon.getShip().getOriginalOwner()&lt;0 &amp;&amp; !weapon.getSlot().isBuiltIn()){
+    MagicInterference.ApplyInterference(weapon.getShip().getVariant());
+}
+</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph"> A default script is provided: org.magiclib.weapons.MagicBasicInterferenceEffect Please note that the interference trait should be mentioned in the weapon extra effect part of the tooltip card.</p><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">Tartiflette</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-2045216091%2FConstructors%2F1247924383" anchor-label="MagicIncompatibleHullmods" id="-2045216091%2FConstructors%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-magic-incompatible-hullmods.html"><span>Magic</span><wbr></wbr><span>Incompatible</span><wbr></wbr><span><span>Hullmods</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2045216091%2FConstructors%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="2088978162%2FFunctions%2F1247924383" anchor-label="clearData" id="2088978162%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-data.html"><span>clear</span><wbr></wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2088978162%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="clear-data.html"><span class="token function">clearData</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1069217854%2FFunctions%2F1247924383" anchor-label="getReason" id="1069217854%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-reason.html"><span>get</span><wbr></wbr><span><span>Reason</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1069217854%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-reason.html"><span class="token function">getReason</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variant<span class="token operator">: </span>ShipVariantAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-812441989%2FFunctions%2F1247924383" anchor-label="removeHullmodWithWarning" id="-812441989%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-hullmod-with-warning.html"><span>remove</span><wbr></wbr><span>Hullmod</span><wbr></wbr><span>With</span><wbr></wbr><span><span>Warning</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-812441989%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="remove-hullmod-with-warning.html"><span class="token function">removeHullmodWithWarning</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variant<span class="token operator">: </span>ShipVariantAPI<span class="token punctuation">, </span></span><span class="parameter ">toRemove<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">removeCause<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

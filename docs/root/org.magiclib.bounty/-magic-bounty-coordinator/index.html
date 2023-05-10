@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>MagicBountyCoordinator</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="root::org.magiclib.bounty/MagicBountyCoordinator///PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.bounty</a><span class="delimiter">/</span><span class="current">MagicBountyCoordinator</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Magic</span><wbr></wbr><span>Bounty</span><wbr></wbr><span><span>Coordinator</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">MagicBountyCoordinator</a></div><p class="paragraph">The point of entry into MagicBounty scripting. Contains methods for getting all or specific ActiveBountys, as well as general bounty management logic. </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">Usage: MagicBountyCoordinator.getInstance()
+</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">Wisp</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="583677222%2FConstructors%2F1247924383" anchor-label="MagicBountyCoordinator" id="583677222%2FConstructors%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-magic-bounty-coordinator.html"><span>Magic</span><wbr></wbr><span>Bounty</span><wbr></wbr><span><span>Coordinator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="583677222%2FConstructors%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1969695984%2FFunctions%2F1247924383" anchor-label="configureBountyListeners" id="-1969695984%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="configure-bounty-listeners.html"><span>configure</span><wbr></wbr><span>Bounty</span><wbr></wbr><span><span>Listeners</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1969695984%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="configure-bounty-listeners.html"><span class="token function">configureBountyListeners</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Idem potently ensures that each `ActiveBounty` has a `MagicBountyBattleListener` running.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-845252004%2FFunctions%2F1247924383" anchor-label="createActiveBounty" id="-845252004%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-active-bounty.html"><span>create</span><wbr></wbr><span>Active</span><wbr></wbr><span><span>Bounty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-845252004%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="create-active-bounty.html"><span class="token function">createActiveBounty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bountyKey<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">spec<span class="token operator">: </span>MagicBountySpec</span></span><span class="token punctuation">)</span><span class="token operator">: </span>ActiveBounty</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2043384777%2FFunctions%2F1247924383" anchor-label="getActiveBounties" id="-2043384777%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-active-bounties.html"><span>get</span><wbr></wbr><span>Active</span><wbr></wbr><span><span>Bounties</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2043384777%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-active-bounties.html"><span class="token function">getActiveBounties</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html">Map</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span>ActiveBounty<span class="token operator">&gt;</span></div><div class="brief ">Returns a map (bounty key, bounty) of all active bounties.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="10732816%2FFunctions%2F1247924383" anchor-label="getActiveBounty" id="10732816%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-active-bounty.html"><span>get</span><wbr></wbr><span>Active</span><wbr></wbr><span><span>Bounty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="10732816%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-active-bounty.html"><span class="token function">getActiveBounty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bountyKey<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span>ActiveBounty</div><div class="brief ">Gets a single active bounty by key.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="445625373%2FFunctions%2F1247924383" anchor-label="getBountiesAcceptedAtMarket" id="445625373%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-bounties-accepted-at-market.html"><span>get</span><wbr></wbr><span>Bounties</span><wbr></wbr><span>Accepted</span><wbr></wbr><span>At</span><wbr></wbr><span><span>Market</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="445625373%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-bounties-accepted-at-market.html"><span class="token function">getBountiesAcceptedAtMarket</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">marketAPI<span class="token operator">: </span>MarketAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1398444434%2FFunctions%2F1247924383" anchor-label="getBountiesWithChanceToSpawnAtMarketById" id="-1398444434%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-bounties-with-chance-to-spawn-at-market-by-id.html"><span>get</span><wbr></wbr><span>Bounties</span><wbr></wbr><span>With</span><wbr></wbr><span>Chance</span><wbr></wbr><span>To</span><wbr></wbr><span>Spawn</span><wbr></wbr><span>At</span><wbr></wbr><span>Market</span><wbr></wbr><span>By</span><wbr></wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1398444434%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-bounties-with-chance-to-spawn-at-market-by-id.html"><span class="token function">getBountiesWithChanceToSpawnAtMarketById</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">market<span class="token operator">: </span>MarketAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html">Map</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span>MagicBountySpec<span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-255849463%2FFunctions%2F1247924383" anchor-label="getBountySlotsAtMarket" id="-255849463%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-bounty-slots-at-market.html"><span>get</span><wbr></wbr><span>Bounty</span><wbr></wbr><span>Slots</span><wbr></wbr><span>At</span><wbr></wbr><span><span>Market</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-255849463%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-bounty-slots-at-market.html"><span class="token function">getBountySlotsAtMarket</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">marketAPI<span class="token operator">: </span>MarketAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1714944416%2FFunctions%2F1247924383" anchor-label="getCompletedBounties" id="-1714944416%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-completed-bounties.html"><span>get</span><wbr></wbr><span>Completed</span><wbr></wbr><span><span>Bounties</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1714944416%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-completed-bounties.html"><span class="token function">getCompletedBounties</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="181866848%2FFunctions%2F1247924383" anchor-label="getMarketBountyBoardGenSeed" id="181866848%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-market-bounty-board-gen-seed.html"><span>get</span><wbr></wbr><span>Market</span><wbr></wbr><span>Bounty</span><wbr></wbr><span>Board</span><wbr></wbr><span>Gen</span><wbr></wbr><span><span>Seed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="181866848%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-market-bounty-board-gen-seed.html"><span class="token function">getMarketBountyBoardGenSeed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">marketAPI<span class="token operator">: </span>MarketAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief ">Gets the seed used to generate bounties at the given market.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="862982151%2FFunctions%2F1247924383" anchor-label="onGameLoad" id="862982151%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-game-load.html"><span>on</span><wbr></wbr><span>Game</span><wbr></wbr><span><span>Load</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="862982151%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-game-load.html"><span class="token function">onGameLoad</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1876221149%2FFunctions%2F1247924383" anchor-label="resetBounty" id="1876221149%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="reset-bounty.html"><span>reset</span><wbr></wbr><span><span>Bounty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1876221149%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reset-bounty.html"><span class="token function">resetBounty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bountyKey<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-3970673%2FFunctions%2F1247924383" anchor-label="setBlockBountyAtMarket" id="-3970673%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-block-bounty-at-market.html"><span>set</span><wbr></wbr><span>Block</span><wbr></wbr><span>Bounty</span><wbr></wbr><span>At</span><wbr></wbr><span><span>Market</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-3970673%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-block-bounty-at-market.html"><span class="token function">setBlockBountyAtMarket</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">marketAPI<span class="token operator">: </span>MarketAPI<span class="token punctuation">, </span></span><span class="parameter ">bountyId<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Marks the bounty as blocking a slot on the market until expiration (default 30 days).</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1086073414%2FFunctions%2F1247924383" anchor-label="shouldShowBountyBoardAt" id="1086073414%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="should-show-bounty-board-at.html"><span>should</span><wbr></wbr><span>Show</span><wbr></wbr><span>Bounty</span><wbr></wbr><span>Board</span><wbr></wbr><span><span>At</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1086073414%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-show-bounty-board-at.html"><span class="token function">shouldShowBountyBoardAt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">marketAPI<span class="token operator">: </span>MarketAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Whether or not a market is a viable candidate for showing the bounty board.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="747908201%2FProperties%2F1247924383" anchor-label="instance" id="747908201%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="instance.html"><span><span>instance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="747908201%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="instance.html">instance</a><span class="token operator">: </span><a href="index.html">MagicBountyCoordinator</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1376602580%2FProperties%2F1247924383" anchor-label="postScalingCreditRewardMultiplier" id="-1376602580%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="post-scaling-credit-reward-multiplier.html"><span>post</span><wbr></wbr><span>Scaling</span><wbr></wbr><span>Credit</span><wbr></wbr><span>Reward</span><wbr></wbr><span><span>Multiplier</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1376602580%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="post-scaling-credit-reward-multiplier.html">postScalingCreditRewardMultiplier</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief ">The multiplier to apply AFTER all other scaling is applied.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2028106479%2FProperties%2F1247924383" anchor-label="preScalingCreditRewardMultiplier" id="-2028106479%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pre-scaling-credit-reward-multiplier.html"><span>pre</span><wbr></wbr><span>Scaling</span><wbr></wbr><span>Credit</span><wbr></wbr><span>Reward</span><wbr></wbr><span><span>Multiplier</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2028106479%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="pre-scaling-credit-reward-multiplier.html">preScalingCreditRewardMultiplier</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief ">The multiplier to apply BEFORE any other scaling is applied.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>MagicTrailObject</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="root::org.magiclib.util/MagicTrailObject///PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.util</a><span class="delimiter">/</span><span class="current">MagicTrailObject</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Magic</span><wbr></wbr><span>Trail</span><wbr></wbr><span><span>Object</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">MagicTrailObject</a></div><p class="paragraph">This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.</p><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">Nicke535</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="645799557%2FConstructors%2F1247924383" anchor-label="MagicTrailObject" id="645799557%2FConstructors%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-magic-trail-object.html"><span>Magic</span><wbr></wbr><span>Trail</span><wbr></wbr><span><span>Object</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="645799557%2FConstructors%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">inDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">mainDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">outDuration<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">startSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">endSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">startAngleVelocity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">endAngleVelocity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">mainOpacity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">blendModeSRC<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">blendModeDEST<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">startSpeed<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">endSpeed<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">startColor<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a><span class="token punctuation">, </span></span><span class="parameter ">endColor<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a><span class="token punctuation">, </span></span><span class="parameter ">angle<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">spawnLocation<span class="token operator">: </span>Vector2f<span class="token punctuation">, </span></span><span class="parameter ">textureLoopLength<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">textureoffset<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">offsetVelocity<span class="token operator">: </span>Vector2f<span class="token punctuation">, </span></span><span class="parameter ">sizePulseWidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">sizePulseCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1493983630%2FFunctions%2F1247924383" anchor-label="copy" id="-1493983630%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="copy.html"><span><span>copy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1493983630%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="copy.html"><span class="token function">copy</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicTrailObject</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1252908858%2FFunctions%2F1247924383" anchor-label="getSpentLifetime" id="-1252908858%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-spent-lifetime.html"><span>get</span><wbr></wbr><span>Spent</span><wbr></wbr><span><span>Lifetime</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1252908858%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-spent-lifetime.html"><span class="token function">getSpentLifetime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1330554448%2FFunctions%2F1247924383" anchor-label="getTotalLifetime" id="-1330554448%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-total-lifetime.html"><span>get</span><wbr></wbr><span>Total</span><wbr></wbr><span><span>Lifetime</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1330554448%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-total-lifetime.html"><span class="token function">getTotalLifetime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="891848860%2FFunctions%2F1247924383" anchor-label="tick" id="891848860%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tick.html"><span><span>tick</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="891848860%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tick.html"><span class="token function">tick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">amount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1225689191%2FProperties%2F1247924383" anchor-label="aggressiveCulling" id="1225689191%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="aggressive-culling.html"><span>aggressive</span><wbr></wbr><span><span>Culling</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1225689191%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="aggressive-culling.html">aggressiveCulling</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-271027456%2FProperties%2F1247924383" anchor-label="angle" id="-271027456%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="angle.html"><span><span>angle</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-271027456%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="angle.html">angle</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1570590973%2FProperties%2F1247924383" anchor-label="blendModeDEST" id="1570590973%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="blend-mode-d-e-s-t.html"><span>blend</span><wbr></wbr><span>Mode</span><wbr></wbr><span><span>DEST</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1570590973%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="blend-mode-d-e-s-t.html">blendModeDEST</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="871768215%2FProperties%2F1247924383" anchor-label="blendModeSRC" id="871768215%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="blend-mode-s-r-c.html"><span>blend</span><wbr></wbr><span>Mode</span><wbr></wbr><span><span>SRC</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="871768215%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="blend-mode-s-r-c.html">blendModeSRC</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1473605023%2FProperties%2F1247924383" anchor-label="currentAngularVelocity" id="-1473605023%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-angular-velocity.html"><span>current</span><wbr></wbr><span>Angular</span><wbr></wbr><span><span>Velocity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1473605023%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="current-angular-velocity.html">currentAngularVelocity</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-531674083%2FProperties%2F1247924383" anchor-label="currentColor" id="-531674083%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-color.html"><span>current</span><wbr></wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-531674083%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="current-color.html">currentColor</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-312240027%2FProperties%2F1247924383" anchor-label="currentLocation" id="-312240027%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-location.html"><span>current</span><wbr></wbr><span><span>Location</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-312240027%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="current-location.html">currentLocation</a><span class="token operator">: </span>Vector2f</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="35849141%2FProperties%2F1247924383" anchor-label="currentOpacity" id="35849141%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-opacity.html"><span>current</span><wbr></wbr><span><span>Opacity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="35849141%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="current-opacity.html">currentOpacity</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1042344985%2FProperties%2F1247924383" anchor-label="currentSize" id="1042344985%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-size.html"><span>current</span><wbr></wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1042344985%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="current-size.html">currentSize</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="665158585%2FProperties%2F1247924383" anchor-label="currentSpeed" id="665158585%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-speed.html"><span>current</span><wbr></wbr><span><span>Speed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="665158585%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="current-speed.html">currentSpeed</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-40388868%2FProperties%2F1247924383" anchor-label="spentLifetime" id="-40388868%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spent-lifetime.html"><span>spent</span><wbr></wbr><span><span>Lifetime</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-40388868%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="spent-lifetime.html">spentLifetime</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1298785042%2FProperties%2F1247924383" anchor-label="textureLoopLength" id="-1298785042%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="texture-loop-length.html"><span>texture</span><wbr></wbr><span>Loop</span><wbr></wbr><span><span>Length</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1298785042%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="texture-loop-length.html">textureLoopLength</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-241145691%2FProperties%2F1247924383" anchor-label="textureOffset" id="-241145691%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="texture-offset.html"><span>texture</span><wbr></wbr><span><span>Offset</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-241145691%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="texture-offset.html">textureOffset</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

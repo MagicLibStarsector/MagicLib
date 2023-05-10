@@ -11,3 +11,4 @@ banner.png$
 media/
 ^release_checklist.md$
 docs/
+dokka/

@@ -12,6 +12,9 @@ import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
 
+/**
+ * Master ModPlugin for MagicLib. Handles all the loading of data and scripts.
+ */
 public class Magic_modPlugin extends BaseModPlugin {
 
     ////////////////////////////////////////

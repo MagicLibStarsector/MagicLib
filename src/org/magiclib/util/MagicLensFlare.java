@@ -1,6 +1,3 @@
-/*
-By Tartiflette, based on a script by DarkRevenant
-*/
 package org.magiclib.util;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
@@ -14,11 +11,18 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 
+/**
+ * Creates "cinematic" lens-flares.
+ * <p>
+ * By Tartiflette, based on a script by DarkRevenant
+ */
 public class MagicLensFlare {
 
     /**
      * Creates sharp lensflares, more suited to very thin short lived flares
-     * Not CPU intensive
+     * Not CPU intensive.
+     *
+     * <img src="https://static.wikia.nocookie.net/starfarergame/images/4/4d/ShartLensflare.jpg/revision/latest/scale-to-width-down/220?cb=20181030152330" />
      *
      * @param engine      Combat engine.
      * @param origin      Source of the Flare. Can be anything but CANNOT BE NULL.

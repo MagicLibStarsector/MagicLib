@@ -44,7 +44,7 @@ import java.util.Map;
 import static com.fs.starfarer.api.util.Misc.MAX_OFFICER_LEVEL;
 
 /**
- * A collection of methods to help do things on the campaign layer.
+ * A collection of methods to help do a variety of things on the campaign layer.
  */
 public class MagicCampaign {
 

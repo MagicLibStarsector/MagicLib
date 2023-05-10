@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>MagicFleetBuilder</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="root::org.magiclib.campaign/MagicFleetBuilder///PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.campaign</a><span class="delimiter">/</span><span class="current">MagicFleetBuilder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Magic</span><wbr></wbr><span>Fleet</span><wbr></wbr><span><span>Builder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">MagicFleetBuilder</a></div><p class="paragraph">Creates a fleet with a defined flagship and optional escort. </p><p class="paragraph"> Not all fields are required. Each `set` method has a comment showing the default value for if it is not used. </p><p class="paragraph"> Example usage: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">MagicCampaign.createFleetBuilder()
+        .setFleetName(&quot;Hegemony Attack Fleet&quot;)
+        .setFleetFaction(Factions.HEGEMONY)
+        .setFleetType(FleetTypes.TASK_FORCE)
+        .setFlagshipName(&quot;HSS Onslaught&quot;)
+        .setFlagshipVariant(&quot;onslaught_xiv_Elite&quot;)
+        .setFlagshipAlwaysRecoverable(false)
+        .setFlagshipAutofit(true)
+        .setCaptain(theCaptain)
+        .setSupportAutofit(true)
+        .setReinforcementFaction(Factions.HEGEMONY)
+        .create()
+</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">Wisp</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1622762027%2FConstructors%2F1247924383" anchor-label="MagicFleetBuilder" id="1622762027%2FConstructors%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-magic-fleet-builder.html"><span>Magic</span><wbr></wbr><span>Fleet</span><wbr></wbr><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1622762027%2FConstructors%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Creates a fleet with a defined flagship and optional escort.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-62378631%2FFunctions%2F1247924383" anchor-label="create" id="-62378631%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create.html"><span><span>create</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-62378631%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span>CampaignFleetAPI</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1610703089%2FFunctions%2F1247924383" anchor-label="setAssignment" id="1610703089%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-assignment.html"><span>set</span><wbr></wbr><span><span>Assignment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1610703089%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-assignment.html"><span class="token function">setAssignment</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">assignment<span class="token operator">: </span>FleetAssignment</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">com.fs.starfarer.api.campaign.FleetAssignment.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1893805075%2FFunctions%2F1247924383" anchor-label="setAssignmentTarget" id="-1893805075%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-assignment-target.html"><span>set</span><wbr></wbr><span>Assignment</span><wbr></wbr><span><span>Target</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1893805075%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-assignment-target.html"><span class="token function">setAssignmentTarget</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">assignmentTarget<span class="token operator">: </span>SectorEntityToken</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Where the fleet will go to execute its order.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-254503542%2FFunctions%2F1247924383" anchor-label="setCaptain" id="-254503542%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-captain.html"><span>set</span><wbr></wbr><span><span>Captain</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-254503542%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-captain.html"><span class="token function">setCaptain</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">captain<span class="token operator">: </span>PersonAPI</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Can be null for a random captain, otherwise use MagicCampaign.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="513927082%2FFunctions%2F1247924383" anchor-label="setFlagshipAlwaysRecoverable" id="513927082%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flagship-always-recoverable.html"><span>set</span><wbr></wbr><span>Flagship</span><wbr></wbr><span>Always</span><wbr></wbr><span><span>Recoverable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="513927082%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flagship-always-recoverable.html"><span class="token function">setFlagshipAlwaysRecoverable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">flagshipAlwaysRecoverable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: false.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="239056381%2FFunctions%2F1247924383" anchor-label="setFlagshipAutofit" id="239056381%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flagship-autofit.html"><span>set</span><wbr></wbr><span>Flagship</span><wbr></wbr><span><span>Autofit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="239056381%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flagship-autofit.html"><span class="token function">setFlagshipAutofit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">flagshipAutofit<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Whether the flagship will be autofitted.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1218063541%2FFunctions%2F1247924383" anchor-label="setFlagshipName" id="-1218063541%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flagship-name.html"><span>set</span><wbr></wbr><span>Flagship</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1218063541%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flagship-name.html"><span class="token function">setFlagshipName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">flagshipName<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: automatically picked by the game.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-219514283%2FFunctions%2F1247924383" anchor-label="setFlagshipVariant" id="-219514283%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flagship-variant.html"><span>set</span><wbr></wbr><span>Flagship</span><wbr></wbr><span><span>Variant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-219514283%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flagship-variant.html"><span class="token function">setFlagshipVariant</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">flagshipVariant<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: picks the first ship in the fleet after it has been sorted.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="911055632%2FFunctions%2F1247924383" anchor-label="setFleetFaction" id="911055632%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-fleet-faction.html"><span>set</span><wbr></wbr><span>Fleet</span><wbr></wbr><span><span>Faction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="911055632%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-fleet-faction.html"><span class="token function">setFleetFaction</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fleetFaction<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: MagicVariables.BOUNTY_FACTION (&quot;ML_bounty&quot;).</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1539521511%2FFunctions%2F1247924383" anchor-label="setFleetName" id="-1539521511%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-fleet-name.html"><span>set</span><wbr></wbr><span>Fleet</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1539521511%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-fleet-name.html"><span class="token function">setFleetName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fleetName<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: &quot;Fleet&quot;.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="971997258%2FFunctions%2F1247924383" anchor-label="setFleetType" id="971997258%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-fleet-type.html"><span>set</span><wbr></wbr><span>Fleet</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="971997258%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-fleet-type.html"><span class="token function">setFleetType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fleetType<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">campaign.ids.FleetTypes, defaults to FleetTypes.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2116753371%2FFunctions%2F1247924383" anchor-label="setIsImportant" id="2116753371%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-is-important.html"><span>set</span><wbr></wbr><span>Is</span><wbr></wbr><span><span>Important</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2116753371%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-is-important.html"><span class="token function">setIsImportant</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isImportant<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: false.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1369707464%2FFunctions%2F1247924383" anchor-label="setMinFP" id="-1369707464%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-min-f-p.html"><span>set</span><wbr></wbr><span>Min</span><wbr></wbr><span><span>FP</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1369707464%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-min-f-p.html"><span class="token function">setMinFP</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minFP<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Minimal fleet size, can be used to adjust to the player's power.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-820405682%2FFunctions%2F1247924383" anchor-label="setQualityOverride" id="-820405682%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-quality-override.html"><span>set</span><wbr></wbr><span>Quality</span><wbr></wbr><span><span>Override</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-820405682%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-quality-override.html"><span class="token function">setQualityOverride</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">qualityOverride<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Float.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Ship quality override.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-709129997%2FFunctions%2F1247924383" anchor-label="setReinforcementFaction" id="-709129997%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-reinforcement-faction.html"><span>set</span><wbr></wbr><span>Reinforcement</span><wbr></wbr><span><span>Faction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-709129997%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-reinforcement-faction.html"><span class="token function">setReinforcementFaction</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">reinforcementFaction<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Reinforcement faction, if the fleet faction is a &quot;neutral&quot; faction without ships Default: fleetFaction.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1332752693%2FFunctions%2F1247924383" anchor-label="setSpawnLocation" id="-1332752693%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-spawn-location.html"><span>set</span><wbr></wbr><span>Spawn</span><wbr></wbr><span><span>Location</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1332752693%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-spawn-location.html"><span class="token function">setSpawnLocation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">spawnLocation<span class="token operator">: </span>SectorEntityToken</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Where the fleet will spawn.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1152110294%2FFunctions%2F1247924383" anchor-label="setSupportAutofit" id="-1152110294%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-support-autofit.html"><span>set</span><wbr></wbr><span>Support</span><wbr></wbr><span><span>Autofit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1152110294%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-support-autofit.html"><span class="token function">setSupportAutofit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">supportAutofit<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Whether the preset ships will be autofitted.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1276646109%2FFunctions%2F1247924383" anchor-label="setSupportFleet" id="-1276646109%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-support-fleet.html"><span>set</span><wbr></wbr><span>Support</span><wbr></wbr><span><span>Fleet</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1276646109%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-support-fleet.html"><span class="token function">setSupportFleet</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">supportFleet<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html">Map</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">MapOptional escort ship variants and how many of each to create.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1462190132%2FFunctions%2F1247924383" anchor-label="setTransponderOn" id="-1462190132%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-transponder-on.html"><span>set</span><wbr></wbr><span>Transponder</span><wbr></wbr><span><span>On</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1462190132%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-transponder-on.html"><span class="token function">setTransponderOn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transponderOn<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">Default: false.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="507969483%2FFunctions%2F1247924383" anchor-label="setVariantsPath" id="507969483%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-variants-path.html"><span>set</span><wbr></wbr><span>Variants</span><wbr></wbr><span><span>Path</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="507969483%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-variants-path.html"><span class="token function">setVariantsPath</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variantsPath<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MagicFleetBuilder</a></div><div class="brief ">If not null, the script will try to find missing variant files there.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

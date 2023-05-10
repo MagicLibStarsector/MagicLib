@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>findSuitableTarget</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="root::org.magiclib.util/MagicCampaign/findSuitableTarget/#java.util.List&lt;java.lang.String&gt;#java.util.List&lt;java.lang.String&gt;#java.lang.String#java.util.List&lt;java.lang.String&gt;#java.util.List&lt;java.lang.String&gt;#java.util.List&lt;java.lang.String&gt;#boolean#boolean#boolean/PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.util</a><span class="delimiter">/</span><a href="index.html">MagicCampaign</a><span class="delimiter">/</span><span class="current">findSuitableTarget</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>find</span><wbr></wbr><span>Suitable</span><wbr></wbr><span><span>Target</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-suitable-target.html"><span class="token function">findSuitableTarget</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">entityIDs<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">marketFactions<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">distance<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">seek_themes<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">avoid_themes<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">entities<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">defaultToAnyEntity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">prioritizeUnexplored<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">verbose<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span>SectorEntityToken</div><p class="paragraph">Returns a random target SectorEntityToken given the following parameters:</p><span class="kdoc-tag"><h4 class="">Return</h4></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>entity</span><wbr></wbr><span><span>IDs</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of IDs of preferred markets to target, supercedes all, default to other parameters if none of those markets exist</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>market</span><wbr></wbr><span><span>Factions</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of faction to pick a market from, supercedes all but market ids, default to other parameters if none of those markets exist</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>distance</span></span></u></div></span></div><div><div class="title"><p class="paragraph">&quot;CORE&quot;, &quot;CLOSE&quot;, &quot;FAR&quot;, preferred range band for the target system if any</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>seek_themes</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of preferred system themes TAGS from campaign.ids.Tags, plus &quot;PROCGEN_NO_THEME&quot; and &quot;PROCGEN_NO_THEME_NO_PULSAR_NO_BLACKHOLE&quot;</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>avoid_themes</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of blacklisted system themes</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>entities</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of preferred entity types from campaign.ids.Tags</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>default</span><wbr></wbr><span>To</span><wbr></wbr><span>Any</span><wbr></wbr><span><span>Entity</span></span></u></div></span></div><div><div class="title"><p class="paragraph">If none of the systems in the required range band has any of the required entities, will the script default to any entity within a system with the proper range and themes instead of looking into a different range band</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>prioritize</span><wbr></wbr><span><span>Unexplored</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Will the script target unexplored systems first before falling back to ones that have been visited by the player</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>verbose</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Log some debug messages</p></div></div></div></div></div></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,4 @@
-/*
-By Tartiflette
- */
+
 package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
@@ -11,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * @author Tartiflette
+ */
 public class MagicInterference {
 
     private static final String INTERFERENCE_HULLMOD = "ML_interferenceWarning";
@@ -19,14 +20,23 @@ public class MagicInterference {
     //                          //
     //   INTERFERENCE EFFECT    //
     //                          //
-    //////////////////////////////  
+    //////////////////////////////
 
     /**
      * Reduces a ship's passive dissipation if more than one weapon causing interferences is installed. The strength of the effect has a quadratic growth with the number of such weapons installed.
      *
      * @param shipVariant Variant of the ship affected by the interference debuff
      */
+    public static void applyInterference(ShipVariantAPI shipVariant) {
+        ApplyInterference(shipVariant);
+    }
 
+    /**
+     * Reduces a ship's passive dissipation if more than one weapon causing interferences is installed. The strength of the effect has a quadratic growth with the number of such weapons installed.
+     *
+     * @param shipVariant Variant of the ship affected by the interference debuff
+     * @deprecated use applyInterference instead (follows proper naming convention)
+     */
     public static void ApplyInterference(ShipVariantAPI shipVariant) {
         //get interference data
         if (RATES.isEmpty() || Global.getSettings().isDevMode()) {

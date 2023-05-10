@@ -19,6 +19,17 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
+/**
+ * Fake beam generator. Create a visually convincing beam from arbitrary coordinates.
+ * It however has several limitation:
+ * - It deal damage instantly and is therefore only meant to be used for burst beams.
+ * - It cannot be "cut" by another object passing between the two ends, thus a very short duration is preferable.
+ * - Unlike vanilla, it deals full damage to armor, be careful when using HIGH_EXPLOSIVE damage type.
+ * It's usage is recommended for short snappy beams or for FX.
+ * <p>
+ *
+ * <img src="https://static.wikia.nocookie.net/starfarergame/images/4/4d/MagicFakeBeam_spawnFakeBeam.gif/revision/latest?cb=20181024094938" />
+ */
 public class MagicFakeBeam {
 
     /////////////////////////////////////////

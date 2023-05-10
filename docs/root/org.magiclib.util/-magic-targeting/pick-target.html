@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>pickTarget</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="root::org.magiclib.util/MagicTargeting/pickTarget/#CombatEntityAPI#org.magiclib.util.MagicTargeting.targetSeeking#java.lang.Integer#java.lang.Integer#java.lang.Integer#java.lang.Integer#java.lang.Integer#java.lang.Integer#java.lang.Integer#boolean/PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.util</a><span class="delimiter">/</span><a href="index.html">MagicTargeting</a><span class="delimiter">/</span><span class="current">pickTarget</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>pick</span><wbr></wbr><span><span>Target</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="pick-target.html"><span class="token function">pickTarget</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">seeker<span class="token operator">: </span>CombatEntityAPI<span class="token punctuation">, </span></span><span class="parameter ">seeks<span class="token operator">: </span><a href="target-seeking/index.html">MagicTargeting.targetSeeking</a><span class="token punctuation">, </span></span><span class="parameter ">maxRange<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">searchCone<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">fighterWeight<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">frigateWeight<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">destroyerWeight<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">cruiserWeight<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">capitalWeight<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token punctuation">, </span></span><span class="parameter ">failsafe<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span>ShipAPI</div><p class="paragraph">Generic target picker Will always fall back on the closest target if none are found within the search parameters. </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">ShipAPI target = MagicTargeting.pickTarget(
+    missile,
+    MagicTargeting.targetSeeking..NO_RANDOM,
+    (int)missile.getWeapon().getRange(),
+    360,
+    0,
+    1,
+    2,
+    4,
+    4,
+    false
+    );
+</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">ShipAPI target</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>seeker</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The CombatEntity concerned. Can only be a ship or a missile.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>seeks</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Does the missile find a random target or tries to hit the ship's one? </p><p class="paragraph">NO_RANDOM, If the launching ship has a valid target within arc, the missile will pursue it. If there is no target, it will check for an unselected cursor target within arc. If there is none, it will pursue its closest valid threat within arc. </p><p class="paragraph">LOCAL_RANDOM, If the ship has a target, the missile will pick a random valid threat around that one. If the ship has none, the missile will pursue a random valid threat around the cursor, or itself. Can produce strange behavior if used with a limited search cone. </p><p class="paragraph">FULL_RANDOM, The missile will always seek a random valid threat within arc around itself. </p><p class="paragraph">IGNORE_SOURCE, The missile will pick the closest target of interest. Useful for custom MIRVs.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>max</span><wbr></wbr><span><span>Range</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Range in which the missile seek a target in game units.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>search</span><wbr></wbr><span><span>Cone</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Angle in which the missile will seek the target. Set to 360 or more to ignore.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>fighter</span><wbr></wbr><span><span>Weight</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Target priority, set to 0 to ignore that class. Other values only used for random targeting.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>frigate</span><wbr></wbr><span><span>Weight</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Target priority, set to 0 to ignore that class. Other values only used for random targeting.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>destroyer</span><wbr></wbr><span><span>Weight</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Target priority, set to 0 to ignore that class. Other values only used for random targeting.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>cruiser</span><wbr></wbr><span><span>Weight</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Target priority, set to 0 to ignore that class. Other values only used for random targeting.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>capital</span><wbr></wbr><span><span>Weight</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Target priority, set to 0 to ignore that class. Other values only used for random targeting.</p></div></div></div></div><div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>failsafe</span></span></u></div></span></div><div><div class="title"><p class="paragraph">fallback option: if no suitable target is found within the search cone and distance the script will pick the closest possible target as long as it is within twice the max range.</p></div></div></div></div></div></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,8 +1,4 @@
-/*
- * By Tartiflette
- * Direct sprite rendering script to create new visual effect or add new UI elements with only one line of code.
- * Note that every element will be drawn one frame late.
- */
+
 package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
@@ -18,6 +14,15 @@ import org.magiclib.plugins.MagicRenderPlugin;
 
 import java.awt.*;
 
+/**
+ * Draw arbitrary sprites on screen with constraints to entities/camera when needed. Most drawing functions come with three optional declarations:
+ * A simple declaration that should cover most use cases,
+ * an advanced declaration that adds jitter/flicker controls plus render layer overrides,
+ * and an advanced declaration that also includes OpenGL blending options.
+ * Note that every element will be drawn one frame late.
+ *
+ * @author Tartiflette
+ */
 public class MagicRender {
 
     /**

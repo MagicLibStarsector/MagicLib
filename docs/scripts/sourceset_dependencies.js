@@ -1,1 +1,1 @@
-sourceset_dependencies='{"magiclib/JVM":[]}'
+sourceset_dependencies='{"moduleName/main":[]}'

@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.*;
 
 /**
+ * Draws a small UI charge-bar/tick box next to the normal ship-system for special systems.
+ *
  * @author Dark.Revenant, Tartiflette, LazyWizard, Snrasha
  */
-
 public class MagicUI {
     //Color of the HUD when the ship is alive or the hud
     public static final Color GREENCOLOR;
@@ -67,6 +68,15 @@ public class MagicUI {
 
     /**
      * Draws a small UI bar next to the ship's system
+     * <pre>
+     *     MagicUI.drawSystemBar(
+     *         ship,
+     *         new Color(255,0,0),
+     *         shieldTime/MAX_SHIELD_TIME,
+     *         0
+     * );
+     * </pre>
+     * <img src="https://static.wikia.nocookie.net/starfarergame/images/2/28/MagicLib_UI.gif/revision/latest?cb=20181114073410"  />
      *
      * @param ship          Ship concerned (the element will only be drawn if that ship
      *                      is the player ship)
@@ -96,6 +106,8 @@ public class MagicUI {
 
     /**
      * Draws a small UI bar at a given location.
+     *
+     * <img src="https://static.wikia.nocookie.net/starfarergame/images/2/28/MagicLib_UI.gif/revision/latest?cb=20181114073410"  />
      *
      * @param ship          Ship concerned (the element will only be drawn if that ship
      *                      is the player ship)
@@ -440,14 +452,14 @@ public class MagicUI {
      * This must be called with the same text argument every couple of seconds to remain active.
      * It's not recommended to change text when calling this method, as doing so will create another status bar.
      *
-     * @param ship        Player ship.
+     * @param ship         Player ship.
      * @param statusBarLoc Where to draw the status bar.
-     * @param fill        Filling level of the bar. 0 to 1
-     * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
-     * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
-     * @param secondFill  Wider filling like the soft/hard-flux. 0 to 1.
-     * @param text        The text written to the left, automatically cut if too large. Set to null to ignore
-     * @param number      The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
+     * @param fill         Filling level of the bar. 0 to 1
+     * @param innerColor   Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor  Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondFill   Wider filling like the soft/hard-flux. 0 to 1.
+     * @param text         The text written to the left, automatically cut if too large. Set to null to ignore
+     * @param number       The number displayed on the right. Can go from 0 to 999 999. Set to <0 value to ignore
      */
     public static void drawInterfaceStatusBar(ShipAPI ship, Vector2f statusBarLoc, float fill, Color innerColor, Color borderColor, float secondFill, String text, int number) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
