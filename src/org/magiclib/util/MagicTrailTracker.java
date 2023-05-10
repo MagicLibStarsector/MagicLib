@@ -1,7 +1,4 @@
-//Optimized by Originem
-//By Nicke535
-//This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will
-//most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.
+
 package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
@@ -15,8 +12,15 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
-//This class handles each "segment" of a trail: each MagicTrailObject within the MagicTrailTracker is considered to be linked to the other objects.
-//To make a new "segment" of trail, unrelated to the others, you have to create a new Tracker. The trail is invisible until at least two objects are in it
+/**
+ * This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will
+ * most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.
+ * <p>
+ * This class handles each "segment" of a trail: each MagicTrailObject within the MagicTrailTracker is considered to be linked to the other objects.
+ * To make a new "segment" of trail, unrelated to the others, you have to create a new Tracker. The trail is invisible until at least two objects are in it
+ *
+ * @author Nicke535, Originem (optimization)
+ */
 public class MagicTrailTracker {
     //For scrolling textures - NOTE: we always use the most recent scroll speed for the trail, if it for some reason changes mid-trail
     private float scrollingTextureOffset = 0f;

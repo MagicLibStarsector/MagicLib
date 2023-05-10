@@ -1,13 +1,3 @@
-//By Nicke535, licensed under CC-BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
-//General script meant to be modified for each implementation. Causes a projectile to rotate mid-flight depending on several settings, simulating guidance
-//HOW TO USE:
-//	Copy this file where you want it and rename+adjust values
-//	Find the projectile to guide using any method you want (everyframe script, weapon-mounted everyframe script, mine-spawning etc.)
-//	run "engine.addPlugin(MagicGuidedProjectileScript(proj, target));" with:
-//		MagicGuidedProjectileScript being replaced with your new class name
-//		proj being the projectile to guide
-//		target being the initial target (if any)
-//	You're done!
 package org.magiclib.weapons;
 
 import com.fs.starfarer.api.Global;
@@ -28,6 +18,31 @@ import org.lwjgl.util.vector.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * General script meant to be modified for each implementation. Causes a projectile to rotate mid-flight depending on several settings, simulating guidance
+ * <br />
+ * <br />
+ * HOW TO USE:
+ * <br />
+ * Copy this file where you want it and rename+adjust values
+ * <p>
+ * Find the projectile to guide using any method you want (everyframe script, weapon-mounted everyframe script, mine-spawning etc.)
+ * <p>
+ * Run "engine.addPlugin(MagicGuidedProjectileScript(proj, target));" with:
+ * <p>
+ * - MagicGuidedProjectileScript being replaced with your new class name
+ * <p>
+ * - proj being the projectile to guide
+ * <p>
+ * - target being the initial target (if any)
+ * <br />
+ * You're done!
+ * <br />
+ * <br />
+ * Licensed under CC-BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+ *
+ * @author Nicke535
+ */
 public class MagicGuidedProjectileScript extends BaseEveryFrameCombatPlugin {
     //---Settings: adjust to fill the needs of your implementation---
     //Sets guidance mode for the projectile when a target is fed to the script (or, in the case of ONE_TURN_DUMB, always).

@@ -1,6 +1,3 @@
-/*
-By Tartiflette
- */
 package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
@@ -16,6 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Allows "smart" target selection for systems and missiles within distance and search cone parameters, plus it can use ship-class preferences.
+ *
+ * @author Tartiflette
+ */
 public class MagicTargeting {
     public static enum targetSeeking {
         NO_RANDOM,
@@ -34,7 +36,22 @@ public class MagicTargeting {
 
     /**
      * Generic target picker
-     * Will always fall back on the closest target if none are found within the search parameters
+     * Will always fall back on the closest target if none are found within the search parameters.
+     *
+     * <pre>
+     * ShipAPI target = MagicTargeting.pickTarget(
+     *     missile,
+     *     MagicTargeting.targetSeeking..NO_RANDOM,
+     *     (int)missile.getWeapon().getRange(),
+     *     360,
+     *     0,
+     *     1,
+     *     2,
+     *     4,
+     *     4,
+     *     false
+     *     );
+     * </pre>
      *
      * @param seeker          The CombatEntity concerned. Can only be a ship or a missile.
      * @param seeks           Does the missile find a random target or tries to hit the ship's one?
@@ -128,7 +145,7 @@ public class MagicTargeting {
     }
 
     /**
-     * Picks a random enemy missile within parameters:
+     * Picks a random enemy missile within parameters.
      *
      * @param source     CombatEntity looking for a missile
      * @param priority   Does the source look for a complete random or has priorities

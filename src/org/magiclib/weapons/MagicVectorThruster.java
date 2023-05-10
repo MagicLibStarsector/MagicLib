@@ -1,6 +1,3 @@
-/*
-    By Tartiflette
- */
 package org.magiclib.weapons;
 
 import com.fs.starfarer.api.combat.*;
@@ -12,8 +9,19 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-//import org.magiclib.plugins.SpriteRenderManager;
 
+/**
+ * Manages vectoring or vernier-style attitude thrusters.
+ *
+ * <pre>"everyFrameEffect":"org.magiclib.weapons.MagicVectorThruster"</pre>
+ * <p>
+ * Just needs to be assigned to a deco weapon with a "flame" animation or a "cover" sprite in their weapon file. Supports both moving vectoring-style thrusters and fixed vernier-style ones.
+ * WARNING, this script may have a negative performance impact, use it sparingly.
+ *
+ * <img src="https://static.wikia.nocookie.net/starfarergame/images/4/44/MagicVectorThruster_fixedVernierExample.gif/revision/latest?cb=20181024100639" />
+ *
+ * @author Tartiflette
+ */
 public class MagicVectorThruster implements EveryFrameWeaponEffectPlugin {
 
     private boolean runOnce = false, accel = false, turn = false;

@@ -1,6 +1,4 @@
-//Optimized by Originem
-//By Nicke535, handles customizable "fake trails" similar to the vanilla QUAD_STRIP smoke implementation.
-//Note that any sprites that use this plugin must have a multiple of 2 as size (so 16, 32, 64, 128 etc.), both in width and height
+
 package org.magiclib.plugins;
 
 import com.fs.starfarer.api.Global;
@@ -21,6 +19,13 @@ import java.util.Map.Entry;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * Allows custom QUAD_STRIP-style trails to be drawn freely, with a bunch of customization available.
+ * Note that any sprites that use this plugin must have a multiple of 2 as size (so 16, 32, 64, 128 etc.), both in width and height.
+ * The trails are made by spawning "trail pieces", which if they have the same ID links together to form a smooth trail (the trail will not render without having at least 2 pieces link together).
+ *
+ * @author Nicke535, Originem (optimization)
+ */
 public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
     public static final String PLUGIN_KEY = "MagicTrailPlugin";
     //Tracker for unique ID getting. Only use for this script, though: it's dangerous to use for other ID purposes, since it is so simple

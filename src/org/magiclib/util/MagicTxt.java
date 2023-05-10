@@ -1,6 +1,3 @@
-/*
-By Tartiflette
- */
 package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
@@ -17,6 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * Contains some String-related utility functions.
+ * @author Tartiflette, Wisp
  */
 public class MagicTxt {
 

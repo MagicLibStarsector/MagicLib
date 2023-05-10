@@ -6,6 +6,9 @@ package org.magiclib.util;
 import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
 
+/**
+ * A collection of functions to make smooth animations.
+ */
 public class MagicAnim {
 
     /**

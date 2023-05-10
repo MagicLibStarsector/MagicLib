@@ -10,3 +10,5 @@ banner.png$
 .github/
 media/
 ^release_checklist.md$
+docs/
+dokka/

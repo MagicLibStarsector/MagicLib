@@ -1,6 +1,3 @@
-//By Nicke535
-//This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will
-//most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.
 package org.magiclib.util;
 
 import org.lazywizard.lazylib.FastTrig;
@@ -8,6 +5,12 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 
+/**
+ * This file isn't meant to be used directly; use the MagicTrailPlugin to actually do anything properly. Your mod will
+ * most likely lose backwards-compatibility if you try to call this class' constructor manually, so don't.
+ *
+ * @author Nicke535
+ */
 public class MagicTrailObject {
     //Private, non-varying values
     protected float inDuration = 0f;

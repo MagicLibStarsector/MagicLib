@@ -1,6 +1,7 @@
 package org.magiclib.util
 
 /**
+ * Do not use.
  * @since 0.46.0
  */
 class MagicUIInternal {
