@@ -1,8 +1,9 @@
 ### Version 1.1.0
 
 **Other**
-- Somewhat experimental backwards-compatibility.
-  - Translation: older mods should now work with this version of MagicLib.
+- Added backwards-compatibility for pre-MagicLib-1.0.0 mods.
+  - Translation: most older mods should now work with this version of MagicLib.
+  - Except for mods that depend on MagicBounty. Adding bounties via json is fine; code dependencies need to be updated. 
 
 ### Version 1.0.1
 
