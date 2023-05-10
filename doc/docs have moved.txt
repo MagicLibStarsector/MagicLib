@@ -1,0 +1,4 @@
+Docs took up a few MB and were a few hundred files that most people don't need, so they have been removed from releases.
+
+View online: https://magiclibstarsector.github.io/MagicLib/index.html
+Download: https://github.com/MagicLibStarsector/MagicLib
