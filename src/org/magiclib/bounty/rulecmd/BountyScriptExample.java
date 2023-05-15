@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * @author Wisp
  */
-class BountyScriptExample extends BaseCommandPlugin {
+public class BountyScriptExample extends BaseCommandPlugin {
 
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
@@ -40,6 +40,8 @@ class BountyScriptExample extends BaseCommandPlugin {
         ActiveBounty.Stage bountyStage = bounty.getStage();
         MagicBountyIntel intel = bounty.getIntel();
 
-        return true;
+        throw new RuntimeException("success!");
+
+//        return true;
     }
 }
