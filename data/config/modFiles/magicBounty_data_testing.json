@@ -47,8 +47,8 @@
 		"job_show_distance":"vague",
 		"job_show_arrow":true,
 		"job_pick_option":"Accept the job",
-		"job_pick_script":"magiclib_test_bounty_completed",
 		"job_memKey":"$test_bounty",
+		"job_pick_script":"magiclib_test_bounty_completed",
 		"job_conclusion_script":"magiclib_test_bounty_completed",
 
 		"target_first_name":"Jonas-August",
