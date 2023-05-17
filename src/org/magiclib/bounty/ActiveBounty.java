@@ -4,6 +4,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.campaign.rules.MemKeys;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.DebugFlags;
@@ -11,6 +13,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.campaign.rules.Memory;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +23,7 @@ import org.magiclib.util.MagicVariables;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -337,7 +341,7 @@ public final class ActiveBounty {
     }
 
     private void runRuleScript(String scriptRuleId) {
-//        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
+        InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
 //        boolean didCreateDialog = false;
 //
 //        if (dialog == null && Global.getCurrentState() == GameState.CAMPAIGN) {
@@ -356,15 +360,17 @@ public final class ActiveBounty {
             DebugFlags.PRINT_RULES_DEBUG_INFO = true;
         }
 
-//        if (dialog != null) {
-//            FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
-//        } else {
-        try {
-            FireBest.fire(null, null, null, scriptRuleId);
-        } catch (Exception e) {
-            LOG.warn("Error running " + scriptRuleId, e);
+        if (dialog != null) {
+            FireBest.fire(null, dialog, dialog.getPlugin().getMemoryMap(), scriptRuleId);
+        } else {
+            try {
+                HashMap<String, MemoryAPI> map = new HashMap<>();
+                map.put(MemKeys.LOCAL, new Memory());
+                FireBest.fire(null, null, map, scriptRuleId);
+            } catch (Exception e) {
+                LOG.warn("Error running " + scriptRuleId, e);
+            }
         }
-//        }
 
         // Turn it on for FireBest, then set it back to whatever it was.
         DebugFlags.PRINT_RULES_DEBUG_INFO = flagSetting;
@@ -496,7 +502,7 @@ public final class ActiveBounty {
      * Calculates and returns the number of credits that will be awarded upon completion, if any.
      * Includes any scaling factor.
      *
-     * @param preScalingMultiplier The multiplier to apply BEFORE any other scaling is applied.
+     * @param preScalingMultiplier  The multiplier to apply BEFORE any other scaling is applied.
      * @param postScalingMultiplier The multiplier to apply AFTER all other scaling is applied.
      */
     @Nullable

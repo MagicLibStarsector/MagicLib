@@ -30,7 +30,9 @@ public class MagicBountyLoader {
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
     private static JSONObject bounty_data;
     private static final Logger LOG = Global.getLogger(MagicBountyLoader.class);
-    private static final String BOUNTY_BOARD = "bounty_board", PATH = "data/config/modFiles/magicBounty_data.json";
+    private static final String BOUNTY_BOARD = "bounty_board";
+    private static final String PATH = "data/config/modFiles/magicBounty_data.json";
+    private static final String TESTING_PATH = "data/config/modFiles/magicBounty_data_testing.json";
 
     /**
      * @param id        bounty unique id
@@ -614,7 +616,10 @@ public class MagicBountyLoader {
     private static JSONObject loadBountyData() {
         JSONObject this_bounty_data = null;
         try {
-            this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH, MagicVariables.MAGICLIB_ID);
+            if (Global.getSector() != null && Global.getSector().getPlayerPerson().getNameString().equalsIgnoreCase("ML_Test"))
+                this_bounty_data = Global.getSettings().getMergedJSONForMod(TESTING_PATH, MagicVariables.MAGICLIB_ID);
+            else
+                this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH, MagicVariables.MAGICLIB_ID);
         } catch (IOException | JSONException ex) {
             LOG.fatal("MagicBountyData is unable to read magicBounty_data.json", ex);
             JSONfailed = true;

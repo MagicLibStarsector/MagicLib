@@ -5,5 +5,5 @@ magiclib_bountyboard_selected,DialogOptionSelected,"$option == magiclib_bountybo
 magiclib_bountyCommText,OpenCommLink,"$entity.MagicLib_Bounty_target_hasReply score:1000
 !$entity.ignorePlayerCommRequests","$entity.ignorePlayerCommRequests = true
 MagicBountyCommsReplyCmd",,cutCommLinkNoText:Continue,
-#magiclib_test_bounty_completed,"magiclib_test_bounty_completed",,"BountyScriptTest",,,
+#magiclib_test_bounty_completed,"magiclib_test_bounty_completed",,"BountyScriptExample",,,
 

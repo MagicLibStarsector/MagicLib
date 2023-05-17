@@ -17,6 +17,9 @@ $dokka.location:org.magiclib.bounty.console/ResetBountyCommand///PointingToDecla
 $dokka.location:org.magiclib.bounty.console/ResetBountyCommand/ResetBountyCommand/#/PointingToDeclaration/root/org.magiclib.bounty.console/-reset-bounty-command/-reset-bounty-command.html
 $dokka.location:org.magiclib.bounty.console/ResetBountyCommand/runCommand/#java.lang.String#BaseCommand.CommandContext/PointingToDeclaration/root/org.magiclib.bounty.console/-reset-bounty-command/run-command.html
 $dokka.location:org.magiclib.bounty.rulecmd////PointingToDeclaration/root/org.magiclib.bounty.rulecmd/index.html
+$dokka.location:org.magiclib.bounty.rulecmd/BountyScriptExample///PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-bounty-script-example/index.html
+$dokka.location:org.magiclib.bounty.rulecmd/BountyScriptExample/BountyScriptExample/#/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-bounty-script-example/-bounty-script-example.html
+$dokka.location:org.magiclib.bounty.rulecmd/BountyScriptExample/execute/#java.lang.String#InteractionDialogAPI#java.util.List<Misc.Token>#java.util.Map<java.lang.String,MemoryAPI>/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-bounty-script-example/execute.html
 $dokka.location:org.magiclib.bounty.rulecmd/MagicBountyCommsReplyCmd///PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-magic-bounty-comms-reply-cmd/index.html
 $dokka.location:org.magiclib.bounty.rulecmd/MagicBountyCommsReplyCmd/MagicBountyCommsReplyCmd/#/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-magic-bounty-comms-reply-cmd/-magic-bounty-comms-reply-cmd.html
 $dokka.location:org.magiclib.bounty.rulecmd/MagicBountyCommsReplyCmd/execute/#java.lang.String#InteractionDialogAPI#java.util.List<Misc.Token>#java.util.Map<java.lang.String,MemoryAPI>/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-magic-bounty-comms-reply-cmd/execute.html

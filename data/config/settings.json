@@ -5,6 +5,12 @@
         "MagicCampaignTrailPlugin":"org.magiclib.plugins.MagicCampaignTrailPlugin",
         "MagicTrailPlugin":"org.magiclib.plugins.MagicTrailPlugin",
         "MagicAutoTrails":"org.magiclib.plugins.MagicAutoTrails",
+
+        "old_ML_fakeBeamPlugin":"data.scripts.plugins.MagicFakeBeamPlugin",
+        "old_ML_spriteRenderManager":"data.scripts.plugins.MagicRenderPlugin",
+        "old_MagicCampaignTrailPlugin":"data.scripts.plugins.MagicCampaignTrailPlugin",
+        "old_MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin",
+        "old_MagicAutoTrails":"data.scripts.plugins.MagicAutoTrails",
         #"MagicModuleRetreatFix":"org.magiclib.plugins.MagicModuleRetreatCleaner",
 		#"MagicNebula":"org.magiclib.plugins.MagicNebula",
     },
