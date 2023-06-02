@@ -75,6 +75,7 @@ $dokka.location:org.magiclib.bounty/ActiveBounty/getGivingFactionTextColor/#/Poi
 $dokka.location:org.magiclib.bounty/ActiveBounty/getIntel/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/get-intel.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/getKey/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/get-key.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/getPresetShipsInFleet/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/get-preset-ships-in-fleet.html
+$dokka.location:org.magiclib.bounty/ActiveBounty/getRewardFactionId/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/get-reward-faction-id.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/getTargetFaction/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/get-target-faction.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/getTargetFactionTextColor/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/get-target-faction-text-color.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/hasCreditReward/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/has-credit-reward.html

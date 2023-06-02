@@ -56,17 +56,19 @@ public class MagicInterference {
     private static Map<String, Float> RATES = new HashMap<>();
     private static float RFC_MULT = 0;
 
+    @Deprecated
     public static void loadInterference() {
+        // Wisp: don't load, that's done by the new classes and we don't want to load the same thing twice.
 
         WEAPONS.clear();
         RATES.clear();
-
-        RATES = MagicSettings.getFloatMap(MAGICLIB_ID, "interferences_rates");
-        RFC_MULT = MagicSettings.getFloat(MAGICLIB_ID, "interference_RFCmult");
-        Map<String, String> rawWeapons = MagicSettings.getStringMap(MAGICLIB_ID, "interferences_weapons");
-        for (Entry<String, String> w : rawWeapons.entrySet()) {
-            WEAPONS.put(w.getKey(), RATES.get(w.getValue()));
-        }
+//
+//        RATES = MagicSettings.getFloatMap(MAGICLIB_ID, "interferences_rates");
+//        RFC_MULT = MagicSettings.getFloat(MAGICLIB_ID, "interference_RFCmult");
+//        Map<String, String> rawWeapons = MagicSettings.getStringMap(MAGICLIB_ID, "interferences_weapons");
+//        for (Entry<String, String> w : rawWeapons.entrySet()) {
+//            WEAPONS.put(w.getKey(), RATES.get(w.getValue()));
+//        }
     }
 
 

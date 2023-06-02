@@ -1,4 +1,15 @@
 
+Version 1.1.2
+
+**Effects**
+- Fixed some effects being rendered twice (if they were added from csv, both new and backward-compat code loaded them).
+
+**MagicBounty**
+- Added two new text variables for use, and changed $faction to $targetFaction (backwards-compatible):
+  - $targetFaction The name of the faction (with article) of the bounty fleet.
+  - $givingFaction The name of the faction (with article) that's giving the bounty.
+  - $rewardFaction The name of the faction (with article) that's giving the bounty reward (typically same as givingFaction).
+
 Version 1.1.1
 
 **Effects**

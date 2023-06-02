@@ -244,7 +244,11 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
             try {
                 trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, MagicVariables.MAGICLIB_ID);
             } catch (IOException | JSONException | RuntimeException ex) {
-                LOG.error("unable to read " + path, ex);
+                if (path.equals("data/trails/trail_data.csv")) {
+                    LOG.info("Deprecated 'data/trails/trail_data.csv' not found, skipping.");
+                } else {
+                    LOG.error("unable to read " + path, ex);
+                }
             }
 
             for (int i = 0; i < trailData.length(); i++) {

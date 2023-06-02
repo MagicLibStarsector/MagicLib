@@ -7,7 +7,7 @@ object MagicKotlinModPlugin {
 
     fun onGameLoad(newGame: Boolean) {
         if (Global.getSettings().isDevMode
-            && Global.getSector().playerPerson.nameString.equals("ML Test", ignoreCase = true)
+            && Global.getSector().playerPerson.nameString.equals("ML_Test", ignoreCase = true)
         ) {
             testMagicFleetBuilder()
         }

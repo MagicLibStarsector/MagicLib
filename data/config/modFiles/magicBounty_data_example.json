@@ -52,7 +52,9 @@
                                                                # $system The star system that the bounty fleet is in.
                                                                # $location The body that the bounty fleet has been placed near.
                                                                # $shipName The name of the bounty flagship.
-                                                               # $faction The name of the faction (with article) of the bounty fleet.
+                                                               # $targetFaction The name of the faction (with article) of the bounty fleet.
+                                                               # $givingFaction The name of the faction (with article) that's giving the bounty.
+                                                               # $rewardFaction The name of the faction (with article) that's giving the bounty reward (typically same as givingFaction).
                                                                # $reward The amount of credits being given as a reward.
                                                                # $name The name of the bounty commander.
                                                                # $firstName The first name of the bounty commander.
