@@ -1,5 +1,7 @@
 package org.magiclib.bounty;
 
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -183,6 +185,30 @@ public class MagicBountyUtilsInternal {
                 return bounty.getFleetSpawnLocation().getFullName();
             }
         });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$givingFaction", new StringCreator() {
+            @Override
+            public String create() {
+                return bounty.getGivingFaction() != null
+                        ? bounty.getGivingFaction().getDisplayNameWithArticle()
+                        : "a faction";
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$rewardFaction", new StringCreator() {
+            @Override
+            public String create() {
+                FactionAPI rewardFaction = Global.getSector().getFaction(bounty.getRewardFactionId());
+                return rewardFaction != null
+                        ? rewardFaction.getDisplayNameWithArticle()
+                        : "a faction";
+            }
+        });
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$targetFaction", new StringCreator() {
+            @Override
+            public String create() {
+                return bounty.getFleet().getFaction().getDisplayNameWithArticle();
+            }
+        });
+        // Deprecated in 1.1.2
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$faction", new StringCreator() {
             @Override
             public String create() {

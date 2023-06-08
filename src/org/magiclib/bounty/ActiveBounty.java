@@ -235,7 +235,7 @@ public final class ActiveBounty {
                     ((BountyResult.Succeeded) result).shouldRewardCredits
                             && hasReputationReward()
             ) {
-                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFaction(), getRewardReputation());
+                Global.getSector().getPlayerFaction().adjustRelationship(getRewardFactionId(), getRewardReputation());
             }
 
             //set the relevant outcome memkey
@@ -255,7 +255,7 @@ public final class ActiveBounty {
             //reputation penalty
             if (hasReputationReward()) {
                 Global.getSector().getPlayerFaction().adjustRelationship(
-                        getRewardFaction(),
+                        getRewardFactionId(),
                         getFailureReputationPenalty());
             }
             //set the relevant outcome memkey
@@ -281,7 +281,7 @@ public final class ActiveBounty {
             //reputation penalty
             if (hasReputationReward()) {
                 Global.getSector().getPlayerFaction().adjustRelationship(
-                        getRewardFaction(),
+                        getRewardFactionId(),
                         getFailureReputationPenalty());
             }
             //set the relevant outcome memkey
@@ -427,6 +427,14 @@ public final class ActiveBounty {
         return Math.max(-0.05f, Math.min(0.00f, -getRewardReputation()));
     }
 
+    /**
+     * @since 1.1.2
+     */
+    public @Nullable String getRewardFactionId() {
+        return rewardFaction;
+    }
+
+    @Deprecated // in 1.1.2, use getRewardFactionId()
     public @Nullable String getRewardFaction() {
         return rewardFaction;
     }
@@ -607,9 +615,9 @@ public final class ActiveBounty {
 
     public boolean hasReputationReward() {
         return getRewardReputation() != null
-                && getRewardFaction() != null
-                && !getRewardFaction().isEmpty()
-                && Global.getSector().getFaction(getRewardFaction()) != null;
+                && getRewardFactionId() != null
+                && !getRewardFactionId().isEmpty()
+                && Global.getSector().getFaction(getRewardFactionId()) != null;
     }
 
     /**

@@ -233,140 +233,142 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         //clear up the trash
         PROJ_TRAILS.clear();
 
-        List<String> trailFiles = MagicSettings.getList(MagicVariables.MAGICLIB_ID, "magicTrail_files");
-        trailFiles.add("data/config/modFiles/magicTrail_data.csv");
+        // Wisp: don't load from csv, that's done by the new classes and we don't want to load the same fx twice.
 
-        for (String path : trailFiles) {
-
-            if (MagicVariables.verbose) LOG.error("Merging trails from " + path);
-
-            //merge all the trail
-            JSONArray trailData = new JSONArray();
-            try {
-                trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, MagicVariables.MAGICLIB_ID);
-            } catch (IOException | JSONException | RuntimeException ex) {
-                LOG.error("unable to read " + path, ex);
-            }
-
-            for (int i = 0; i < trailData.length(); i++) {
-                try {
-                    JSONObject row = trailData.getJSONObject(i);
-
-                    //check the blending first
-                    int blend = GL_ONE_MINUS_SRC_ALPHA;
-                    if (row.getBoolean("additive")) {
-                        blend = GL_ONE;
-                    }
-
-                    //get the concerned projectile
-                    String thisProj = row.getString("projectile");
-
-                    //setup layer override
-                    CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
-                    try {
-                        if (row.getBoolean("renderBelowExplosions")) {
-                            layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
-                        }
-                    } catch (JSONException ex) {
-//                            LOG.error("missing layer override for " + thisProj);
-                    }
-
-                    float frameOffsetMult = 1f;
-                    try {
-                        frameOffsetMult = (float) row.getDouble("frameOffsetMult");
-                    } catch (JSONException ex) {
-//                            LOG.error("missing frame offset mult override for " + thisProj);
-                    }
-
-                    float textureOffset = 0;
-                    try {
-                        if (row.getBoolean("randomTextureOffset")) {
-                            textureOffset = -1;
-                        }
-                    } catch (JSONException ignored) {
-//                            LOG.error("missing random texture offset boolean for " + thisProj);
-                    }
-
-                    //check if there are any trail already assigned to that projectile
-                    if (PROJ_TRAILS.containsKey(thisProj)) {
-                        //add the new trail to the existing proj
-                        PROJ_TRAILS.get(thisProj).add(
-                                new trailData(
-                                        row.getString("sprite"),
-                                        (float) row.getDouble("minLength"),
-                                        (float) row.getDouble("fadeIn"),
-                                        (float) row.getDouble("duration"),
-                                        (float) row.getDouble("fadeOut"),
-                                        (float) row.getDouble("sizeIn"),
-                                        (float) row.getDouble("sizeOut"),
-                                        MagicSettings.toColor3(row.getString("colorIn")),
-                                        MagicSettings.toColor3(row.getString("colorOut")),
-                                        (float) row.getDouble("opacity"),
-                                        blend,
-                                        (float) row.getDouble("textLength"),
-                                        (float) row.getDouble("textScroll"),
-                                        textureOffset,
-                                        (float) row.getDouble("distance"),
-                                        (float) row.getDouble("drift"),
-                                        row.getBoolean("fadeOnFadeOut"),
-                                        row.getBoolean("angleAdjustment"),
-                                        (float) row.getDouble("dispersion"),
-                                        (float) row.getDouble("velocityIn"),
-                                        (float) row.getDouble("velocityOut"),
-                                        (float) row.getDouble("randomVelocity"),
-                                        (float) row.getDouble("angle"),
-                                        (float) row.getDouble("rotationIn"),
-                                        (float) row.getDouble("rotationOut"),
-                                        row.getBoolean("randomRotation"),
-                                        layer,
-                                        frameOffsetMult
-                                ));
-
-                    } else {
-                        //add a new entry with that first trail
-                        List<trailData> list = new ArrayList<>();
-                        list.add(
-                                new trailData(
-                                        row.getString("sprite"),
-                                        (float) row.getDouble("minLength"),
-                                        (float) row.getDouble("fadeIn"),
-                                        (float) row.getDouble("duration"),
-                                        (float) row.getDouble("fadeOut"),
-                                        (float) row.getDouble("sizeIn"),
-                                        (float) row.getDouble("sizeOut"),
-                                        MagicSettings.toColor3(row.getString("colorIn")),
-                                        MagicSettings.toColor3(row.getString("colorOut")),
-                                        (float) row.getDouble("opacity"),
-                                        blend,
-                                        (float) row.getDouble("textLength"),
-                                        (float) row.getDouble("textScroll"),
-                                        textureOffset,
-                                        (float) row.getDouble("distance"),
-                                        (float) row.getDouble("drift"),
-                                        row.getBoolean("fadeOnFadeOut"),
-                                        row.getBoolean("angleAdjustment"),
-                                        (float) row.getDouble("dispersion"),
-                                        (float) row.getDouble("velocityIn"),
-                                        (float) row.getDouble("velocityOut"),
-                                        (float) row.getDouble("randomVelocity"),
-                                        (float) row.getDouble("angle"),
-                                        (float) row.getDouble("rotationIn"),
-                                        (float) row.getDouble("rotationOut"),
-                                        row.getBoolean("randomRotation"),
-                                        layer,
-                                        frameOffsetMult
-                                ));
-                        PROJ_TRAILS.put(
-                                thisProj,
-                                list
-                        );
-                    }
-                } catch (JSONException ex) {
-                    if (MagicVariables.verbose) LOG.error("Invalid line, skipping");
-                }
-            }
-
-        }
+//        List<String> trailFiles = MagicSettings.getList(MagicVariables.MAGICLIB_ID, "magicTrail_files");
+//        trailFiles.add("data/config/modFiles/magicTrail_data.csv");
+//
+//        for (String path : trailFiles) {
+//
+//            if (MagicVariables.verbose) LOG.error("Merging trails from " + path);
+//
+//            //merge all the trail
+//            JSONArray trailData = new JSONArray();
+//            try {
+//                trailData = Global.getSettings().getMergedSpreadsheetDataForMod("trail", path, MagicVariables.MAGICLIB_ID);
+//            } catch (IOException | JSONException | RuntimeException ex) {
+//                LOG.error("unable to read " + path, ex);
+//            }
+//
+//            for (int i = 0; i < trailData.length(); i++) {
+//                try {
+//                    JSONObject row = trailData.getJSONObject(i);
+//
+//                    //check the blending first
+//                    int blend = GL_ONE_MINUS_SRC_ALPHA;
+//                    if (row.getBoolean("additive")) {
+//                        blend = GL_ONE;
+//                    }
+//
+//                    //get the concerned projectile
+//                    String thisProj = row.getString("projectile");
+//
+//                    //setup layer override
+//                    CombatEngineLayers layer = CombatEngineLayers.BELOW_INDICATORS_LAYER;
+//                    try {
+//                        if (row.getBoolean("renderBelowExplosions")) {
+//                            layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
+//                        }
+//                    } catch (JSONException ex) {
+////                            LOG.error("missing layer override for " + thisProj);
+//                    }
+//
+//                    float frameOffsetMult = 1f;
+//                    try {
+//                        frameOffsetMult = (float) row.getDouble("frameOffsetMult");
+//                    } catch (JSONException ex) {
+////                            LOG.error("missing frame offset mult override for " + thisProj);
+//                    }
+//
+//                    float textureOffset = 0;
+//                    try {
+//                        if (row.getBoolean("randomTextureOffset")) {
+//                            textureOffset = -1;
+//                        }
+//                    } catch (JSONException ignored) {
+////                            LOG.error("missing random texture offset boolean for " + thisProj);
+//                    }
+//
+//                    //check if there are any trail already assigned to that projectile
+//                    if (PROJ_TRAILS.containsKey(thisProj)) {
+//                        //add the new trail to the existing proj
+//                        PROJ_TRAILS.get(thisProj).add(
+//                                new trailData(
+//                                        row.getString("sprite"),
+//                                        (float) row.getDouble("minLength"),
+//                                        (float) row.getDouble("fadeIn"),
+//                                        (float) row.getDouble("duration"),
+//                                        (float) row.getDouble("fadeOut"),
+//                                        (float) row.getDouble("sizeIn"),
+//                                        (float) row.getDouble("sizeOut"),
+//                                        MagicSettings.toColor3(row.getString("colorIn")),
+//                                        MagicSettings.toColor3(row.getString("colorOut")),
+//                                        (float) row.getDouble("opacity"),
+//                                        blend,
+//                                        (float) row.getDouble("textLength"),
+//                                        (float) row.getDouble("textScroll"),
+//                                        textureOffset,
+//                                        (float) row.getDouble("distance"),
+//                                        (float) row.getDouble("drift"),
+//                                        row.getBoolean("fadeOnFadeOut"),
+//                                        row.getBoolean("angleAdjustment"),
+//                                        (float) row.getDouble("dispersion"),
+//                                        (float) row.getDouble("velocityIn"),
+//                                        (float) row.getDouble("velocityOut"),
+//                                        (float) row.getDouble("randomVelocity"),
+//                                        (float) row.getDouble("angle"),
+//                                        (float) row.getDouble("rotationIn"),
+//                                        (float) row.getDouble("rotationOut"),
+//                                        row.getBoolean("randomRotation"),
+//                                        layer,
+//                                        frameOffsetMult
+//                                ));
+//
+//                    } else {
+//                        //add a new entry with that first trail
+//                        List<trailData> list = new ArrayList<>();
+//                        list.add(
+//                                new trailData(
+//                                        row.getString("sprite"),
+//                                        (float) row.getDouble("minLength"),
+//                                        (float) row.getDouble("fadeIn"),
+//                                        (float) row.getDouble("duration"),
+//                                        (float) row.getDouble("fadeOut"),
+//                                        (float) row.getDouble("sizeIn"),
+//                                        (float) row.getDouble("sizeOut"),
+//                                        MagicSettings.toColor3(row.getString("colorIn")),
+//                                        MagicSettings.toColor3(row.getString("colorOut")),
+//                                        (float) row.getDouble("opacity"),
+//                                        blend,
+//                                        (float) row.getDouble("textLength"),
+//                                        (float) row.getDouble("textScroll"),
+//                                        textureOffset,
+//                                        (float) row.getDouble("distance"),
+//                                        (float) row.getDouble("drift"),
+//                                        row.getBoolean("fadeOnFadeOut"),
+//                                        row.getBoolean("angleAdjustment"),
+//                                        (float) row.getDouble("dispersion"),
+//                                        (float) row.getDouble("velocityIn"),
+//                                        (float) row.getDouble("velocityOut"),
+//                                        (float) row.getDouble("randomVelocity"),
+//                                        (float) row.getDouble("angle"),
+//                                        (float) row.getDouble("rotationIn"),
+//                                        (float) row.getDouble("rotationOut"),
+//                                        row.getBoolean("randomRotation"),
+//                                        layer,
+//                                        frameOffsetMult
+//                                ));
+//                        PROJ_TRAILS.put(
+//                                thisProj,
+//                                list
+//                        );
+//                    }
+//                } catch (JSONException ex) {
+//                    if (MagicVariables.verbose) LOG.error("Invalid line, skipping");
+//                }
+//            }
+//
+//        }
     }
 
     //public methods for those that do not want to use the CSV merging
