@@ -207,12 +207,9 @@ public class MagicBountyLoader {
             }
 
             //fixes for my own mistakes
-            List<String> locations = new ArrayList<>();
-            if (getStringList(bountyId, "location_marketIDs") != null) {
-                locations = getStringList(bountyId, "location_marketIDs");
-            } else if (getStringList(bountyId, "location_entitiesID") != null) {
-                locations = getStringList(bountyId, "location_entitiesID");
-            }
+            // Wisp: fixes for Tart's mistakes :P
+            List<String> locations = getStringList(bountyId, "location_marketIDs");
+            locations.addAll(getStringList(bountyId, "location_entitiesID"));
 
             //fixes for my own mistakes
             Integer minSize = getInt(bountyId, "fleet_min_FP", getInt(bountyId, "fleet_min_DP"));

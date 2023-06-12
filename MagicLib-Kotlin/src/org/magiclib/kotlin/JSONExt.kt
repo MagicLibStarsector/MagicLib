@@ -6,6 +6,8 @@ import org.lazywizard.lazylib.ext.json.getFloat
 
 
 /**
+ * Converts a `JSONArray` to a `List<String>`.
+ *
  * @since 0.46.0
  */
 fun JSONArray.toStringList(): List<String> {
@@ -16,6 +18,8 @@ fun JSONArray.toStringList(): List<String> {
 }
 
 /**
+ * Converts a `JSONArray` to a `List<Long>`.
+ *
  * @since 0.46.0
  */
 fun JSONArray.toLongList(): List<Long> {
@@ -25,12 +29,22 @@ fun JSONArray.toLongList(): List<Long> {
 }
 
 /**
+ * Tries to get a value from a `JSONObject` by key. The value must exist.
+ * Usage:
+ * ```kt
+ * obj.tryGet<String>("key")
+ * ```
  * @since 0.46.0
  */
 inline fun <reified T> JSONObject.getObj(key: String): T =
     getJsonObj(this, key)
 
 /**
+ * Tries to get a value from a `JSONObject` by key, returning `default` if the key is not found.
+ * Usage:
+ * ```kt
+ * obj.tryGet<String>("key") { "default" }
+ * ```
  * @since 0.46.0
  */
 inline fun <reified T> JSONObject.tryGet(key: String, default: () -> T): T =
@@ -38,6 +52,14 @@ inline fun <reified T> JSONObject.tryGet(key: String, default: () -> T): T =
         .getOrDefault(default())
 
 /**
+ * Gets an object from a `JSONObject` by key, returning `default` (null if not specified) if the key is not found.
+ *
+ * Usage:
+ * ```kt
+ * jsonObj.optional<String>("key")
+ * jsonObj.options<String>("key") { "default" }
+ * ```
+ *
  * @since 0.46.0
  */
 inline fun <reified T> JSONObject.optional(key: String, default: () -> T? = { null }): T? =
@@ -45,6 +67,14 @@ inline fun <reified T> JSONObject.optional(key: String, default: () -> T? = { nu
         .getOrDefault(default())
 
 /**
+ *
+ * Usage:
+ * ```kt
+ * jsonArray.forEach<String> { obj -> doSomething(obj) }
+ * ```
+ *
+ * Optionally, you can specify a transform function to manually convert the object to type `T`.
+ *
  * @since 0.46.0
  */
 inline fun <reified T> JSONArray.forEach(
@@ -56,6 +86,13 @@ inline fun <reified T> JSONArray.forEach(
 }
 
 /**
+ * Usage:
+ * ```kt
+ * jsonArray.map<String> { obj -> doSomething(obj) }
+ * ```
+ *
+ * Optionally, you can specify a transform function to manually convert the object to type `T`.
+ *
  * @since 0.46.0
  */
 inline fun <reified T, K> JSONArray.map(
@@ -71,6 +108,14 @@ inline fun <reified T, K> JSONArray.map(
 }
 
 /**
+ *
+ * Usage:
+ * ```kt
+ *  jsonArray.filter<String> { obj -> obj == "something" }
+ *  ```
+ *
+ * Optionally, you can specify a transform function to manually convert the object to type `T`.
+ *
  * @since 0.46.0
  */
 inline fun <reified T> JSONArray.filter(
@@ -91,6 +136,8 @@ inline fun <reified T> JSONArray.filter(
 }
 
 /**
+ * Gets an object from a JSONArray, automatically converting it to the specified type.
+ *
  * @since 0.46.0
  */
 inline fun <reified T> getJsonObjFromArray(json: JSONArray, i: Int) =
@@ -106,6 +153,8 @@ inline fun <reified T> getJsonObjFromArray(json: JSONArray, i: Int) =
     }
 
 /**
+ * Gets an object from a JSONObject, automatically converting it to the specified type.
+ *
  * @since 0.46.0
  */
 inline fun <reified T> getJsonObj(json: JSONObject, key: String) =
