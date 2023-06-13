@@ -934,11 +934,11 @@ public class MagicCampaign {
 
         //checking trigger_memKeys_any
         if (memKeys_any != null && !memKeys_any.isEmpty()) {
-            for (String f : memKeys_any.keySet()) {
+            for (String key : memKeys_any.keySet()) {
                 //check if the memKey exists 
-                if (!Global.getSector().getMemoryWithoutUpdate().getKeys().contains(f)) {
+                if (Global.getSector().getMemoryWithoutUpdate().getKeys().contains(key)) {
                     //check if it has the proper value
-                    if (memKeys_any.get(f) == Global.getSector().getMemoryWithoutUpdate().getBoolean(f)) {
+                    if (memKeys_any.get(key) == Global.getSector().getMemoryWithoutUpdate().getBoolean(key)) {
                         return true;
                     }
                 }

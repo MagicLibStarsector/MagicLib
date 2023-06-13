@@ -179,7 +179,7 @@
 
         #LOCATION
 
-        "location_entitiesID": [  # Default: no preset. Preset locations to spawn the bounty fleet, can default to the preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
+        "location_entitiesID": [  # Default: no preset. Preset locations (SectorEntityTokens) to spawn the bounty fleet, will fall back to other choices (if they are defined) and if this preset location doesn't exist (eg due to Nexerelin's random mode).
             "location1",
             "location2",
         ],

@@ -274,7 +274,7 @@ public class MagicBountySpec {
     // Section: location
 
     /**
-     * preset location, can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode
+     * Preset locations (SectorEntityTokens, not markets, variable is poorly named) to spawn the bounty fleet, will fall back to other choices (if they are defined) and if this preset location doesn't exist (eg due to Nexerelin's random mode).
      */
     public List<String> location_marketIDs;
     /**
@@ -413,7 +413,7 @@ public class MagicBountySpec {
         this.job_intel_success = job_intel_success;
         this.job_intel_failure = job_intel_failure;
         this.job_intel_expired = job_intel_expired;
-        this.job_forFaction = job_forFaction;
+        this.job_forFaction = MagicTxt.nullStringIfEmpty(job_forFaction);
         this.job_difficultyDescription = job_difficultyDescription;
         this.job_deadline = job_deadline;
         this.job_credit_reward = job_credit_reward;

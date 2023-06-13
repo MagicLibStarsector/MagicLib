@@ -1,11 +1,16 @@
+Verison 1.1.3
+
+**MagicBounty**
+- Fixed "location_entitiesID" never working (reported by vicegrip).
+- Fixed "trigger_memKeys_any" never working (reported by vicegrip).
 
 Version 1.1.2
 
 **Effects**
-- Fixed some effects being rendered twice (if they were added from csv, both new and backward-compat code loaded them).
+- Fixed some effects being rendered twice (if they were added from csv, both new and backward-compat code loaded them) (reported by Nia).
 
 **MagicBounty**
-- Added two new text variables for use, and changed $faction to $targetFaction (backwards-compatible):
+- Added two new text variables for use (requested by Nia), and changed $faction to $targetFaction (backwards-compatible):
   - $targetFaction The name of the faction (with article) of the bounty fleet.
   - $givingFaction The name of the faction (with article) that's giving the bounty.
   - $rewardFaction The name of the faction (with article) that's giving the bounty reward (typically same as givingFaction).
