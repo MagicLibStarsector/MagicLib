@@ -1,4 +1,8 @@
-Verison 1.1.3
+Version 1.1.4
+**MagicBounty**
+- Bounty fleets are no longer aggressive toward non-player fleets. They should no longer attack each other (reported by Avanitia).
+
+Version 1.1.3
 
 **MagicBounty**
 - Fixed "location_entitiesID" never working (reported by vicegrip).

@@ -10,6 +10,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -373,6 +374,9 @@ public final class MagicBountyCoordinator {
             // Add both a constant tag to the fleet as well as the bounty key that it is for.
             fleet.addTag(MagicBountyLoader.BOUNTY_FLEET_TAG);
             fleet.addTag(bountyKey);
+
+            fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORES_OTHER_FLEETS, true);
+            fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_DO_NOT_IGNORE_PLAYER, true);
 
             // Set fleet to max CR
             for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
