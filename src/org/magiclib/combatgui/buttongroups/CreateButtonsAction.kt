@@ -1,8 +1,11 @@
-package org.magiclib.kotlin.combatgui.buttongroups
+package org.magiclib.combatgui.buttongroups
 
 /**
  * Implement this interface to create buttons for a button group
  * Consider using CreateSimpleButtons rather than creating your own action
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 interface CreateButtonsAction {
     /**

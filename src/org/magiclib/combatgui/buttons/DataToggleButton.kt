@@ -1,8 +1,11 @@
-package org.magiclib.kotlin.combatgui.buttons
+package org.magiclib.combatgui.buttons
 
 /**
  * A Button that can be activated/deactivated by clicking on it
  * Used in button groups, don't use directly unless you know what you are doing
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 class DataToggleButton(
     val data: Any, info: ButtonInfo

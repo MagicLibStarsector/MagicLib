@@ -1,4 +1,4 @@
-package org.magiclib.kotlin.combatgui
+package org.magiclib.combatgui
 
 import java.awt.Color
 
@@ -18,6 +18,9 @@ import java.awt.Color
  * @param fontPath path to a Starsector font, e.g. "graphics/fonts/insignia15LTaa.fnt"
  * @param xMessageRel position in relative coordinates (value between 0 and 1) where messages will be displayed
  * @param yMessageRel cf. xMessageRel
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 data class GuiLayout(
     val xAnchorRel: Float, val yAnchorRel: Float, val buttonWidthPx: Float, val buttonHeightPx: Float,

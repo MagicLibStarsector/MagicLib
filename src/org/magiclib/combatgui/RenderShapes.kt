@@ -1,4 +1,4 @@
-package org.magiclib.kotlin.combatgui
+package org.magiclib.combatgui
 
 import com.fs.starfarer.api.Global
 import org.lazywizard.lazylib.opengl.DrawUtils
@@ -12,6 +12,9 @@ import java.nio.FloatBuffer
 
 /**
  * data class defining position, radius and opacity of a circle to highlight things
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 data class Highlight(val x: Float, val y: Float, val r: Float, var a: Float)
 

@@ -1,8 +1,11 @@
-package org.magiclib.kotlin.combatgui.buttongroups
+package org.magiclib.combatgui.buttongroups
 
 /**
  * defines an action to be performed whenever anything happens
  * Use this to e.g. disabled buttons that are incompatible with other active buttons
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 interface RefreshButtonsAction {
     /**

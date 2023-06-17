@@ -1,7 +1,10 @@
-package org.magiclib.kotlin.combatgui.buttongroups
+package org.magiclib.combatgui.buttongroups
 
 /**
  * implement this interface to tell a button group what action to perform
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 interface ButtonGroupAction {
     /**

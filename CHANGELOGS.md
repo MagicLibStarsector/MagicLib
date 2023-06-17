@@ -1,4 +1,4 @@
-Version 1.1.4
+Version 1.2.0
 **MagicBounty**
 - Bounty fleets are no longer aggressive toward non-player fleets. They should no longer attack each other (reported by Avanitia).
 

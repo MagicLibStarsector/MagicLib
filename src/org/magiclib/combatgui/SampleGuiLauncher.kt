@@ -1,4 +1,4 @@
-package org.magiclib.kotlin.combatgui
+package org.magiclib.combatgui
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
@@ -7,10 +7,13 @@ import com.fs.starfarer.api.input.InputEventAPI
 
 /**
  * Class that, when added to engine via e.g. addPlugin, will open/close GUI when specified hotkey is pressed.
- * Extend this class by overriding [constructGui] to construct a GuiObject that extends GuiBase.
+ * Extend this class by overriding [constructGui] to construct a GuiObject that extends [GuiBase].
  * This class is mainly intended as an example or to quickly get started. In the long term, you probably want to implement
  * your own GUI launching logic in order to be able to customize things.
- * @param hotkey lowercase char representation of hotkey to press to open/close the GUI. Make sure that key is not being used by starsector!
+ * @param hotkey lowercase char representation of hotkey to press to open/close the GUI. Make sure that key is not being used by Starsector!
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 abstract class SampleGuiLauncher(private val hotkey: Char) : BaseEveryFrameCombatPlugin() {
     private var gui: GuiBase? = null

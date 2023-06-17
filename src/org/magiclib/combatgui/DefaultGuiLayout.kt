@@ -1,10 +1,13 @@
-package org.magiclib.kotlin.combatgui
+package org.magiclib.combatgui
 
 import java.awt.Color
 
 /**
  * best guess GUI layout, feel free to pass this to GuiBase to get started quickly
  * in the long term, you probably want to create your own GuiLayout
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 val defaultGuiLayout = GuiLayout(
     0.05f, 0.8f, 100f, 20f, 0.5f, Color.WHITE,

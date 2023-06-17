@@ -1,4 +1,4 @@
-package org.magiclib.kotlin.combatgui.buttongroups
+package org.magiclib.combatgui.buttongroups
 
 import java.awt.Color
 
@@ -16,6 +16,9 @@ import java.awt.Color
  * @param xTooltip x-position where hover tooltip shall be displayed
  * @param yTooltip y-position where hover tooltip shall be displayed
  * @param horizontal if true, buttons will be displayed from left to right, otherwise from top to bottom
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 data class ButtonGroupLayout(
     val x: Float, val y: Float, val w: Float, val h: Float,

@@ -1,10 +1,10 @@
-package org.magiclib.kotlin.combatgui.buttongroups
+package org.magiclib.combatgui.buttongroups
 
 import org.lazywizard.lazylib.ui.LazyFont
-import org.magiclib.kotlin.combatgui.buttons.ButtonBase
-import org.magiclib.kotlin.combatgui.buttons.ButtonInfo
-import org.magiclib.kotlin.combatgui.buttons.DataToggleButton
-import org.magiclib.kotlin.combatgui.buttons.HoverTooltip
+import org.magiclib.combatgui.buttons.ButtonBase
+import org.magiclib.combatgui.buttons.ButtonInfo
+import org.magiclib.combatgui.buttons.DataToggleButton
+import org.magiclib.combatgui.buttons.HoverTooltip
 
 /**
  * If possible, use GuiBase.addButtonGroup rather than using this class directly!
@@ -29,6 +29,9 @@ import org.magiclib.kotlin.combatgui.buttons.HoverTooltip
  * @param font LazyFont object
  * @param descriptionText text to be rendered above the group
  * @param layout defines where/how the group gets rendered
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 abstract class DataButtonGroup(
     val font: LazyFont?, var descriptionText: String, val layout: ButtonGroupLayout

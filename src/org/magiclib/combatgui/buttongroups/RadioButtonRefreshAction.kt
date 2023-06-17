@@ -1,4 +1,4 @@
-package org.magiclib.kotlin.combatgui.buttongroups
+package org.magiclib.combatgui.buttongroups
 
 /**
  * pass this to GuiLayout.addButtonGroup as refresh to enable radio-button behavior
@@ -12,6 +12,9 @@ package org.magiclib.kotlin.combatgui.buttongroups
  * Then, this refresh action will get triggered and un-click the first button.
  *
  * Attention: only works if all buttons have unique non-null data!
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 class RadioButtonRefreshAction : RefreshButtonsAction {
     private var lastData: Any? = null

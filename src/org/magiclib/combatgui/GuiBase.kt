@@ -1,13 +1,13 @@
-package org.magiclib.kotlin.combatgui
+package org.magiclib.combatgui
 
 import com.fs.starfarer.api.Global
 import org.lazywizard.lazylib.ui.FontException
 import org.lazywizard.lazylib.ui.LazyFont
-import org.magiclib.kotlin.combatgui.buttongroups.*
-import org.magiclib.kotlin.combatgui.buttons.ActionButton
-import org.magiclib.kotlin.combatgui.buttons.ButtonAction
-import org.magiclib.kotlin.combatgui.buttons.ButtonInfo
-import org.magiclib.kotlin.combatgui.buttons.HoverTooltip
+import org.magiclib.combatgui.buttongroups.*
+import org.magiclib.combatgui.buttons.ActionButton
+import org.magiclib.combatgui.buttons.ButtonAction
+import org.magiclib.combatgui.buttons.ButtonInfo
+import org.magiclib.combatgui.buttons.HoverTooltip
 
 /**
  * The base class you need to extend/inherit from to create a GUI
@@ -24,6 +24,9 @@ import org.magiclib.kotlin.combatgui.buttons.HoverTooltip
  * It makes sense to create a new GUI object when a hotkey is pressed
  *
  * To get started quickly, you can use the [SampleGuiLauncher]
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     private val gSettings = Global.getSettings()

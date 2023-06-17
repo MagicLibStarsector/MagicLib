@@ -1,13 +1,16 @@
-package org.magiclib.kotlin.combatgui.buttons
+package org.magiclib.combatgui.buttons
 
 import com.fs.starfarer.api.Global
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
-import org.magiclib.kotlin.combatgui.renderTextbox
+import org.magiclib.combatgui.renderTextbox
 import java.awt.Color
 
 /**
  * Only use this directly if you know what you are doing
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 abstract class ButtonBase(val info: ButtonInfo) {
     var isActive = false

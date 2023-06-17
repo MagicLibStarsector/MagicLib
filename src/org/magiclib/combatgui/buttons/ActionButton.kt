@@ -1,8 +1,11 @@
-package org.magiclib.kotlin.combatgui.buttons
+package org.magiclib.combatgui.buttons
 
 /**
  * Simple button that does something (defined by button action) when clicked
  * If possible, use GuiBase.addButton rather than using this directly
+ *
+ * @author Jannes
+ * @since 1.2.0
  */
 class ActionButton(
     private val action: ButtonAction? = null, info: ButtonInfo
