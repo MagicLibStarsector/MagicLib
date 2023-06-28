@@ -59,7 +59,12 @@ private fun postRender() {
  * @param color alpha value is unused (defined via Highlight instead)
  *
  * Example:
- *
+ * <pre>
+ *     renderHighlights(Arrays.asList(new Highlight(100.0F, 100.0F, 50.0F, 1.0F)),
+ *                      Global.getSector().getViewport().getViewMult(),
+ *                      Color.GREEN
+ *                      );
+ * </pre>
  */
 fun renderHighlights(highlights: List<Highlight>, viewMult: Float, color: Color = defaultHighlightColor) {
     val uiMult = Global.getSettings()?.screenScaleMult ?: 1f
