@@ -25,6 +25,49 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  *
  * To get started quickly, you can use the [SampleGuiLauncher]
  *
+ * Example implementation:
+ * <pre>
+ * public class ExampleCombatGui extends GuiBase {
+ *     // GUI setup work is done in constructor
+ *     public ExampleCombatGui(){
+ *         super(
+ *                 new GuiLayout(0.05f, 0.8f, 100f, 20f, 0.5f,
+ *                 Color.WHITE,5f, 0.4f, 0.2f, 25f,
+ *                 "graphics/fonts/insignia15LTaa.fnt", 0.4f, 0.4f)
+ *         );
+ *
+ *         addButton(new MyButtonAction(), // MyButtonAction is a class you need to write that implements [ButtonAction]
+ *           "MyButton", // title of the button, i.e. text displayed on the button
+ *           "my tooltip text", // text to display when user hovers over the button
+ *           false // if the button should be disabled (usually false)
+ *         );
+ *
+ *         addButtonGroup(
+ *                 new MyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]
+ *                 new CreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]
+ *                         Arrays.asList("button1", "button2"),
+ *                         null,
+ *                         null
+ *                 ),
+ *                 null,
+ *                 "Example button group"
+ *         );
+ *     }
+ *
+ *     @Nullable
+ *     @Override
+ *     protected String getTitleString() {
+ *         return "This is an example title";
+ *     }
+ *
+ *     @Nullable
+ *     @Override
+ *     protected String getMessageString() {
+ *         return "This is a sample message";
+ *     }
+ * }
+ * </pre>
+ *
  * @author Jannes
  * @since 1.2.0
  */
@@ -49,6 +92,14 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     /**
      * override this returning a string representing your GUI title
      * may change between frames
+     *
+     * Example implementation:
+     * <pre>
+     * @Override
+     * protected String getTitleString() {
+     *   return "This is an example title";
+     * }
+     * </pre>
      */
     protected open fun getTitleString(): String? {
         return ""
@@ -57,6 +108,14 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     /**
      * override this to display a message, feel free to return null
      * may change between frames
+     *
+     * Example implementation:
+     * <pre>
+     * @Override
+     * protected String getMessageString() {
+     *   return "";
+     * }
+     * </pre>
      */
     protected open fun getMessageString(): String? {
         return ""
@@ -80,6 +139,20 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
      * @param refresh will be called whenever something changes (e.g. any button gets clicked), feel free to pass null
      * @note Internally, this will create a new object that inherits from DataButtonGroup and implements the abstract functions.
      *       If you want to provide your own implementation for DataButtonGroup, use addCustomButtonGroup instead
+     *
+     * <pre>
+     * Example:
+     * addButtonGroup(
+     *                 new MyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]
+     *                 new CreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]
+     *                         Arrays.asList("button1", "button2"),
+     *                         null,
+     *                         null
+     *                 ),
+     *                 null,
+     *                 "Example button group"
+     *         );
+     * </pre>
      */
     protected fun addButtonGroup(
         action: ButtonGroupAction,
@@ -125,6 +198,15 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
      * @param action will be executed when the button is click, feel free to pass null
      * @param txt display text AKA name of the button
      * @param tooltipTxt will be displayed when user hovers over button, feel free to pass an empty string
+     *
+     * Example:
+     * <pre>
+     * addButton(new MyButtonAction(), // MyButtonAction is a class you need to write that implements [ButtonAction]
+     *           "MyButton", // title of the button, i.e. text displayed on the button
+     *           "my tooltip text", // text to display when user hovers over the button
+     *           false // if the button should be disabled (usually false)
+     *           );
+     * </pre>
      */
     protected fun addButton(action: ButtonAction?, txt: String, tooltipTxt: String, isDisabled: Boolean = false) {
         val btnInfo = createButtonInfo(standaloneButtons.size, txt, tooltipTxt)
