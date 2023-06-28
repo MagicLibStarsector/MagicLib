@@ -3,7 +3,8 @@ package org.magiclib.combatgui
 import java.awt.Color
 
 /**
- * data class describing the layout, i.e. positions/spacings/color etc. of you GUI
+ * Data class describing the layout, i.e. positions/spacings/color etc. of your GUI.
+ *
  * @param xAnchorRel position in relative coordinates (value between 0 and 1) where the top-left corner of first
  * button group of the UI shall be placed. Note that ActionButtons will be placed above this.
  * @param yAnchorRel cf. xAnchorRel

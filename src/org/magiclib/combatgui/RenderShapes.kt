@@ -11,7 +11,7 @@ import java.nio.Buffer
 import java.nio.FloatBuffer
 
 /**
- * data class defining position, radius and opacity of a circle to highlight things
+ * Data class defining position, radius and opacity of a circle to highlight things.
  *
  * @author Jannes
  * @since 1.2.0
@@ -59,12 +59,12 @@ private fun postRender() {
  * @param color alpha value is unused (defined via Highlight instead)
  *
  * Example:
- * <pre>
+ * ```java
  *     renderHighlights(Arrays.asList(new Highlight(100.0F, 100.0F, 50.0F, 1.0F)),
  *                      Global.getSector().getViewport().getViewMult(),
  *                      Color.GREEN
  *                      );
- * </pre>
+ * ```
  */
 fun renderHighlights(highlights: List<Highlight>, viewMult: Float, color: Color = defaultHighlightColor) {
     val uiMult = Global.getSettings()?.screenScaleMult ?: 1f
@@ -77,8 +77,10 @@ fun renderHighlights(highlights: List<Highlight>, viewMult: Float, color: Color 
 }
 
 /**
- * Render a textbox for given string at given position
- * this gets used by buttons internally, so unless you want to manually display text, you won't need to use this
+ * Render a textbox for given string at given position.
+ *
+ * This gets used by buttons internally, so unless you want to manually display text, you won't need to use this.
+ *
  * @param text string to surround by textbox
  * @param xPos position where you will draw the string
  * @param yPos position where you will draw the string

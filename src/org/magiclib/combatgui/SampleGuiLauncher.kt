@@ -10,10 +10,9 @@ import com.fs.starfarer.api.input.InputEventAPI
  * Extend this class by overriding [constructGui] to construct a GuiObject that extends [GuiBase].
  * This class is mainly intended as an example or to quickly get started. In the long term, you probably want to implement
  * your own GUI launching logic in order to be able to customize things.
- * @param hotkey lowercase char representation of hotkey to press to open/close the GUI. Make sure that key is not being used by Starsector!
  *
  * Example:
- * <pre>
+ * ```java
  * public class ExampleCombatGuiLauncher extends SampleGuiLauncher{
  *     public ExampleCombatGuiLauncher(){
  *         super('+'); // use + as hotkey to open/close GUI
@@ -24,8 +23,9 @@ import com.fs.starfarer.api.input.InputEventAPI
  *         return new ExampleCombatGui(); // construct and return class that extends [GuiBase]
  *     }
  * }
- * </pre>
+ * ```
  *
+ * @param hotkey lowercase char representation of hotkey to press to open/close the GUI. Make sure that key is not being used by Starsector!
  * @author Jannes
  * @since 1.2.0
  */
