@@ -40,6 +40,23 @@ abstract class DataButtonGroup(
     private val descriptionOffset = 40f
     private var currentX = layout.x
     private var currentY = layout.y
+
+    /**
+     * Add a new button to a button group
+     *
+     * The button will be positioned automatically.
+     *
+     * @param text name of the button, will be displayed inside the button
+     * @param data data represented by the button
+     * @param tooltip will be displayed when user hovers over the button
+     * @param isActive if true, the button will be active at the beginning
+     *
+     * Example:
+     * <pre>
+     * addButton("MyButton", "button data, e.g. a String", "My tooltip", false);
+     * </pre>
+     *
+     */
     fun addButton(text: String, data: Any, tooltip: String, isActive: Boolean = true) {
         val info = ButtonInfo(
             currentX,

@@ -12,6 +12,20 @@ import com.fs.starfarer.api.input.InputEventAPI
  * your own GUI launching logic in order to be able to customize things.
  * @param hotkey lowercase char representation of hotkey to press to open/close the GUI. Make sure that key is not being used by Starsector!
  *
+ * Example:
+ * <pre>
+ * public class ExampleCombatGuiLauncher extends SampleGuiLauncher{
+ *     public ExampleCombatGuiLauncher(){
+ *         super('+'); // use + as hotkey to open/close GUI
+ *     }
+ *
+ *     @Override
+ *     public @NotNull GuiBase constructGui(){
+ *         return new ExampleCombatGui(); // construct and return class that extends [GuiBase]
+ *     }
+ * }
+ * </pre>
+ *
  * @author Jannes
  * @since 1.2.0
  */
