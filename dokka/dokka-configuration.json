@@ -7,7 +7,7 @@
         "sourceSetName": "main"
       },
       "sourceRoots": [
-        "./src/org/magiclib",
+        "F:/Code/Starsector/MagicLib/src/org/magiclib",
         "F:/Code/Starsector/MagicLib/MagicLib-Kotlin"
       ]
     }

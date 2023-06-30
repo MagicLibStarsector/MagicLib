@@ -3,8 +3,8 @@ package org.magiclib.combatgui
 import java.awt.Color
 
 /**
- * Best guess GUI layout, feel free to pass this to GuiBase to get started quickly.
- * In the long term, you probably want to create your own GuiLayout.
+ * Best guess GUI layout, feel free to pass this to [GuiBase] to get started quickly.
+ * In the long term, you probably want to create your own [GuiLayout].
  *
  * @author Jannes
  * @since 1.2.0

@@ -6,7 +6,7 @@ import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.input.InputEventAPI
 
 /**
- * Class that, when added to engine via e.g. addPlugin, will open/close GUI when specified hotkey is pressed.
+ * Class that, when added to engine via e.g. `addPlugin`, will open/close GUI when specified hotkey is pressed.
  * Extend this class by overriding [constructGui] to construct a GuiObject that extends [GuiBase].
  * This class is mainly intended as an example or to quickly get started. In the long term, you probably want to implement
  * your own GUI launching logic in order to be able to customize things.

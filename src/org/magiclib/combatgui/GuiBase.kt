@@ -13,7 +13,7 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  * The base class you need to extend/inherit from to create a GUI.
  *
  * Call the constructor of this class in your constructor (via super) and pass it a guiLayout object.
- * You can use the defaultGuiLayout by passing nothing if you want to get started quickly.
+ * You can use the `defaultGuiLayout` by passing nothing if you want to get started quickly.
  *
  * Override [getTitleString] to set a display title.
  *
@@ -145,8 +145,8 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
      *                 "Example button group"
      *         );
      * ```
-     * Note: Internally, this will create a new object that inherits from DataButtonGroup and implements the abstract functions.
-     *       If you want to provide your own implementation for DataButtonGroup, use addCustomButtonGroup instead
+     * Note: Internally, this will create a new object that inherits from [DataButtonGroup] and implements the abstract functions.
+     *       If you want to provide your own implementation for [DataButtonGroup], use `addCustomButtonGroup` instead
      *
      * @param action will be performed when one of the buttons gets clicked, can't pass null
      *               Implement a class that implements ButtonGroupAction, overriding the execute method
@@ -183,7 +183,7 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     }
 
     /**
-     * It is recommended to use addButtonGroup instead.
+     * It is recommended to use [addButtonGroup] instead.
      * add a custom button group where you have to take care of positioning etc.
      * You will need to create a new class that inherits from DataButton group and pass an instance to this method.
      * Actions will be automatically executed when appropriate.
@@ -218,7 +218,7 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     }
 
     /**
-     * It is recommended to use addButton instead of this.
+     * It is recommended to use [addButton] instead of this.
      * Adds a custom button where you have to take care of positioning etc.
      */
     protected fun addCustomButton(button: ActionButton) {
@@ -238,9 +238,9 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     }
 
     /**
-     * @returns button info that would be assigned to button when using addButton
+     * @returns button info that would be assigned to button when using [addButton]
      *
-     * @note Only relevant if you plan on using addCustomButton
+     * @note Only relevant if you plan on using [addCustomButton]
      */
     protected fun createButtonInfo(xIndex: Int, txt: String, tooltipTxt: String): ButtonInfo {
         return ButtonInfo(
@@ -283,7 +283,7 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
     }
 
     /**
-     * Delete all buttons from button groups and re-create them with the given CreateButtonsAction.
+     * Delete all buttons from button groups and re-create them with the given [CreateButtonsAction].
      */
     open fun reRenderButtonGroups() {
         buttonGroups.forEach {

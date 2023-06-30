@@ -4,9 +4,9 @@ import org.lazywizard.lazylib.ui.LazyFont
 import java.awt.Color
 
 /**
- * data class describing data required to render button
+ * data class describing data required to render button.
  *
- * Only use directly to add custom buttons (it's recommended to use GuiBase.addButton instead)
+ * Only use directly to add custom buttons (it's recommended to use [org.magiclib.combatgui.GuiBase.addButton] instead).
  *
  * @author Jannes
  * @since 1.2.0

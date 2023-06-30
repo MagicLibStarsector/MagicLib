@@ -316,6 +316,132 @@ $dokka.location:org.magiclib.campaign/MagicFleetBuilder/setSupportAutofit/#boole
 $dokka.location:org.magiclib.campaign/MagicFleetBuilder/setSupportFleet/#java.util.Map<java.lang.String,java.lang.Integer>/PointingToDeclaration/root/org.magiclib.campaign/-magic-fleet-builder/set-support-fleet.html
 $dokka.location:org.magiclib.campaign/MagicFleetBuilder/setTransponderOn/#boolean/PointingToDeclaration/root/org.magiclib.campaign/-magic-fleet-builder/set-transponder-on.html
 $dokka.location:org.magiclib.campaign/MagicFleetBuilder/setVariantsPath/#java.lang.String/PointingToDeclaration/root/org.magiclib.campaign/-magic-fleet-builder/set-variants-path.html
+$dokka.location:org.magiclib.combatgui.buttongroups////PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupAction///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-action/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupAction/execute/#kotlin.collections.List[kotlin.Any]#kotlin.Any?#kotlin.Any?/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-action/execute.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupAction/onHover/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-action/on-hover.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/ButtonGroupLayout/#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#java.awt.Color#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/-button-group-layout.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/a/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/a.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/color/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/color.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/h/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/h.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/horizontal/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/horizontal.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/padding/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/padding.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/w/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/w.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/x/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/x.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/xTooltip/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/x-tooltip.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/y/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/y.html
+$dokka.location:org.magiclib.combatgui.buttongroups/ButtonGroupLayout/yTooltip/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-button-group-layout/y-tooltip.html
+$dokka.location:org.magiclib.combatgui.buttongroups/CreateButtonsAction///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-create-buttons-action/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/CreateButtonsAction/createButtons/#org.magiclib.combatgui.buttongroups.DataButtonGroup/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-create-buttons-action/create-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/CreateSimpleButtons///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-create-simple-buttons/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/CreateSimpleButtons/CreateSimpleButtons/#kotlin.collections.List[kotlin.String]#kotlin.collections.List[kotlin.Any]?#kotlin.collections.List[kotlin.String]?/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-create-simple-buttons/-create-simple-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/CreateSimpleButtons/createButtons/#org.magiclib.combatgui.buttongroups.DataButtonGroup/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-create-simple-buttons/create-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/DataButtonGroup/#[Error type: Unresolved type for LazyFont]?#kotlin.String#org.magiclib.combatgui.buttongroups.ButtonGroupLayout/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/-data-button-group.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/addButton/#kotlin.String#kotlin.Any#kotlin.String#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/add-button.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/advance/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/advance.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/buttons/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/createButtons/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/create-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/descriptionText/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/description-text.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/disableButton/#kotlin.String/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/disable-button.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/enableAllButtons/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/enable-all-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/executeAction/#kotlin.collections.List[kotlin.Any]#kotlin.Any?#kotlin.Any?/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/execute-action.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/font/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/font.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/getActiveButtonData/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/get-active-button-data.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/layout/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/layout.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/onHover/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/on-hover.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/refresh/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/refresh.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/refreshAllButtons/#kotlin.collections.List[kotlin.Any]/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/refresh-all-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/render/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/render.html
+$dokka.location:org.magiclib.combatgui.buttongroups/DataButtonGroup/resetGrid/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-data-button-group/reset-grid.html
+$dokka.location:org.magiclib.combatgui.buttongroups/RadioButtonRefreshAction///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-radio-button-refresh-action/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/RadioButtonRefreshAction/RadioButtonRefreshAction/#/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-radio-button-refresh-action/-radio-button-refresh-action.html
+$dokka.location:org.magiclib.combatgui.buttongroups/RadioButtonRefreshAction/refreshButtons/#org.magiclib.combatgui.buttongroups.DataButtonGroup/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-radio-button-refresh-action/refresh-buttons.html
+$dokka.location:org.magiclib.combatgui.buttongroups/RefreshButtonsAction///PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-refresh-buttons-action/index.html
+$dokka.location:org.magiclib.combatgui.buttongroups/RefreshButtonsAction/refreshButtons/#org.magiclib.combatgui.buttongroups.DataButtonGroup/PointingToDeclaration/root/org.magiclib.combatgui.buttongroups/-refresh-buttons-action/refresh-buttons.html
+$dokka.location:org.magiclib.combatgui.buttons////PointingToDeclaration/root/org.magiclib.combatgui.buttons/index.html
+$dokka.location:org.magiclib.combatgui.buttons/ActionButton///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-action-button/index.html
+$dokka.location:org.magiclib.combatgui.buttons/ActionButton/ActionButton/#org.magiclib.combatgui.buttons.ButtonAction?#org.magiclib.combatgui.buttons.ButtonInfo/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-action-button/-action-button.html
+$dokka.location:org.magiclib.combatgui.buttons/ActionButton/advance/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-action-button/advance.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonAction///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-action/index.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonAction/execute/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-action/execute.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase.Companion///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-companion/index.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase.Companion/enableButtonHoverEffects/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-companion/enable-button-hover-effects.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase.Companion/enableButtonHoverSound/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-companion/enable-button-hover-sound.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase.Companion/enableButtonOutlines/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-companion/enable-button-outlines.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase.Companion/enableHoverTooltipBoxes/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-companion/enable-hover-tooltip-boxes.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase.Companion/enableHoverTooltips/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-companion/enable-hover-tooltips.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/index.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/ButtonBase/#org.magiclib.combatgui.buttons.ButtonInfo/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/-button-base.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/advance/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/advance.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/info/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/info.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/isActive/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/is-active.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/isDisabled/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/is-disabled.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/isHover/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/is-hover.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/render/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/render.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/wasHover/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/was-hover.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonBase/wasMouseReleased/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-base/was-mouse-released.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/index.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/ButtonInfo/#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.String#[Error type: Unresolved type for LazyFont]?#java.awt.Color#org.magiclib.combatgui.buttons.HoverTooltip/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/-button-info.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/a/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/a.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/color/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/color.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/font/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/font.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/h/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/h.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/tooltip/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/tooltip.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/txt/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/txt.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/w/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/w.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/x/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/x.html
+$dokka.location:org.magiclib.combatgui.buttons/ButtonInfo/y/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-button-info/y.html
+$dokka.location:org.magiclib.combatgui.buttons/DataToggleButton///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-data-toggle-button/index.html
+$dokka.location:org.magiclib.combatgui.buttons/DataToggleButton/DataToggleButton/#kotlin.Any#org.magiclib.combatgui.buttons.ButtonInfo/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-data-toggle-button/-data-toggle-button.html
+$dokka.location:org.magiclib.combatgui.buttons/DataToggleButton/advance/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-data-toggle-button/advance.html
+$dokka.location:org.magiclib.combatgui.buttons/DataToggleButton/data/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-data-toggle-button/data.html
+$dokka.location:org.magiclib.combatgui.buttons/DataToggleButton/getDataIfActive/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-data-toggle-button/get-data-if-active.html
+$dokka.location:org.magiclib.combatgui.buttons/HoverTooltip///PointingToDeclaration/root/org.magiclib.combatgui.buttons/-hover-tooltip/index.html
+$dokka.location:org.magiclib.combatgui.buttons/HoverTooltip/HoverTooltip/#kotlin.Float#kotlin.Float#kotlin.String/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-hover-tooltip/-hover-tooltip.html
+$dokka.location:org.magiclib.combatgui.buttons/HoverTooltip/txt/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-hover-tooltip/txt.html
+$dokka.location:org.magiclib.combatgui.buttons/HoverTooltip/x/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-hover-tooltip/x.html
+$dokka.location:org.magiclib.combatgui.buttons/HoverTooltip/y/#/PointingToDeclaration/root/org.magiclib.combatgui.buttons/-hover-tooltip/y.html
+$dokka.location:org.magiclib.combatgui////PointingToDeclaration/root/org.magiclib.combatgui/index.html
+$dokka.location:org.magiclib.combatgui//defaultFrameColor/#/PointingToDeclaration/root/org.magiclib.combatgui/default-frame-color.html
+$dokka.location:org.magiclib.combatgui//defaultGuiLayout/#/PointingToDeclaration/root/org.magiclib.combatgui/default-gui-layout.html
+$dokka.location:org.magiclib.combatgui//defaultHighlightColor/#/PointingToDeclaration/root/org.magiclib.combatgui/default-highlight-color.html
+$dokka.location:org.magiclib.combatgui//defaultTextBoxColor/#/PointingToDeclaration/root/org.magiclib.combatgui/default-text-box-color.html
+$dokka.location:org.magiclib.combatgui//renderHighlights/#kotlin.collections.List[org.magiclib.combatgui.Highlight]#kotlin.Float#java.awt.Color/PointingToDeclaration/root/org.magiclib.combatgui/render-highlights.html
+$dokka.location:org.magiclib.combatgui//renderTextbox/#[Error type: Unresolved type for LazyFont.DrawableString]#kotlin.Float#kotlin.Float#kotlin.Float#java.awt.Color#java.awt.Color/PointingToDeclaration/root/org.magiclib.combatgui/render-textbox.html
+$dokka.location:org.magiclib.combatgui/GuiBase///PointingToDeclaration/root/org.magiclib.combatgui/-gui-base/index.html
+$dokka.location:org.magiclib.combatgui/GuiBase/GuiBase/#org.magiclib.combatgui.GuiLayout/PointingToDeclaration/root/org.magiclib.combatgui/-gui-base/-gui-base.html
+$dokka.location:org.magiclib.combatgui/GuiBase/advance/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-base/advance.html
+$dokka.location:org.magiclib.combatgui/GuiBase/color/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-base/color.html
+$dokka.location:org.magiclib.combatgui/GuiBase/reRenderButtonGroups/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-base/re-render-button-groups.html
+$dokka.location:org.magiclib.combatgui/GuiBase/render/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-base/render.html
+$dokka.location:org.magiclib.combatgui/GuiLayout///PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/index.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/GuiLayout/#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#java.awt.Color#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.String#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/-gui-layout.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/a/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/a.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/buttonHeightPx/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/button-height-px.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/buttonWidthPx/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/button-width-px.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/color/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/color.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/fontPath/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/font-path.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/paddingPx/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/padding-px.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/textSpacingBufferPx/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/text-spacing-buffer-px.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/xAnchorRel/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/x-anchor-rel.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/xMessageRel/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/x-message-rel.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/xTooltipRel/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/x-tooltip-rel.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/yAnchorRel/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/y-anchor-rel.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/yMessageRel/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/y-message-rel.html
+$dokka.location:org.magiclib.combatgui/GuiLayout/yTooltipRel/#/PointingToDeclaration/root/org.magiclib.combatgui/-gui-layout/y-tooltip-rel.html
+$dokka.location:org.magiclib.combatgui/Highlight///PointingToDeclaration/root/org.magiclib.combatgui/-highlight/index.html
+$dokka.location:org.magiclib.combatgui/Highlight/Highlight/#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.combatgui/-highlight/-highlight.html
+$dokka.location:org.magiclib.combatgui/Highlight/a/#/PointingToDeclaration/root/org.magiclib.combatgui/-highlight/a.html
+$dokka.location:org.magiclib.combatgui/Highlight/r/#/PointingToDeclaration/root/org.magiclib.combatgui/-highlight/r.html
+$dokka.location:org.magiclib.combatgui/Highlight/x/#/PointingToDeclaration/root/org.magiclib.combatgui/-highlight/x.html
+$dokka.location:org.magiclib.combatgui/Highlight/y/#/PointingToDeclaration/root/org.magiclib.combatgui/-highlight/y.html
+$dokka.location:org.magiclib.combatgui/SampleGuiLauncher///PointingToDeclaration/root/org.magiclib.combatgui/-sample-gui-launcher/index.html
+$dokka.location:org.magiclib.combatgui/SampleGuiLauncher/SampleGuiLauncher/#kotlin.Char/PointingToDeclaration/root/org.magiclib.combatgui/-sample-gui-launcher/-sample-gui-launcher.html
+$dokka.location:org.magiclib.combatgui/SampleGuiLauncher/advance/#kotlin.Float#kotlin.collections.MutableList[[Error type: Unresolved type for InputEventAPI]]?/PointingToDeclaration/root/org.magiclib.combatgui/-sample-gui-launcher/advance.html
+$dokka.location:org.magiclib.combatgui/SampleGuiLauncher/constructGui/#/PointingToDeclaration/root/org.magiclib.combatgui/-sample-gui-launcher/construct-gui.html
+$dokka.location:org.magiclib.combatgui/SampleGuiLauncher/renderInUICoords/#[Error type: Unresolved type for ViewportAPI]?/PointingToDeclaration/root/org.magiclib.combatgui/-sample-gui-launcher/render-in-u-i-coords.html
 $dokka.location:org.magiclib.hullmods////PointingToDeclaration/root/org.magiclib.hullmods/index.html
 $dokka.location:org.magiclib.hullmods/MagicIncompatibleWarning///PointingToDeclaration/root/org.magiclib.hullmods/-magic-incompatible-warning/index.html
 $dokka.location:org.magiclib.hullmods/MagicIncompatibleWarning/MagicIncompatibleWarning/#/PointingToDeclaration/root/org.magiclib.hullmods/-magic-incompatible-warning/-magic-incompatible-warning.html
@@ -1085,6 +1211,9 @@ $dokka.location:org.magiclib.util/MagicUI/drawSystemBox/#ShipAPI#Vector2f#java.a
 $dokka.location:org.magiclib.util/MagicUI/drawSystemBox/#ShipAPI#java.awt.Color#float/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/draw-system-box.html
 $dokka.location:org.magiclib.util/MagicUI/getInterfaceOffsetFromStatusBars/#ShipAPI#ShipVariantAPI/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-interface-offset-from-status-bars.html
 $dokka.location:org.magiclib.util/MagicUI/getInterfaceOffsetFromSystemBar/#ShipAPI#ShipVariantAPI/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-interface-offset-from-system-bar.html
+$dokka.location:org.magiclib.util/MagicUIInternal.Companion///PointingToDeclaration/root/org.magiclib.util/-magic-u-i-internal/-companion/index.html
+$dokka.location:org.magiclib.util/MagicUIInternal///PointingToDeclaration/root/org.magiclib.util/-magic-u-i-internal/index.html
+$dokka.location:org.magiclib.util/MagicUIInternal/MagicUIInternal/#/PointingToDeclaration/root/org.magiclib.util/-magic-u-i-internal/-magic-u-i-internal.html
 $dokka.location:org.magiclib.util/MagicVariables///PointingToDeclaration/root/org.magiclib.util/-magic-variables/index.html
 $dokka.location:org.magiclib.util/MagicVariables/AVOID_BLACKHOLE_PULSAR/#/PointingToDeclaration/root/org.magiclib.util/-magic-variables/-a-v-o-i-d_-b-l-a-c-k-h-o-l-e_-p-u-l-s-a-r.html
 $dokka.location:org.magiclib.util/MagicVariables/AVOID_COLONIZED_SYSTEM/#/PointingToDeclaration/root/org.magiclib.util/-magic-variables/-a-v-o-i-d_-c-o-l-o-n-i-z-e-d_-s-y-s-t-e-m.html
@@ -1139,6 +1268,9 @@ org.magiclib.bounty
 org.magiclib.bounty.console
 org.magiclib.bounty.rulecmd
 org.magiclib.campaign
+org.magiclib.combatgui
+org.magiclib.combatgui.buttongroups
+org.magiclib.combatgui.buttons
 org.magiclib.hullmods
 org.magiclib.kotlin
 org.magiclib.plugins

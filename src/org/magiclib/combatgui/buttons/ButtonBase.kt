@@ -7,7 +7,7 @@ import org.magiclib.combatgui.renderTextbox
 import java.awt.Color
 
 /**
- * Only use this directly if you know what you are doing
+ * Only use this directly if you know what you are doing.
  *
  * @author Jannes
  * @since 1.2.0

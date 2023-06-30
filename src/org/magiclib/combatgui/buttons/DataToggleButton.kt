@@ -1,8 +1,8 @@
 package org.magiclib.combatgui.buttons
 
 /**
- * A Button that can be activated/deactivated by clicking on it
- * Used in button groups, don't use directly unless you know what you are doing
+ * A Button that can be activated/deactivated by clicking on it.
+ * Used in button groups, don't use directly unless you know what you are doing.
  *
  * @author Jannes
  * @since 1.2.0
@@ -19,7 +19,7 @@ class DataToggleButton(
     }
 
     /**
-     * returns data set in ctr if active, null otherwise
+     * Returns data set in constructor if active, null otherwise.
      */
     fun getDataIfActive(): Any? {
         return if (isActive) data else null

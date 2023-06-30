@@ -56,7 +56,7 @@ private fun postRender() {
  * You can call this in your render or onHover methods to e.g. visualize what a given button affects
  * @param highlights list of highlights (filled circles) to render
  * @param viewMult get from viewport
- * @param color alpha value is unused (defined via Highlight instead)
+ * @param color alpha value is unused (defined via [Highlight] instead)
  *
  * Example:
  * ```java
