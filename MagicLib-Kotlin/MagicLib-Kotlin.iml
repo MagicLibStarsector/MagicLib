@@ -8,8 +8,18 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="starfarer.api" level="project" />
-    <orderEntry type="library" name="LazyLib-Kotlin" level="application" />
     <orderEntry type="library" name="Kotlin-Runtime" level="application" />
     <orderEntry type="library" name="LazyLib" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
