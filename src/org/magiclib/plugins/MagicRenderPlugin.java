@@ -49,12 +49,54 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
         SINGLEFRAME.add(new renderData(sprite, loc, layer));
     }
 
-    public static void addBattlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin,
-                                      float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
-                                      float fadein, float full, float fadeout, CombatEngineLayers layer) {
+    public static void addBattlespace(SpriteAPI sprite,
+                                      Vector2f loc,
+                                      Vector2f vel,
+                                      Vector2f growth,
+                                      float spin,
+                                      float jitterRange,
+                                      float jitterTilt,
+                                      Vector3f jitter,
+                                      float flickerRange,
+                                      float flickerMedian,
+                                      IntervalUtil delay,
+                                      float fadein,
+                                      float full,
+                                      float fadeout,
+                                      CombatEngineLayers layer) {
 
         BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin,
                 jitterRange, jitterTilt, jitter, flickerRange, flickerMedian, delay,
+                fadein, full, fadeout, 0, layer));
+    }
+
+    public static void addBattlespace(SpriteAPI sprite,
+                                      Vector2f loc,
+                                      Vector2f vel,
+                                      Vector2f growth,
+                                      float spin,
+                                      float fadein,
+                                      float full,
+                                      float fadeout,
+                                      CombatEngineLayers layer) {
+        BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin,
+                0, 0, null, 0, 0, null,
+                fadein, full, fadeout, 0, layer));
+    }
+
+    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin,
+                                      float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
+                                      float fadein, float full, float fadeout, CombatEngineLayers layer) {
+
+        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin,
+                jitterRange, jitterTilt, jitter, flickerRange, flickerMedian, delay,
+                fadein, full, fadeout, 0, layer));
+    }
+
+    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin,
+                                      float fadein, float full, float fadeout, CombatEngineLayers layer) {
+        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin,
+                0, 0, null, 0, 0, null,
                 fadein, full, fadeout, 0, layer));
     }
 
@@ -67,34 +109,11 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
                 fadein, full, fadeout, fadeOnDeath, 0, layer));
     }
 
-    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin,
-                                      float jitterRange, float jitterTilt, Vector3f jitter, float flickerRange, float flickerMedian, IntervalUtil delay,
-                                      float fadein, float full, float fadeout, CombatEngineLayers layer) {
-
-        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin,
-                jitterRange, jitterTilt, jitter, flickerRange, flickerMedian, delay,
-                fadein, full, fadeout, 0, layer));
-    }
-
-    public static void addBattlespace(SpriteAPI sprite, Vector2f loc, Vector2f vel, Vector2f growth, float spin,
-                                      float fadein, float full, float fadeout, CombatEngineLayers layer) {
-        BATTLESPACE.add(new battlespaceData(sprite, loc, vel, growth, spin,
-                0, 0, null, 0, 0, null,
-                fadein, full, fadeout, 0, layer));
-    }
-
     public static void addObjectspace(SpriteAPI sprite, CombatEntityAPI anchor, Vector2f loc, Vector2f offset, Vector2f vel, Vector2f growth, float angle, float spin,
                                       boolean parent, float fadein, float full, float fadeout, boolean fadeOnDeath, CombatEngineLayers layer) {
         OBJECTSPACE.add(new objectspaceData(sprite, anchor, loc, offset, vel, growth, angle, spin, parent,
                 0, 0, null, 0, 0, null,
                 fadein, full, fadeout, fadeOnDeath, 0, layer));
-    }
-
-    public static void addScreenspace(SpriteAPI sprite, MagicRender.positioning pos, Vector2f loc, Vector2f vel, Vector2f ratio, Vector2f growth, float spin,
-                                      float fadein, float full, float fadeout, CombatEngineLayers layer) {
-        SCREENSPACE.add(new screenspaceData(sprite, pos, loc, vel, ratio, growth, spin,
-                0, 0, null, 0, 0, null,
-                fadein, full, fadeout, 0, layer));
     }
 
     //////////////////////////////

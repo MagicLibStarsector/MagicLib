@@ -1,5 +1,5 @@
 
-package org.magiclib.util;
+package org.magiclib.util2;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineLayers;
@@ -181,37 +181,23 @@ public class MagicRender {
         }
         MagicRenderPlugin.addBattlespace(
                 sprite,
-                new Vector2f(loc), new Vector2f(vel),
-                growth, spin,
-                0, 0, null,
-                0, 0, null,
-                fadein, fadein + full, fadein + full + fadeout,
+                new Vector2f(loc),
+                new Vector2f(vel),
+                growth,
+                spin,
+                0,
+                0,
+                null,
+                0,
+                0,
+                null,
+                fadein,
+                fadein + full,
+                fadein + full + fadeout,
                 CombatEngineLayers.BELOW_INDICATORS_LAYER
         );
     }
 
-    /**
-     * Draws a sprite in absolute engine coordinates for a duration. Advanced declaration.
-     *
-     * @param sprite        SpriteAPI to render. Use Global.getSettings().getSprite(settings category, settings id)
-     * @param loc           Vector2f, center in world coordinates.
-     * @param vel           Vector2f() velocity of the sprite.
-     * @param size          Vector2f(width, height) in pixels.
-     * @param growth        Vector2f() change of size over time in pixels/sec. Can be negative, a sprite that completely shrunk will be removed.
-     * @param angle         float of the sprite's azimuth. 0 is pointing top.
-     * @param spin          float of the sprite's rotation, in degree/sec.
-     * @param color         Color() override, also used for fading.
-     * @param additive      boolean for additive blending.
-     * @param jitterRange   max jitter offset from base position
-     * @param jitterTilt    max jitter rotation from base position
-     * @param flickerRange  max flickering range, can be >1 to maintain the sprite on or off
-     * @param flickerMedian default opacity before flickering, can be > or < 0
-     * @param maxDelay      base frequency is 60 update per second, delay can be randomly increased to this value
-     * @param fadein        time in sec for fading in.
-     * @param full          time in sec at maximum opacity (clamped by color)
-     * @param fadeout       time in sec for fading out
-     * @param layer         : layer to render at
-     */
     public static void battlespace(
             SpriteAPI sprite,
             Vector2f loc,
@@ -242,11 +228,19 @@ public class MagicRender {
 
         MagicRenderPlugin.addBattlespace(
                 sprite,
-                new Vector2f(loc), new Vector2f(vel),
-                growth, spin,
-                jitterRange, jitterTilt, new Vector3f(),
-                flickerRange, flickerMedian, delay,
-                fadein, fadein + full, fadein + full + fadeout,
+                new Vector2f(loc),
+                new Vector2f(vel),
+                growth,
+                spin,
+                jitterRange,
+                jitterTilt,
+                new Vector3f(),
+                flickerRange,
+                flickerMedian,
+                delay,
+                fadein,
+                fadein + full,
+                fadein + full + fadeout,
                 layer);
     }
 
@@ -373,12 +367,23 @@ public class MagicRender {
         MagicRenderPlugin.addObjectspace(
                 sprite,
                 anchor,
-                loc, offset, new Vector2f(vel),
-                growth, angle, spin,
+                loc,
+                offset,
+                new Vector2f(vel),
+                growth,
+                angle,
+                spin,
                 parent,
-                0, 0, null,
-                0, 0, null,
-                fadein, fadein + full, fadein + full + fadeout, fadeOnDeath,
+                0,
+                0,
+                null,
+                0,
+                0,
+                null,
+                fadein,
+                fadein + full,
+                fadein + full + fadeout,
+                fadeOnDeath,
                 CombatEngineLayers.BELOW_INDICATORS_LAYER
         );
     }
@@ -610,15 +615,15 @@ public class MagicRender {
         }
 
         Vector2f velocity = new Vector2f(vel);
-        MagicRenderPlugin.addScreenspace(
-                sprite,
-                pos, loc, velocity,
-                ratio, growth, spin,
-                0, 0, null,
-                0, 0, null,
-                fadein, fadein + full, fadein + full + fadeout,
-                CombatEngineLayers.BELOW_INDICATORS_LAYER
-        );
+//        MagicRenderPlugin.addScreenspace(
+//                sprite,
+//                pos, loc, velocity,
+//                ratio, growth, spin,
+//                0, 0, null,
+//                0, 0, null,
+//                fadein, fadein + full, fadein + full + fadeout,
+//                CombatEngineLayers.BELOW_INDICATORS_LAYER
+//        );
     }
 
     /**
@@ -695,14 +700,24 @@ public class MagicRender {
 
         IntervalUtil delay = new IntervalUtil(0.016f, Math.max(0.016f, maxDelay));
 
-        MagicRenderPlugin.addScreenspace(
-                sprite,
-                pos, new Vector2f(loc), new Vector2f(vel),
-                ratio, growth, spin,
-                jitterRange, jitterTilt, new Vector3f(),
-                flickerRange, flickerMedian, delay,
-                fadein, fadein + full, fadein + full + fadeout,
-                layer);
+//        MagicRenderPlugin.addScreenspace(
+//                sprite,
+//                pos,
+//                new Vector2f(loc),
+//                new Vector2f(vel),
+//                ratio,
+//                growth,
+//                spin,
+//                jitterRange,
+//                jitterTilt,
+//                new Vector3f(),
+//                flickerRange,
+//                flickerMedian,
+//                delay,
+//                fadein,
+//                fadein + full,
+//                fadein + full + fadeout,
+//                layer);
     }
 
     /**
@@ -779,14 +794,14 @@ public class MagicRender {
 
         IntervalUtil delay = new IntervalUtil(0.016f, Math.max(0.016f, maxDelay));
 
-        MagicRenderPlugin.addScreenspace(
-                sprite,
-                pos, new Vector2f(loc), new Vector2f(vel),
-                ratio, growth, spin,
-                jitterRange, jitterTilt, new Vector3f(),
-                flickerRange, flickerMedian, delay,
-                fadein, fadein + full, fadein + full + fadeout,
-                layer);
+//        MagicRenderPlugin.addScreenspace(
+//                sprite,
+//                pos, new Vector2f(loc), new Vector2f(vel),
+//                ratio, growth, spin,
+//                jitterRange, jitterTilt, new Vector3f(),
+//                flickerRange, flickerMedian, delay,
+//                fadein, fadein + full, fadein + full + fadeout,
+//                layer);
     }
 
 
