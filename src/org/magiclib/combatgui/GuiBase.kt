@@ -72,7 +72,7 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  * @author Jannes
  * @since 1.2.0
  */
-open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
+open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = defaultGuiLayout) {
     private val gSettings = Global.getSettings()
 
     private val xSpacing = guiLayout.buttonWidthPx + guiLayout.paddingPx
@@ -89,6 +89,14 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
 
     protected val standaloneButtons = mutableListOf<ActionButton>()
     protected val buttonGroups = mutableListOf<DataButtonGroup>()
+
+    init {
+        try {
+            font = LazyFont.loadFont("graphics/fonts/insignia15LTaa.fnt")
+        } catch (e: FontException) {
+            Global.getLogger(this.javaClass).error("Failed to load font, won't be displaying messages", e)
+        }
+    }
 
     /**
      * Override this returning a string representing your GUI title.
@@ -249,14 +257,6 @@ open class GuiBase(private val guiLayout: GuiLayout = defaultGuiLayout) {
                 xTooltip, yTooltip, tooltipTxt
             )
         )
-    }
-
-    init {
-        try {
-            font = LazyFont.loadFont("graphics/fonts/insignia15LTaa.fnt")
-        } catch (e: FontException) {
-            Global.getLogger(this.javaClass).error("Failed to load font, won't de displaying messages", e)
-        }
     }
 
     /**

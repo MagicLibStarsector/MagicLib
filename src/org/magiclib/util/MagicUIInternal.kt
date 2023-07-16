@@ -1,5 +1,7 @@
 package org.magiclib.util
 
+import org.lwjgl.opengl.GLContext
+
 /**
  * Do not use.
  * @since 0.46.0
@@ -11,7 +13,9 @@ class MagicUIInternal {
          */
         @JvmStatic
         internal fun callRenderMethods() {
-            MagicUI.drawStatusBarMap()
+            if (GLContext.getCapabilities().OpenGL15) {
+                MagicUI.drawStatusBarMap()
+            }
         }
     }
 }

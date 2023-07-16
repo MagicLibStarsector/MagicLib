@@ -833,7 +833,7 @@ public class MagicCampaign {
 
         //checking trigger_min_days_elapsed
 //        if(min_days_elapsed>0 && Global.getSector().getClock().getDay()<min_days_elapsed)return false;
-        if (min_days_elapsed > 0 && Global.getSector().getClock().getDay() + (Global.getSector().getClock().getCycle() - 206) * 365 < min_days_elapsed)
+        if (min_days_elapsed > 0 && MagicMisc.getElapsedDaysSinceGameStart() < min_days_elapsed)
             return false;
 
         //checking trigger_player_minLevel

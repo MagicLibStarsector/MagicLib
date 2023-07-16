@@ -1,11 +1,17 @@
 @echo off
-REM Written by combustiblemon
+REM Written by combustiblemon and Wisp
 REM get working dir and then replace backslashes with forward slashes.
 set "PROJECT_DIR=%~dp0"
 set "PROJECT_DIR=%PROJECT_DIR:\=/%"
+set "PROJECT_DIR=%PROJECT_DIR:dokka/=%"
 
-Set "DOKKA_DIR=%PROJECT_DIR%"
+
+Set "DOKKA_DIR=%PROJECT_DIR%dokka/"
 Set "DOKKA-CONFIG=%DOKKA_DIR%dokka-configuration.json"
+
+echo Project dir: %PROJECT_DIR%
+echo Dokka dir: %DOKKA_DIR%
+echo Dokka config: %DOKKA-CONFIG%
 
 echo { > %DOKKA-CONFIG%
 echo   "outputDir": "./docs", >> %DOKKA-CONFIG%
@@ -16,8 +22,8 @@ echo         "scopeId": "moduleName", >> %DOKKA-CONFIG%
 echo         "sourceSetName": "main" >> %DOKKA-CONFIG%
 echo       }, >> %DOKKA-CONFIG%
 echo       "sourceRoots": [ >> %DOKKA-CONFIG%
-echo         "%DOKKA_DIR%src/org/magiclib", >> %DOKKA-CONFIG%
-echo         "%DOKKA_DIR%MagicLib-Kotlin" >> %DOKKA-CONFIG%
+echo         "%PROJECT_DIR%src/org/magiclib", >> %DOKKA-CONFIG%
+echo         "%PROJECT_DIR%MagicLib-Kotlin" >> %DOKKA-CONFIG%
 echo       ] >> %DOKKA-CONFIG%
 echo     } >> %DOKKA-CONFIG%
 echo   ], >> %DOKKA-CONFIG%
