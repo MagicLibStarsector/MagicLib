@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.CoreRuleTokenReplacementGeneratorImpl;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial;
 import com.fs.starfarer.api.util.Misc;
@@ -11,18 +12,27 @@ import org.jetbrains.annotations.NotNull;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.StringCreator;
 
+import java.util.Map;
+
 /**
  * Do not use this.
  * It is only public because it is used in the org.magiclib.bounty.rulecmd package.
  */
 public class MagicBountyUtilsInternal {
 
-
     /**
      * Replaces variables in the given string with data from the bounty and splits it into paragraphs using `\n`.
      */
     public static String replaceStringVariables(final ActiveBounty bounty, String text) {
         String replaced = text;
+
+        // Perform vanilla replacements.
+        CoreRuleTokenReplacementGeneratorImpl coreRuleTokenReplacementGenerator = new CoreRuleTokenReplacementGeneratorImpl();
+        Map<String, String> tokenReplacements = coreRuleTokenReplacementGenerator.getTokenReplacements(null, bounty.getFleet(), null);
+
+        for (Map.Entry<String, String> replacement : tokenReplacements.entrySet()) {
+            replaced = replaced.replace(replacement.getKey(), replacement.getValue());
+        }
 
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$sonDaughterChild", new StringCreator() {
             @Override

@@ -1,6 +1,8 @@
 package org.magiclib.kotlin
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.VisualPanelAPI
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 
 /**
@@ -38,8 +40,17 @@ fun VisualPanelAPI.showPeople(
                 this.showFirstPerson()
                 this.showPersonInfo(person, true, withRelationshipBar)
             }
+
             1 -> this.showSecondPerson(person)
             2 -> this.showThirdPerson(person)
         }
     }
+}
+
+/**
+ * Adds the given [IntelInfoPlugin] to the [Global.getSector]'s [com.fs.starfarer.api.campaign.comm.IntelManagerAPI].
+ * @param shouldNotifyPlayer Whether or not the player should be notified in the bottom-left corner.
+ */
+fun IntelInfoPlugin.addToManager(shouldNotifyPlayer: Boolean = false) {
+    Global.getSector().intelManager.addIntel(this, !shouldNotifyPlayer)
 }

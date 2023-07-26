@@ -1,6 +1,10 @@
+Version 1.2.1
+**MagicBounty**
+- Text now supports all vanilla variables (requested by CivilYoshi).
+
 Version 1.2.0
 **CombatGUI**
-- **New feature!** 
+- **New feature!** Contributed by @Jannes/DesperatePeter!
 
 **MagicBounty**
 - Bounty fleets are no longer aggressive toward non-player fleets. They should no longer attack each other (reported by Avanitia).

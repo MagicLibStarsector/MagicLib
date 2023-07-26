@@ -15,10 +15,10 @@
         "trigger_min_fleet_size": 0,
         "trigger_min_days_elapsed": 0, 
         "trigger_weight_mult": 0,
-        "trigger_memKeys_all": {"$key":true,},
-        "trigger_memKeys_any": {"$key":true,},
-        "trigger_playerRelationship_atLeast": {"faction":0.0,},
-        "trigger_playerRelationship_atMost": {"faction":0.0,},
+        #"trigger_memKeys_all": {"$key":true,},
+        #"trigger_memKeys_any": {"$key":true,},
+        #"trigger_playerRelationship_atLeast": {"faction":0.0,},
+        #"trigger_playerRelationship_atMost": {"faction":0.0,},
         
         #BOUNTY DESCRIPTION
         
@@ -42,11 +42,11 @@
         "job_show_arrow": false,
         "job_difficultyDescription": "auto",
         "job_pick_option": "",
-        "job_pick_script": "data.script.script",
-        "job_memKey":"$key",
-        "job_conclusion_script":"data.script.script",
+        #"job_pick_script": "data.script.script",
+        #"job_memKey":"$key",
+        #"job_conclusion_script":"data.script.script",
         
-		"existing_target_memkey":"$memKey",
+		#"existing_target_memkey":"$memKey",
 
         #TARGET COMMANDER (OPTIONAL)
         
