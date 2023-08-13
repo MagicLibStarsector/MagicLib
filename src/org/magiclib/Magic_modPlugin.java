@@ -4,6 +4,7 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
+import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
 import org.magiclib.plugins.MagicAutoTrails;
@@ -62,6 +63,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_test_mode");
+
+        MagicAchievementManager.getInstance();
     }
 
     @Override
@@ -129,6 +132,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicKotlinModPlugin.INSTANCE.onGameLoad(newGame);
+        MagicAchievementManager.getInstance().initIntel();
     }
 
     /**

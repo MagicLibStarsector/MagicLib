@@ -3,7 +3,7 @@ package org.magiclib.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.SWPModPlugin;
+//import data.scripts.SWPModPlugin;
 import data.scripts.VayraModPlugin;
 
 import java.util.ArrayList;
@@ -131,12 +131,12 @@ public class MagicVariables {
         MagicBountiesEnabled = MagicSettings.getBoolean(MAGICLIB_ID, "bounty_board_enabled");
 
         //check for IBBs presence
-        if (Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties == true) {
-            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", true);
-            ibb = true;
-        } else {
-            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
-        }
+//        if (Global.getSettings().getModManager().isModEnabled("swp") && SWPModPlugin.Module_FamousBounties == true) {
+//            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", true);
+//            ibb = true;
+//        } else {
+//            Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
+//        }
 
         //check for HVBs presence
         if (Global.getSettings().getModManager().isModEnabled("vayrasector") && VayraModPlugin.UNIQUE_BOUNTIES == true) {

@@ -1,0 +1,4 @@
+id,name,summary,description,class,image,hasProgressBar,spoilerLevel
+test, Test,Test achievement,"This is a description for a test achievement.", ,true,none
+test2, Test Spoiler,Test achievement,"This is a description for a test achievement.", ,true,spoiler
+test3, Test Hidden,Test achievement,"This is a description for a test achievement.", ,true,hidden
