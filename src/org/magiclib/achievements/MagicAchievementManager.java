@@ -19,7 +19,7 @@ public class MagicAchievementManager {
     private static final Logger logger = Global.getLogger(MagicAchievementManager.class);
     private final String filename = "data/config/magic_achievements.csv";
     @NotNull
-    private List<MagicAchievement> achievements = new ArrayList<>();
+    private List<MagicAchievementSpec> achievementSpecs = new ArrayList<>();
 
     @NotNull
     public static MagicAchievementManager getInstance() {
@@ -52,8 +52,19 @@ public class MagicAchievementManager {
         }
     }
 
+    @NotNull
+    public List<MagicAchievement> getAchievements() {
+        List<MagicAchievement> achievements = new ArrayList<>();
+
+        for (MagicAchievementSpec spec : achievementSpecs) {
+            achievements.add(new MagicAchievement(spec));
+        }
+
+        return achievements;
+    }
+
     public void loadData() {
-        List<MagicAchievement> achievementList = new ArrayList<>();
+        List<MagicAchievementSpec> achievementList = new ArrayList<>();
 
         for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy()) {
             JSONArray modCsv = null;
@@ -75,18 +86,17 @@ public class MagicAchievementManager {
                     JSONObject item = modCsv.getJSONObject(i);
                     id = item.getString("id").trim();
                     String name = item.getString("name").trim();
-                    String summary = item.getString("summary").trim();
                     String description = item.getString("description").trim();
-                    String clazz = item.getString("class").trim();
+                    String script = item.getString("script").trim();
                     String image = item.optString("image", null);
                     image = image == null ? null : image.trim();
                     boolean hasProgressBar = item.optBoolean("hasProgressBar", false);
                     String spoilerLevelStr = item.optString("spoilerLevel", SpoilerLevel.Visible.name());
-                    SpoilerLevel spoilerLevel = SpoilerLevel.valueOf(spoilerLevelStr);
+                    SpoilerLevel spoilerLevel = getSpoilerLevel(spoilerLevelStr);
 
                     boolean skip = false;
 
-                    for (MagicAchievement achievement : achievementList) {
+                    for (MagicAchievementSpec achievement : achievementList) {
                         if (achievement.getId().equals(id)) {
                             skip = true;
                             logger.warn(String.format("Achievement with id %s in mod %s already exists in mod %s, skipping.",
@@ -96,13 +106,12 @@ public class MagicAchievementManager {
                     }
 
                     if (!skip) {
-                        achievementList.add(new MagicAchievement(
+                        achievementList.add(new MagicAchievementSpec(
                                 mod.getId(),
                                 id,
                                 name,
-                                summary,
                                 description,
-                                clazz,
+                                script,
                                 image,
                                 hasProgressBar,
                                 spoilerLevel
@@ -114,10 +123,24 @@ public class MagicAchievementManager {
             }
         }
 
-        achievements = achievementList;
+        achievementSpecs = achievementList;
     }
 
-    public @NotNull List<MagicAchievement> getAchievements() {
-        return achievements;
+    @NotNull
+    private static SpoilerLevel getSpoilerLevel(String spoilerLevelStr) {
+        SpoilerLevel spoilerLevel = SpoilerLevel.Visible;
+
+        if (spoilerLevelStr != null) {
+            if (spoilerLevelStr.equalsIgnoreCase("spoiler")) {
+                spoilerLevel = SpoilerLevel.Spoiler;
+            } else if (spoilerLevelStr.equalsIgnoreCase("hidden")) {
+                spoilerLevel = SpoilerLevel.Hidden;
+            }
+        }
+        return spoilerLevel;
+    }
+
+    public @NotNull List<MagicAchievementSpec> getAchievementSpecs() {
+        return achievementSpecs;
     }
 }

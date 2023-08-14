@@ -1,4 +1,8 @@
-id,name,summary,description,class,image,hasProgressBar,spoilerLevel
-test, Test,Test achievement,"This is a description for a test achievement.", ,true,none
-test2, Test Spoiler,Test achievement,"This is a description for a test achievement.", ,true,spoiler
-test3, Test Hidden,Test achievement,"This is a description for a test achievement.", ,true,hidden
+id,name,description,script,image,hasProgressBar,spoilerLevel
+onslaught, "I Exist Without My Consent","Obtained three Onslaught-inspired hulls.",,,true,VISIBLE
+blackhole, "Died In A Black Hole","Died in a black hole.", ,,true,VISIBLE
+realestate, "Prime Real Estate","Invaded a core world before having any colonies of your own.",,,true,VISIBLE
+fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every design type in a battle.",,,true,VISIBLE
+meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,,true,VISIBLE
+overinvested, "Overinvested","Made it to cycle c+300.",,,false,SPOILER
+sundive, "Hold My Beer","Flew through a sun.",,,false,HIDDEN
