@@ -14,12 +14,17 @@ import java.util.regex.Pattern;
 
 /**
  * Contains some String-related utility functions.
+ *
  * @author Tartiflette, Wisp
  */
 public class MagicTxt {
 
     public static String getString(String id) {
         return Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id);
+    }
+
+    public static String getString(String id, String... args) {
+        return String.format(Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id), args);
     }
 
     /**

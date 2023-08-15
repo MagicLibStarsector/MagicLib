@@ -132,7 +132,19 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicKotlinModPlugin.INSTANCE.onGameLoad(newGame);
-        MagicAchievementManager.getInstance().initIntel();
+        MagicAchievementManager.getInstance().onGameLoad();
+    }
+
+    @Override
+    public void beforeGameSave() {
+        super.beforeGameSave();
+        MagicAchievementManager.getInstance().beforeGameSave();
+    }
+
+    @Override
+    public void afterGameSave() {
+        super.afterGameSave();
+        MagicAchievementManager.getInstance().afterGameSave();
     }
 
     /**
