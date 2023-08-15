@@ -9,10 +9,8 @@ import org.magiclib.util.MagicTxt;
 
 import java.awt.*;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class MagicAchievementIntel extends BaseIntelPlugin {
     public static final int ENTRY_HEIGHT = 72;
@@ -43,7 +41,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
         info.setParaFontVictor14();
 //        info.addPara("test?", opad);
-        List<MagicAchievement> achievements = MagicAchievementManager.getInstance().getAchievements();
+        Collection<MagicAchievement> achievements = MagicAchievementManager.getInstance().getAchievements().values();
 
         List<MagicAchievement> unlockedAchievements = new ArrayList<>();
         for (MagicAchievement achievement : achievements) {

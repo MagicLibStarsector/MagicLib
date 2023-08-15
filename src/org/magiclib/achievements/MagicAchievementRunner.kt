@@ -34,7 +34,7 @@ internal class MagicAchievementRunner : EveryFrameScript {
     override fun runWhilePaused(): Boolean = true
 
     override fun advance(amount: Float) {
-        MagicAchievementManager.getInstance().achievements.forEach { achievement ->
+        MagicAchievementManager.getInstance().achievements.values.forEach { achievement ->
             if (!achievement.isComplete) {
                 achievement.advanceInternal(amount)
             }

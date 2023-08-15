@@ -12,7 +12,9 @@ import org.lazywizard.lazylib.JSONUtils;
 import org.magiclib.util.MagicMisc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MagicAchievementManager {
 
@@ -23,7 +25,7 @@ public class MagicAchievementManager {
     @NotNull
     private List<MagicAchievementSpec> achievementSpecs = new ArrayList<>();
     @NotNull
-    private final List<MagicAchievement> achievements = new ArrayList<>();
+    private final Map<String, MagicAchievement> achievements = new HashMap<>();
     private static final String achievementsJsonObjectKey = "achievements";
 
     @NotNull
@@ -68,7 +70,7 @@ public class MagicAchievementManager {
     }
 
     @NotNull
-    public List<MagicAchievement> getAchievements() {
+    public Map<String, MagicAchievement> getAchievements() {
         return achievements;
     }
 
@@ -83,7 +85,7 @@ public class MagicAchievementManager {
             return;
         }
 
-        for (MagicAchievement achievement : achievements) {
+        for (MagicAchievement achievement : achievements.values()) {
             try {
                 savedAchievements.put(achievement.toJsonObject());
             } catch (Exception e) {
@@ -102,7 +104,25 @@ public class MagicAchievementManager {
     }
 
     public void loadAchievements() {
-        // Load achievements already saved in Common.
+        Map<String, MagicAchievement> newAchievementsById = new HashMap<>();
+
+        // Create all achievement objects from specs.
+        for (MagicAchievementSpec spec : achievementSpecs) {
+            try {
+                final Class<?> commandClass = Global.getSettings().getScriptClassLoader().loadClass(spec.getScript());
+                if (!MagicAchievement.class.isAssignableFrom(commandClass)) {
+                    throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
+                }
+
+                MagicAchievement magicAchievement = (MagicAchievement) commandClass.newInstance();
+                magicAchievement.spec = spec;
+                newAchievementsById.put(spec.getId(), magicAchievement);
+            } catch (Exception e) {
+                logger.warn(String.format("Unable to load achievement '%s' because class '%s' didn't load!", spec.getId(), spec.getScript()), e);
+            }
+        }
+
+        // Load achievements already saved in Common and overwrite the generated ones with their data.
         JSONUtils.CommonDataJSONObject commonJson;
         JSONArray savedAchievements;
 
@@ -120,53 +140,35 @@ public class MagicAchievementManager {
             return;
         }
 
-        for (MagicAchievement achievement : achievements) {
-            achievement.onDestroyed();
-        }
-
-        achievements.clear();
-
         for (int i = 0; i < savedAchievements.length(); i++) {
             try {
-                JSONObject savedAchievement = savedAchievements.getJSONObject(i);
-                MagicAchievement achievement = MagicAchievement.fromJsonObject(savedAchievement);
-                String foundModId = null;
+                JSONObject savedAchievementJson = savedAchievements.getJSONObject(i);
+                String specId = savedAchievementJson.optString("sssid", "");
+                // Try to load the achievement from a spec in a loaded mod.
+                MagicAchievement blankAchievement = newAchievementsById.get(specId);
 
-                for (MagicAchievement a : achievements) {
-                    if (a.getSpecId().equals(achievement.getSpecId())) {
-                        foundModId = a.getModId();
-                        break;
-                    }
+                if (blankAchievement == null) {
+                    // If the achievement isn't in a loaded mod, load it as an "unloaded" achievement.
+                    logger.warn("Achievement " + specId + " doesn't exist in the current mod list.");
+                    blankAchievement = new MagicUnloadedAchievement();
+                    blankAchievement.spec = MagicAchievementSpec.fromJsonObject(savedAchievementJson);
                 }
 
-                if (foundModId != null) {
-                    logger.warn(String.format("Achievement in mod %s with id %s already exists in %s, skipping.", achievement.getModId(), achievement.getSpecId(), foundModId));
-                    continue;
-                }
-
-                achievements.add(achievement);
+                blankAchievement.loadFromJsonObject(savedAchievementJson);
+                newAchievementsById.put(blankAchievement.getSpecId(), blankAchievement);
             } catch (Exception e) {
                 logger.warn("Unable to load achievement #" + i, e);
             }
         }
 
-        // Load achievements from specs that aren't already saved in Common.
-        for (MagicAchievementSpec spec : achievementSpecs) {
-            boolean found = false;
 
-            for (MagicAchievement achievement : achievements) {
-                if (achievement.getSpecId().equals(spec.getId())) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                achievements.add(new MagicAchievement(spec));
-            }
+        for (MagicAchievement achievement : achievements.values()) {
+            achievement.onDestroyed();
         }
 
-        for (MagicAchievement achievement : achievements) {
+        achievements.putAll(newAchievementsById);
+
+        for (MagicAchievement achievement : achievements.values()) {
             achievement.onCreated();
         }
 
@@ -239,13 +241,13 @@ public class MagicAchievementManager {
     }
 
     public void beforeGameSave() {
-        for (MagicAchievement achievement : achievements) {
+        for (MagicAchievement achievement : achievements.values()) {
             achievement.beforeGameSave();
         }
     }
 
     public void afterGameSave() {
-        for (MagicAchievement achievement : achievements) {
+        for (MagicAchievement achievement : achievements.values()) {
             achievement.afterGameSave();
         }
     }
@@ -270,7 +272,7 @@ public class MagicAchievementManager {
 
     @Nullable
     public MagicAchievement getAchievement(String specId) {
-        for (MagicAchievement achievement : achievements) {
+        for (MagicAchievement achievement : achievements.values()) {
             if (achievement.getSpecId().equals(specId)) {
                 return achievement;
             }

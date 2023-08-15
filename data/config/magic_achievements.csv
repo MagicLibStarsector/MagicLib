@@ -6,3 +6,4 @@ fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every design type 
 meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,,true,VISIBLE
 overinvested, "Overinvested","Made it to cycle c+300.",,,false,SPOILER
 sundive, "Hold My Beer","Flew through a sun.",,,false,HIDDEN
+test, "Survived Five Days", "(test) Wow, you survived five days. Good job.",org.magiclib.achievements.TestAchievement,,true,VISIBLE

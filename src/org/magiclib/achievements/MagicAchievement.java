@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Note: this class is serialized to the save file.
@@ -17,7 +20,7 @@ import java.util.Date;
  * @since 1.3.0
  */
 public class MagicAchievement {
-    private final Logger logger;
+    private Logger logger;
     @NotNull MagicAchievementSpec spec;
 
     @Nullable
@@ -30,22 +33,20 @@ public class MagicAchievement {
     private String completedByUserId;
     @Nullable
     private String completedByUserName;
+    @NotNull
+    private final Map<String, Object> memory = new HashMap<>();
 
     /**
      * By default, only run the achievement advance check every 2-5 seconds for performance reasons.
      */
     private IntervalUtil advanceInterval = new IntervalUtil(2f, 5f);
 
-    public MagicAchievement(@NotNull MagicAchievementSpec spec) {
-        logger = Global.getLogger(this.getClass());
-        this.spec = spec;
-    }
-
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
      */
     public void onCreated() {
+        logger = Global.getLogger(this.getClass());
     }
 
     public void beforeGameSave() {
@@ -73,6 +74,8 @@ public class MagicAchievement {
             this.completedByUserId = completedByPlayer.getId();
             this.completedByUserName = completedByPlayer.getName().getFullName();
         }
+
+        logger.info("Achievement completed! " + spec.getId());
     }
 
     protected void advanceInternal(float amount) {
@@ -84,7 +87,6 @@ public class MagicAchievement {
     }
 
     public void advance(float amount) {
-        logger.info("My name is " + spec.getId() + " and I'm advancing by " + amount);
     }
 
     public void saveChanges() {
@@ -100,6 +102,7 @@ public class MagicAchievement {
             jsonObject.put("dateCompleted", dateCompleted == null ? null : dateCompleted.getTime());
             jsonObject.put("completedByUserId", completedByUserId);
             jsonObject.put("completedByUserName", completedByUserName);
+            jsonObject.put("memory", memory);
             return jsonObject;
         } catch (Exception e) {
             logger.warn("Unable to convert achievement to JSON.", e);
@@ -107,19 +110,27 @@ public class MagicAchievement {
         }
     }
 
-    public static MagicAchievement fromJsonObject(@NotNull JSONObject jsonObject) {
+    public boolean loadFromJsonObject(@NotNull JSONObject jsonObject) {
         try {
-            MagicAchievement achievement = new MagicAchievement(MagicAchievementSpec.fromJsonObject(jsonObject));
-            achievement.progress = (float) jsonObject.optDouble("progress", 0);
-            achievement.maxProgress = (float) jsonObject.optDouble("maxProgress", 0);
+            spec = MagicAchievementSpec.fromJsonObject(jsonObject);
+            progress = (float) jsonObject.optDouble("progress", 0);
+            maxProgress = (float) jsonObject.optDouble("maxProgress", 0);
             long dateCompletedTimestamp = jsonObject.optLong("dateCompleted", 0);
-            achievement.dateCompleted = dateCompletedTimestamp == 0 ? null : new Date(dateCompletedTimestamp);
-            achievement.completedByUserId = jsonObject.optString("completedByUserId", null);
-            achievement.completedByUserName = jsonObject.optString("completedByUserName", null);
-            return achievement;
+            dateCompleted = dateCompletedTimestamp == 0 ? null : new Date(dateCompletedTimestamp);
+            completedByUserId = jsonObject.optString("completedByUserId", null);
+            completedByUserName = jsonObject.optString("completedByUserName", null);
+            JSONObject memJson = jsonObject.optJSONObject("memory");
+
+            if (memJson != null) {
+                for (Iterator<String> it = memJson.keys(); it.hasNext(); ) {
+                    String key = it.next();
+                    memory.put(key, memJson.get(key));
+                }
+            }
+            return true;
         } catch (Exception e) {
             Global.getLogger(MagicAchievement.class).warn("Unable to convert achievement from JSON.", e);
-            return null;
+            return false;
         }
     }
 
@@ -221,6 +232,10 @@ public class MagicAchievement {
 
     public void setCompletedByUserName(@Nullable String completedByUserName) {
         this.completedByUserName = completedByUserName;
+    }
+
+    public @NotNull Map<String, Object> getMemory() {
+        return memory;
     }
 
     /**
