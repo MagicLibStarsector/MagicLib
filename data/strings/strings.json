@@ -260,10 +260,11 @@
 
     # MagicAchievements
     "grantAchievement": "Grant",
-    "achievementCompletionProgress": "%s of %s achievements unlocked",
+    "achievementCompletionProgress": "%s of %s achievements unlocked  (%s%%)",
     "unlockedAchievementsTitle": "Unlocked Achievements",
     "lockedAchievementsTitle": "Locked Achievements",
-    "achievementCompletedDate": "Completed: %s",
-    "achievementCompletedBy": "By: %s",
+    "achievementCompletedDate": "Unlocked on %s",
+    "achievementCompletedBy": "by Captain %s",
+    "achievementUnlockedNotification": "Unlocked %s",
   }
 }

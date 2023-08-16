@@ -27,6 +27,7 @@ public class MagicAchievementManager {
     @NotNull
     private final Map<String, MagicAchievement> achievements = new HashMap<>();
     private static final String achievementsJsonObjectKey = "achievements";
+    private List<String> previouslyCompleted = new ArrayList<>();
 
     @NotNull
     public static MagicAchievementManager getInstance() {
@@ -62,7 +63,7 @@ public class MagicAchievementManager {
     @Nullable
     public MagicAchievementIntel getIntel() {
         try {
-            return (MagicAchievementIntel) Global.getSector().getIntelManager().getIntel(MagicAchievementIntel.class);
+            return (MagicAchievementIntel) Global.getSector().getIntelManager().getFirstIntel(MagicAchievementIntel.class);
         } catch (Exception ex) {
             logger.warn("Unable to get MagicAchievementIntel.", ex);
             return null;
@@ -100,6 +101,22 @@ public class MagicAchievementManager {
             logger.warn("Unable to save achievements to " + commonFilename, e);
         }
 
+        // for all achievements that were just completed, notify intel
+        for (MagicAchievement achievement : achievements.values()) {
+            if (achievement.isComplete() && !previouslyCompleted.contains(achievement.getSpecId())) {
+                MagicAchievementIntel intel = getIntel();
+                try {
+                    intel.tempAchievement = achievement;
+                    intel.sendUpdateIfPlayerHasIntel(null, false, false);
+                    intel.tempAchievement = null;
+                } catch (Exception e) {
+                    logger.warn("Unable to notify intel of achievement " + achievement.getSpecId(), e);
+                }
+
+                previouslyCompleted.add(achievement.getSpecId());
+            }
+        }
+
         logger.info("Saved " + achievements.size() + " achievements.");
     }
 
@@ -117,6 +134,7 @@ public class MagicAchievementManager {
                 MagicAchievement magicAchievement = (MagicAchievement) commandClass.newInstance();
                 magicAchievement.spec = spec;
                 newAchievementsById.put(spec.getId(), magicAchievement);
+                logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + spec.getScript() + ".");
             } catch (Exception e) {
                 logger.warn(String.format("Unable to load achievement '%s' because class '%s' didn't load!", spec.getId(), spec.getScript()), e);
             }
@@ -143,7 +161,7 @@ public class MagicAchievementManager {
         for (int i = 0; i < savedAchievements.length(); i++) {
             try {
                 JSONObject savedAchievementJson = savedAchievements.getJSONObject(i);
-                String specId = savedAchievementJson.optString("sssid", "");
+                String specId = savedAchievementJson.optString("id", "");
                 // Try to load the achievement from a spec in a loaded mod.
                 MagicAchievement blankAchievement = newAchievementsById.get(specId);
 
@@ -173,6 +191,12 @@ public class MagicAchievementManager {
         }
 
         logger.info("Loaded " + achievements.size() + " achievements.");
+
+        for (MagicAchievement prevAchi : achievements.values()) {
+            if (prevAchi.isComplete()) {
+                previouslyCompleted.add(prevAchi.getSpecId());
+            }
+        }
 
         saveAchievements();
     }

@@ -1,9 +1,9 @@
 id,name,description,script,image,hasProgressBar,spoilerLevel
 onslaught, "I Exist Without My Consent","Obtained three Onslaught-inspired hulls.",,,true,VISIBLE
-blackhole, "Died In A Black Hole","Died in a black hole.", ,,true,VISIBLE
-realestate, "Prime Real Estate","Invaded a core world before having any colonies of your own.",,,true,VISIBLE
-fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every design type in a battle.",,,true,VISIBLE
-meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,,true,VISIBLE
+blackhole, "Died In A Black Hole","Died in a black hole.", ,,false,VISIBLE
+realestate, "Prime Real Estate","Invaded a core world before having any colonies of your own.",,,false,VISIBLE
+fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every design type in a battle.",,,false,VISIBLE
+meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,,false,VISIBLE
 overinvested, "Overinvested","Made it to cycle c+300.",,,false,SPOILER
 sundive, "Hold My Beer","Flew through a sun.",,,false,HIDDEN
 test, "Survived Five Days", "(test) Wow, you survived five days. Good job.",org.magiclib.achievements.TestAchievement,,true,VISIBLE
