@@ -229,8 +229,10 @@ public class MagicAchievementManager {
                     String image = item.optString("image", null);
                     image = image == null ? null : image.trim();
                     boolean hasProgressBar = item.optBoolean("hasProgressBar", false);
-                    String spoilerLevelStr = item.optString("spoilerLevel", SpoilerLevel.Visible.name());
-                    SpoilerLevel spoilerLevel = getSpoilerLevel(spoilerLevelStr);
+                    String spoilerLevelStr = item.optString("spoilerLevel", MagicAchievementSpoilerLevel.Visible.name());
+                    MagicAchievementSpoilerLevel spoilerLevel = getSpoilerLevel(spoilerLevelStr);
+                    String rarityStr = item.optString("rarity", MagicAchievementRarity.Common.name());
+                    MagicAchievementRarity rarity = getRarity(rarityStr);
 
                     boolean skip = false;
 
@@ -252,7 +254,8 @@ public class MagicAchievementManager {
                                 script,
                                 image,
                                 hasProgressBar,
-                                spoilerLevel
+                                spoilerLevel,
+                                rarity
                         ));
                     }
                 } catch (Exception e) {
@@ -277,17 +280,35 @@ public class MagicAchievementManager {
     }
 
     @NotNull
-    private static SpoilerLevel getSpoilerLevel(String spoilerLevelStr) {
-        SpoilerLevel spoilerLevel = SpoilerLevel.Visible;
+    private static MagicAchievementSpoilerLevel getSpoilerLevel(String spoilerLevelStr) {
+        MagicAchievementSpoilerLevel spoilerLevel = MagicAchievementSpoilerLevel.Visible;
 
         if (spoilerLevelStr != null) {
             if (spoilerLevelStr.equalsIgnoreCase("spoiler")) {
-                spoilerLevel = SpoilerLevel.Spoiler;
+                spoilerLevel = MagicAchievementSpoilerLevel.Spoiler;
             } else if (spoilerLevelStr.equalsIgnoreCase("hidden")) {
-                spoilerLevel = SpoilerLevel.Hidden;
+                spoilerLevel = MagicAchievementSpoilerLevel.Hidden;
             }
         }
+
         return spoilerLevel;
+    }
+
+    @NotNull
+    private static MagicAchievementRarity getRarity(String rarityStr) {
+        MagicAchievementRarity rarity = MagicAchievementRarity.Common;
+
+        if (rarityStr != null) {
+            if (rarityStr.equalsIgnoreCase("uncommon")) {
+                rarity = MagicAchievementRarity.Uncommon;
+            } else if (rarityStr.equalsIgnoreCase("rare")) {
+                rarity = MagicAchievementRarity.Rare;
+            } else if (rarityStr.equalsIgnoreCase("epic")) {
+                rarity = MagicAchievementRarity.Epic;
+            }
+        }
+
+        return rarity;
     }
 
     public @NotNull List<MagicAchievementSpec> getAchievementSpecs() {

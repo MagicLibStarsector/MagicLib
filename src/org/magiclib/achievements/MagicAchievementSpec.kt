@@ -1,5 +1,6 @@
 package org.magiclib.achievements
 
+import com.fs.starfarer.api.util.Misc
 import org.json.JSONObject
 
 data class MagicAchievementSpec(
@@ -10,7 +11,8 @@ data class MagicAchievementSpec(
     var script: String,
     var image: String?,
     var hasProgressBar: Boolean,
-    var spoilerLevel: SpoilerLevel,
+    var spoilerLevel: MagicAchievementSpoilerLevel,
+    var rarity: MagicAchievementRarity,
 ) {
     fun clone() = this.copy()
 
@@ -24,6 +26,7 @@ data class MagicAchievementSpec(
         json.put("image", image)
         json.put("hasProgressBar", hasProgressBar)
         json.put("spoilerLevel", spoilerLevel.toString())
+        json.put("rarity", rarity.toString())
         return json
     }
 
@@ -37,8 +40,9 @@ data class MagicAchievementSpec(
             val script = json.getString("script")
             val image = json.optString("image", null)
             val hasProgressBar = json.optBoolean("hasProgressBar", false)
-            val spoilerLevel = SpoilerLevel.valueOf(json.optString("spoilerLevel", "VISIBLE"))
-            return MagicAchievementSpec(modId, id, name, description, script, image, hasProgressBar, spoilerLevel)
+            val spoilerLevel = MagicAchievementSpoilerLevel.valueOf(json.optString("spoilerLevel", "VISIBLE").lowercase().let { Misc.ucFirst(it) })
+            val rarity = MagicAchievementRarity.valueOf(json.optString("rarity", "COMMON").lowercase().let { Misc.ucFirst(it) })
+            return MagicAchievementSpec(modId, id, name, description, script, image, hasProgressBar, spoilerLevel, rarity)
         }
     }
 }

@@ -1,8 +1,9 @@
-package org.magiclib.achievements;
+package org.magiclib.achievements.builtin;
 
 import com.fs.starfarer.api.Global;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.achievements.MagicAchievement;
 import org.magiclib.util.MagicMisc;
 
 public class TestAchievement extends MagicAchievement {

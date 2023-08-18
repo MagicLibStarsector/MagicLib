@@ -198,12 +198,20 @@ public class MagicAchievement {
         spec.setHasProgressBar(hasProgressBar);
     }
 
-    public @NotNull SpoilerLevel getSpoilerLevel() {
+    public @NotNull MagicAchievementSpoilerLevel getSpoilerLevel() {
         return spec.getSpoilerLevel();
     }
 
-    public void setSpoilerLevel(@NotNull SpoilerLevel spoilerLevel) {
+    public void setSpoilerLevel(@NotNull MagicAchievementSpoilerLevel spoilerLevel) {
         spec.setSpoilerLevel(spoilerLevel);
+    }
+
+    public @NotNull MagicAchievementRarity getRarity() {
+        return spec.getRarity();
+    }
+
+    public void setRarity(@NotNull MagicAchievementRarity rarity) {
+        spec.setRarity(rarity);
     }
 
     public boolean isComplete() {

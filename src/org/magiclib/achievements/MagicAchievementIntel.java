@@ -8,9 +8,7 @@ import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.magiclib.util.MagicTxt;
 
-import java.awt.*;
 import java.text.DateFormat;
-import java.util.List;
 import java.util.*;
 
 public class MagicAchievementIntel extends BaseIntelPlugin {
@@ -21,6 +19,9 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
     public MagicAchievementIntel() {
         super();
+        if (!Global.getSector().hasScript(MagicAchievementIntel.class)) {
+            Global.getSector().addScript(this);
+        }
     }
 
 
@@ -102,14 +103,13 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
      */
     @SuppressWarnings("SuspiciousNameCombination")
     public void displayAchievements(CustomPanelAPI panel, TooltipMakerAPI info, float rowWidth, List<MagicAchievement> achievements) {
-        Color titleColor = Misc.getHighlightColor();
         float pad = 3;
         float opad = 10;
         boolean isFirstItem = true;
         String defaultImage = Global.getSettings().getSpriteName("intel", "achievement");
 
         for (MagicAchievement achievement : achievements) {
-            if (achievement.getSpoilerLevel() == SpoilerLevel.Hidden)
+            if (achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Hidden)
                 continue;
 
             CustomPanelAPI row = panel.createCustomPanel(rowWidth, ENTRY_HEIGHT, null);
@@ -124,15 +124,21 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 } else {
                     image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
                 }
+
             } else {
                 image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
             }
 
             row.addUIElement(image).inTL(0, 0);
 
+            // If the achievement is complete, add a fancy particle effect.
+            if (achievement.isComplete()) {
+                row.addComponent(row.createCustomPanel(IMAGE_HEIGHT, IMAGE_HEIGHT, new FancyEffects(image.getPosition(), IMAGE_HEIGHT, achievement)));
+            }
+
             TooltipMakerAPI leftElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
             TooltipMakerAPI rightElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
-            boolean showDescription = achievement.isComplete() || achievement.getSpoilerLevel() == SpoilerLevel.Visible;
+            boolean showDescription = achievement.isComplete() || achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Visible;
 
             if (!showDescription) {
                 // Blank line if the desc isn't show to put title in the middle.
@@ -140,11 +146,13 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
 
             String name = achievement.getName();
-            if (!achievement.isComplete() && achievement.getSpoilerLevel() != SpoilerLevel.Visible) {
+            if (!achievement.isComplete() && achievement.getSpoilerLevel() != MagicAchievementSpoilerLevel.Visible) {
                 name = "(hidden)";
             }
 
-            leftElement.addPara(name, titleColor, 0);
+            leftElement.addPara(name, achievement.isComplete()
+                    ? Misc.getHighlightColor()
+                    : Misc.getTextColor(), 0);
 
             if (showDescription) {
                 leftElement.addPara(achievement.getDescription(), 3);
@@ -182,6 +190,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             row.addUIElement(leftElement).rightOfTop(image, 16);
             row.addUIElement(rightElement).rightOfTop(image, 16).setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
+            PositionAPI pos = row.getPosition();
 
             TooltipMakerAPI pointsText = row.createUIElement(rowWidth * 0.25f, ENTRY_HEIGHT, false);
             pointsText.setParaOrbitronVeryLarge();
@@ -197,6 +206,12 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
     @Override
     public void buttonPressConfirmed(Object buttonId, IntelUIAPI ui) {
         MagicAchievement achievement = MagicAchievementManager.getInstance().getAchievement((String) buttonId);
+
+        if (achievement == null) {
+            logger.warn(String.format("Unable to find achievement with ID %s", buttonId));
+            return;
+        }
+
         achievement.completeAchievement(Global.getSector().getPlayerPerson());
         achievement.saveChanges();
         ui.updateUIForItem(this);
