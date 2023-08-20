@@ -25,7 +25,7 @@ class MagicAchievementParticleScript {
     }
 
     /**
-     * If [initialSeed] is true, the particle will appear already at some stage, rather than always at the start and fading in.
+     * If [initialSeed] is true, the particle will appear already in-flight, rather than always at the start and fading in.
      * Useful for when you want to have a bunch of particles look like they're already in the middle of their animation.
      */
     @JvmOverloads

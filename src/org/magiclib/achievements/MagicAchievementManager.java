@@ -363,6 +363,9 @@ public class MagicAchievementManager {
      * Calls all achievements' beforeGameSave() method.
      */
     public void beforeGameSave() {
+        // No reason to add intel to the save.
+        removeIntel();
+
         for (MagicAchievement achievement : achievements.values()) {
             achievement.beforeGameSave();
         }
@@ -372,6 +375,8 @@ public class MagicAchievementManager {
      * Calls all achievements' afterGameSave() method.
      */
     public void afterGameSave() {
+        initIntel();
+
         for (MagicAchievement achievement : achievements.values()) {
             achievement.afterGameSave();
         }
