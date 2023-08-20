@@ -3,6 +3,8 @@ package org.magiclib.achievements;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import lunalib.lunaSettings.LunaSettings;
+import lunalib.lunaSettings.LunaSettingsListener;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.JSONUtils;
 import org.magiclib.util.MagicMisc;
+import org.magiclib.util.MagicVariables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,43 +24,88 @@ public class MagicAchievementManager {
     private static MagicAchievementManager instance;
     private static final Logger logger = Global.getLogger(MagicAchievementManager.class);
     private static final String specsFilename = "data/config/magic_achievements.csv";
-    private final String commonFilename = "magic_achievements.json";
+    private static final String commonFilename = "magic_achievements.json";
+    private static final String achievementsJsonObjectKey = "achievements";
+
     @NotNull
     private List<MagicAchievementSpec> achievementSpecs = new ArrayList<>();
     @NotNull
     private final Map<String, MagicAchievement> achievements = new HashMap<>();
-    private static final String achievementsJsonObjectKey = "achievements";
-    private List<String> previouslyCompleted = new ArrayList<>();
+    private final List<String> previouslyCompleted = new ArrayList<>();
+    private boolean areAchievementsEnabled = true;
 
     @NotNull
     public static MagicAchievementManager getInstance() {
         if (instance == null) {
             instance = new MagicAchievementManager();
-            instance.loadSpecs();
-            instance.loadAchievements();
+            instance.achievementSpecs = getSpecsFromFiles();
+            instance.reloadAchievements();
+            instance.saveAchievements();
         }
 
         return instance;
     }
 
-    public void onGameLoad() {
-        initIntel();
-        Global.getSector().addTransientScript(new MagicAchievementRunner());
+    public void onApplicationLoad() {
+        // Set up LunaLib settings.
+        if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
+            // Add settings listener.
+            LunaSettings.addSettingsListener(new LunaSettingsListener() {
+                @Override
+                public void settingsChanged(@NotNull String settings) {
+                    Boolean lunaAreAchievementsEnabled = LunaSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
 
-        if (Global.getSettings().isDevMode()) {
-            MagicAchievementManager.getInstance().loadAchievements();
+                    if (lunaAreAchievementsEnabled != null) {
+                        areAchievementsEnabled = lunaAreAchievementsEnabled;
+
+                        if (Global.getSettings().isInCampaignState()) {
+                            setAchievementsEnabled(areAchievementsEnabled);
+                        }
+                    }
+                }
+            });
+
+            // Read from settings for initial load.
+            Boolean lunaAreAchievementsEnabled = LunaSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
+
+            if (lunaAreAchievementsEnabled != null) {
+                areAchievementsEnabled = lunaAreAchievementsEnabled;
+            }
+        }
+    }
+
+    public void onGameLoad() {
+        setAchievementsEnabled(areAchievementsEnabled);
+    }
+
+    public void setAchievementsEnabled(boolean areAchievementsEnabled) {
+        if (!Global.getSettings().isInCampaignState()) return;
+
+        if (areAchievementsEnabled) {
+            initIntel();
+            Global.getSector().addTransientScript(new MagicAchievementRunner());
+
+//            if (Global.getSettings().isDevMode()) {
+            MagicAchievementManager.getInstance().reloadAchievements();
+//            }
+        } else {
+            logger.info("MagicLib achievements are disabled.");
+            removeIntel();
+            saveAchievements();
+            Global.getSector().removeTransientScriptsOfClass(MagicAchievementRunner.class);
+
+            for (MagicAchievement magicAchievement : achievements.values()) {
+                magicAchievement.onDestroyed();
+            }
         }
     }
 
     public void initIntel() {
-        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
-
-        while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
-            intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
-        }
+        if (Global.getSector() == null) return;
+        removeIntel();
 
         MagicAchievementIntel intel = new MagicAchievementIntel();
-        intelManager.addIntel(intel, true);
+        Global.getSector().getIntelManager().addIntel(intel, true);
     }
 
     @Nullable
@@ -120,25 +168,11 @@ public class MagicAchievementManager {
         logger.info("Saved " + achievements.size() + " achievements.");
     }
 
-    public void loadAchievements() {
-        Map<String, MagicAchievement> newAchievementsById = new HashMap<>();
-
-        // Create all achievement objects from specs.
-        for (MagicAchievementSpec spec : achievementSpecs) {
-            try {
-                final Class<?> commandClass = Global.getSettings().getScriptClassLoader().loadClass(spec.getScript());
-                if (!MagicAchievement.class.isAssignableFrom(commandClass)) {
-                    throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
-                }
-
-                MagicAchievement magicAchievement = (MagicAchievement) commandClass.newInstance();
-                magicAchievement.spec = spec;
-                newAchievementsById.put(spec.getId(), magicAchievement);
-                logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + spec.getScript() + ".");
-            } catch (Exception e) {
-                logger.warn(String.format("Unable to load achievement '%s' because class '%s' didn't load!", spec.getId(), spec.getScript()), e);
-            }
-        }
+    /**
+     * Unloads all current achievements from the sector and reloads them from files.
+     */
+    public void reloadAchievements() {
+        Map<String, MagicAchievement> newAchievementsById = generateAchievementsFromSpec(instance.achievementSpecs);
 
         // Load achievements already saved in Common and overwrite the generated ones with their data.
         JSONUtils.CommonDataJSONObject commonJson;
@@ -158,6 +192,11 @@ public class MagicAchievementManager {
             return;
         }
 
+
+        // Load all achievements that were saved in the file.
+
+        // If the specId doesn't exist in the current mod list, load it as an "unloaded" achievement.
+        // This prevents achievements from being lost if a mod is removed or the achievement is removed from a mod.
         for (int i = 0; i < savedAchievements.length(); i++) {
             try {
                 JSONObject savedAchievementJson = savedAchievements.getJSONObject(i);
@@ -169,7 +208,6 @@ public class MagicAchievementManager {
                     // If the achievement isn't in a loaded mod, load it as an "unloaded" achievement.
                     logger.warn("Achievement " + specId + " doesn't exist in the current mod list.");
                     blankAchievement = new MagicUnloadedAchievement();
-                    blankAchievement.spec = MagicAchievementSpec.fromJsonObject(savedAchievementJson);
                 }
 
                 blankAchievement.loadFromJsonObject(savedAchievementJson);
@@ -179,11 +217,12 @@ public class MagicAchievementManager {
             }
         }
 
-
         for (MagicAchievement achievement : achievements.values()) {
             achievement.onDestroyed();
         }
 
+        // Not removing old achievements; we never want to risk deleting any,
+        // and putting the new ones in the map will overwrite the old ones.
         achievements.putAll(newAchievementsById);
 
         for (MagicAchievement achievement : achievements.values()) {
@@ -197,11 +236,37 @@ public class MagicAchievementManager {
                 previouslyCompleted.add(prevAchi.getSpecId());
             }
         }
-
-        saveAchievements();
     }
 
-    public void loadSpecs() {
+    /**
+     * Creates achievements from the given specs, creates the script instances from the class name, and returns them.
+     */
+    public static @NotNull Map<String, MagicAchievement> generateAchievementsFromSpec(@NotNull List<MagicAchievementSpec> specs) {
+        Map<String, MagicAchievement> newAchievementsById = new HashMap<>();
+
+        for (MagicAchievementSpec spec : specs) {
+            try {
+                final Class<?> commandClass = Global.getSettings().getScriptClassLoader().loadClass(spec.getScript());
+                if (!MagicAchievement.class.isAssignableFrom(commandClass)) {
+                    throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
+                }
+
+                MagicAchievement magicAchievement = (MagicAchievement) commandClass.newInstance();
+                magicAchievement.spec = spec;
+                newAchievementsById.put(spec.getId(), magicAchievement);
+                logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + spec.getScript() + ".");
+            } catch (Exception e) {
+                logger.warn(String.format("Unable to load achievement '%s' because class '%s' didn't load!", spec.getId(), spec.getScript()), e);
+            }
+        }
+
+        return newAchievementsById;
+    }
+
+    /**
+     * Reads achievement specs from CSV files in mods and returns them.
+     */
+    public static @NotNull List<MagicAchievementSpec> getSpecsFromFiles() {
         List<MagicAchievementSpec> newAchievementSpecs = new ArrayList<>();
 
         for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy()) {
@@ -248,6 +313,7 @@ public class MagicAchievementManager {
                     if (!skip) {
                         newAchievementSpecs.add(new MagicAchievementSpec(
                                 mod.getId(),
+                                mod.getName(),
                                 id,
                                 name,
                                 description,
@@ -264,15 +330,47 @@ public class MagicAchievementManager {
             }
         }
 
-        this.achievementSpecs = newAchievementSpecs;
+        return newAchievementSpecs;
     }
 
+    public @NotNull List<MagicAchievementSpec> getAchievementSpecs() {
+        return achievementSpecs;
+    }
+
+    @Nullable
+    public MagicAchievement getAchievement(String specId) {
+        for (MagicAchievement achievement : achievements.values()) {
+            if (achievement.getSpecId().equals(specId)) {
+                return achievement;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Resets the achievement passed in to the spec. This is useful for when a mod changes the achievement.
+     * Does not uncomplete it, even if it would no longer be earned.
+     */
+    public void resetAchievementToSpec(@NotNull MagicAchievement achievement) {
+        for (MagicAchievementSpec spec : MagicAchievementManager.getSpecsFromFiles()) {
+            achievement.spec = spec;
+            return;
+        }
+    }
+
+    /**
+     * Calls all achievements' beforeGameSave() method.
+     */
     public void beforeGameSave() {
         for (MagicAchievement achievement : achievements.values()) {
             achievement.beforeGameSave();
         }
     }
 
+    /**
+     * Calls all achievements' afterGameSave() method.
+     */
     public void afterGameSave() {
         for (MagicAchievement achievement : achievements.values()) {
             achievement.afterGameSave();
@@ -311,18 +409,13 @@ public class MagicAchievementManager {
         return rarity;
     }
 
-    public @NotNull List<MagicAchievementSpec> getAchievementSpecs() {
-        return achievementSpecs;
-    }
+    private static void removeIntel() {
+        if (Global.getSector() == null) return;
 
-    @Nullable
-    public MagicAchievement getAchievement(String specId) {
-        for (MagicAchievement achievement : achievements.values()) {
-            if (achievement.getSpecId().equals(specId)) {
-                return achievement;
-            }
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+
+        while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
+            intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
         }
-
-        return null;
     }
 }

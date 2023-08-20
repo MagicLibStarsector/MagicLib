@@ -3,6 +3,7 @@ package org.magiclib.achievements
 import com.fs.starfarer.api.util.IntervalUtil
 import org.lazywizard.lazylib.ext.rotate
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.kotlin.getDistance
 import org.magiclib.kotlin.random
 import org.magiclib.kotlin.setAlpha
 import java.awt.Color
@@ -28,7 +29,12 @@ class MagicAchievementParticleScript {
      * Useful for when you want to have a bunch of particles look like they're already in the middle of their animation.
      */
     @JvmOverloads
-    fun render(rect: Rectangle, achievement: MagicAchievement, initialSeed: Boolean = false) {
+    fun render(
+        rect: Rectangle,
+        anchor: Vector2f,
+        achievement: MagicAchievement,
+        initialSeed: Boolean = false
+    ) {
         customRenderer.render()
 
         val objDensityInternalRef = objDensityInternal
@@ -55,13 +61,13 @@ class MagicAchievementParticleScript {
             )
         )
 
-        val velocityScale = .15f
-        val sizeScale = 1f
+        val velocityScale = .01f
+        val sizeScale = 0.75f
         val durationScale = 8f
         val rampUpScale = 4.0f
         val rampDownScale = 1.0f
         val endSizeScale = 1.55f
-        val densityScale = 10f // Lower is more dense
+        val densityScale = 8f // Lower is more dense
         val vel = Vector2f(100f * velocityScale, 100f * velocityScale)
             .rotate(Random.nextFloat() * 360f)
 
@@ -74,8 +80,11 @@ class MagicAchievementParticleScript {
 
 //        lines.forEach { line ->
         customRenderer.addNebula(
-            location = getRandomPointInRectangle(rect), // MathUtils.getRandomPointOnLine(line.first, line.second),
-            anchorLocation = Vector2f(0f, 0f),
+            location = getRandomPointInRectangleAvoidingCenter(
+                rect,
+                avoidCenterRadius = 15f
+            ), // MathUtils.getRandomPointOnLine(line.first, line.second),
+            anchorLocation = anchor,
             velocity = vel,
             size = 5f * sizeScale,
             endSizeMult = endSizeScale,
@@ -83,10 +92,11 @@ class MagicAchievementParticleScript {
             inFraction = 0.1f * rampUpScale,
             outFraction = 0.5f * rampDownScale,
             color = when (achievement.rarity) {
-                MagicAchievementRarity.Common -> Color(0x544512).setAlpha(150)
-                MagicAchievementRarity.Uncommon -> Color(0xC0C0C0).setAlpha(150)
-                MagicAchievementRarity.Rare -> Color.YELLOW.setAlpha(150)
-                MagicAchievementRarity.Epic -> Color(0x6B46C1)
+                MagicAchievementRarity.Common -> Color.cyan
+                MagicAchievementRarity.Uncommon -> Color(0xCD7F32).setAlpha(200)
+                MagicAchievementRarity.Rare -> Color(0xE0DFDF).setAlpha(200)
+                MagicAchievementRarity.Epic -> Color.YELLOW.setAlpha(200)
+                //Color(0x7754C9)
             },
             type = CustomRenderer.NebulaType.NORMAL,
             negative = false
@@ -97,6 +107,22 @@ class MagicAchievementParticleScript {
             }
 //        }
     }
+}
+
+// method that gets a random point in a rectange but avoids the center
+fun getRandomPointInRectangleAvoidingCenter(rect: Rectangle, avoidCenterRadius: Float): Vector2f {
+    val x = Random.nextInt(rect.x, rect.x + rect.width)
+    val y = Random.nextInt(rect.y, rect.y + rect.height)
+    val point = Vector2f(x.toFloat(), y.toFloat())
+    if (avoidCenterRadius > 0f) {
+        val center =
+            Vector2f(rect.x.toFloat() + rect.width.toFloat() / 2f, rect.y.toFloat() + rect.height.toFloat() / 2f)
+        if (point.getDistance(center) < avoidCenterRadius) {
+            return getRandomPointInRectangleAvoidingCenter(rect, avoidCenterRadius)
+        }
+    }
+
+    return point
 }
 
 fun getRandomPointInRectangle(rect: Rectangle): Vector2f {

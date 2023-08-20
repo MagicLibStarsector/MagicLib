@@ -37,9 +37,18 @@ public class MagicAchievement {
     private final Map<String, Object> memory = new HashMap<>();
 
     /**
-     * By default, only run the achievement advance check every 2-5 seconds for performance reasons.
+     * Do not use this constructor.
+     * Put your initialization code in {@link #onCreated()} instead.
      */
-    private IntervalUtil advanceInterval = new IntervalUtil(2f, 5f);
+    @Deprecated
+    public MagicAchievement() {
+
+    }
+
+    /**
+     * By default, only run the achievement advance check every 1-2 seconds for performance reasons.
+     */
+    private IntervalUtil advanceInterval = new IntervalUtil(1f, 2f);
 
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
@@ -49,14 +58,23 @@ public class MagicAchievement {
         logger = Global.getLogger(this.getClass());
     }
 
+    /**
+     * Called each time the game is saved. If you want to avoid any data going into the save file,
+     * you can clear it here.
+     */
     public void beforeGameSave() {
     }
 
+    /**
+     * Called each time the game is loaded.
+     */
     public void afterGameSave() {
     }
 
     /**
      * Do any cleanup logic here, e.g. removing listeners.
+     * Called when the achievement is being unloaded from the sector, e.g. they're loading a new save.
+     * Do NOT reset progress here, we're not deleting it, just taking it out of memory.
      */
     public void onDestroyed() {
     }
@@ -78,6 +96,21 @@ public class MagicAchievement {
         logger.info("Achievement completed! " + spec.getId());
     }
 
+    /**
+     * Don't use this except for very good reasons, e.g. debugging!
+     * Imagine if you had a Steam achievement go and take itself away.
+     */
+    public void uncompleteAchievement() {
+        this.dateCompleted = null;
+        this.completedByUserId = null;
+        this.completedByUserName = null;
+
+        logger.info("Achievement uncompleted! " + spec.getId());
+    }
+
+    /**
+     * Not meant to be overriden. Use {@link #advance(float)} instead.
+     */
     protected void advanceInternal(float amount) {
         advanceInterval.advance(amount);
 
@@ -86,13 +119,23 @@ public class MagicAchievement {
         }
     }
 
+    /**
+     * NOT CALLED EVERY FRAME.
+     * Called every 1-2 seconds by default. Change timing with {@link #setAdvanceIntervalUtil(IntervalUtil)}.
+     */
     public void advance(float amount) {
     }
 
+    /**
+     * Call this to save any changes to the achievement (and all others as well).
+     */
     public void saveChanges() {
         MagicAchievementManager.getInstance().saveAchievements();
     }
 
+    /**
+     * Serializes this achievement to a JSON object.
+     */
     @Nullable
     public JSONObject toJsonObject() {
         try {
@@ -110,6 +153,9 @@ public class MagicAchievement {
         }
     }
 
+    /**
+     * Sets this achievement's data from the given JSON object.
+     */
     public boolean loadFromJsonObject(@NotNull JSONObject jsonObject) {
         try {
             spec = MagicAchievementSpec.fromJsonObject(jsonObject);
@@ -134,6 +180,20 @@ public class MagicAchievement {
         }
     }
 
+    /**
+     * Returns the time interval in seconds between each call to {@link #advance(float)}.
+     */
+    public IntervalUtil getAdvanceIntervalUtil() {
+        return advanceInterval;
+    }
+
+    /**
+     * Sets the time interval between each call to {@link #advance(float)}.
+     */
+    public void setAdvanceIntervalUtil(IntervalUtil interval) {
+        advanceInterval = interval;
+    }
+
     public @Nullable Float getProgress() {
         return progress;
     }
@@ -152,6 +212,10 @@ public class MagicAchievement {
 
     public @NotNull String getModId() {
         return spec.getModId();
+    }
+
+    public @NotNull String getModName() {
+        return spec.getModName();
     }
 
     public @NotNull String getSpecId() {
@@ -244,19 +308,5 @@ public class MagicAchievement {
 
     public @NotNull Map<String, Object> getMemory() {
         return memory;
-    }
-
-    /**
-     * Returns the time interval in seconds between each call to {@link #advance(float)}.
-     */
-    public IntervalUtil getAdvanceIntervalUtil() {
-        return advanceInterval;
-    }
-
-    /**
-     * Sets the time interval between each call to {@link #advance(float)}.
-     */
-    public void setAdvanceIntervalUtil(IntervalUtil interval) {
-        advanceInterval = interval;
     }
 }

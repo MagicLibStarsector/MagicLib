@@ -1,6 +1,7 @@
 package org.magiclib.achievements;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.*;
@@ -105,12 +106,40 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
     public void displayAchievements(CustomPanelAPI panel, TooltipMakerAPI info, float rowWidth, List<MagicAchievement> achievements) {
         float pad = 3;
         float opad = 10;
+        FactionAPI faction = Global.getSector().getPlayerFaction();
         boolean isFirstItem = true;
         String defaultImage = Global.getSettings().getSpriteName("intel", "achievement");
+
+        Collections.sort(achievements, new Comparator<MagicAchievement>() {
+            @Override
+            public int compare(MagicAchievement leftAch, MagicAchievement rightAch) {
+                // spoilered, incomplete achievements go to the bottom
+                if (leftAch.getSpoilerLevel() == MagicAchievementSpoilerLevel.Spoiler && !leftAch.isComplete())
+                    return 1;
+                if (rightAch.getSpoilerLevel() == MagicAchievementSpoilerLevel.Spoiler && !rightAch.isComplete())
+                    return -1;
+
+                // sort by mod name, then by achievement spec id
+                ModSpecAPI leftMod = Global.getSettings().getModManager().getModSpec(leftAch.getModId());
+                ModSpecAPI rightMod = Global.getSettings().getModManager().getModSpec(rightAch.getModId());
+                String leftModName = leftMod != null ? leftMod.getName() : leftAch.getModId();
+                String rightModName = rightMod != null ? rightMod.getName() : rightAch.getModId();
+                int modNameCompare = leftModName.compareTo(rightModName);
+                if (modNameCompare != 0) return modNameCompare;
+                return leftAch.getSpecId().compareTo(rightAch.getSpecId());
+            }
+        });
+
+        String prevModId = null;
 
         for (MagicAchievement achievement : achievements) {
             if (achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Hidden)
                 continue;
+
+            if (!achievement.getModId().equals(prevModId)) {
+                info.addSectionHeading(achievement.getModName(), faction.getBaseUIColor(), faction.getSecondaryUIColor(), Alignment.LMID, 10f);
+                prevModId = achievement.getModId();
+            }
 
             CustomPanelAPI row = panel.createCustomPanel(rowWidth, ENTRY_HEIGHT, null);
             TooltipMakerAPI image = row.createUIElement(IMAGE_HEIGHT, ENTRY_HEIGHT, false);
@@ -124,7 +153,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 } else {
                     image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
                 }
-
             } else {
                 image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
             }
@@ -132,8 +160,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             row.addUIElement(image).inTL(0, 0);
 
             // If the achievement is complete, add a fancy particle effect.
-            if (achievement.isComplete()) {
-                row.addComponent(row.createCustomPanel(IMAGE_HEIGHT, IMAGE_HEIGHT, new FancyEffects(image.getPosition(), IMAGE_HEIGHT, achievement)));
+            if (achievement.isComplete() && !achievement.getRarity().equals(MagicAchievementRarity.Common)) {
+                row.addComponent(row.createCustomPanel(
+                        IMAGE_HEIGHT,
+                        IMAGE_HEIGHT,
+                        new MagicAchievementIntelParticleEffect(image.getPosition(), IMAGE_HEIGHT, achievement)));
             }
 
             TooltipMakerAPI leftElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
@@ -159,8 +190,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
 
             // Debugging TODO
-            if (!achievement.isComplete() && Global.getSettings().isDevMode()) {
-                leftElement.addButton(MagicTxt.getString("grantAchievement"), achievement.getSpecId(), 128, 16, pad);
+            if (Global.getSettings().isDevMode()) {
+                if (!achievement.isComplete())
+                    leftElement.addButton(MagicTxt.getString("grantAchievement"), achievement.getSpecId(), 128, 16, pad);
+                if (achievement.isComplete())
+                    leftElement.addButton(MagicTxt.getString("resetAchievement"), achievement.getSpecId(), 128, 16, pad);
             }
 
             if (achievement.isComplete()) {
@@ -212,7 +246,12 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             return;
         }
 
-        achievement.completeAchievement(Global.getSector().getPlayerPerson());
+        if (achievement.isComplete()) {
+            achievement.completeAchievement(Global.getSector().getPlayerPerson());
+        } else {
+            achievement.uncompleteAchievement();
+        }
+
         achievement.saveChanges();
         ui.updateUIForItem(this);
     }

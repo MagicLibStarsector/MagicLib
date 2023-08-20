@@ -260,6 +260,7 @@
 
     # MagicAchievements
     "grantAchievement": "Grant",
+    "resetAchievement": "Uncomplete",
     "achievementCompletionProgress": "%s of %s achievements unlocked  (%s%%)",
     "unlockedAchievementsTitle": "Unlocked Achievements",
     "lockedAchievementsTitle": "Locked Achievements",
