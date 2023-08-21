@@ -1,5 +1,6 @@
 package org.magiclib.achievements;
 
+import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.JSONUtils;
 import org.magiclib.util.MagicMisc;
@@ -39,13 +41,16 @@ public class MagicAchievementManager {
         if (instance == null) {
             instance = new MagicAchievementManager();
             instance.achievementSpecs = getSpecsFromFiles();
-            instance.reloadAchievements();
-            instance.saveAchievements();
+//            instance.reloadAchievements();
+//            instance.saveAchievements();
         }
 
         return instance;
     }
 
+    /**
+     * Loads achievements (so that any that track stuff outside of the campaign are started).
+     */
     public void onApplicationLoad() {
         // Set up LunaLib settings.
         if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
@@ -58,9 +63,8 @@ public class MagicAchievementManager {
                     if (lunaAreAchievementsEnabled != null) {
                         areAchievementsEnabled = lunaAreAchievementsEnabled;
 
-                        if (Global.getSettings().isInCampaignState()) {
-                            setAchievementsEnabled(areAchievementsEnabled);
-                        }
+                        boolean isGameLoading = Global.getCurrentState() == GameState.CAMPAIGN;
+                        setAchievementsEnabled(areAchievementsEnabled, isGameLoading);
                     }
                 }
             });
@@ -72,21 +76,29 @@ public class MagicAchievementManager {
                 areAchievementsEnabled = lunaAreAchievementsEnabled;
             }
         }
+
+        setAchievementsEnabled(areAchievementsEnabled, false);
     }
 
+    /**
+     * (Re)loads achievements (so that any that track stuff outside of the campaign are started).
+     */
     public void onGameLoad() {
-        setAchievementsEnabled(areAchievementsEnabled);
+        setAchievementsEnabled(areAchievementsEnabled, true);
     }
 
-    public void setAchievementsEnabled(boolean areAchievementsEnabled) {
-        if (!Global.getSettings().isInCampaignState()) return;
-
+    public void setAchievementsEnabled(boolean areAchievementsEnabled, boolean isSaveLoaded) {
         if (areAchievementsEnabled) {
-            initIntel();
-            Global.getSector().addTransientScript(new MagicAchievementRunner());
+            if (isSaveLoaded) {
+                initIntel();
+
+                if (!Global.getSector().hasTransientScript(MagicAchievementRunner.class)) {
+                    Global.getSector().addTransientScript(new MagicAchievementRunner());
+                }
+            }
 
 //            if (Global.getSettings().isDevMode()) {
-            MagicAchievementManager.getInstance().reloadAchievements();
+            MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
 //            }
         } else {
             logger.info("MagicLib achievements are disabled.");
@@ -170,8 +182,10 @@ public class MagicAchievementManager {
 
     /**
      * Unloads all current achievements from the sector and reloads them from files.
+     *
+     * @param isSaveGameLoaded Whether a save game is being loaded.
      */
-    public void reloadAchievements() {
+    public void reloadAchievements(boolean isSaveGameLoaded) {
         Map<String, MagicAchievement> newAchievementsById = generateAchievementsFromSpec(instance.achievementSpecs);
 
         // Load achievements already saved in Common and overwrite the generated ones with their data.
@@ -184,9 +198,19 @@ public class MagicAchievementManager {
                 saveAchievements();
             }
 
-            //noinspection resource
-            commonJson = JSONUtils.loadCommonJSON(commonFilename);
-            savedAchievements = commonJson.getJSONArray(achievementsJsonObjectKey);
+            try {
+                //noinspection resource
+                commonJson = JSONUtils.loadCommonJSON(commonFilename);
+                savedAchievements = commonJson.getJSONArray(achievementsJsonObjectKey);
+            } catch (JSONException ex) {
+                // If the achievement file is broken, make a backup and then remake it.
+                logger.warn("Unable to load achievements from " + commonFilename + ", making a backup and remaking it.", ex);
+                Global.getSettings().writeTextFileToCommon(commonFilename + ".backup", Global.getSettings().readTextFileFromCommon(commonFilename));
+                Global.getSettings().deleteTextFileFromCommon(commonFilename);
+                saveAchievements();
+                commonJson = JSONUtils.loadCommonJSON(commonFilename);
+                savedAchievements = commonJson.getJSONArray(achievementsJsonObjectKey);
+            }
         } catch (Exception e) {
             logger.warn("Unable to load achievements from " + commonFilename, e);
             return;
@@ -225,8 +249,17 @@ public class MagicAchievementManager {
         // and putting the new ones in the map will overwrite the old ones.
         achievements.putAll(newAchievementsById);
 
+        // Calling onApplicationLoaded and onGameLoaded would seem to make more sense to do
+        // in their respective methods, but doing it here ensures that they're called.
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.onCreated();
+            achievement.onApplicationLoaded();
+        }
+
+        // Can't just check GameState, it shows a TITLE after pressing Continue on the title page.
+        if (isSaveGameLoaded) {
+            for (MagicAchievement achievement : achievements.values()) {
+                achievement.onGameLoaded();
+            }
         }
 
         logger.info("Loaded " + achievements.size() + " achievements.");

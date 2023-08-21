@@ -6,9 +6,9 @@ sundive, "Hold My Beer","Flew through a sun.",org.magiclib.achievements.builtin.
 realestate, "Prime Real Estate","Invaded a core world before having any colonies of your own.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,false,VISIBLE,UNCOMMON
 fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every design type in a battle.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,false,VISIBLE,UNCOMMON
 onslaught, "I Exist Without My Consent","Obtained three Onslaught-inspired hulls.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,true,VISIBLE,UNCOMMON
-slayer1, "Harmful","Destroyed 100 enemy ships.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,true,VISIBLE,COMMON
-slayer2, "Dangerous","Destroyed 500 enemy ships.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,true,VISIBLE,COMMON
-slayer3, "Slayer","Destroyed 2000 enemy ships.",org.magiclib.achievements.builtin.TestAchievement,,true,VISIBLE,UNCOMMON
-slayer4, "Reaper","Destroyed 5000 enemy ships.",org.magiclib.achievements.builtin.TestAchievement,,true,VISIBLE,RARE
-slayer5, "Doomguy","Destroyed 10000 enemy ships.",org.magiclib.achievements.builtin.TestAchievement,,true,VISIBLE,EPIC
+slayer1, "Harmful","Destroyed 100 enemy ships.",org.magiclib.achievements.builtin.Slayer100MagicAchievement,,true,VISIBLE,COMMON
+slayer2, "Dangerous","Destroyed 500 enemy ships.",org.magiclib.achievements.builtin.Slayer500MagicAchievement,,true,VISIBLE,COMMON
+slayer3, "Slayer","Destroyed 2000 enemy ships.",org.magiclib.achievements.builtin.Slayer2000MagicAchievement,,true,VISIBLE,UNCOMMON
+slayer4, "Reaper","Destroyed 5000 enemy ships.",org.magiclib.achievements.builtin.Slayer5000MagicAchievement,,true,VISIBLE,RARE
+slayer5, "Doomguy","Destroyed 10000 enemy ships.",org.magiclib.achievements.builtin.Slayer10000MagicAchievement,,true,VISIBLE,EPIC
 overinvested, "Overinvested","Made it to cycle c+300.",,,false,SPOILER,EPIC

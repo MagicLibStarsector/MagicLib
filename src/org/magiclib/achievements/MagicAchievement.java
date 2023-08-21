@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Note: this class is serialized to the save file.
+ * This class is not serialized to the save file.
  *
  * @author Wisp
  * @since 1.3.0
@@ -37,10 +37,15 @@ public class MagicAchievement {
     private final Map<String, Object> memory = new HashMap<>();
 
     /**
-     * Do not use this constructor.
-     * Put your initialization code in {@link #onCreated()} instead.
+     * Shown if set. Only persisted in memory.
      */
-    @Deprecated
+    @Nullable
+    public String errorMessage;
+
+    /**
+     * Do not use this constructor.
+     * Put your initialization code in {@link #onApplicationLoaded()} instead.
+     */
     public MagicAchievement() {
 
     }
@@ -50,12 +55,16 @@ public class MagicAchievement {
      */
     private IntervalUtil advanceInterval = new IntervalUtil(1f, 2f);
 
+    public void onApplicationLoaded() {
+        logger = Global.getLogger(this.getClass());
+    }
+
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
      */
-    public void onCreated() {
-        logger = Global.getLogger(this.getClass());
+    public void onGameLoaded() {
+
     }
 
     /**
@@ -81,6 +90,14 @@ public class MagicAchievement {
 
     /**
      * Call when the achievement is completed.
+     * Sets the date completed and the current player as the completer.
+     */
+    public void completeAchievement() {
+        completeAchievement(Global.getSector().getPlayerPerson());
+    }
+
+    /**
+     * Call when the achievement is completed.
      * Sets the date completed and the player who completed it.
      *
      * @param completedByPlayer The player's character who completed the achievement, if applicable.
@@ -101,9 +118,9 @@ public class MagicAchievement {
      * Imagine if you had a Steam achievement go and take itself away.
      */
     public void uncompleteAchievement() {
-        this.dateCompleted = null;
-        this.completedByUserId = null;
-        this.completedByUserName = null;
+        setDateCompleted(null);
+        setCompletedByUserId(null);
+        setCompletedByUserName(null);
 
         logger.info("Achievement uncompleted! " + spec.getId());
     }
