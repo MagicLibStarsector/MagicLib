@@ -99,10 +99,13 @@ public class MagicAchievement {
     /**
      * Call when the achievement is completed.
      * Sets the date completed and the player who completed it.
+     * Does nothing if already completed; uncomplete first, if you want to re-complete it for some reason.
      *
      * @param completedByPlayer The player's character who completed the achievement, if applicable.
      */
     public void completeAchievement(@Nullable PersonAPI completedByPlayer) {
+        if (isComplete()) return;
+
         this.dateCompleted = new Date();
 
         if (completedByPlayer != null) {
@@ -212,6 +215,9 @@ public class MagicAchievement {
     }
 
     public @Nullable Float getProgress() {
+        if (isComplete())
+            return getMaxProgress();
+
         return progress;
     }
 
@@ -325,5 +331,13 @@ public class MagicAchievement {
 
     public @NotNull Map<String, Object> getMemory() {
         return memory;
+    }
+
+    /**
+     * By default, only show Hidden achievements once they're completed.
+     */
+    public boolean shouldShowInIntel() {
+        return getSpoilerLevel() != MagicAchievementSpoilerLevel.Hidden
+                || isComplete();
     }
 }

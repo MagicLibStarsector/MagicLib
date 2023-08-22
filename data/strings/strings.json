@@ -264,8 +264,8 @@
     "achievementCompletionProgress": "%s of %s achievements unlocked  (%s%%)",
     "unlockedAchievementsTitle": "Unlocked Achievements",
     "lockedAchievementsTitle": "Locked Achievements",
-    "achievementCompletedDate": "Unlocked on %s",
+    "achievementCompletedDate": "Unlocked on %s, %s",
     "achievementCompletedBy": "by Captain %s",
-    "achievementUnlockedNotification": "Unlocked %s",
+    "achievementUnlockedNotification": "Achievement Unlocked!",
   }
 }

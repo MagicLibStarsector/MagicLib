@@ -36,7 +36,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
     @Override
     protected void addBulletPoints(TooltipMakerAPI info, ListInfoMode mode) {
         if (tempAchievement != null) {
-            info.addPara(tempAchievement.getDescription(), 3f);
+            info.addPara(tempAchievement.getName(), 3f);
         }
     }
 
@@ -74,10 +74,19 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         }
 
         info.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
+        int listedAchievements = achievements.size();
+
+        // Remove achievements that aren't displayed at all from the total and percent calculation.
+        for (MagicAchievement achievement : achievements) {
+            if (!achievement.shouldShowInIntel()) {
+                listedAchievements--;
+            }
+        }
+
         info.addSectionHeading(MagicTxt.getString("achievementCompletionProgress",
                         Integer.toString(unlockedAchievements.size()),
-                        Integer.toString(achievements.size()),
-                        Integer.toString((int) ((float) unlockedAchievements.size() / achievements.size() * 100))
+                        Integer.toString(listedAchievements),
+                        Integer.toString((int) ((float) unlockedAchievements.size() / listedAchievements * 100))
                 ), faction.getBaseUIColor(),
                 faction.getDarkUIColor(), Alignment.MID, 0f);
         info.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
@@ -133,7 +142,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         String prevModId = null;
 
         for (MagicAchievement achievement : achievements) {
-            if (achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Hidden)
+            if (!achievement.shouldShowInIntel())
                 continue;
 
             // Mod name header
@@ -210,7 +219,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Completed info, shown on the right.
             if (achievement.isComplete()) {
                 Date date = achievement.getDateCompleted();
-                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateInstance().format(date));
+                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateTimeInstance().format(date), DateFormat.getTimeInstance().format(date));
                 rightElement.addPara(str, pad);
 
                 if (achievement.getCompletedByUserName() != null) {

@@ -30,7 +30,7 @@ public class MagicAchievementManager {
     private static final String achievementsJsonObjectKey = "achievements";
 
     @NotNull
-    private List<MagicAchievementSpec> achievementSpecs = new ArrayList<>();
+    private Map<String, MagicAchievementSpec> achievementSpecs = new HashMap<>();
     @NotNull
     private final Map<String, MagicAchievement> achievements = new HashMap<>();
     private final List<String> previouslyCompleted = new ArrayList<>();
@@ -226,16 +226,25 @@ public class MagicAchievementManager {
                 JSONObject savedAchievementJson = savedAchievements.getJSONObject(i);
                 String specId = savedAchievementJson.optString("id", "");
                 // Try to load the achievement from a spec in a loaded mod.
-                MagicAchievement blankAchievement = newAchievementsById.get(specId);
+                MagicAchievement loadedAchievement = newAchievementsById.get(specId);
 
-                if (blankAchievement == null) {
+                if (loadedAchievement == null) {
                     // If the achievement isn't in a loaded mod, load it as an "unloaded" achievement.
                     logger.warn("Achievement " + specId + " doesn't exist in the current mod list.");
-                    blankAchievement = new MagicUnloadedAchievement();
+                    loadedAchievement = new MagicUnloadedAchievement();
                 }
 
-                blankAchievement.loadFromJsonObject(savedAchievementJson);
-                newAchievementsById.put(blankAchievement.getSpecId(), blankAchievement);
+                loadedAchievement.loadFromJsonObject(savedAchievementJson);
+
+                // If the achievement was loaded from a spec (ie mod is loaded), use that spec, rather than the spec saved in common.
+                // This will load any changes made to the achievement's spec in the mod without affecting completion or saved data.
+                MagicAchievementSpec achievementSpec = instance.achievementSpecs.get(specId);
+
+                if (achievementSpec != null) {
+                    loadedAchievement.spec = achievementSpec;
+                }
+
+                newAchievementsById.put(loadedAchievement.getSpecId(), loadedAchievement);
             } catch (Exception e) {
                 logger.warn("Unable to load achievement #" + i, e);
             }
@@ -274,10 +283,10 @@ public class MagicAchievementManager {
     /**
      * Creates achievements from the given specs, creates the script instances from the class name, and returns them.
      */
-    public static @NotNull Map<String, MagicAchievement> generateAchievementsFromSpec(@NotNull List<MagicAchievementSpec> specs) {
+    public static @NotNull Map<String, MagicAchievement> generateAchievementsFromSpec(@NotNull Map<String, MagicAchievementSpec> specs) {
         Map<String, MagicAchievement> newAchievementsById = new HashMap<>();
 
-        for (MagicAchievementSpec spec : specs) {
+        for (MagicAchievementSpec spec : specs.values()) {
             try {
                 final Class<?> commandClass = Global.getSettings().getScriptClassLoader().loadClass(spec.getScript());
                 if (!MagicAchievement.class.isAssignableFrom(commandClass)) {
@@ -299,7 +308,7 @@ public class MagicAchievementManager {
     /**
      * Reads achievement specs from CSV files in mods and returns them.
      */
-    public static @NotNull List<MagicAchievementSpec> getSpecsFromFiles() {
+    public static @NotNull Map<String, MagicAchievementSpec> getSpecsFromFiles() {
         List<MagicAchievementSpec> newAchievementSpecs = new ArrayList<>();
 
         for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy()) {
@@ -363,10 +372,16 @@ public class MagicAchievementManager {
             }
         }
 
-        return newAchievementSpecs;
+        Map<String, MagicAchievementSpec> newAchievementSpecsById = new HashMap<>();
+
+        for (MagicAchievementSpec newAchievementSpec : newAchievementSpecs) {
+            newAchievementSpecsById.put(newAchievementSpec.getId(), newAchievementSpec);
+        }
+
+        return newAchievementSpecsById;
     }
 
-    public @NotNull List<MagicAchievementSpec> getAchievementSpecs() {
+    public @NotNull Map<String, MagicAchievementSpec> getAchievementSpecs() {
         return achievementSpecs;
     }
 
@@ -386,7 +401,7 @@ public class MagicAchievementManager {
      * Does not uncomplete it, even if it would no longer be earned.
      */
     public void resetAchievementToSpec(@NotNull MagicAchievement achievement) {
-        for (MagicAchievementSpec spec : MagicAchievementManager.getSpecsFromFiles()) {
+        for (MagicAchievementSpec spec : MagicAchievementManager.getSpecsFromFiles().values()) {
             achievement.spec = spec;
             return;
         }

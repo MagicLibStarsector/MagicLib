@@ -1,5 +1,157 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
+$dokka.location:org.magiclib.achievements.builtin////PointingToDeclaration/root/org.magiclib.achievements.builtin/index.html
+$dokka.location:org.magiclib.achievements.builtin/IcarusAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-icarus-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/IcarusAchievement/IcarusAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-icarus-achievement/-icarus-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/IcarusAchievement/advance/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-icarus-achievement/advance.html
+$dokka.location:org.magiclib.achievements.builtin/JavaUpgradeAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-java-upgrade-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/JavaUpgradeAchievement/JavaUpgradeAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-java-upgrade-achievement/-java-upgrade-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/JavaUpgradeAchievement/onGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-java-upgrade-achievement/on-game-loaded.html
+$dokka.location:org.magiclib.achievements.builtin/NeverCompleteTestAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-never-complete-test-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/NeverCompleteTestAchievement/NeverCompleteTestAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-never-complete-test-achievement/-never-complete-test-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer10000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer10000-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer10000MagicAchievement/Slayer10000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer10000-magic-achievement/-slayer10000-magic-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer10000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer10000-magic-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer100MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer100-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer100MagicAchievement/Slayer100MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer100-magic-achievement/-slayer100-magic-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer100MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer100-magic-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer2000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer2000-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer2000MagicAchievement/Slayer2000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer2000-magic-achievement/-slayer2000-magic-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer2000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer2000-magic-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer5000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer5000-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer5000MagicAchievement/Slayer5000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer5000-magic-achievement/-slayer5000-magic-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer5000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer5000-magic-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer500MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer500-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer500MagicAchievement/Slayer500MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer500-magic-achievement/-slayer500-magic-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/Slayer500MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer500-magic-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement.Listener///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-listener/index.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement.Listener/Listener/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-listener/-listener.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement.Listener/reportBattleFinished/#[Error type: Unresolved type for CampaignFleetAPI]?#[Error type: Unresolved type for BattleAPI]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-listener/report-battle-finished.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/SlayerMagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-slayer-magic-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/get-progress.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/listener/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/listener.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/on-destroyed.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/onGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/on-game-loaded.html
+$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/shipsKilled/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/ships-killed.html
+$dokka.location:org.magiclib.achievements.builtin/TestAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/index.html
+$dokka.location:org.magiclib.achievements.builtin/TestAchievement/TestAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/-test-achievement.html
+$dokka.location:org.magiclib.achievements.builtin/TestAchievement/advance/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/advance.html
+$dokka.location:org.magiclib.achievements.builtin/TestAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements.builtin/TestAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/get-progress.html
+$dokka.location:org.magiclib.achievements////PointingToDeclaration/root/org.magiclib.achievements/index.html
+$dokka.location:org.magiclib.achievements//getRandomPointInRectangle/#java.awt.Rectangle/PointingToDeclaration/root/org.magiclib.achievements/get-random-point-in-rectangle.html
+$dokka.location:org.magiclib.achievements//getRandomPointInRectangleAvoidingCenter/#java.awt.Rectangle#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements/get-random-point-in-rectangle-avoiding-center.html
+$dokka.location:org.magiclib.achievements/MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-magic-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/advance/#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/advance.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/afterGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/after-game-save.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/beforeGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/before-game-save.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/completeAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/complete-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/completeAchievement/#PersonAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/complete-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/completedByUserId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/completed-by-user-id.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/completedByUserName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/completed-by-user-name.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/dateCompleted/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/date-completed.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/errorMessage/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/error-message.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getAdvanceIntervalUtil/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-advance-interval-util.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getDescription/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-description.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getHasProgressBar/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-has-progress-bar.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getImage/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-image.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getModId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-mod-id.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getModName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-mod-name.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-name.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getRarity/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-rarity.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getScript/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-script.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getSpecId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-spec-id.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getSpoilerLevel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-spoiler-level.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/isComplete/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/is-complete.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/loadFromJsonObject/#JSONObject/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/load-from-json-object.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/maxProgress/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/max-progress.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/memory/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/memory.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/onApplicationLoaded/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-application-loaded.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-destroyed.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/onGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-game-loaded.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/progress/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/progress.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/saveChanges/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/save-changes.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setAdvanceIntervalUtil/#IntervalUtil/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-advance-interval-util.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setDescription/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-description.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setHasProgressBar/#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-has-progress-bar.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setImage/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-image.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setName/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-name.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setRarity/#org.magiclib.achievements.MagicAchievementRarity/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-rarity.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setScript/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-script.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/setSpoilerLevel/#org.magiclib.achievements.MagicAchievementSpoilerLevel/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-spoiler-level.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/shouldShowInIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/should-show-in-intel.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/toJsonObject/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/to-json-object.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/uncompleteAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/uncomplete-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/ENTRY_HEIGHT/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/-e-n-t-r-y_-h-e-i-g-h-t.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/IMAGE_HEIGHT/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/-i-m-a-g-e_-h-e-i-g-h-t.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/MagicAchievementIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/-magic-achievement-intel.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/buttonPressConfirmed/#java.lang.Object#IntelUIAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/button-press-confirmed.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/createLargeDescription/#CustomPanelAPI#float#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/create-large-description.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/displayAchievements/#CustomPanelAPI#TooltipMakerAPI#float#java.util.List<MagicAchievement>/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/display-achievements.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/getIcon/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/get-icon.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/getIntelTags/#SectorMapAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/get-intel-tags.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/hasLargeDescription/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/has-large-description.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/hasSmallDescription/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/has-small-description.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/isEnded/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/is-ended.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/isEnding/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/is-ending.html
+$dokka.location:org.magiclib.achievements/MagicAchievementIntel/tempAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/temp-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/MagicAchievementManager/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/-magic-achievement-manager.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/achievementSpecs/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/achievement-specs.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/achievements/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/achievements.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/afterGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/after-game-save.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/beforeGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/before-game-save.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/generateAchievementsFromSpec/#java.util.Map<java.lang.String,org.magiclib.achievements.MagicAchievementSpec>/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/generate-achievements-from-spec.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/getAchievement/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/get-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/getIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/get-intel.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/getSpecsFromFiles/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/get-specs-from-files.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/initIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/init-intel.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/instance/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/instance.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/onApplicationLoad/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/on-application-load.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/onGameLoad/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/on-game-load.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/reloadAchievements/#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/reload-achievements.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/resetAchievementToSpec/#MagicAchievement/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/reset-achievement-to-spec.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/saveAchievements/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/save-achievements.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/setAchievementsEnabled/#boolean#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/set-achievements-enabled.html
+$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript/MagicAchievementParticleScript/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/-magic-achievement-particle-script.html
+$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript/advance/#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/advance.html
+$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript/render/#java.awt.Rectangle#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for MagicAchievement]#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/render.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity.Common///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-common/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity.Epic///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-epic/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity.Rare///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-rare/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity.Uncommon///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-uncommon/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-rarity/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity/valueOf/#kotlin.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-rarity/value-of.html
+$dokka.location:org.magiclib.achievements/MagicAchievementRarity/values/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-rarity/values.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec.Companion///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-companion/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec.Companion/fromJsonObject/#[Error type: Unresolved type for JSONObject]/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-companion/from-json-object.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/MagicAchievementSpec/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#kotlin.Boolean#org.magiclib.achievements.MagicAchievementSpoilerLevel#org.magiclib.achievements.MagicAchievementRarity/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-magic-achievement-spec.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/clone/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/clone.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/description/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/description.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/hasProgressBar/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/has-progress-bar.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/id/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/id.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/image/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/image.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/modId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/mod-id.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/modName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/mod-name.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/name/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/name.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/rarity/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/rarity.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/script/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/script.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/spoilerLevel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/spoiler-level.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/toJsonObject/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/to-json-object.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel.Hidden///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-spoiler-level/-hidden/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel.Spoiler///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-spoiler-level/-spoiler/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel.Visible///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-spoiler-level/-visible/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spoiler-level/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel/valueOf/#kotlin.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spoiler-level/value-of.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel/values/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spoiler-level/values.html
+$dokka.location:org.magiclib.achievements/MagicUnloadedAchievement///PointingToDeclaration/root/org.magiclib.achievements/-magic-unloaded-achievement/index.html
+$dokka.location:org.magiclib.achievements/MagicUnloadedAchievement/MagicUnloadedAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-unloaded-achievement/-magic-unloaded-achievement.html
 $dokka.location:org.magiclib.ai////PointingToDeclaration/root/org.magiclib.ai/index.html
 $dokka.location:org.magiclib.ai/MagicMissileAI///PointingToDeclaration/root/org.magiclib.ai/-magic-missile-a-i/index.html
 $dokka.location:org.magiclib.ai/MagicMissileAI/MagicMissileAI/#MissileAPI#ShipAPI/PointingToDeclaration/root/org.magiclib.ai/-magic-missile-a-i/-magic-missile-a-i.html
@@ -575,6 +727,7 @@ $dokka.location:org.magiclib.kotlin//getDesiredMoveDir/[Error type: Unresolved t
 $dokka.location:org.magiclib.kotlin//getDetailedAgoString/kotlin.Long#/PointingToDeclaration/root/org.magiclib.kotlin/get-detailed-ago-string.html
 $dokka.location:org.magiclib.kotlin//getDiff/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/get-diff.html
 $dokka.location:org.magiclib.kotlin//getDistance/[Error type: Unresolved type for SectorEntityToken]#[Error type: Unresolved type for SectorEntityToken]/PointingToDeclaration/root/org.magiclib.kotlin/get-distance.html
+$dokka.location:org.magiclib.kotlin//getDistance/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/get-distance.html
 $dokka.location:org.magiclib.kotlin//getDistance/[Error type: Unresolved type for Vector3f]#[Error type: Unresolved type for Vector3f]/PointingToDeclaration/root/org.magiclib.kotlin/get-distance.html
 $dokka.location:org.magiclib.kotlin//getDistanceLY/[Error type: Unresolved type for SectorEntityToken]#[Error type: Unresolved type for SectorEntityToken]/PointingToDeclaration/root/org.magiclib.kotlin/get-distance-l-y.html
 $dokka.location:org.magiclib.kotlin//getDistanceLY/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/get-distance-l-y.html
@@ -1065,6 +1218,7 @@ $dokka.location:org.magiclib.util/MagicLensFlare/createSmoothFlare/#CombatEngine
 $dokka.location:org.magiclib.util/MagicMisc///PointingToDeclaration/root/org.magiclib.util/-magic-misc/index.html
 $dokka.location:org.magiclib.util/MagicMisc/MagicMisc/#/PointingToDeclaration/root/org.magiclib.util/-magic-misc/-magic-misc.html
 $dokka.location:org.magiclib.util/MagicMisc/getElapsedDaysSinceGameStart/#/PointingToDeclaration/root/org.magiclib.util/-magic-misc/get-elapsed-days-since-game-start.html
+$dokka.location:org.magiclib.util/MagicMisc/takeFirst/#java.lang.String#int/PointingToDeclaration/root/org.magiclib.util/-magic-misc/take-first.html
 $dokka.location:org.magiclib.util/MagicPaginatedBarEvent.MagicPaginatedOption///PointingToDeclaration/root/org.magiclib.util/-magic-paginated-bar-event/-magic-paginated-option/index.html
 $dokka.location:org.magiclib.util/MagicPaginatedBarEvent.MagicPaginatedOption/MagicPaginatedOption/#java.lang.String#java.lang.Object#java.lang.String#java.lang.Integer/PointingToDeclaration/root/org.magiclib.util/-magic-paginated-bar-event/-magic-paginated-option/-magic-paginated-option.html
 $dokka.location:org.magiclib.util/MagicPaginatedBarEvent.MagicPaginatedOption/hotkey/#/PointingToDeclaration/root/org.magiclib.util/-magic-paginated-bar-event/-magic-paginated-option/hotkey.html
@@ -1192,6 +1346,7 @@ $dokka.location:org.magiclib.util/MagicTxt/MagicTxt/#/PointingToDeclaration/roo
 $dokka.location:org.magiclib.util/MagicTxt/addPara/#TextPanelAPI#java.lang.String#java.awt.Color#java.awt.Color/PointingToDeclaration/root/org.magiclib.util/-magic-txt/add-para.html
 $dokka.location:org.magiclib.util/MagicTxt/addPara/#TooltipMakerAPI#java.lang.String#float#java.awt.Color#java.awt.Color/PointingToDeclaration/root/org.magiclib.util/-magic-txt/add-para.html
 $dokka.location:org.magiclib.util/MagicTxt/createMagicDisplayableText/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-txt/create-magic-displayable-text.html
+$dokka.location:org.magiclib.util/MagicTxt/getString/#java.lang.String#java.lang.String.../PointingToDeclaration/root/org.magiclib.util/-magic-txt/get-string.html
 $dokka.location:org.magiclib.util/MagicTxt/getString/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-txt/get-string.html
 $dokka.location:org.magiclib.util/MagicTxt/nullStringIfEmpty/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-txt/null-string-if-empty.html
 $dokka.location:org.magiclib.util/MagicTxt/replaceAllIfPresent/#java.lang.String#java.lang.String#StringCreator/PointingToDeclaration/root/org.magiclib.util/-magic-txt/replace-all-if-present.html
@@ -1256,6 +1411,14 @@ $dokka.location:org.magiclib.weapons/MagicBasicInterferenceEffect/advance/#float
 $dokka.location:org.magiclib.weapons/MagicGuidedProjectileScript///PointingToDeclaration/root/org.magiclib.weapons/-magic-guided-projectile-script/index.html
 $dokka.location:org.magiclib.weapons/MagicGuidedProjectileScript/MagicGuidedProjectileScript/#DamagingProjectileAPI#CombatEntityAPI/PointingToDeclaration/root/org.magiclib.weapons/-magic-guided-projectile-script/-magic-guided-projectile-script.html
 $dokka.location:org.magiclib.weapons/MagicGuidedProjectileScript/advance/#float#java.util.List<InputEventAPI>/PointingToDeclaration/root/org.magiclib.weapons/-magic-guided-projectile-script/advance.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats///PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/index.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/EngineStats/#kotlin.Float#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/-engine-stats.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/length/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/length.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/state/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/state.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/width/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/width.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters///PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/index.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters/MagicSystemVectorThrusters/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-magic-system-vector-thrusters.html
+$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters/apply/#[Error type: Unresolved type for ShipAPI]#[Error type: Unresolved type for ShipSystemStatsScript.State]#kotlin.Float/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/apply.html
 $dokka.location:org.magiclib.weapons/MagicVectorThruster///PointingToDeclaration/root/org.magiclib.weapons/-magic-vector-thruster/index.html
 $dokka.location:org.magiclib.weapons/MagicVectorThruster/MagicVectorThruster/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-vector-thruster/-magic-vector-thruster.html
 $dokka.location:org.magiclib.weapons/MagicVectorThruster/advance/#float#CombatEngineAPI#WeaponAPI/PointingToDeclaration/root/org.magiclib.weapons/-magic-vector-thruster/advance.html
@@ -1263,11 +1426,15 @@ $dokka.location:org.magiclib.weapons/MagicVectorThruster/smooth/#float/PointingT
 $dokka.location:org.magiclib////PointingToDeclaration/root/org.magiclib/index.html
 $dokka.location:org.magiclib/Magic_modPlugin///PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/index.html
 $dokka.location:org.magiclib/Magic_modPlugin/Magic_modPlugin/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/-magic_mod-plugin.html
+$dokka.location:org.magiclib/Magic_modPlugin/afterGameSave/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/after-game-save.html
+$dokka.location:org.magiclib/Magic_modPlugin/beforeGameSave/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/before-game-save.html
 $dokka.location:org.magiclib/Magic_modPlugin/configureXStream/#XStream/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/configure-x-stream.html
 $dokka.location:org.magiclib/Magic_modPlugin/onApplicationLoad/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/on-application-load.html
 $dokka.location:org.magiclib/Magic_modPlugin/onDevModeF8Reload/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/on-dev-mode-f8-reload.html
 $dokka.location:org.magiclib/Magic_modPlugin/onGameLoad/#boolean/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/on-game-load.html
 org.magiclib
+org.magiclib.achievements
+org.magiclib.achievements.builtin
 org.magiclib.ai
 org.magiclib.bounty
 org.magiclib.bounty.console

@@ -18,6 +18,8 @@ public class TestAchievement extends MagicAchievement {
 
     @Override
     public @Nullable Float getProgress() {
+        if (isComplete())
+            return getMaxProgress();
         return Math.min(MagicMisc.getElapsedDaysSinceGameStart(), getMaxProgress());
     }
 
