@@ -17,13 +17,9 @@ import org.lazywizard.lazylib.JSONUtils;
 import org.magiclib.util.MagicMisc;
 import org.magiclib.util.MagicVariables;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MagicAchievementManager {
-
     private static MagicAchievementManager instance;
     private static final Logger logger = Global.getLogger(MagicAchievementManager.class);
     private static final String specsFilename = "data/config/magic_achievements.csv";
@@ -90,6 +86,10 @@ public class MagicAchievementManager {
 
     public void setAchievementsEnabled(boolean areAchievementsEnabled, boolean isSaveLoaded) {
         if (areAchievementsEnabled) {
+//            if (Global.getSettings().isDevMode()) {
+            MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
+//            }
+
             if (isSaveLoaded) {
                 initIntel();
 
@@ -97,10 +97,6 @@ public class MagicAchievementManager {
                     Global.getSector().addTransientScript(new MagicAchievementRunner());
                 }
             }
-
-//            if (Global.getSettings().isDevMode()) {
-            MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
-//            }
         } else {
             logger.info("MagicLib achievements are disabled.");
             removeIntel();
@@ -160,22 +156,6 @@ public class MagicAchievementManager {
             commonJson.save();
         } catch (Exception e) {
             logger.warn("Unable to save achievements to " + commonFilename, e);
-        }
-
-        // for all achievements that were just completed, notify intel
-        for (MagicAchievement achievement : achievements.values()) {
-            if (achievement.isComplete() && !previouslyCompleted.contains(achievement.getSpecId())) {
-                MagicAchievementIntel intel = getIntel();
-                try {
-                    intel.tempAchievement = achievement;
-                    intel.sendUpdateIfPlayerHasIntel(null, false, false);
-                    intel.tempAchievement = null;
-                } catch (Exception e) {
-                    logger.warn("Unable to notify intel of achievement " + achievement.getSpecId(), e);
-                }
-
-                previouslyCompleted.add(achievement.getSpecId());
-            }
         }
 
         logger.info("Saved " + achievements.size() + " achievements.");
@@ -333,6 +313,7 @@ public class MagicAchievementManager {
                     id = item.getString("id").trim();
                     String name = item.getString("name").trim();
                     String description = item.getString("description").trim();
+                    String tooltip = item.getString("tooltip").trim();
                     String script = item.getString("script").trim();
                     String image = item.optString("image", null);
                     image = image == null ? null : image.trim();
@@ -360,6 +341,7 @@ public class MagicAchievementManager {
                                 id,
                                 name,
                                 description,
+                                tooltip,
                                 script,
                                 image,
                                 hasProgressBar,
@@ -431,6 +413,94 @@ public class MagicAchievementManager {
         }
     }
 
+    // Set of achievement IDs that have thrown an error in their advance method.
+    public Set<String> achievementScriptsWithRunError = new HashSet<>();
+
+    /**
+     * Called by MagicAchievementRunner.
+     */
+    void advance(float amount) {
+        // Call the advance method on all achievements.
+        for (MagicAchievement achievement : achievements.values()) {
+            if (achievementScriptsWithRunError.contains(achievement.getSpecId())) {
+                continue;
+            }
+
+            try {
+                if (!achievement.isComplete()) {
+                    achievement.advanceInternal(amount);
+                }
+            } catch (Exception e) {
+                String errorStr =
+                        String.format("Error running achievement '%s' from mod '%s'!", achievement.getSpecId(), achievement.getModName());
+                logger.warn(errorStr, e);
+                achievementScriptsWithRunError.add(achievement.getSpecId());
+                achievement.errorMessage = errorStr;
+
+                // If dev mode, crash.
+                if (Global.getSettings().isDevMode()) {
+                    throw e;
+                }
+            }
+        }
+
+        // For all achievements that were just completed, show intel update.
+        // Only notify intel if in campaign.
+        // If in combat, the intel will be shown when the player returns to the campaign.
+        if (Global.getCurrentState() == GameState.CAMPAIGN) {
+            for (MagicAchievement achievement : achievements.values()) {
+                if (achievement.isComplete() && !previouslyCompleted.contains(achievement.getSpecId())) {
+                    MagicAchievementIntel intel = getIntel();
+
+                    try {
+                        intel.tempAchievement = achievement;
+                        intel.sendUpdateIfPlayerHasIntel(null, false, false);
+                        intel.tempAchievement = null;
+                        previouslyCompleted.add(achievement.getSpecId());
+                    } catch (Exception e) {
+                        logger.warn("Unable to notify intel of achievement " + achievement.getSpecId(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    // Set of achievement IDs that have thrown an error in their advance method.
+    public Set<String> achievementScriptsWithCombatRunError = new HashSet<>();
+
+    /**
+     * Called by MagicAchievementCombatScript.
+     */
+    void advanceInCombat(float amount, List<InputEventAPI> events) {
+        if (Global.getCurrentState() == GameState.TITLE)
+            return;
+        if (Global.getCombatEngine() == null)
+            return;
+
+        for (MagicAchievement achievement : achievements.values()) {
+            if (!achievement.isComplete()) {
+                if (achievementScriptsWithCombatRunError.contains(achievement.getSpecId())) {
+                    continue;
+                }
+
+                try {
+                    achievement.advanceInCombat(amount, events, Global.getCombatEngine().isSimulation());
+                } catch (Exception e) {
+                    String errorStr =
+                            String.format("Error running achievement '%s' from mod '%s' during combat!", achievement.getSpecId(), achievement.getModName());
+                    logger.warn(errorStr, e);
+                    achievementScriptsWithCombatRunError.add(achievement.getSpecId());
+                    achievement.errorMessage = errorStr;
+
+                    // If dev mode, crash.
+                    if (Global.getSettings().isDevMode()) {
+                        throw e;
+                    }
+                }
+            }
+        }
+    }
+
     @NotNull
     private static MagicAchievementSpoilerLevel getSpoilerLevel(String spoilerLevelStr) {
         MagicAchievementSpoilerLevel spoilerLevel = MagicAchievementSpoilerLevel.Visible;
@@ -470,17 +540,6 @@ public class MagicAchievementManager {
 
         while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
-        }
-    }
-
-    /**
-     * Called by MagicAchievementCombatScript.
-     */
-    void advanceInCombat(float amount, List<InputEventAPI> events) {
-        for (MagicAchievement achievement : achievements.values()) {
-            if (!achievement.isComplete()) {
-                achievement.advanceInCombat(amount, events);
-            }
         }
     }
 }

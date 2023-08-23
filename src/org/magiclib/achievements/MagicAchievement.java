@@ -147,7 +147,7 @@ public class MagicAchievement {
     /**
      * Called every frame during combat unless the achievement is complete.
      */
-    public void advanceInCombat(float amount, List<InputEventAPI> events) {
+    public void advanceInCombat(float amount, List<InputEventAPI> events, boolean isSimulation) {
 
     }
 
@@ -272,6 +272,14 @@ public class MagicAchievement {
 
     public void setDescription(@NotNull String description) {
         spec.setDescription(description);
+    }
+
+    public @NotNull String getTooltip() {
+        return spec.getTooltip();
+    }
+
+    public void setTooltip(@NotNull String tooltip) {
+        spec.setTooltip(tooltip);
     }
 
     public @NotNull String getScript() {

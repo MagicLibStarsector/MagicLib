@@ -9,6 +9,7 @@ data class MagicAchievementSpec(
     val id: String,
     var name: String,
     var description: String,
+    var tooltip: String,
     var script: String,
     var image: String?,
     var hasProgressBar: Boolean,
@@ -24,6 +25,7 @@ data class MagicAchievementSpec(
         json.put("id", id)
         json.put("name", name)
         json.put("description", description)
+        json.put("tooltip", tooltip)
         json.put("script", script)
         json.put("image", image)
         json.put("hasProgressBar", hasProgressBar)
@@ -40,6 +42,7 @@ data class MagicAchievementSpec(
             val id = json.getString("id")
             val name = json.getString("name")
             val description = json.getString("description")
+            val tooltip = json.getString("tooltip")
             val script = json.getString("script")
             val image = json.optString("image", null)
             val hasProgressBar = json.optBoolean("hasProgressBar", false)
@@ -54,6 +57,7 @@ data class MagicAchievementSpec(
                 id,
                 name,
                 description,
+                tooltip,
                 script,
                 image,
                 hasProgressBar,

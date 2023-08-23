@@ -11,8 +11,12 @@ import org.magiclib.achievements.MagicAchievement
 class MeantToDoThatAchievement : MagicAchievement() {
     private val _shipIdToListener: MutableMap<String, DamageDetectorListener> = mutableMapOf()
 
-    override fun advanceInCombat(amount: Float, events: MutableList<InputEventAPI>?) {
-        if (isComplete) return
+    override fun advanceInCombat(
+        amount: Float,
+        events: MutableList<InputEventAPI>?,
+        isSimulation: Boolean
+    ) {
+        if (isComplete || isSimulation) return
 
         val ships = Global.getCombatEngine().ships
         applyShipListeners(ships)
@@ -21,9 +25,6 @@ class MeantToDoThatAchievement : MagicAchievement() {
     internal inner class DamageDetectorListener : DamageListener {
         override fun reportDamageApplied(source: Any?, target: CombatEntityAPI?, result: ApplyDamageResultAPI?) {
             val combatEngine = Global.getCombatEngine()
-//            if (combatEngine.isSimulation) {
-//                return
-//            }
 
             if (source == null || result == null) {
                 return

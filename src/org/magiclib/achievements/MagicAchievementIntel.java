@@ -276,7 +276,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             return;
         }
 
-        if (achievement.isComplete()) {
+        if (!achievement.isComplete()) {
             achievement.completeAchievement(Global.getSector().getPlayerPerson());
         } else {
             achievement.uncompleteAchievement();

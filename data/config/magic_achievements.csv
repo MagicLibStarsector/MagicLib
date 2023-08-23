@@ -1,16 +1,15 @@
-id,name,description,script,image,hasProgressBar,spoilerLevel,rarity,
-test, "Survived Five Days", "(test) Wow, you survived five days. Good job.",org.magiclib.achievements.builtin.TestAchievement,,true,VISIBLE,COMMON
+id,name,description,tooltip,script,image,hasProgressBar,spoilerLevel,rarity,
+test, "Survived Five Days", "(test) Wow, you survived five days. Good job.",,org.magiclib.achievements.builtin.TestAchievement,,true,VISIBLE,COMMON
 
-slayer1, "Harmful","Destroyed 100 enemy ships.",org.magiclib.achievements.builtin.Slayer100MagicAchievement,,true,VISIBLE,COMMON
-slayer2, "Dangerous","Destroyed 500 enemy ships.",org.magiclib.achievements.builtin.Slayer500MagicAchievement,,true,VISIBLE,COMMON
-slayer3, "Slayer","Destroyed 2000 enemy ships.",org.magiclib.achievements.builtin.Slayer2000MagicAchievement,,true,VISIBLE,UNCOMMON
-slayer4, "Reaper","Destroyed 5000 enemy ships.",org.magiclib.achievements.builtin.Slayer5000MagicAchievement,,true,VISIBLE,RARE
-slayer5, "Doomguy","Destroyed 10000 enemy ships.",org.magiclib.achievements.builtin.Slayer10000MagicAchievement,,true,VISIBLE,EPIC
-blackhole, "Died In A Black Hole","Died in a black hole.",org.magiclib.achievements.builtin.BlackHoleAchievement,,false,VISIBLE,COMMON
-sundive, "Icarus","Flew into a sun.",org.magiclib.achievements.builtin.IcarusAchievement,,false,VISIBLE,COMMON
-meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",org.magiclib.achievements.builtin.MeantToDoThatAchievement,,false,VISIBLE,UNCOMMON
-realestate, "Prime Real Estate","Invaded a core world before having any colonies of your own.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,false,VISIBLE,UNCOMMON
-fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every design type in a battle.",org.magiclib.achievements.builtin.NeverCompleteTestAchievement,,false,VISIBLE,UNCOMMON
+slayer1, "Harmful","Destroyed 100 enemy ships.",,org.magiclib.achievements.builtin.Slayer100MagicAchievement,,true,VISIBLE,COMMON
+slayer2, "Dangerous","Destroyed 500 enemy ships.",,org.magiclib.achievements.builtin.Slayer500MagicAchievement,,true,VISIBLE,COMMON
+slayer3, "Slayer","Destroyed 2000 enemy ships.",,org.magiclib.achievements.builtin.Slayer2000MagicAchievement,,true,VISIBLE,UNCOMMON
+slayer4, "Reaper","Destroyed 5000 enemy ships.",,org.magiclib.achievements.builtin.Slayer5000MagicAchievement,,true,VISIBLE,RARE
+slayer5, "Doomguy","Destroyed 10000 enemy ships.",,org.magiclib.achievements.builtin.Slayer10000MagicAchievement,,true,VISIBLE,EPIC
+blackhole, "Died In A Black Hole","Died in a black hole.",,org.magiclib.achievements.builtin.BlackHoleAchievement,,false,VISIBLE,COMMON
+sundive, "Icarus","Flew into a sun.",,org.magiclib.achievements.builtin.IcarusAchievement,,false,VISIBLE,COMMON
+meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,org.magiclib.achievements.builtin.MeantToDoThatAchievement,,false,VISIBLE,UNCOMMON
+fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,false,VISIBLE,EPIC
 
-overinvested, "Overinvested","Made it to cycle c+300.",,,false,HIDDEN,EPIC
-javaupgrade, "BIG DECIMAL","Upgraded the game's Java version.",org.magiclib.achievements.builtin.JavaUpgradeAchievement,,false,HIDDEN,RARE
+overinvested, "Overinvested","Made it to cycle c+300.",,,,false,HIDDEN,EPIC
+javaupgrade, "BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,false,HIDDEN,RARE

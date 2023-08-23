@@ -61,13 +61,13 @@ class MagicAchievementParticleScript {
             )
         )
 
-        val velocityScale = .01f
+        val velocityScale = .015f
         val sizeScale = 0.75f
-        val durationScale = 8f
+        val durationScale = 4f
         val rampUpScale = 4.0f
         val rampDownScale = 1.0f
         val endSizeScale = 1.55f
-        val densityScale = 8f // Lower is more dense
+        val densityScale = 7f // Lower is more dense
         val vel = Vector2f(100f * velocityScale, 100f * velocityScale)
             .rotate(Random.nextFloat() * 360f)
 
