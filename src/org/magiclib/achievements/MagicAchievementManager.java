@@ -4,6 +4,7 @@ import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import lunalib.lunaSettings.LunaSettings;
 import lunalib.lunaSettings.LunaSettingsListener;
 import org.apache.log4j.Logger;
@@ -469,6 +470,17 @@ public class MagicAchievementManager {
 
         while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
+        }
+    }
+
+    /**
+     * Called by MagicAchievementCombatScript.
+     */
+    void advanceInCombat(float amount, List<InputEventAPI> events) {
+        for (MagicAchievement achievement : achievements.values()) {
+            if (!achievement.isComplete()) {
+                achievement.advanceInCombat(amount, events);
+            }
         }
     }
 }

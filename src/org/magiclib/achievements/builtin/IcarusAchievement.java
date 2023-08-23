@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class IcarusAchievement extends MagicAchievement {
     @Override
-    public void advance(float amount) {
+    public void advanceAfterInterval(float amount) {
         if (Global.getSector() == null
                 || Global.getCurrentState() != GameState.CAMPAIGN
                 || Global.getSector().getCurrentLocation() == Global.getSector().getHyperspace()

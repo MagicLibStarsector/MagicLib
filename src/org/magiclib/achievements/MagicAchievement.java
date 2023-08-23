@@ -2,16 +2,14 @@ package org.magiclib.achievements;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is not serialized to the save file.
@@ -129,21 +127,28 @@ public class MagicAchievement {
     }
 
     /**
-     * Not meant to be overriden. Use {@link #advance(float)} instead.
+     * Not meant to be overriden. Use {@link #advanceAfterInterval(float)} instead.
      */
     protected void advanceInternal(float amount) {
         advanceInterval.advance(amount);
 
         if (advanceInterval.intervalElapsed()) {
-            advance(advanceInterval.getElapsed());
+            advanceAfterInterval(advanceInterval.getElapsed());
         }
     }
 
     /**
-     * NOT CALLED EVERY FRAME.
+     * Like regular advance, but NOT CALLED EVERY FRAME.
      * Called every 1-2 seconds by default. Change timing with {@link #setAdvanceIntervalUtil(IntervalUtil)}.
      */
-    public void advance(float amount) {
+    public void advanceAfterInterval(float amount) {
+    }
+
+    /**
+     * Called every frame during combat unless the achievement is complete.
+     */
+    public void advanceInCombat(float amount, List<InputEventAPI> events) {
+
     }
 
     /**
@@ -201,14 +206,22 @@ public class MagicAchievement {
     }
 
     /**
-     * Returns the time interval in seconds between each call to {@link #advance(float)}.
+     * By default, only show Hidden achievements once they're completed.
+     */
+    public boolean shouldShowInIntel() {
+        return getSpoilerLevel() != MagicAchievementSpoilerLevel.Hidden
+                || isComplete();
+    }
+
+    /**
+     * Returns the time interval in seconds between each call to {@link #advanceAfterInterval(float)}.
      */
     public IntervalUtil getAdvanceIntervalUtil() {
         return advanceInterval;
     }
 
     /**
-     * Sets the time interval between each call to {@link #advance(float)}.
+     * Sets the time interval between each call to {@link #advanceAfterInterval(float)}.
      */
     public void setAdvanceIntervalUtil(IntervalUtil interval) {
         advanceInterval = interval;
@@ -331,13 +344,5 @@ public class MagicAchievement {
 
     public @NotNull Map<String, Object> getMemory() {
         return memory;
-    }
-
-    /**
-     * By default, only show Hidden achievements once they're completed.
-     */
-    public boolean shouldShowInIntel() {
-        return getSpoilerLevel() != MagicAchievementSpoilerLevel.Hidden
-                || isComplete();
     }
 }
