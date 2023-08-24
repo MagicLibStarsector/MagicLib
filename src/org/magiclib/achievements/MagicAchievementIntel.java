@@ -200,7 +200,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                     : Misc.getTextColor(), 0);
 
             // Tooltip
-            if (!achievement.getTooltip().trim().isEmpty()) {
+            if (achievement.getTooltip() != null && !achievement.getTooltip().trim().isEmpty()) {
                 TooltipMakerAPI leftTooltip = leftElement.beginSubTooltip(200f);
                 leftTooltip.addPara(achievement.getTooltip().trim(), pad);
                 leftElement.endSubTooltip();
