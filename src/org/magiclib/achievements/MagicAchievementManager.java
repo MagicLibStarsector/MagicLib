@@ -26,6 +26,9 @@ public class MagicAchievementManager {
     private static final String commonFilename = "magic_achievements.json";
     private static final String achievementsJsonObjectKey = "achievements";
 
+    /**
+     * Loaded once at launch and not again.
+     */
     @NotNull
     private Map<String, MagicAchievementSpec> achievementSpecs = new HashMap<>();
     @NotNull
@@ -384,7 +387,7 @@ public class MagicAchievementManager {
      * Does not uncomplete it, even if it would no longer be earned.
      */
     public void resetAchievementToSpec(@NotNull MagicAchievement achievement) {
-        for (MagicAchievementSpec spec : MagicAchievementManager.getSpecsFromFiles().values()) {
+        for (MagicAchievementSpec spec : achievementSpecs.values()) {
             achievement.spec = spec;
             return;
         }

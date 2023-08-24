@@ -11,5 +11,5 @@ sundive, "Icarus","Flew into a sun.",,org.magiclib.achievements.builtin.IcarusAc
 meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,org.magiclib.achievements.builtin.MeantToDoThatAchievement,,false,VISIBLE,UNCOMMON
 fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,false,VISIBLE,EPIC
 
-overinvested, "Overinvested","Made it to cycle c+300.",,,,false,HIDDEN,EPIC
+overinvested, "Overinvested","Made it to cycle c+300.",,org.magiclib.achievements.builtin.OverinvestedAchievement,,false,HIDDEN,EPIC
 javaupgrade, "BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,false,HIDDEN,RARE

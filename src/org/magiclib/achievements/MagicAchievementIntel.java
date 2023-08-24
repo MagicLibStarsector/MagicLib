@@ -199,6 +199,18 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                     ? Misc.getHighlightColor()
                     : Misc.getTextColor(), 0);
 
+            // Tooltip
+            if (!achievement.getTooltip().trim().isEmpty()) {
+                TooltipMakerAPI leftTooltip = leftElement.beginSubTooltip(200f);
+                leftTooltip.addPara(achievement.getTooltip().trim(), pad);
+                leftElement.endSubTooltip();
+                TooltipMakerAPI rightTooltip = rightElement.beginSubTooltip(200f);
+                rightTooltip.addPara(achievement.getTooltip().trim(), pad);
+                rightElement.endSubTooltip();
+                leftElement.addCustom(leftTooltip, pad);
+                rightElement.addCustom(rightTooltip, pad);
+            }
+
             // Error message if there is one.
             if (achievement.errorMessage == null) {
                 if (showDescription) {

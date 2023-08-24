@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.Misc;
+import org.jetbrains.annotations.NotNull;
 import org.magiclib.achievements.MagicAchievement;
 
 import java.util.ArrayList;
@@ -86,5 +87,10 @@ public class FleetDoctrineAchievement extends MagicAchievement {
 
         completeAchievement();
         saveChanges();
+    }
+
+    @Override
+    public @NotNull String getTooltip() {
+        return Misc.getJoined(", ", new ArrayList<>(allTechTypes));
     }
 }
