@@ -66,6 +66,11 @@ inline fun SectorEntityToken.getDistance(to: SectorEntityToken) = Misc.getDistan
 inline fun SectorEntityToken.getDistanceLY(to: SectorEntityToken) = Misc.getDistanceLY(this, to)
 
 /**
+ * @since 1.3.0
+ */
+inline fun Vector2f.getDistance(to: Vector2f) = Misc.getDistance(this, to)
+
+/**
  * @since 0.46.0
  */
 inline fun Vector2f.getDistanceSq(to: Vector2f) = Misc.getDistanceSq(this, to)

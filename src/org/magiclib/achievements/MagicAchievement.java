@@ -2,19 +2,17 @@ package org.magiclib.achievements;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Note: this class is serialized to the save file.
+ * This class is not serialized to the save file.
  *
  * @author Wisp
  * @since 1.3.0
@@ -37,37 +35,75 @@ public class MagicAchievement {
     private final Map<String, Object> memory = new HashMap<>();
 
     /**
-     * By default, only run the achievement advance check every 2-5 seconds for performance reasons.
+     * Shown if set. Only persisted in memory.
      */
-    private IntervalUtil advanceInterval = new IntervalUtil(2f, 5f);
+    @Nullable
+    public String errorMessage;
+
+    /**
+     * Do not use this constructor.
+     * Put your initialization code in {@link #onApplicationLoaded()} instead.
+     */
+    public MagicAchievement() {
+
+    }
+
+    /**
+     * By default, only run the achievement advance check every 1-2 seconds for performance reasons.
+     */
+    private IntervalUtil advanceInterval = new IntervalUtil(1f, 2f);
+
+    public void onApplicationLoaded() {
+        logger = Global.getLogger(this.getClass());
+    }
 
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
      */
-    public void onCreated() {
-        logger = Global.getLogger(this.getClass());
+    public void onGameLoaded() {
+
     }
 
+    /**
+     * Called each time the game is saved. If you want to avoid any data going into the save file,
+     * you can clear it here.
+     */
     public void beforeGameSave() {
     }
 
+    /**
+     * Called each time the game is loaded.
+     */
     public void afterGameSave() {
     }
 
     /**
      * Do any cleanup logic here, e.g. removing listeners.
+     * Called when the achievement is being unloaded from the sector, e.g. they're loading a new save.
+     * Do NOT reset progress here, we're not deleting it, just taking it out of memory.
      */
     public void onDestroyed() {
     }
 
     /**
      * Call when the achievement is completed.
+     * Sets the date completed and the current player as the completer.
+     */
+    public void completeAchievement() {
+        completeAchievement(Global.getSector().getPlayerPerson());
+    }
+
+    /**
+     * Call when the achievement is completed.
      * Sets the date completed and the player who completed it.
+     * Does nothing if already completed; uncomplete first, if you want to re-complete it for some reason.
      *
      * @param completedByPlayer The player's character who completed the achievement, if applicable.
      */
     public void completeAchievement(@Nullable PersonAPI completedByPlayer) {
+        if (isComplete()) return;
+
         this.dateCompleted = new Date();
 
         if (completedByPlayer != null) {
@@ -78,21 +114,53 @@ public class MagicAchievement {
         logger.info("Achievement completed! " + spec.getId());
     }
 
+    /**
+     * Don't use this except for very good reasons, e.g. debugging!
+     * Imagine if you had a Steam achievement go and take itself away.
+     */
+    public void uncompleteAchievement() {
+        setDateCompleted(null);
+        setCompletedByUserId(null);
+        setCompletedByUserName(null);
+
+        logger.info("Achievement uncompleted! " + spec.getId());
+    }
+
+    /**
+     * Not meant to be overriden. Use {@link #advanceAfterInterval(float)} instead.
+     */
     protected void advanceInternal(float amount) {
         advanceInterval.advance(amount);
 
         if (advanceInterval.intervalElapsed()) {
-            advance(advanceInterval.getElapsed());
+            advanceAfterInterval(advanceInterval.getElapsed());
         }
     }
 
-    public void advance(float amount) {
+    /**
+     * Like regular advance, but NOT CALLED EVERY FRAME.
+     * Called every 1-2 seconds by default. Change timing with {@link #setAdvanceIntervalUtil(IntervalUtil)}.
+     */
+    public void advanceAfterInterval(float amount) {
     }
 
+    /**
+     * Called every frame during combat unless the achievement is complete.
+     */
+    public void advanceInCombat(float amount, List<InputEventAPI> events, boolean isSimulation) {
+
+    }
+
+    /**
+     * Call this to save any changes to the achievement (and all others as well).
+     */
     public void saveChanges() {
         MagicAchievementManager.getInstance().saveAchievements();
     }
 
+    /**
+     * Serializes this achievement to a JSON object.
+     */
     @Nullable
     public JSONObject toJsonObject() {
         try {
@@ -110,6 +178,9 @@ public class MagicAchievement {
         }
     }
 
+    /**
+     * Sets this achievement's data from the given JSON object.
+     */
     public boolean loadFromJsonObject(@NotNull JSONObject jsonObject) {
         try {
             spec = MagicAchievementSpec.fromJsonObject(jsonObject);
@@ -134,7 +205,32 @@ public class MagicAchievement {
         }
     }
 
+    /**
+     * By default, only show Hidden achievements once they're completed.
+     */
+    public boolean shouldShowInIntel() {
+        return getSpoilerLevel() != MagicAchievementSpoilerLevel.Hidden
+                || isComplete();
+    }
+
+    /**
+     * Returns the time interval in seconds between each call to {@link #advanceAfterInterval(float)}.
+     */
+    public IntervalUtil getAdvanceIntervalUtil() {
+        return advanceInterval;
+    }
+
+    /**
+     * Sets the time interval between each call to {@link #advanceAfterInterval(float)}.
+     */
+    public void setAdvanceIntervalUtil(IntervalUtil interval) {
+        advanceInterval = interval;
+    }
+
     public @Nullable Float getProgress() {
+        if (isComplete())
+            return getMaxProgress();
+
         return progress;
     }
 
@@ -152,6 +248,10 @@ public class MagicAchievement {
 
     public @NotNull String getModId() {
         return spec.getModId();
+    }
+
+    public @NotNull String getModName() {
+        return spec.getModName();
     }
 
     public @NotNull String getSpecId() {
@@ -172,6 +272,14 @@ public class MagicAchievement {
 
     public void setDescription(@NotNull String description) {
         spec.setDescription(description);
+    }
+
+    public @NotNull String getTooltip() {
+        return spec.getTooltip();
+    }
+
+    public void setTooltip(@NotNull String tooltip) {
+        spec.setTooltip(tooltip);
     }
 
     public @NotNull String getScript() {
@@ -198,12 +306,20 @@ public class MagicAchievement {
         spec.setHasProgressBar(hasProgressBar);
     }
 
-    public @NotNull SpoilerLevel getSpoilerLevel() {
+    public @NotNull MagicAchievementSpoilerLevel getSpoilerLevel() {
         return spec.getSpoilerLevel();
     }
 
-    public void setSpoilerLevel(@NotNull SpoilerLevel spoilerLevel) {
+    public void setSpoilerLevel(@NotNull MagicAchievementSpoilerLevel spoilerLevel) {
         spec.setSpoilerLevel(spoilerLevel);
+    }
+
+    public @NotNull MagicAchievementRarity getRarity() {
+        return spec.getRarity();
+    }
+
+    public void setRarity(@NotNull MagicAchievementRarity rarity) {
+        spec.setRarity(rarity);
     }
 
     public boolean isComplete() {
@@ -236,19 +352,5 @@ public class MagicAchievement {
 
     public @NotNull Map<String, Object> getMemory() {
         return memory;
-    }
-
-    /**
-     * Returns the time interval in seconds between each call to {@link #advance(float)}.
-     */
-    public IntervalUtil getAdvanceIntervalUtil() {
-        return advanceInterval;
-    }
-
-    /**
-     * Sets the time interval between each call to {@link #advance(float)}.
-     */
-    public void setAdvanceIntervalUtil(IntervalUtil interval) {
-        advanceInterval = interval;
     }
 }

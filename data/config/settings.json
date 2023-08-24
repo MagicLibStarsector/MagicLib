@@ -5,6 +5,7 @@
         "MagicCampaignTrailPlugin":"org.magiclib.plugins.MagicCampaignTrailPlugin",
         "MagicTrailPlugin":"org.magiclib.plugins.MagicTrailPlugin",
         "MagicAutoTrails":"org.magiclib.plugins.MagicAutoTrails",
+        "MagicAchievementCombatScript":"org.magiclib.achievements.MagicAchievementCombatScript",
 
         "old_ML_fakeBeamPlugin":"data.scripts.plugins.MagicFakeBeamPlugin",
         "old_ML_spriteRenderManager":"data.scripts.plugins.MagicRenderPlugin",

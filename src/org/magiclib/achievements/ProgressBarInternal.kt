@@ -13,6 +13,9 @@ import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+/**
+ * From LunaLib.
+ */
 internal class ProgressBarInternal(
     private var value: Float,
     private var minvalue: Float,
@@ -20,7 +23,8 @@ internal class ProgressBarInternal(
     textColor: Color,
     val tooltip: TooltipMakerAPI,
     var width: Float,
-    var height: Float
+    var height: Float,
+    val displayText: Boolean
 ) : CustomUIPanelPlugin {
 
     // LunaElement
@@ -266,11 +270,13 @@ internal class ProgressBarInternal(
     init {
         value = MathUtils.clamp(value, minvalue, maxValue)
 
-        addText(
-            "${value.toString().trimEnd('0').trimEnd('.')} / ${maxValue.toString().trimEnd('0').trimEnd('.')}",
-            baseColor = textColor
-        )
-        centerText()
+        if (displayText) {
+            addText(
+                "${value.toString().trimEnd('0').trimEnd('.')} / ${maxValue.toString().trimEnd('0').trimEnd('.')}",
+                baseColor = textColor
+            )
+            centerText()
+        }
 
         renderBorder = true
     }

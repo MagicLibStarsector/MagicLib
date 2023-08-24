@@ -65,6 +65,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_test_mode");
 
         MagicAchievementManager.getInstance();
+        MagicAchievementManager.getInstance().onApplicationLoad();
     }
 
     @Override
