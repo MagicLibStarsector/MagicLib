@@ -274,11 +274,11 @@ public class MagicAchievement {
         spec.setDescription(description);
     }
 
-    public @NotNull String getTooltip() {
+    public @Nullable String getTooltip() {
         return spec.getTooltip();
     }
 
-    public void setTooltip(@NotNull String tooltip) {
+    public void setTooltip(@Nullable String tooltip) {
         spec.setTooltip(tooltip);
     }
 

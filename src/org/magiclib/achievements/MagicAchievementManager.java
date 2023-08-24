@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.JSONUtils;
+import org.magiclib.achievements.builtin.Spoilers;
 import org.magiclib.util.MagicMisc;
 import org.magiclib.util.MagicVariables;
 
@@ -89,9 +90,14 @@ public class MagicAchievementManager {
 
     public void setAchievementsEnabled(boolean areAchievementsEnabled, boolean isSaveLoaded) {
         if (areAchievementsEnabled) {
-//            if (Global.getSettings().isDevMode()) {
+            // Add MagicLib achievements that are code-only, rather than being in the csv for anyone to see.
+            for (MagicAchievementSpec spec : Spoilers.getSpoilerAchievementSpecs()) {
+                if (!achievementSpecs.containsKey(spec.getId())) {
+                    achievementSpecs.put(spec.getId(), spec);
+                }
+            }
+
             MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
-//            }
 
             if (isSaveLoaded) {
                 initIntel();
@@ -282,7 +288,10 @@ public class MagicAchievementManager {
                 newAchievementsById.put(spec.getId(), magicAchievement);
                 logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + spec.getScript() + ".");
             } catch (Exception e) {
-                logger.warn(String.format("Unable to load achievement '%s' because class '%s' didn't load!", spec.getId(), spec.getScript()), e);
+                if (spec != null)
+                    logger.warn(String.format("Unable to load achievement '%s' because class '%s' didn't load!", spec.getId(), spec.getScript()), e);
+                else
+                    logger.warn("Unable to load achievement because spec was null! What are you doing?!", e);
             }
         }
 

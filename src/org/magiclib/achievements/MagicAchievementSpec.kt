@@ -3,21 +3,19 @@ package org.magiclib.achievements
 import com.fs.starfarer.api.util.Misc
 import org.json.JSONObject
 
-data class MagicAchievementSpec(
+open class MagicAchievementSpec(
     val modId: String,
     val modName: String,
     val id: String,
     var name: String,
     var description: String,
-    var tooltip: String,
+    var tooltip: String?,
     var script: String,
     var image: String?,
     var hasProgressBar: Boolean,
     var spoilerLevel: MagicAchievementSpoilerLevel,
     var rarity: MagicAchievementRarity,
 ) {
-    fun clone() = this.copy()
-
     fun toJsonObject(): JSONObject {
         val json = JSONObject()
         json.put("modId", modId)
