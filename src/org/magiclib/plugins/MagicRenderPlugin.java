@@ -144,7 +144,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     }
 
     private void battlespaceHandler(CombatEngineLayers layer, float amount) {
-        //iterate throught the BATTLESPACE data first:
+        //iterate through the BATTLESPACE data first:
         for (Iterator<battlespaceData> iter = BATTLESPACE.iterator(); iter.hasNext(); ) {
             battlespaceData entry = iter.next();
 

@@ -1,11 +1,17 @@
 package org.magiclib.achievements;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.util.IntervalUtil;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.magiclib.util.MagicTxt;
+import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Note: this class is serialized to the save file.
@@ -14,41 +20,45 @@ import java.util.Date;
  * @since 1.3.0
  */
 public class MagicAchievement {
+    private Logger logger;
+    @NotNull MagicAchievementSpec spec;
+
     @Nullable
     private Float progress = null;
     @Nullable
     private Float maxProgress = null;
-    @NotNull
-    private final String modId;
-    @NotNull
-    private final String id;
-    @NotNull
-    private String name;
-    @NotNull
-    private String description;
-    @NotNull
-    private String script;
-    @Nullable
-    private String image;
-    private boolean hasProgressBar;
-    @NotNull
-    private SpoilerLevel spoilerLevel;
     @Nullable
     private Date dateCompleted;
     @Nullable
     private String completedByUserId;
     @Nullable
     private String completedByUserName;
+    @NotNull
+    private final Map<String, Object> memory = new HashMap<>();
 
-    public MagicAchievement(@NotNull MagicAchievementSpec spec) {
-        this.modId = spec.getModId();
-        this.id = spec.getId();
-        this.name = spec.getName();
-        this.description = spec.getDescription();
-        this.script = spec.getScript();
-        this.image = spec.getImage();
-        this.hasProgressBar = spec.getHasProgressBar();
-        this.spoilerLevel = spec.getSpoilerLevel();
+    /**
+     * By default, only run the achievement advance check every 2-5 seconds for performance reasons.
+     */
+    private IntervalUtil advanceInterval = new IntervalUtil(2f, 5f);
+
+    /**
+     * Called each time the achievement is loaded, for example when the game is loaded.
+     * Place any code here that registers itself with the game, such as adding a listener.
+     */
+    public void onCreated() {
+        logger = Global.getLogger(this.getClass());
+    }
+
+    public void beforeGameSave() {
+    }
+
+    public void afterGameSave() {
+    }
+
+    /**
+     * Do any cleanup logic here, e.g. removing listeners.
+     */
+    public void onDestroyed() {
     }
 
     /**
@@ -63,6 +73,64 @@ public class MagicAchievement {
         if (completedByPlayer != null) {
             this.completedByUserId = completedByPlayer.getId();
             this.completedByUserName = completedByPlayer.getName().getFullName();
+        }
+
+        logger.info("Achievement completed! " + spec.getId());
+    }
+
+    protected void advanceInternal(float amount) {
+        advanceInterval.advance(amount);
+
+        if (advanceInterval.intervalElapsed()) {
+            advance(advanceInterval.getElapsed());
+        }
+    }
+
+    public void advance(float amount) {
+    }
+
+    public void saveChanges() {
+        MagicAchievementManager.getInstance().saveAchievements();
+    }
+
+    @Nullable
+    public JSONObject toJsonObject() {
+        try {
+            JSONObject jsonObject = spec.toJsonObject();
+            jsonObject.put("progress", progress);
+            jsonObject.put("maxProgress", maxProgress);
+            jsonObject.put("dateCompleted", dateCompleted == null ? null : dateCompleted.getTime());
+            jsonObject.put("completedByUserId", completedByUserId);
+            jsonObject.put("completedByUserName", completedByUserName);
+            jsonObject.put("memory", memory);
+            return jsonObject;
+        } catch (Exception e) {
+            logger.warn("Unable to convert achievement to JSON.", e);
+            return null;
+        }
+    }
+
+    public boolean loadFromJsonObject(@NotNull JSONObject jsonObject) {
+        try {
+            spec = MagicAchievementSpec.fromJsonObject(jsonObject);
+            progress = (float) jsonObject.optDouble("progress", 0);
+            maxProgress = (float) jsonObject.optDouble("maxProgress", 0);
+            long dateCompletedTimestamp = jsonObject.optLong("dateCompleted", 0);
+            dateCompleted = dateCompletedTimestamp == 0 ? null : new Date(dateCompletedTimestamp);
+            completedByUserId = jsonObject.optString("completedByUserId", null);
+            completedByUserName = jsonObject.optString("completedByUserName", null);
+            JSONObject memJson = jsonObject.optJSONObject("memory");
+
+            if (memJson != null) {
+                for (Iterator<String> it = memJson.keys(); it.hasNext(); ) {
+                    String key = it.next();
+                    memory.put(key, memJson.get(key));
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            Global.getLogger(MagicAchievement.class).warn("Unable to convert achievement from JSON.", e);
+            return false;
         }
     }
 
@@ -83,63 +151,59 @@ public class MagicAchievement {
     }
 
     public @NotNull String getModId() {
-        return modId;
+        return spec.getModId();
     }
 
-    public @NotNull String getId() {
-        return id;
+    public @NotNull String getSpecId() {
+        return spec.getId();
     }
 
     public @NotNull String getName() {
-        return name;
+        return spec.getName();
     }
 
     public void setName(@NotNull String name) {
-        this.name = name;
+        spec.setName(name);
     }
 
     public @NotNull String getDescription() {
-        return description;
+        return spec.getDescription();
     }
 
     public void setDescription(@NotNull String description) {
-        this.description = description;
+        spec.setDescription(description);
     }
 
     public @NotNull String getScript() {
-        return script;
+        return spec.getScript();
     }
 
     public void setScript(@NotNull String script) {
-        this.script = script;
+        spec.setScript(script);
     }
 
     public @Nullable String getImage() {
-        return image;
+        return spec.getImage();
     }
 
     public void setImage(@Nullable String image) {
-        this.image = image;
+        spec.setImage(image);
     }
 
     public boolean getHasProgressBar() {
-        return hasProgressBar;
+        return spec.getHasProgressBar();
     }
 
     public void setHasProgressBar(boolean hasProgressBar) {
-        this.hasProgressBar = hasProgressBar;
+        spec.setHasProgressBar(hasProgressBar);
     }
 
     public @NotNull SpoilerLevel getSpoilerLevel() {
-        return spoilerLevel;
+        return spec.getSpoilerLevel();
     }
 
     public void setSpoilerLevel(@NotNull SpoilerLevel spoilerLevel) {
-        this.spoilerLevel = spoilerLevel;
-    }
-
-    public boolean isHasProgressBar() {
-        return hasProgressBar;
+        spec.setSpoilerLevel(spoilerLevel);
     }
 
     public boolean isComplete() {
@@ -168,5 +232,23 @@ public class MagicAchievement {
 
     public void setCompletedByUserName(@Nullable String completedByUserName) {
         this.completedByUserName = completedByUserName;
+    }
+
+    public @NotNull Map<String, Object> getMemory() {
+        return memory;
+    }
+
+    /**
+     * Returns the time interval in seconds between each call to {@link #advance(float)}.
+     */
+    public IntervalUtil getAdvanceIntervalUtil() {
+        return advanceInterval;
+    }
+
+    /**
+     * Sets the time interval between each call to {@link #advance(float)}.
+     */
+    public void setAdvanceIntervalUtil(IntervalUtil interval) {
+        advanceInterval = interval;
     }
 }
