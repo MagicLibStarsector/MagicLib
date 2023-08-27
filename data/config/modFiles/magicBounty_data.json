@@ -89,7 +89,6 @@
 		#"location_marketFactions":[],
 		"location_distance":"",
 		"location_themes":[
-			,
 		],
 		#"location_themes_blacklist":[],
 		"location_entities":[
@@ -109,4 +108,3 @@
 		"location_defaultToAnyEntity":true
 	},
 }
-k
