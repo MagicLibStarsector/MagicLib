@@ -65,7 +65,7 @@ public class MagicAchievement {
      * Place any code here that registers itself with the game, such as adding a listener.
      * Called even if the achievement is completed.
      */
-    public void onGameLoaded() {
+    public void onSaveGameLoaded() {
 
     }
 
@@ -162,6 +162,7 @@ public class MagicAchievement {
      * Call this to save any changes to the achievement (and all others as well).
      */
     public void saveChanges() {
+        logger.info("Saving achievements triggered by '" + spec.getId() + "' from mod '" + spec.getModName() + "'.");
         MagicAchievementManager.getInstance().saveAchievements();
     }
 
@@ -385,5 +386,9 @@ public class MagicAchievement {
 
     public @NotNull Map<String, Object> getMemory() {
         return memory;
+    }
+
+    public String getSoundEffectId() {
+        return "magiclib_achievementunlocked";
     }
 }

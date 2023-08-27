@@ -143,7 +143,11 @@ public class MagicAchievementManager {
         return achievements;
     }
 
-    public void saveAchievements() {
+    /**
+     * TODO: add in a safeguard to prevent this from being called every frame or worse.
+     * This writes to disk.
+     */
+    protected void saveAchievements() {
         JSONUtils.CommonDataJSONObject commonJson;
         JSONArray savedAchievements = new JSONArray();
 
@@ -259,7 +263,7 @@ public class MagicAchievementManager {
         // Can't just check GameState, it shows a TITLE after pressing Continue on the title page.
         if (isSaveGameLoaded) {
             for (MagicAchievement achievement : achievements.values()) {
-                achievement.onGameLoaded();
+                achievement.onSaveGameLoaded();
             }
         }
 
@@ -472,6 +476,7 @@ public class MagicAchievementManager {
                         intel.tempAchievement = achievement;
                         intel.sendUpdateIfPlayerHasIntel(null, false, false);
                         intel.tempAchievement = null;
+                        playSoundEffect(achievement);
                         completedAchievementIdsThatUserHasBeenNotifiedFor.add(achievement.getSpecId());
                     } catch (Exception e) {
                         logger.warn("Unable to notify intel of achievement " + achievement.getSpecId(), e);
@@ -503,6 +508,7 @@ public class MagicAchievementManager {
                         achievement.getRarityColor(),
                         combatEngine.getPlayerShip(),
                         0, 0);
+                playSoundEffect(achievement);
                 completedAchievementIdsThatUserHasBeenNotifiedFor.add(achievement.getSpecId());
             }
         }
@@ -569,6 +575,15 @@ public class MagicAchievementManager {
 
         while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
+        }
+    }
+
+    private static void playSoundEffect(MagicAchievement achievement) {
+        try {
+            if (!Global.getSettings().isSoundEnabled()) return;
+            Global.getSoundPlayer().playUISound(achievement.getSoundEffectId(), 1, 1);
+        } catch (Exception e) {
+            logger.warn("Unable to play sound effect for achievement " + achievement.getSpecId() + " in mod " + achievement.getModName(), e);
         }
     }
 }

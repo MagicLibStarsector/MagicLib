@@ -9,7 +9,8 @@ slayer5,"Doomguy","Destroyed 10000 enemy ships.",,org.magiclib.achievements.buil
 blackhole, "Died In A Black Hole","Died in a black hole.",,org.magiclib.achievements.builtin.BlackHoleAchievement,,false,VISIBLE,COMMON
 sundive, "Icarus","Flew into a sun.",,org.magiclib.achievements.builtin.IcarusAchievement,,false,VISIBLE,COMMON
 bombardment,"I Am Become Death, The Destroyer Of Worlds","Saturation bombarded an inhabited planet.",,org.magiclib.achievements.builtin.BombardmentAchievement,,false,VISIBLE,COMMON
-revisionist,"Revisionist","Un-lost a battle",,org.magiclib.achievements.builtin.RevisionistAchievement,,false,VISIBLE,COMMON
+revisionist,"Revisionist","Un-lost a battle.",,org.magiclib.achievements.builtin.RevisionistAchievement,,false,VISIBLE,COMMON
+builtins,"Pristine Condition","Built in 20 hullmods.",,org.magiclib.achievements.builtin.BuiltInsAchievement,,false,VISIBLE,COMMON
 # Uncommon
 meanttodothat,"I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,org.magiclib.achievements.builtin.MeantToDoThatAchievement,,false,VISIBLE,UNCOMMON
 # Rare

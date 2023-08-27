@@ -35,7 +35,7 @@ abstract class SlayerMagicAchievement : MagicAchievement() {
         }
     }
 
-    override fun onGameLoaded() {
+    override fun onSaveGameLoaded() {
         listener = Listener()
         Global.getSector().addTransientListener(listener)
     }

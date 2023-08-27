@@ -12,8 +12,8 @@ import org.magiclib.achievements.MagicAchievement;
 public class BombardmentAchievement extends MagicAchievement implements ColonyPlayerHostileActListener {
 
     @Override
-    public void onGameLoaded() {
-        super.onGameLoaded();
+    public void onSaveGameLoaded() {
+        super.onSaveGameLoaded();
         if (isComplete()) return;
         Global.getSector().getListenerManager().addListener(this, true);
     }

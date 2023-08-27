@@ -25,7 +25,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         }
     }
 
-
     @Override
     protected String getName() {
         return tempAchievement != null

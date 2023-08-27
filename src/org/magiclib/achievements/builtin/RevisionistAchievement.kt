@@ -1,10 +1,6 @@
 package org.magiclib.achievements.builtin
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
-import com.fs.starfarer.api.impl.campaign.intel.bar.events.SpecBarEventCreator
-import com.fs.starfarer.api.impl.campaign.missions.hub.BaseHubMission
-import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionBarEventWrapper
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import org.magiclib.achievements.MagicAchievement
@@ -17,8 +13,8 @@ class RevisionistAchievement : MagicAchievement() {
         private val interval = IntervalUtil(1f, 1f)
     }
 
-    override fun onGameLoaded() {
-        super.onGameLoaded()
+    override fun onSaveGameLoaded() {
+        super.onSaveGameLoaded()
         if (isComplete) return
         memory[LOADED_SAVE_KEY] = true
         saveChanges()

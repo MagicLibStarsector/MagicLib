@@ -26,7 +26,7 @@ class MeantToDoThatAchievement : MagicAchievement() {
         override fun reportDamageApplied(source: Any?, target: CombatEntityAPI?, result: ApplyDamageResultAPI?) {
             val combatEngine = Global.getCombatEngine()
 
-            if (source == null || result == null) {
+            if (Global.getSettings().isDevMode || source == null || result == null) {
                 return
             }
 
