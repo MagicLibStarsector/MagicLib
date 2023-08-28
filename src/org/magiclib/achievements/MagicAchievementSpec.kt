@@ -40,7 +40,7 @@ open class MagicAchievementSpec(
             val id = json.getString("id")
             val name = json.getString("name")
             val description = json.getString("description")
-            val tooltip = json.getString("tooltip")
+            val tooltip = json.optString("tooltip", null)
             val script = json.getString("script")
             val image = json.optString("image", null)
             val hasProgressBar = json.optBoolean("hasProgressBar", false)

@@ -15,5 +15,7 @@ builtins,"Pristine Condition","Built in 20 hullmods.",,org.magiclib.achievements
 meanttodothat,"I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,org.magiclib.achievements.builtin.MeantToDoThatAchievement,,false,VISIBLE,UNCOMMON
 # Rare
 javaupgrade,"BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,false,HIDDEN,RARE
+paradise,"Paradise","Surveyed a planet with 75% hazard or better.",,org.magiclib.achievements.builtin.ParadiseAchievement,,false,VISIBLE,RARE
+noconditions,"Unconditional","Surveyed a planet with no conditions.",,org.magiclib.achievements.builtin.NoConditionsAchievement,,false,VISIBLE,RARE
 # Epic
 fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,false,VISIBLE,EPIC

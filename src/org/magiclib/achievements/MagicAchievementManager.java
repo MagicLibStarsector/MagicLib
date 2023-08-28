@@ -257,23 +257,31 @@ public class MagicAchievementManager {
         // Calling onApplicationLoaded and onGameLoaded would seem to make more sense to do
         // in their respective methods, but doing it here ensures that they're called.
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.onApplicationLoaded();
+            if (!achievement.isComplete()) {
+                achievement.onApplicationLoaded();
+            }
         }
 
         // Can't just check GameState, it shows a TITLE after pressing Continue on the title page.
         if (isSaveGameLoaded) {
             for (MagicAchievement achievement : achievements.values()) {
-                achievement.onSaveGameLoaded();
+                if (!achievement.isComplete()) {
+                    achievement.onSaveGameLoaded();
+                }
             }
         }
 
-        logger.info("Loaded " + achievements.size() + " achievements.");
+        // Give scripts that errored out another chance on a reload.
+        achievementScriptsWithRunError.clear();
 
+        completedAchievementIdsThatUserHasBeenNotifiedFor.clear();
         for (MagicAchievement prevAchi : achievements.values()) {
             if (prevAchi.isComplete()) {
                 completedAchievementIdsThatUserHasBeenNotifiedFor.add(prevAchi.getSpecId());
             }
         }
+
+        logger.info("Loaded " + achievements.size() + " achievements.");
     }
 
     /**
@@ -416,7 +424,9 @@ public class MagicAchievementManager {
         removeIntel();
 
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.beforeGameSave();
+            if (!achievement.isComplete()) {
+                achievement.beforeGameSave();
+            }
         }
     }
 
@@ -427,7 +437,9 @@ public class MagicAchievementManager {
         initIntel();
 
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.afterGameSave();
+            if (!achievement.isComplete()) {
+                achievement.afterGameSave();
+            }
         }
     }
 
@@ -559,7 +571,7 @@ public class MagicAchievementManager {
 
         if (rarityStr != null) {
             try {
-                MagicAchievementRarity.valueOf(Misc.ucFirst(rarityStr.trim().toLowerCase()));
+                rarity = MagicAchievementRarity.valueOf(Misc.ucFirst(rarityStr.trim().toLowerCase()));
             } catch (Exception e) {
                 logger.warn("Invalid rarity '" + rarityStr + " for achievement '" + specId + "', using Common.");
             }

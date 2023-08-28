@@ -56,6 +56,10 @@ public class MagicAchievement {
      */
     private IntervalUtil advanceInterval = new IntervalUtil(1f, 2f);
 
+    /**
+     * Called when Starsector is loaded.
+     * Not called if the achievement is complete.
+     */
     public void onApplicationLoaded() {
         logger = Global.getLogger(this.getClass());
     }
@@ -63,7 +67,7 @@ public class MagicAchievement {
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
-     * Called even if the achievement is completed.
+     * Not called if the achievement is completed.
      */
     public void onSaveGameLoaded() {
 
@@ -72,12 +76,14 @@ public class MagicAchievement {
     /**
      * Called each time the game is saved. If you want to avoid any data going into the save file,
      * you can clear it here.
+     * Not called if the achievement is complete.
      */
     public void beforeGameSave() {
     }
 
     /**
      * Called each time the game is loaded.
+     * Not called if the achievement is complete.
      */
     public void afterGameSave() {
     }
