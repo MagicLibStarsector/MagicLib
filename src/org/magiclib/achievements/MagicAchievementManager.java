@@ -448,6 +448,7 @@ public class MagicAchievementManager {
 
     /**
      * Called by MagicAchievementRunner.
+     * Only called in campaign, not in title, which means the sector is always non-null.
      */
     void advance(float amount) {
         // Call the advance method on all achievements.
