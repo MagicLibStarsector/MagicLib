@@ -39,8 +39,8 @@ public class FleetDoctrineAchievement extends MagicAchievement {
     }
 
     @Override
-    public void onGameLoaded() {
-        super.onGameLoaded();
+    public void onSaveGameLoaded() {
+        super.onSaveGameLoaded();
         allTechTypes.clear();
 
         for (String factionId : vanillaFactions) {

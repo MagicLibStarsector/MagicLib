@@ -4,5 +4,6 @@ enum class MagicAchievementRarity {
     Common,
     Uncommon,
     Rare,
-    Epic
+    Epic,
+    Legendary
 }

@@ -4,11 +4,14 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
+import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -53,6 +56,10 @@ public class MagicAchievement {
      */
     private IntervalUtil advanceInterval = new IntervalUtil(1f, 2f);
 
+    /**
+     * Called when Starsector is loaded.
+     * Not called if the achievement is complete.
+     */
     public void onApplicationLoaded() {
         logger = Global.getLogger(this.getClass());
     }
@@ -60,20 +67,23 @@ public class MagicAchievement {
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
+     * Not called if the achievement is completed.
      */
-    public void onGameLoaded() {
+    public void onSaveGameLoaded() {
 
     }
 
     /**
      * Called each time the game is saved. If you want to avoid any data going into the save file,
      * you can clear it here.
+     * Not called if the achievement is complete.
      */
     public void beforeGameSave() {
     }
 
     /**
      * Called each time the game is loaded.
+     * Not called if the achievement is complete.
      */
     public void afterGameSave() {
     }
@@ -128,6 +138,7 @@ public class MagicAchievement {
 
     /**
      * Not meant to be overriden. Use {@link #advanceAfterInterval(float)} instead.
+     * Not called if the achievement is complete.
      */
     protected void advanceInternal(float amount) {
         advanceInterval.advance(amount);
@@ -140,12 +151,14 @@ public class MagicAchievement {
     /**
      * Like regular advance, but NOT CALLED EVERY FRAME.
      * Called every 1-2 seconds by default. Change timing with {@link #setAdvanceIntervalUtil(IntervalUtil)}.
+     * Not called if the achievement is complete.
      */
     public void advanceAfterInterval(float amount) {
     }
 
     /**
-     * Called every frame during combat unless the achievement is complete.
+     * Called every frame during combat.
+     * Not called if the achievement is complete.
      */
     public void advanceInCombat(float amount, List<InputEventAPI> events, boolean isSimulation) {
 
@@ -155,6 +168,7 @@ public class MagicAchievement {
      * Call this to save any changes to the achievement (and all others as well).
      */
     public void saveChanges() {
+        logger.info("Saving achievements triggered by '" + spec.getId() + "' from mod '" + spec.getModName() + "'.");
         MagicAchievementManager.getInstance().saveAchievements();
     }
 
@@ -318,6 +332,32 @@ public class MagicAchievement {
         return spec.getRarity();
     }
 
+    /**
+     * Returns the color of the particle effect for this achievement's rarity.
+     * Common rarity doesn't have a particle effect.
+     */
+    public @NotNull Color getRarityColor() {
+        switch (getRarity()) {
+            case Common:
+                // Not shown as a particle effect, but used for the text color during combat.
+                return Misc.getTextColor();
+            case Uncommon:
+                // Bronze
+                return new Color(0xCD7F32);
+            case Rare:
+                // Silver
+                return new Color(0xE0DFDF);
+            case Epic:
+                // Gold
+                return Color.YELLOW;
+            case Legendary:
+                // Purple
+                return new Color(0x7754C9);
+        }
+
+        return Color.red;
+    }
+
     public void setRarity(@NotNull MagicAchievementRarity rarity) {
         spec.setRarity(rarity);
     }
@@ -352,5 +392,9 @@ public class MagicAchievement {
 
     public @NotNull Map<String, Object> getMemory() {
         return memory;
+    }
+
+    public String getSoundEffectId() {
+        return "magiclib_achievementunlocked";
     }
 }

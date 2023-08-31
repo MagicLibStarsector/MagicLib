@@ -1,0 +1,6 @@
+{
+  "magiclib_achievementunlocked": [
+    # Unused vanilla sound effect
+    { "file": "sounds/sfx_charscreen/story_point_gain_v3.ogg","pitch": 1,"volume": 1.0 },
+  ]
+}

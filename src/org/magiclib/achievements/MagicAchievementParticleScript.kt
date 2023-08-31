@@ -91,13 +91,7 @@ class MagicAchievementParticleScript {
             duration = (1.2f..1.5f).random() * durationScale,
             inFraction = 0.1f * rampUpScale,
             outFraction = 0.5f * rampDownScale,
-            color = when (achievement.rarity) {
-                MagicAchievementRarity.Common -> Color.cyan
-                MagicAchievementRarity.Uncommon -> Color(0xCD7F32).setAlpha(200)
-                MagicAchievementRarity.Rare -> Color(0xE0DFDF).setAlpha(200)
-                MagicAchievementRarity.Epic -> Color.YELLOW.setAlpha(200)
-                //Color(0x7754C9)
-            },
+            color = achievement.rarityColor,
             type = CustomRenderer.NebulaType.NORMAL,
             negative = false
         )

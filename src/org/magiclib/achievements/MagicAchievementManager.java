@@ -4,7 +4,9 @@ import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.util.Misc;
 import lunalib.lunaSettings.LunaSettings;
 import lunalib.lunaSettings.LunaSettingsListener;
 import org.apache.log4j.Logger;
@@ -34,7 +36,7 @@ public class MagicAchievementManager {
     private Map<String, MagicAchievementSpec> achievementSpecs = new HashMap<>();
     @NotNull
     private final Map<String, MagicAchievement> achievements = new HashMap<>();
-    private final List<String> previouslyCompleted = new ArrayList<>();
+    private final List<String> completedAchievementIdsThatUserHasBeenNotifiedFor = new ArrayList<>();
     private boolean areAchievementsEnabled = true;
 
     @NotNull
@@ -141,7 +143,11 @@ public class MagicAchievementManager {
         return achievements;
     }
 
-    public void saveAchievements() {
+    /**
+     * TODO: add in a safeguard to prevent this from being called every frame or worse.
+     * This writes to disk.
+     */
+    protected void saveAchievements() {
         JSONUtils.CommonDataJSONObject commonJson;
         JSONArray savedAchievements = new JSONArray();
 
@@ -251,23 +257,31 @@ public class MagicAchievementManager {
         // Calling onApplicationLoaded and onGameLoaded would seem to make more sense to do
         // in their respective methods, but doing it here ensures that they're called.
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.onApplicationLoaded();
+            if (!achievement.isComplete()) {
+                achievement.onApplicationLoaded();
+            }
         }
 
         // Can't just check GameState, it shows a TITLE after pressing Continue on the title page.
         if (isSaveGameLoaded) {
             for (MagicAchievement achievement : achievements.values()) {
-                achievement.onGameLoaded();
+                if (!achievement.isComplete()) {
+                    achievement.onSaveGameLoaded();
+                }
+            }
+        }
+
+        // Give scripts that errored out another chance on a reload.
+        achievementScriptsWithRunError.clear();
+
+        completedAchievementIdsThatUserHasBeenNotifiedFor.clear();
+        for (MagicAchievement prevAchi : achievements.values()) {
+            if (prevAchi.isComplete()) {
+                completedAchievementIdsThatUserHasBeenNotifiedFor.add(prevAchi.getSpecId());
             }
         }
 
         logger.info("Loaded " + achievements.size() + " achievements.");
-
-        for (MagicAchievement prevAchi : achievements.values()) {
-            if (prevAchi.isComplete()) {
-                previouslyCompleted.add(prevAchi.getSpecId());
-            }
-        }
     }
 
     /**
@@ -333,7 +347,7 @@ public class MagicAchievementManager {
                     String spoilerLevelStr = item.optString("spoilerLevel", MagicAchievementSpoilerLevel.Visible.name());
                     MagicAchievementSpoilerLevel spoilerLevel = getSpoilerLevel(spoilerLevelStr);
                     String rarityStr = item.optString("rarity", MagicAchievementRarity.Common.name());
-                    MagicAchievementRarity rarity = getRarity(rarityStr);
+                    MagicAchievementRarity rarity = getRarity(rarityStr, id);
 
                     boolean skip = false;
 
@@ -410,7 +424,9 @@ public class MagicAchievementManager {
         removeIntel();
 
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.beforeGameSave();
+            if (!achievement.isComplete()) {
+                achievement.beforeGameSave();
+            }
         }
     }
 
@@ -421,7 +437,9 @@ public class MagicAchievementManager {
         initIntel();
 
         for (MagicAchievement achievement : achievements.values()) {
-            achievement.afterGameSave();
+            if (!achievement.isComplete()) {
+                achievement.afterGameSave();
+            }
         }
     }
 
@@ -430,6 +448,7 @@ public class MagicAchievementManager {
 
     /**
      * Called by MagicAchievementRunner.
+     * Only called in campaign, not in title, which means the sector is always non-null.
      */
     void advance(float amount) {
         // Call the advance method on all achievements.
@@ -461,14 +480,17 @@ public class MagicAchievementManager {
         // If in combat, the intel will be shown when the player returns to the campaign.
         if (Global.getCurrentState() == GameState.CAMPAIGN) {
             for (MagicAchievement achievement : achievements.values()) {
-                if (achievement.isComplete() && !previouslyCompleted.contains(achievement.getSpecId())) {
+                if (achievement.isComplete() && !completedAchievementIdsThatUserHasBeenNotifiedFor.contains(achievement.getSpecId())) {
+                    // Player has unlocked a new achievement! Let's notify them.
+
                     MagicAchievementIntel intel = getIntel();
 
                     try {
                         intel.tempAchievement = achievement;
                         intel.sendUpdateIfPlayerHasIntel(null, false, false);
                         intel.tempAchievement = null;
-                        previouslyCompleted.add(achievement.getSpecId());
+                        playSoundEffect(achievement);
+                        completedAchievementIdsThatUserHasBeenNotifiedFor.add(achievement.getSpecId());
                     } catch (Exception e) {
                         logger.warn("Unable to notify intel of achievement " + achievement.getSpecId(), e);
                     }
@@ -484,11 +506,27 @@ public class MagicAchievementManager {
      * Called by MagicAchievementCombatScript.
      */
     void advanceInCombat(float amount, List<InputEventAPI> events) {
-        if (Global.getCurrentState() == GameState.TITLE)
+        if (Global.getCurrentState() != GameState.COMBAT)
             return;
-        if (Global.getCombatEngine() == null)
+        CombatEngineAPI combatEngine = Global.getCombatEngine();
+        if (combatEngine == null)
             return;
 
+        // Check for any completed achievements that haven't been notified yet and display them as text above the ship.
+        for (MagicAchievement achievement : achievements.values()) {
+            if (achievement.isComplete() && !completedAchievementIdsThatUserHasBeenNotifiedFor.contains(achievement.getSpecId())) {
+                combatEngine.addFloatingText(combatEngine.getPlayerShip().getLocation(),
+                        "Achievement Unlocked: " + achievement.getName(),
+                        40,
+                        achievement.getRarityColor(),
+                        combatEngine.getPlayerShip(),
+                        0, 0);
+                playSoundEffect(achievement);
+                completedAchievementIdsThatUserHasBeenNotifiedFor.add(achievement.getSpecId());
+            }
+        }
+
+        // Call the advanceInCombat method on all achievements.
         for (MagicAchievement achievement : achievements.values()) {
             if (!achievement.isComplete()) {
                 if (achievementScriptsWithCombatRunError.contains(achievement.getSpecId())) {
@@ -496,7 +534,7 @@ public class MagicAchievementManager {
                 }
 
                 try {
-                    achievement.advanceInCombat(amount, events, Global.getCombatEngine().isSimulation());
+                    achievement.advanceInCombat(amount, events, combatEngine.isSimulation());
                 } catch (Exception e) {
                     String errorStr =
                             String.format("Error running achievement '%s' from mod '%s' during combat!", achievement.getSpecId(), achievement.getModName());
@@ -529,16 +567,14 @@ public class MagicAchievementManager {
     }
 
     @NotNull
-    private static MagicAchievementRarity getRarity(String rarityStr) {
+    private static MagicAchievementRarity getRarity(String rarityStr, String specId) {
         MagicAchievementRarity rarity = MagicAchievementRarity.Common;
 
         if (rarityStr != null) {
-            if (rarityStr.equalsIgnoreCase("uncommon")) {
-                rarity = MagicAchievementRarity.Uncommon;
-            } else if (rarityStr.equalsIgnoreCase("rare")) {
-                rarity = MagicAchievementRarity.Rare;
-            } else if (rarityStr.equalsIgnoreCase("epic")) {
-                rarity = MagicAchievementRarity.Epic;
+            try {
+                rarity = MagicAchievementRarity.valueOf(Misc.ucFirst(rarityStr.trim().toLowerCase()));
+            } catch (Exception e) {
+                logger.warn("Invalid rarity '" + rarityStr + " for achievement '" + specId + "', using Common.");
             }
         }
 
@@ -552,6 +588,15 @@ public class MagicAchievementManager {
 
         while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
+        }
+    }
+
+    private static void playSoundEffect(MagicAchievement achievement) {
+        try {
+            if (!Global.getSettings().isSoundEnabled()) return;
+            Global.getSoundPlayer().playUISound(achievement.getSoundEffectId(), 1, 1);
+        } catch (Exception e) {
+            logger.warn("Unable to play sound effect for achievement " + achievement.getSpecId() + " in mod " + achievement.getModName(), e);
         }
     }
 }

@@ -25,7 +25,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         }
     }
 
-
     @Override
     protected String getName() {
         return tempAchievement != null
@@ -201,14 +200,14 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             // Tooltip
             if (achievement.getTooltip() != null && !achievement.getTooltip().trim().isEmpty()) {
-                TooltipMakerAPI leftTooltip = leftElement.beginSubTooltip(200f);
-                leftTooltip.addPara(achievement.getTooltip().trim(), pad);
-                leftElement.endSubTooltip();
-                TooltipMakerAPI rightTooltip = rightElement.beginSubTooltip(200f);
-                rightTooltip.addPara(achievement.getTooltip().trim(), pad);
-                rightElement.endSubTooltip();
-                leftElement.addCustom(leftTooltip, pad);
-                rightElement.addCustom(rightTooltip, pad);
+//                TooltipMakerAPI leftTooltip = leftElement.beginSubTooltip(200f);
+//                leftTooltip.addPara(achievement.getTooltip().trim(), pad);
+//                leftElement.endSubTooltip();
+//                TooltipMakerAPI rightTooltip = rightElement.beginSubTooltip(200f);
+//                rightTooltip.addPara(achievement.getTooltip().trim(), pad);
+//                rightElement.endSubTooltip();
+//                leftElement.addCustom(leftTooltip, pad);
+//                rightElement.addCustom(rightTooltip, pad);
             }
 
             // Error message if there is one.

@@ -35,7 +35,7 @@ abstract class SlayerMagicAchievement : MagicAchievement() {
         }
     }
 
-    override fun onGameLoaded() {
+    override fun onSaveGameLoaded() {
         listener = Listener()
         Global.getSector().addTransientListener(listener)
     }
@@ -52,8 +52,8 @@ class Slayer100MagicAchievement : SlayerMagicAchievement() {
     override fun getMaxProgress(): Float = 100f
 }
 
-class Slayer500MagicAchievement : SlayerMagicAchievement() {
-    override fun getMaxProgress(): Float = 500f
+class Slayer1000MagicAchievement : SlayerMagicAchievement() {
+    override fun getMaxProgress(): Float = 1000f
 }
 
 class Slayer2000MagicAchievement : SlayerMagicAchievement() {

@@ -1,14 +1,34 @@
 id,name,description,tooltip,script,image,hasProgressBar,spoilerLevel,rarity,
-test, "Survived Five Days", "(test) Wow, you survived five days. Good job.",,org.magiclib.achievements.builtin.TestAchievement,,true,VISIBLE,COMMON
+# Slayer Series
+slayer1,"Harmful","Destroyed 100 enemy ships.",,org.magiclib.achievements.builtin.Slayer100MagicAchievement,,true,VISIBLE,COMMON
+slayer2,"Dangerous","Destroyed 1000 enemy ships.",,org.magiclib.achievements.builtin.Slayer1000MagicAchievement,,true,VISIBLE,UNCOMMON
+slayer3,"Slayer","Destroyed 2000 enemy ships.",,org.magiclib.achievements.builtin.Slayer2000MagicAchievement,,true,VISIBLE,RARE
+slayer4,"Reaper","Destroyed 5000 enemy ships.",,org.magiclib.achievements.builtin.Slayer5000MagicAchievement,,true,VISIBLE,EPIC
+slayer5,"Doomguy","Destroyed 10000 enemy ships.",,org.magiclib.achievements.builtin.Slayer10000MagicAchievement,,true,VISIBLE,LEGENDARY
 
-slayer1, "Harmful","Destroyed 100 enemy ships.",,org.magiclib.achievements.builtin.Slayer100MagicAchievement,,true,VISIBLE,COMMON
-slayer2, "Dangerous","Destroyed 500 enemy ships.",,org.magiclib.achievements.builtin.Slayer500MagicAchievement,,true,VISIBLE,COMMON
-slayer3, "Slayer","Destroyed 2000 enemy ships.",,org.magiclib.achievements.builtin.Slayer2000MagicAchievement,,true,VISIBLE,UNCOMMON
-slayer4, "Reaper","Destroyed 5000 enemy ships.",,org.magiclib.achievements.builtin.Slayer5000MagicAchievement,,true,VISIBLE,RARE
-slayer5, "Doomguy","Destroyed 10000 enemy ships.",,org.magiclib.achievements.builtin.Slayer10000MagicAchievement,,true,VISIBLE,EPIC
-blackhole, "Died In A Black Hole","Died in a black hole.",,org.magiclib.achievements.builtin.BlackHoleAchievement,,false,VISIBLE,COMMON
-sundive, "Icarus","Flew into a sun.",,org.magiclib.achievements.builtin.IcarusAchievement,,false,VISIBLE,COMMON
-meanttodothat, "I Meant To Do That","Destroyed an enemy ship with your own ship's explosion.",,org.magiclib.achievements.builtin.MeantToDoThatAchievement,,false,VISIBLE,UNCOMMON
-fleetdoctrine, "What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,false,VISIBLE,EPIC
+# Common
+blackhole, "Died In A Black Hole","Died in a black hole.",,org.magiclib.achievements.builtin.BlackHoleAchievement,,,VISIBLE,COMMON
+sundive, "Icarus","Flew into a sun.",,org.magiclib.achievements.builtin.IcarusAchievement,,,VISIBLE,COMMON
+bombardment,"I Am Become Death, The Destroyer Of Worlds","Saturation bombarded an inhabited planet.",,org.magiclib.achievements.builtin.BombardmentAchievement,,,VISIBLE,COMMON
+revisionist,"Revisionist","Un-lost a battle.",,org.magiclib.achievements.builtin.RevisionistAchievement,,,VISIBLE,COMMON
+builtins,"Pristine Condition","Built in 20 hullmods.",,org.magiclib.achievements.builtin.BuiltInsAchievement,,,VISIBLE,COMMON
+abandoned,"Going Out For Milk","Abandoned a colony.",,org.magiclib.achievements.builtin.AbandonedAchievement,,,VISIBLE,COMMON
+# Bounty result isn't public, implementation would be too annoying, would need to copy/paste the bounty code.
+# bounties,"Blood Money","Completed 10 person bounties.",,org.magiclib.achievements.builtin.BountiesAchievement,,,VISIBLE,COMMON
 
-javaupgrade, "BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,false,HIDDEN,RARE
+# Uncommon
+meanttodothat,"You're Coming With Me","Destroyed an enemy ship with your own ship's explosion.",,org.magiclib.achievements.builtin.MeantToDoThatAchievement,,,VISIBLE,UNCOMMON
+inspection,"I Don't Think So","Defeated an inspection fleet.",,org.magiclib.achievements.builtin.InspectionAchievement,,,VISIBLE,UNCOMMON
+aicore,"I'm Sorry, Dave","Had a colony AI Core go rogue.",,org.magiclib.achievements.builtin.AICoreAchievement,,,VISIBLE,UNCOMMON
+gatetravel,"Big Hop","Traveled 60 LY in a single jump.",,org.magiclib.achievements.builtin.GateTravelAchievement,,,VISIBLE,UNCOMMON
+neural,"Assuming Direct Control","Used Neural Link to control an automated ship.",,org.magiclib.achievements.builtin.NeuralAchievement,,,VISIBLE,UNCOMMON
+
+# Rare
+javaupgrade,"BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,,HIDDEN,RARE
+paradise,"Paradise","Surveyed a planet with 75% hazard or better.",,org.magiclib.achievements.builtin.ParadiseAchievement,,,VISIBLE,RARE
+noconditions,"Unconditional","Surveyed a planet with no conditions.",,org.magiclib.achievements.builtin.NoConditionsAchievement,,,VISIBLE,RARE
+powerofthesun,"The Power Of The Sun, In The Palm Of My Hand","Gave one of your colonies extra sunlight.",,org.magiclib.achievements.builtin.PowerOfTheSunAchievement,,,VISIBLE,RARE
+motes,"Who You Gonna Call?","Encountered eight different hyperspace ghosts.",,org.magiclib.achievements.builtin.MotesAchievement,,true,VISIBLE,RARE
+
+# Epic
+fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,,VISIBLE,EPIC
