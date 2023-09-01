@@ -22,6 +22,7 @@ inspection,"I Don't Think So","Defeated an inspection fleet.",,org.magiclib.achi
 aicore,"I'm Sorry, Dave","Had a colony AI Core go rogue.",,org.magiclib.achievements.builtin.AICoreAchievement,,,VISIBLE,UNCOMMON
 gatetravel,"Big Hop","Traveled 60 LY in a single jump.",,org.magiclib.achievements.builtin.GateTravelAchievement,,,VISIBLE,UNCOMMON
 neural,"Assuming Direct Control","Used Neural Link to control an automated ship.",,org.magiclib.achievements.builtin.NeuralAchievement,,,VISIBLE,UNCOMMON
+satbombeverybody,"And Over The Ashes","Saturation bombed all vanilla faction homeworlds.",,org.magiclib.achievements.builtin.SatBombEverybodyAchievement,,true,VISIBLE,UNCOMMON
 
 # Rare
 javaupgrade,"BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,,HIDDEN,RARE
@@ -29,6 +30,10 @@ paradise,"Paradise","Surveyed a planet with 75% hazard or better.",,org.magiclib
 noconditions,"Unconditional","Surveyed a planet with no conditions.",,org.magiclib.achievements.builtin.NoConditionsAchievement,,,VISIBLE,RARE
 powerofthesun,"The Power Of The Sun, In The Palm Of My Hand","Gave one of your colonies extra sunlight.",,org.magiclib.achievements.builtin.PowerOfTheSunAchievement,,,VISIBLE,RARE
 motes,"Who You Gonna Call?","Encountered eight different hyperspace ghosts.",,org.magiclib.achievements.builtin.MotesAchievement,,true,VISIBLE,RARE
+luckystart, "Lucky Start","Found a capital derelict within the first month.",,org.magiclib.achievements.builtin.LuckyStartAchievement,,false,VISIBLE,RARE
 
 # Epic
-fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,,VISIBLE,EPIC
+fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a single battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,,VISIBLE,EPIC
+colonyitems,"Behold! My Stuff.","Install every colony item.",,org.magiclib.achievements.builtin.ColonyItemsAchievement,,true,VISIBLE,EPIC
+
+# Legendary

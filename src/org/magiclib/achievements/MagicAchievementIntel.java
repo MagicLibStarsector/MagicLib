@@ -7,6 +7,7 @@ import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.magiclib.util.MagicTxt;
 
 import java.text.DateFormat;
@@ -112,7 +113,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
      */
     @SuppressWarnings("SuspiciousNameCombination")
     public void displayAchievements(CustomPanelAPI panel, TooltipMakerAPI info, float rowWidth, List<MagicAchievement> achievements) {
-        float pad = 3;
+        final float pad = 3;
         float opad = 10;
         FactionAPI faction = Global.getSector().getPlayerFaction();
         boolean isFirstItem = true;
@@ -140,7 +141,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
         String prevModId = null;
 
-        for (MagicAchievement achievement : achievements) {
+        for (final MagicAchievement achievement : achievements) {
             if (!achievement.shouldShowInIntel())
                 continue;
 
@@ -181,8 +182,14 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Description
             TooltipMakerAPI leftElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
             TooltipMakerAPI rightElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
-            boolean showDescription = achievement.isComplete() || achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Visible;
 
+            // Tooltip
+            if (achievement.getTooltip() != null && !achievement.getTooltip().trim().isEmpty()) {
+                leftElement.addTooltipTo(getTooltipCreator(achievement, pad), row, TooltipMakerAPI.TooltipLocation.ABOVE);
+//                rightElement.addTooltipToPrevious(getTooltipCreator(achievement, pad), TooltipMakerAPI.TooltipLocation.ABOVE);
+            }
+
+            boolean showDescription = achievement.isComplete() || achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Visible;
             if (!showDescription) {
                 // Blank line if the desc isn't show to put title in the middle.
                 leftElement.addPara("", 3);
@@ -197,18 +204,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             leftElement.addPara(name, achievement.isComplete()
                     ? Misc.getHighlightColor()
                     : Misc.getTextColor(), 0);
-
-            // Tooltip
-            if (achievement.getTooltip() != null && !achievement.getTooltip().trim().isEmpty()) {
-//                TooltipMakerAPI leftTooltip = leftElement.beginSubTooltip(200f);
-//                leftTooltip.addPara(achievement.getTooltip().trim(), pad);
-//                leftElement.endSubTooltip();
-//                TooltipMakerAPI rightTooltip = rightElement.beginSubTooltip(200f);
-//                rightTooltip.addPara(achievement.getTooltip().trim(), pad);
-//                rightElement.endSubTooltip();
-//                leftElement.addCustom(leftTooltip, pad);
-//                rightElement.addCustom(rightTooltip, pad);
-            }
 
             // Error message if there is one.
             if (achievement.errorMessage == null) {
@@ -276,6 +271,17 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             info.addCustom(row, isFirstItem ? opad : pad);
             isFirstItem = false;
         }
+    }
+
+    @NotNull
+    private static BaseTooltipCreator getTooltipCreator(final MagicAchievement achievement, final float pad) {
+        return new BaseTooltipCreator() {
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                super.createTooltip(tooltip, expanded, tooltipParam);
+                achievement.createTooltip(tooltip, expanded, getTooltipWidth(tooltipParam));
+            }
+        };
     }
 
     @Override

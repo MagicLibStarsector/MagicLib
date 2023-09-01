@@ -3,6 +3,7 @@ package org.magiclib.achievements;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
@@ -241,6 +242,11 @@ public class MagicAchievement {
         advanceInterval = interval;
     }
 
+    /**
+     * Returns the progress of the achievement, or null if it's not a progress bar achievement.
+     * Progress is relative to the max progress.
+     * Either override this method or call {@link #setProgress(Float)} to set the progress.
+     */
     public @Nullable Float getProgress() {
         if (isComplete())
             return getMaxProgress();
@@ -248,16 +254,40 @@ public class MagicAchievement {
         return progress;
     }
 
+    /**
+     * Sets the progress. Only used for progress bar achievements.
+     * Note that if you override {@link #getProgress()}, this may not be used, depending on your implementation.
+     */
     public void setProgress(@Nullable Float progress) {
         this.progress = progress;
     }
 
+    /**
+     * Returns the max progress of the achievement, or null if it's not a progress bar achievement.
+     * Either override this method or call {@link #setMaxProgress(Float)} to set the max progress.
+     */
     public @Nullable Float getMaxProgress() {
         return maxProgress;
     }
 
+    /**
+     * Sets the max progress. Only used for progress bar achievements.
+     * Note that if you override {@link #getMaxProgress()}, this may not be used, depending on your implementation.
+     */
     public void setMaxProgress(@Nullable Float maxProgress) {
         this.maxProgress = maxProgress;
+    }
+
+    /**
+     * Allows full control of the tooltip.
+     * Called when the achievement is hovered over in the Intel screen.
+     * By default, shows the name and tooltip.
+     */
+    public void createTooltip(@NotNull TooltipMakerAPI tooltipMakerAPI, boolean isExpanded, float width) {
+        if (getTooltip() != null && !getTooltip().isEmpty()) {
+            tooltipMakerAPI.addPara(getName(), Misc.getHighlightColor(), 3f);
+            tooltipMakerAPI.addPara(getTooltip(), 3f);
+        }
     }
 
     public @NotNull String getModId() {
