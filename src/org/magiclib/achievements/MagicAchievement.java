@@ -22,6 +22,7 @@ import java.util.*;
  * @since 1.3.0
  */
 public class MagicAchievement {
+    // Note to self: don't use directly, call getLogger().
     private Logger logger;
     @NotNull MagicAchievementSpec spec;
 
@@ -39,7 +40,7 @@ public class MagicAchievement {
     private final Map<String, Object> memory = new HashMap<>();
 
     /**
-     * Shown if set. Only persisted in memory.
+     * Shown if set. Only persisted in memory, not save file.
      */
     @Nullable
     public String errorMessage;
@@ -49,7 +50,6 @@ public class MagicAchievement {
      * Put your initialization code in {@link #onApplicationLoaded()} instead.
      */
     public MagicAchievement() {
-
     }
 
     /**
@@ -62,7 +62,6 @@ public class MagicAchievement {
      * Not called if the achievement is complete.
      */
     public void onApplicationLoaded() {
-        logger = Global.getLogger(this.getClass());
     }
 
     /**
@@ -71,7 +70,6 @@ public class MagicAchievement {
      * Not called if the achievement is completed.
      */
     public void onSaveGameLoaded() {
-
     }
 
     /**
@@ -122,7 +120,7 @@ public class MagicAchievement {
             this.completedByUserName = completedByPlayer.getName().getFullName();
         }
 
-        logger.info("Achievement completed! " + spec.getId());
+        getLogger().info("Achievement completed! " + spec.getId());
     }
 
     /**
@@ -134,7 +132,7 @@ public class MagicAchievement {
         setCompletedByUserId(null);
         setCompletedByUserName(null);
 
-        logger.info("Achievement uncompleted! " + spec.getId());
+        getLogger().info("Achievement uncompleted! " + spec.getId());
     }
 
     /**
@@ -169,7 +167,7 @@ public class MagicAchievement {
      * Call this to save any changes to the achievement (and all others as well).
      */
     public void saveChanges() {
-        logger.info("Saving achievements triggered by '" + spec.getId() + "' from mod '" + spec.getModName() + "'.");
+        getLogger().info("Saving achievements triggered by '" + spec.getId() + "' from mod '" + spec.getModName() + "'.");
         MagicAchievementManager.getInstance().saveAchievements();
     }
 
@@ -188,7 +186,7 @@ public class MagicAchievement {
             jsonObject.put("memory", memory);
             return jsonObject;
         } catch (Exception e) {
-            logger.warn("Unable to convert achievement to JSON.", e);
+            getLogger().warn("Unable to convert achievement to JSON.", e);
             return null;
         }
     }
@@ -218,6 +216,14 @@ public class MagicAchievement {
             Global.getLogger(MagicAchievement.class).warn("Unable to convert achievement from JSON.", e);
             return false;
         }
+    }
+
+    protected Logger getLogger() {
+        if (logger == null) {
+            logger = Global.getLogger(this.getClass());
+        }
+
+        return logger;
     }
 
     /**

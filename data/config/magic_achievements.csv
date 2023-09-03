@@ -34,6 +34,7 @@ luckystart, "Lucky Start","Found a capital derelict within the first month.",,or
 
 # Epic
 fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a single battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,,VISIBLE,EPIC
+omegaLowDp,"I Am The Alpha","Defeated <ultra redacted> using a maximum of 80 deployment points.",,org.magiclib.achievements.builtin.OmegaLowDpAchievement,,,VISIBLE,EPIC
 colonyitems,"Behold! My Stuff.","Install every colony item.",,org.magiclib.achievements.builtin.ColonyItemsAchievement,,true,VISIBLE,EPIC
 
 # Legendary

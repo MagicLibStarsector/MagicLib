@@ -11,6 +11,7 @@
 		"showNameOnMap":false,
 		"scaleNameWithZoom":false,
 		"scaleIconWithZoom":true,
+		"tags":["not_random_mission_target"],
 		"layers":[ABOVE, FLEETS, ASTEROIDS, JUMP_POINTS, PLANETS, RINGS, STATIONS, TERRAIN_7A], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
 		"pluginClass":"org.magiclib.util.MagicCustomCampaignTrailEntityScript",
 	},

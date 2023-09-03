@@ -225,7 +225,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Completed info, shown on the right.
             if (achievement.isComplete()) {
                 Date date = achievement.getDateCompleted();
-                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateTimeInstance().format(date), DateFormat.getTimeInstance().format(date));
+                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateInstance().format(date), DateFormat.getTimeInstance(DateFormat.SHORT).format(date));
                 rightElement.addPara(str, pad);
 
                 if (achievement.getCompletedByUserName() != null) {
@@ -306,7 +306,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
     @Override
     public Set<String> getIntelTags(SectorMapAPI map) {
         Set<String> tags = super.getIntelTags(map);
-        tags.add("Achievements");
+        tags.add("Personal");
         return tags;
     }
 
