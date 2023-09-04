@@ -128,7 +128,16 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 if (rightAch.getSpoilerLevel() == MagicAchievementSpoilerLevel.Spoiler && !rightAch.isComplete())
                     return -1;
 
-                // sort by mod name, then by achievement spec id
+                // sort by mod name, then by achievement completion time, then rarity, then name
+                if (leftAch.getDateCompleted() != null && rightAch.getDateCompleted() != null) {
+                    int dateCompare = rightAch.getDateCompleted().compareTo(leftAch.getDateCompleted());
+                    if (dateCompare != 0) return dateCompare;
+                }
+
+                if (leftAch.getRarity() != rightAch.getRarity()) {
+                    return leftAch.getRarity().compareTo(rightAch.getRarity());
+                }
+
                 ModSpecAPI leftMod = Global.getSettings().getModManager().getModSpec(leftAch.getModId());
                 ModSpecAPI rightMod = Global.getSettings().getModManager().getModSpec(rightAch.getModId());
                 String leftModName = leftMod != null ? leftMod.getName() : leftAch.getModId();

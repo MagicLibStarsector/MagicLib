@@ -1,6 +1,8 @@
 package org.magiclib.achievements.builtin
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.PlanetAPI
+import com.fs.starfarer.api.campaign.listeners.SurveyPlanetListener
 import org.magiclib.achievements.MagicAchievement
 import org.magiclib.achievements.MagicAchievementRarity
 import org.magiclib.achievements.MagicAchievementSpec
@@ -40,6 +42,42 @@ internal class OverInvestedAchievementSpec : MagicAchievementSpec(
 internal class OverInvestedAchievement : MagicAchievement() {
     override fun advanceAfterInterval(amount: Float) {
         if (MagicMisc.getElapsedDaysSinceGameStart() > (365 * 30)) {
+            completeAchievement()
+            saveChanges()
+        }
+    }
+}
+
+/**
+ * The part that would normally be in the csv, but in code to hide it better from prying eyes.
+ */
+internal class OldEarthAchievementSpec : MagicAchievementSpec(
+    MagicVariables.MAGICLIB_ID,
+    Global.getSettings().modManager.getModSpec(MagicVariables.MAGICLIB_ID).name,
+    "oldearth",
+    "Old Earth",
+    "Surveyed a planet with 50% hazard or better.",
+    null,
+    "org.magiclib.achievements.builtin.OldEarthAchievement",
+    null,
+    false,
+    MagicAchievementSpoilerLevel.Hidden,
+    MagicAchievementRarity.Legendary
+)
+
+internal class OldEarthAchievement : MagicAchievement(), SurveyPlanetListener {
+    override fun onSaveGameLoaded() {
+        super.onSaveGameLoaded()
+        Global.getSector().listenerManager.addListener(this, true)
+    }
+
+    override fun onDestroyed() {
+        super.onDestroyed()
+        Global.getSector().listenerManager.removeListener(this)
+    }
+
+    override fun reportPlayerSurveyedPlanet(planet: PlanetAPI?) {
+        if ((planet?.market?.hazardValue ?: 0f) <= 0.50f) {
             completeAchievement()
             saveChanges()
         }

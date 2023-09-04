@@ -7,6 +7,9 @@ import org.magiclib.util.MagicUI;
 
 import java.awt.*;
 
+/**
+ * @author President Matt Damon
+ */
 public class StatusBarData {
 
     private ShipAPI ship;

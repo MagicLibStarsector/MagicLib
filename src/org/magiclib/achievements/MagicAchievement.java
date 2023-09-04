@@ -341,7 +341,22 @@ public class MagicAchievement {
     }
 
     public @Nullable String getImage() {
-        return spec.getImage();
+        if (spec.getImage() != null && !spec.getImage().isEmpty())
+            return spec.getImage();
+
+        switch (getRarity()) {
+            case Common:
+                return Global.getSettings().getSpriteName("intel", "achievement_bronze");
+            case Uncommon:
+                return Global.getSettings().getSpriteName("intel", "achievement_silver");
+            case Rare:
+                return Global.getSettings().getSpriteName("intel", "achievement_gold");
+            case Epic:
+            case Legendary:
+                return Global.getSettings().getSpriteName("intel", "achievement_purple");
+            default:
+                return null;
+        }
     }
 
     public void setImage(@Nullable String image) {
@@ -379,13 +394,15 @@ public class MagicAchievement {
                 return Misc.getTextColor();
             case Uncommon:
                 // Bronze
-                return new Color(0xCD7F32);
-            case Rare:
+//                return new Color(0xCD7F32);
                 // Silver
                 return new Color(0xE0DFDF);
-            case Epic:
+            case Rare:
                 // Gold
                 return Color.YELLOW;
+            case Epic:
+                // Purple
+                return new Color(0x7754C9);
             case Legendary:
                 // Purple
                 return new Color(0x7754C9);

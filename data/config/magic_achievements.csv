@@ -31,6 +31,7 @@ noconditions,"Unconditional","Surveyed a planet with no conditions.",,org.magicl
 powerofthesun,"The Power Of The Sun, In The Palm Of My Hand","Gave one of your colonies extra sunlight.",,org.magiclib.achievements.builtin.PowerOfTheSunAchievement,,,VISIBLE,RARE
 motes,"Who You Gonna Call?","Encountered eight different hyperspace ghosts.",,org.magiclib.achievements.builtin.MotesAchievement,,true,VISIBLE,RARE
 luckystart, "Lucky Start","Found a capital derelict within the first month.",,org.magiclib.achievements.builtin.LuckyStartAchievement,,false,VISIBLE,RARE
+oriondrive, "Cool Guys Don't Look At Explosions","Destroyed an enemy using the orion drive.",,org.magiclib.achievements.builtin.OrionDriveAchievement,,false,VISIBLE,RARE
 
 # Epic
 fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a single battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,,VISIBLE,EPIC

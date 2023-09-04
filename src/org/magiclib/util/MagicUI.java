@@ -636,7 +636,7 @@ public class MagicUI {
 //    }
 
     /**
-     * Get the UI Element Offset for the Shipsystem bar. (Depends of the group
+     * Get the UI Element Offset for the Shipsystem bar. (Depends if the group
      * layout, or if the player has some wing)
      *
      * @param ship    The player ship.
@@ -657,7 +657,12 @@ public class MagicUI {
      */
     public static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
         Vector2f offset = getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
+
         if (ship.getPhaseCloak() != null && !ship.getHullSpec().isPhase()) {
+            offset = Vector2f.add(new Vector2f(0f, 14f), offset, null);
+        }
+
+        if (Global.getCombatEngine() != null && Global.getCombatEngine().getCombatUI().isStrafeToggledOn()) {
             offset = Vector2f.add(new Vector2f(0f, 14f), offset, null);
         }
 
