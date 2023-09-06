@@ -49,14 +49,6 @@ class RevisionistAchievement : MagicAchievement() {
                 memory[LOADED_SAVE_KEY] = false
                 saveChanges()
             }
-
-
-//            BarEventManager.getInstance().active.items
-//                .filterIsInstance<HubMissionBarEventWrapper>()
-//                .forEach { event -> BarEventManager.getInstance().active.items.remove(event) }
-//            BarEventManager.getInstance().creators
-//                .filterIsInstance<SpecBarEventCreator>()
-//                .forEach { creator -> BarEventManager.getInstance().creators.remove(creator) }
         }
     }
 }

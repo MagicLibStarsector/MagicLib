@@ -476,9 +476,9 @@ public class MagicAchievementManager {
         }
 
         // For all achievements that were just completed, show intel update.
-        // Only notify intel if in campaign.
+        // Only notify intel if in campaign and not showing a dialog.
         // If in combat, the intel will be shown when the player returns to the campaign.
-        if (Global.getCurrentState() == GameState.CAMPAIGN) {
+        if (Global.getCurrentState() == GameState.CAMPAIGN && Global.getSector().getCampaignUI().getCurrentInteractionDialog() == null) {
             for (MagicAchievement achievement : achievements.values()) {
                 if (achievement.isComplete() && !completedAchievementIdsThatUserHasBeenNotifiedFor.contains(achievement.getSpecId())) {
                     // Player has unlocked a new achievement! Let's notify them.
