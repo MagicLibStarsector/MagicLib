@@ -7,7 +7,7 @@ import com.fs.starfarer.api.input.InputEventAPI
 
 /**
  * Class that, when added to engine via e.g. `addPlugin`, will open/close GUI when specified hotkey is pressed.
- * Extend this class by overriding [constructGui] to construct a GuiObject that extends [GuiBase].
+ * Extend this class by overriding [constructGui] to construct a GuiObject that extends [MagicCombatGuiBase].
  * This class is mainly intended as an example or to quickly get started. In the long term, you probably want to implement
  * your own GUI launching logic in order to be able to customize things.
  *
@@ -19,7 +19,7 @@ import com.fs.starfarer.api.input.InputEventAPI
  *     }
  *
  *     @Override
- *     public @NotNull GuiBase constructGui(){
+ *     public @NotNull MagicCombatGuiBase constructGui(){
  *         return new ExampleCombatGui(); // construct and return class that extends [GuiBase]
  *     }
  * }
@@ -27,15 +27,15 @@ import com.fs.starfarer.api.input.InputEventAPI
  *
  * @param hotkey lowercase char representation of hotkey to press to open/close the GUI. Make sure that key is not being used by Starsector!
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-abstract class SampleGuiLauncher(private val hotkey: Char) : BaseEveryFrameCombatPlugin() {
-    private var gui: GuiBase? = null
+abstract class SampleMagicCombatGuiLauncher(private val hotkey: Char) : BaseEveryFrameCombatPlugin() {
+    private var gui: MagicCombatGuiBase? = null
 
     /**
-     * override this to return a new GUI object from this function, e.g. "return new MyGui()"
+     * Override this to return a new GUI object from this function, e.g. "return new MyGui()"
      */
-    abstract fun constructGui(): GuiBase
+    abstract fun constructGui(): MagicCombatGuiBase
 
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
         super.advance(amount, events)

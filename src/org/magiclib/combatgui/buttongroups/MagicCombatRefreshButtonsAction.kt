@@ -5,12 +5,12 @@ package org.magiclib.combatgui.buttongroups
  * Use this to e.g. disable buttons that are incompatible with other active buttons
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-interface RefreshButtonsAction {
+interface MagicCombatRefreshButtonsAction {
     /**
      * will get called every frame
      * @param group to perform actions on. Use group.getActiveButtonData() and group.buttons to interact with buttons
      */
-    fun refreshButtons(group: DataButtonGroup)
+    fun refreshButtons(group: MagicCombatDataButtonGroup)
 }

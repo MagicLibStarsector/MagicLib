@@ -3,16 +3,16 @@ package org.magiclib.combatgui.buttons
 import com.fs.starfarer.api.Global
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
-import org.magiclib.combatgui.renderTextbox
+import org.magiclib.combatgui.MagicCombatRenderShapes
 import java.awt.Color
 
 /**
  * Only use this directly if you know what you are doing.
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-abstract class ButtonBase(val info: ButtonInfo) {
+abstract class MagicCombatButtonBase(val info: MagicCombatButtonInfo) {
     var isActive = false
     var isDisabled = false
     var wasMouseReleased = true
@@ -40,7 +40,7 @@ abstract class ButtonBase(val info: ButtonInfo) {
         if (isHover() && enableButtonHoverEffects) {
             val tooltipText = info.font?.createText(info.tooltip.txt, baseColor = determineColor())
             tooltipText?.let {
-                if (enableHoverTooltipBoxes) renderTextbox(it, info.tooltip.x, info.tooltip.y, 10f)
+                if (enableHoverTooltipBoxes) MagicCombatRenderShapes.renderTextbox(it, info.tooltip.x, info.tooltip.y, 10f)
                 if (enableHoverTooltips) it.draw(info.tooltip.x, info.tooltip.y)
             }
 

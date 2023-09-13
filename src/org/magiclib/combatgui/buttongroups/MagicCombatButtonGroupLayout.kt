@@ -3,9 +3,9 @@ package org.magiclib.combatgui.buttongroups
 import java.awt.Color
 
 /**
- * set of parameters to define positioning/size etc. of a button group
- * only use for custom button groups
- * coordinates are screen coordinates
+ * Set of parameters to define positioning/size etc. of a button group.
+ * Only use for custom button groups.
+ * Coordinates are screen coordinates.
  * @param x position of first button
  * @param y position of first button
  * @param w width of single button
@@ -18,9 +18,9 @@ import java.awt.Color
  * @param horizontal if true, buttons will be displayed from left to right, otherwise from top to bottom
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-data class ButtonGroupLayout(
+data class MagicCombatButtonGroupLayout(
     val x: Float, val y: Float, val w: Float, val h: Float,
     val a: Float, val color: Color,
     val padding: Float,

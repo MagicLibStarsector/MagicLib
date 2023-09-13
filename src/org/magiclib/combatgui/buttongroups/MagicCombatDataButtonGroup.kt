@@ -1,15 +1,15 @@
 package org.magiclib.combatgui.buttongroups
 
 import org.lazywizard.lazylib.ui.LazyFont
-import org.magiclib.combatgui.buttons.ButtonBase
-import org.magiclib.combatgui.buttons.ButtonInfo
-import org.magiclib.combatgui.buttons.DataToggleButton
-import org.magiclib.combatgui.buttons.HoverTooltip
+import org.magiclib.combatgui.buttons.MagicCombatButtonBase
+import org.magiclib.combatgui.buttons.MagicCombatButtonInfo
+import org.magiclib.combatgui.buttons.MagicCombatDataToggleButton
+import org.magiclib.combatgui.buttons.MagicCombatHoverTooltip
 
 /**
- * If possible, use GuiBase.addButtonGroup rather than using this class directly!
+ * If possible, use [org.magiclib.combatgui.MagicCombatGuiBase.addButtonGroup] rather than using this class directly!
  *
- * This class provides an inheritance-based option to create your buttons, whereas addButtonGroup instead allows
+ * This class provides an inheritance-based option to create your buttons, whereas [org.magiclib.combatgui.MagicCombatGuiBase.addButtonGroup] instead allows
  * you to pass actions for creating/refreshing buttons and the action to execute.
  *
  * base class defining a group of buttons with each button representing a possible date and the whole group
@@ -19,24 +19,24 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  * when clicked. When a button is clicked, that action is performed with the data of all active buttons.
  *
  * buttons get activated/deactivated by the user by clicking on them
- * when a button is clicked, executeAction gets called with the sum of data of all active buttons
+ * when a button is clicked, [executeAction] gets called with the sum of data of all active buttons
  *
  * If, for instance, we have two buttons with corresponding data 1 and respectively, and the user
  * activates the first button, `[1]` will be passed as data to the groupAction and 1 as triggeringButtonData.
  * If the user then clicks the second button `[1, 2]`, will be passed as data and 2 as triggeringButtonData.
  *
- * Extend this class by implementing createButtons, refresh and executeAction
- * @param font LazyFont object
+ * Extend this class by implementing [createButtons], [refresh] and [executeAction]
+ * @param font [LazyFont] object
  * @param descriptionText text to be rendered above the group
  * @param layout defines where/how the group gets rendered
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-abstract class DataButtonGroup(
-    val font: LazyFont?, var descriptionText: String, val layout: ButtonGroupLayout
+abstract class MagicCombatDataButtonGroup(
+    val font: LazyFont?, var descriptionText: String, val layout: MagicCombatButtonGroupLayout
 ) {
-    val buttons = mutableListOf<DataToggleButton>()
+    val buttons = mutableListOf<MagicCombatDataToggleButton>()
     private val descriptionOffset = 40f
     private var currentX = layout.x
     private var currentY = layout.y
@@ -58,18 +58,18 @@ abstract class DataButtonGroup(
      *
      */
     fun addButton(text: String, data: Any, tooltip: String, isActive: Boolean = true) {
-        val info = ButtonInfo(
-            currentX,
-            currentY,
-            layout.w,
-            layout.h,
-            layout.a,
-            text,
-            font,
-            layout.color,
-            HoverTooltip(layout.xTooltip, layout.yTooltip, tooltip)
+        val info = MagicCombatButtonInfo(
+            x = currentX,
+            y = currentY,
+            w = layout.w,
+            h = layout.h,
+            a = layout.a,
+            txt = text,
+            font = font,
+            color = layout.color,
+            tooltip = MagicCombatHoverTooltip(layout.xTooltip, layout.yTooltip, tooltip)
         )
-        buttons.add(DataToggleButton(data, info))
+        buttons.add(MagicCombatDataToggleButton(data, info))
         buttons.last().isActive = isActive
         if (layout.horizontal) {
             currentX += layout.w + layout.padding
@@ -79,8 +79,8 @@ abstract class DataButtonGroup(
     }
 
     /**
-     * reset grid positions back to original values
-     * call this method if you want to e.g. change something and recreate buttons
+     * Reset grid positions back to original values.
+     * Call this method if you want to e.g. change something and recreate buttons
      */
     fun resetGrid() {
         currentX = layout.x
@@ -88,14 +88,14 @@ abstract class DataButtonGroup(
     }
 
     /**
-     * disable (i.e. grey out and make un-clickable) button with given title/text/name
+     * Disable (i.e. grey out and make un-clickable) button with given title/text/name
      */
     fun disableButton(title: String) {
         buttons.find { it.info.txt == title }?.let { it.isDisabled = true }
     }
 
     /**
-     * refresh state (active/inactive) of all buttons
+     * Refresh state (active/inactive) of all buttons
      * @param data all buttons where button data is contained in this list will be set to active
      */
     fun refreshAllButtons(data: List<Any>) {
@@ -105,7 +105,7 @@ abstract class DataButtonGroup(
     }
 
     /**
-     * hopefully self-explanatory =)
+     * Hopefully self-explanatory =)
      */
     fun enableAllButtons() {
         buttons.forEach { it.isDisabled = false }
@@ -119,11 +119,11 @@ abstract class DataButtonGroup(
     }
 
     /**
-     * needs to be called every frame.
-     * checks if a button was clicked/hovered over during that frame
+     * Needs to be called every frame.
+     * Checks if a button was clicked/hovered over during that frame
      */
     fun advance(): Boolean {
-        if (ButtonBase.enableButtonHoverEffects && buttons.any { it.isHover() }) {
+        if (MagicCombatButtonBase.enableButtonHoverEffects && buttons.any { it.isHover() }) {
             onHover()
         }
         buttons.filter { it.advance() }.let {
@@ -138,7 +138,7 @@ abstract class DataButtonGroup(
     }
 
     /**
-     * needs to be called every frame from a render-method, such as e.g. BaseEveryFrameCombatPlugin::renderInUICoords
+     * Needs to be called every frame from a render-method, such as e.g. [com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin.renderInUICoords]
      */
     fun render() {
         buttons.forEach { it.render() }
@@ -147,14 +147,14 @@ abstract class DataButtonGroup(
 
     /**
      * Override me!
-     * gets called on construction. Create all buttons belonging to this group in the implementation of this method.
-     * cf. CreateSimpleButtons for an example implementation.
+     * Gets called on construction. Create all buttons belonging to this group in the implementation of this method.
+     * Check [MagicCombatCreateSimpleButtons] for an example implementation.
      */
     abstract fun createButtons()
 
     /**
      * Override me!
-     * gets called whenever a button of any group gets pressed (or something calls for a re-render)
+     * Gets called whenever a button of any group gets pressed (or something calls for a re-render).
      * If you e.g. want to enable/disable buttons or change tooltips based on the current state, implement
      * that logic in this method. Otherwise, an empty method will do.
      */
@@ -162,7 +162,7 @@ abstract class DataButtonGroup(
 
     /**
      * Override me!
-     * gets called whenever a button in this group gets clicked. Implement the actual logic you want your button group
+     * Gets called whenever a button in this group gets clicked. Implement the actual logic you want your button group
      * to perform in here.
      * @param data a list of the data of all currently active buttons
      * @param triggeringButtonData data of the button that was clicked if it was turned active. Null otherwise.
@@ -173,7 +173,8 @@ abstract class DataButtonGroup(
 
     /**
      * Override this method to perform some action when the user hovers over a button in the group.
-     * @note use getActiveButtonData() if you need to know the current button states in this method.
+     *
+     * Note: use [getActiveButtonData] if you need to know the current button states in this method.
      */
     open fun onHover() {}
 }

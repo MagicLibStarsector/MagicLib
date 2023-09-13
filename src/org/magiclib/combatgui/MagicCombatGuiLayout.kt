@@ -6,7 +6,7 @@ import java.awt.Color
  * Data class describing the layout, i.e. positions/spacings/color etc. of your GUI.
  *
  * @param xAnchorRel position in relative coordinates (value between 0 and 1) where the top-left corner of first
- * button group of the UI shall be placed. Note that [org.magiclib.combatgui.buttons.ActionButton]s will be placed above this.
+ * button group of the UI shall be placed. Note that [org.magiclib.combatgui.buttons.MagicCombatActionButton]s will be placed above this.
  * @param yAnchorRel cf. xAnchorRel
  * @param buttonWidthPx button width in pixels, e.g. 100f
  * @param buttonHeightPx button height in pixels, e.g. 20f
@@ -21,9 +21,9 @@ import java.awt.Color
  * @param yMessageRel cf. xMessageRel
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-data class GuiLayout(
+data class MagicCombatGuiLayout(
     val xAnchorRel: Float, val yAnchorRel: Float, val buttonWidthPx: Float, val buttonHeightPx: Float,
     val a: Float, val color: Color, val paddingPx: Float, val xTooltipRel: Float, val yTooltipRel: Float,
     val textSpacingBufferPx: Float, val fontPath: String, val xMessageRel: Float, val yMessageRel: Float

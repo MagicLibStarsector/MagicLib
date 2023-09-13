@@ -5,7 +5,7 @@ package org.magiclib.combatgui.buttongroups
  *
  * Example implementation:
  *
- * <pre>
+ * ```java
  * public class ExampleButtonGroupAction implements ButtonGroupAction {
  *     @Override
  *     public void execute(@NotNull List<?> data, @Nullable Object selectedButtonData, @Nullable Object unselectedButtonData) {
@@ -17,27 +17,27 @@ package org.magiclib.combatgui.buttongroups
  *     public void onHover() {
  *     }
  * }
- * </pre>
+ * ```
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-interface ButtonGroupAction {
+interface MagicCombatButtonGroupAction {
     /**
-     * this method will get called when a button in this button group gets clicked by the user
+     * This method will get called when a button in this button group gets clicked by the user
      *
      * @param data list of data of all currently active buttons (maybe empty)
      * @param selectedButtonData data of the button that was clicked if it was selected (null if button was deselected)
      * @param deselectedButtonData data of the button that was clicked if it was deselected (null if button was selected)
      *
      * Example implementation:
-     * <pre>
+     * ```java
      * @Override
      * public void execute(@NotNull List<?> data, @Nullable Object selectedButtonData, @Nullable Object unselectedButtonData) {
      *     Global.getLogger(this.getClass()).info("A button in the button group was clicked. Button group data:");
      *     Global.getLogger(this.getClass()).info(data);
      * }
-     * </pre>
+     * ```
      */
     fun execute(data: List<Any>, selectedButtonData: Any?, deselectedButtonData: Any? = null)
 
@@ -45,11 +45,12 @@ interface ButtonGroupAction {
      * Override this function to perform some kind of action when a button of the group is hovered over
      *
      * Example implementation:
-     * <pre>
+     * ```java
      * @Override
      * public void onHover() {
+     *   Global.getLogger(this.getClass()).info("A button in the button group was hovered over");
      * }
-     * </pre>
+     * ```
      */
     fun onHover() {}
 }

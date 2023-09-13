@@ -5,7 +5,7 @@ package org.magiclib.combatgui.buttons
  *
  * Example implementation:
  * ```java
- * public class ExampleButtonAction implements ButtonAction {
+ * public class ExampleButtonAction implements MagicCombatButtonAction {
  *     @Override
  *     public void execute() {
  *         Global.getLogger(this.getClass()).info("Button was clicked. This message should show up in starsector.log");
@@ -14,9 +14,9 @@ package org.magiclib.combatgui.buttons
  * ```
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-interface ButtonAction {
+interface MagicCombatButtonAction {
     /**
      * Will get executed when button is clicked.
      *

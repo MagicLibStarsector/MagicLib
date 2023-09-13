@@ -5,11 +5,11 @@ package org.magiclib.combatgui.buttons
  * Used in button groups, don't use directly unless you know what you are doing.
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-class DataToggleButton(
-    val data: Any, info: ButtonInfo
-) : ButtonBase(info) {
+class MagicCombatDataToggleButton(
+    val data: Any, info: MagicCombatButtonInfo
+) : MagicCombatButtonBase(info) {
     override fun advance(): Boolean {
         if (isClicked()) {
             isActive = !isActive

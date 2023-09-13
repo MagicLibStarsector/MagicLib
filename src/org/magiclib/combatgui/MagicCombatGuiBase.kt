@@ -4,10 +4,11 @@ import com.fs.starfarer.api.Global
 import org.lazywizard.lazylib.ui.FontException
 import org.lazywizard.lazylib.ui.LazyFont
 import org.magiclib.combatgui.buttongroups.*
-import org.magiclib.combatgui.buttons.ActionButton
-import org.magiclib.combatgui.buttons.ButtonAction
-import org.magiclib.combatgui.buttons.ButtonInfo
-import org.magiclib.combatgui.buttons.HoverTooltip
+import org.magiclib.combatgui.buttons.MagicCombatActionButton
+import org.magiclib.combatgui.buttons.MagicCombatButtonAction
+import org.magiclib.combatgui.buttons.MagicCombatButtonInfo
+import org.magiclib.combatgui.buttons.MagicCombatHoverTooltip
+import java.awt.Color
 
 /**
  * The base class you need to extend/inherit from to create a GUI.
@@ -17,13 +18,13 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  *
  * Override [getTitleString] to set a display title.
  *
- * Call [GuiBase.addButton] and/or [addButtonGroup] in your constructor to define what the GUI does.
+ * Call [MagicCombatGuiBase.addButton] and/or [addButtonGroup] in your constructor to define what the GUI does.
  *
  * Call this classes [advance] and [render] in a BaseEveryFrame(Combat)Script advance/render methods.
  *
  * It makes sense to create a new GUI object when a hotkey is pressed.
  *
- * To get started quickly, you can use the [SampleGuiLauncher].
+ * To get started quickly, you can use the [SampleMagicCombatGuiLauncher].
  *
  * Example implementation:
  * 
@@ -32,7 +33,7 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  *     // GUI setup work is done in constructor
  *     public ExampleCombatGui(){
  *         super(
- *                 new GuiLayout(0.05f, 0.8f, 100f, 20f, 0.5f,
+ *                 new MagicCombatGuiLayout(0.05f, 0.8f, 100f, 20f, 0.5f,
  *                 Color.WHITE,5f, 0.4f, 0.2f, 25f,
  *                 "graphics/fonts/insignia15LTaa.fnt", 0.4f, 0.4f)
  *         );
@@ -44,8 +45,8 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  *         );
  *
  *         addButtonGroup(
- *                 new MyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]
- *                 new CreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]
+ *                 new MagicCombatMyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]
+ *                 new MagicCombatCreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]
  *                         Arrays.asList("button1", "button2"),
  *                         null,
  *                         null
@@ -70,9 +71,25 @@ import org.magiclib.combatgui.buttons.HoverTooltip
  * ```
  *
  * @author Jannes
- * @since 1.2.0
+ * @since 1.3.0
  */
-open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = defaultGuiLayout) {
+open class MagicCombatGuiBase @JvmOverloads constructor(private val guiLayout: MagicCombatGuiLayout = createDefaultMagicCombatGuiLayout()) {
+
+    companion object {
+        /**
+         * Best guess GUI layout, feel free to pass this to [MagicCombatGuiBase] to get started quickly.
+         * In the long term, you probably want to create your own [MagicCombatGuiLayout].
+         *
+         * @author Jannes
+         * @since 1.3.0
+         */
+        @JvmStatic
+        fun createDefaultMagicCombatGuiLayout() = MagicCombatGuiLayout(
+            0.05f, 0.8f, 100f, 20f, 0.5f, Color.WHITE,
+            5f, 0.4f, 0.2f, 25f, "graphics/fonts/insignia15LTaa.fnt", 0.4f, 0.4f
+        )
+    }
+
     private val gSettings = Global.getSettings()
 
     private val xSpacing = guiLayout.buttonWidthPx + guiLayout.paddingPx
@@ -87,8 +104,8 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
 
     protected var font: LazyFont? = null
 
-    protected val standaloneButtons = mutableListOf<ActionButton>()
-    protected val buttonGroups = mutableListOf<DataButtonGroup>()
+    protected val standaloneButtons = mutableListOf<MagicCombatActionButton>()
+    protected val buttonGroups = mutableListOf<MagicCombatDataButtonGroup>()
 
     init {
         try {
@@ -143,8 +160,8 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      * Example:
      * ```java
      * addButtonGroup(
-     *                 new MyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]
-     *                 new CreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]
+     *                 new MagicCombatMyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]
+     *                 new MagicCombatCreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]
      *                         Arrays.asList("button1", "button2"),
      *                         null,
      *                         null
@@ -153,8 +170,8 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      *                 "Example button group"
      *         );
      * ```
-     * Note: Internally, this will create a new object that inherits from [DataButtonGroup] and implements the abstract functions.
-     *       If you want to provide your own implementation for [DataButtonGroup], use `addCustomButtonGroup` instead
+     * Note: Internally, this will create a new object that inherits from [MagicCombatDataButtonGroup] and implements the abstract functions.
+     *       If you want to provide your own implementation for [MagicCombatDataButtonGroup], use `addCustomButtonGroup` instead
      *
      * @param action will be performed when one of the buttons gets clicked, can't pass null
      *               Implement a class that implements ButtonGroupAction, overriding the execute method
@@ -164,12 +181,12 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      * @param refresh will be called whenever something changes (e.g. any button gets clicked), feel free to pass null
      */
     protected fun addButtonGroup(
-        action: ButtonGroupAction,
-        create: CreateButtonsAction,
-        refresh: RefreshButtonsAction?,
+        action: MagicCombatButtonGroupAction,
+        create: MagicCombatCreateButtonsAction,
+        refresh: MagicCombatRefreshButtonsAction?,
         descriptionText: String
     ) {
-        val group = object : DataButtonGroup(font, descriptionText, createButtonGroupLayout(buttonGroups.size)) {
+        val group = object : MagicCombatDataButtonGroup(font, descriptionText, createButtonGroupLayout(buttonGroups.size)) {
             override fun createButtons() {
                 create.createButtons(this)
             }
@@ -193,10 +210,10 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
     /**
      * It is recommended to use [addButtonGroup] instead.
      * add a custom button group where you have to take care of positioning etc.
-     * You will need to create a new class that inherits from DataButton group and pass an instance to this method.
+     * You will need to create a new class that inherits from [MagicCombatDataButton] group and pass an instance to this method.
      * Actions will be automatically executed when appropriate.
      */
-    protected fun addCustomButtonGroup(buttonGroup: DataButtonGroup) {
+    protected fun addCustomButtonGroup(buttonGroup: MagicCombatDataButtonGroup) {
         buttonGroup.createButtons()
         buttonGroups.add(buttonGroup)
     }
@@ -207,7 +224,7 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      *
      * Example:
      * ```java
-     * addButton(new MyButtonAction(), // MyButtonAction is a class you need to write that implements [ButtonAction]
+     * addButton(new MyButtonAction(), // MyButtonAction is a class you need to write that implements [MagicCombatButtonAction]
      *           "MyButton", // title of the button, i.e. text displayed on the button
      *           "my tooltip text", // text to display when user hovers over the button
      *           false // if the button should be disabled (usually false)
@@ -218,9 +235,9 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      * @param txt display text AKA name of the button
      * @param tooltipTxt will be displayed when user hovers over button, feel free to pass an empty string
      */
-    protected fun addButton(action: ButtonAction?, txt: String, tooltipTxt: String, isDisabled: Boolean = false) {
+    protected fun addButton(action: MagicCombatButtonAction?, txt: String, tooltipTxt: String, isDisabled: Boolean = false) {
         val btnInfo = createButtonInfo(standaloneButtons.size, txt, tooltipTxt)
-        val btn = ActionButton(action, btnInfo)
+        val btn = MagicCombatActionButton(action, btnInfo)
         btn.isDisabled = isDisabled
         standaloneButtons.add(btn)
     }
@@ -229,7 +246,7 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      * It is recommended to use [addButton] instead of this.
      * Adds a custom button where you have to take care of positioning etc.
      */
-    protected fun addCustomButton(button: ActionButton) {
+    protected fun addCustomButton(button: MagicCombatActionButton) {
         standaloneButtons.add(button)
     }
 
@@ -238,8 +255,8 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      *
      * @note Only relevant if you plan on using [addCustomButtonGroup]
      */
-    protected fun createButtonGroupLayout(index: Int): ButtonGroupLayout {
-        return ButtonGroupLayout(
+    protected fun createButtonGroupLayout(index: Int): MagicCombatButtonGroupLayout {
+        return MagicCombatButtonGroupLayout(
             xAnchor, yAnchor - index * ySpacing, guiLayout.buttonWidthPx, guiLayout.buttonHeightPx,
             guiLayout.a, guiLayout.color, guiLayout.paddingPx, xTooltip, yTooltip
         )
@@ -250,10 +267,10 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
      *
      * @note Only relevant if you plan on using [addCustomButton]
      */
-    protected fun createButtonInfo(xIndex: Int, txt: String, tooltipTxt: String): ButtonInfo {
-        return ButtonInfo(
+    protected fun createButtonInfo(xIndex: Int, txt: String, tooltipTxt: String): MagicCombatButtonInfo {
+        return MagicCombatButtonInfo(
             xAnchor + xIndex * xSpacing, yAnchor + ySpacing,
-            guiLayout.buttonWidthPx, guiLayout.buttonHeightPx, guiLayout.a, txt, font, color, HoverTooltip(
+            guiLayout.buttonWidthPx, guiLayout.buttonHeightPx, guiLayout.a, txt, font, color, MagicCombatHoverTooltip(
                 xTooltip, yTooltip, tooltipTxt
             )
         )
@@ -283,7 +300,7 @@ open class GuiBase @JvmOverloads constructor(private val guiLayout: GuiLayout = 
     }
 
     /**
-     * Delete all buttons from button groups and re-create them with the given [CreateButtonsAction].
+     * Delete all buttons from button groups and re-create them with the given [MagicCombatCreateButtonsAction].
      */
     open fun reRenderButtonGroups() {
         buttonGroups.forEach {
