@@ -10,7 +10,7 @@ import java.awt.Color
 import java.awt.Rectangle
 import kotlin.random.Random
 
-class MagicAchievementParticleScript {
+internal class MagicAchievementParticleScript {
     private val customRenderer: CustomPanelCustomRenderer = CustomPanelCustomRenderer()
     private val baseMinInterval = 0.03f
     private val baseMaxInterval = 0.04f

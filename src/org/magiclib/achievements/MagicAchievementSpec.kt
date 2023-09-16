@@ -3,6 +3,9 @@ package org.magiclib.achievements
 import com.fs.starfarer.api.util.Misc
 import org.json.JSONObject
 
+/**
+ * The specification, or blueprint, for an achievement. Does not contain player progress. A [MagicAchievement], which tracks progress, is created from this.
+ */
 open class MagicAchievementSpec(
     val modId: String,
     val modName: String,

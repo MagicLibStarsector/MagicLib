@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.*;
 
 /**
+ * The base class for all achievements. Extend this class to create your own.
+ * <p>
+ * First, create an entry in your <code>data/config/magic_achievements.csv</code> file. Set the <code>script</code> column to this class's package and name.
+ * <p>
  * This class is not serialized to the save file.
  *
  * @author Wisp
@@ -47,14 +51,14 @@ public class MagicAchievement {
     public String errorMessage;
 
     /**
-     * Do not use this constructor.
-     * Put your initialization code in {@link #onApplicationLoaded()} instead.
+     * Do not use this constructor. It is called automatically using reflection to instantiate this class.
+     * Put your initialization code in {@link #onApplicationLoaded()} or {@link #onSaveGameLoaded()} instead.
      */
     public MagicAchievement() {
     }
 
     /**
-     * By default, only run the achievement advance check every 1-2 seconds for performance reasons.
+     * By default, only run the achievement advance check every 1-2 seconds to improve performance.
      */
     private IntervalUtil advanceInterval = new IntervalUtil(1f, 2f);
 
@@ -219,6 +223,9 @@ public class MagicAchievement {
         }
     }
 
+    /**
+     * Returns an instance of the logger for this achievement.
+     */
     protected Logger getLogger() {
         if (logger == null) {
             logger = Global.getLogger(this.getClass());
@@ -228,7 +235,8 @@ public class MagicAchievement {
     }
 
     /**
-     * By default, only show Hidden achievements once they're completed.
+     * Whether or not to show this achievement in the Intel screen.
+     * By default, we only show Hidden achievements once they're completed.
      */
     public boolean shouldShowInIntel() {
         return getSpoilerLevel() != MagicAchievementSpoilerLevel.Hidden
@@ -247,6 +255,14 @@ public class MagicAchievement {
      */
     public void setAdvanceIntervalUtil(IntervalUtil interval) {
         advanceInterval = interval;
+    }
+
+    public boolean getHasProgressBar() {
+        return spec.getHasProgressBar();
+    }
+
+    public void setHasProgressBar(boolean hasProgressBar) {
+        spec.setHasProgressBar(hasProgressBar);
     }
 
     /**
@@ -376,14 +392,6 @@ public class MagicAchievement {
 
     public void setImage(@Nullable String image) {
         spec.setImage(image);
-    }
-
-    public boolean getHasProgressBar() {
-        return spec.getHasProgressBar();
-    }
-
-    public void setHasProgressBar(boolean hasProgressBar) {
-        spec.setHasProgressBar(hasProgressBar);
     }
 
     public @NotNull MagicAchievementSpoilerLevel getSpoilerLevel() {

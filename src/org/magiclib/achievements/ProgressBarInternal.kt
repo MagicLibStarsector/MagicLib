@@ -21,42 +21,38 @@ internal class ProgressBarInternal(
     private var minvalue: Float,
     private var maxValue: Float,
     textColor: Color,
-    val tooltip: TooltipMakerAPI,
-    var width: Float,
-    var height: Float,
-    val displayText: Boolean
+    private val tooltip: TooltipMakerAPI,
+    private var width: Float,
+    private var height: Float,
+    private val displayText: Boolean
 ) : CustomUIPanelPlugin {
 
     // LunaElement
-    var parentElement: TooltipMakerAPI = tooltip
-    var elementPanel: CustomPanelAPI
-    var innerElement: TooltipMakerAPI
-    var paragraph: LabelAPI? = null
+    private var parentElement: TooltipMakerAPI = tooltip
+    private var elementPanel: CustomPanelAPI
+    private var innerElement: TooltipMakerAPI
+    private var paragraph: LabelAPI? = null
 
-    var x: Float
-    var y: Float
+    private var x: Float
+    private var y: Float
 
-    var isHeld = false
-        private set
+    private var isHeld = false
 
-    var isHovering = false
-        private set
-    var hoverEnter = false
-        private set
+    private var isHovering = false
+    private var hoverEnter = false
 
-    var position: PositionAPI
-        private set
+    private var position: PositionAPI
 
-    var backgroundColor = Misc.getDarkPlayerColor().darker()
-    var borderColor = Misc.getDarkPlayerColor()
+    private var backgroundColor = Misc.getDarkPlayerColor().darker()
+    private var borderColor = Misc.getDarkPlayerColor()
 
-    var renderBorder = true
+    private var renderBorder = true
 
-    var enableTransparency = false
-    var borderAlpha = 1f
-    var backgroundAlpha = 1f
+    private var enableTransparency = false
+    private var borderAlpha = 1f
+    private var backgroundAlpha = 1f
 
-    var selectionGroup = ""
+    private var selectionGroup = ""
 
     private var customData: HashMap<String, Any?> = HashMap()
 
@@ -90,7 +86,7 @@ internal class ProgressBarInternal(
         selectionGroup = "all"
     }
 
-    fun addText(
+    private fun addText(
         text: String,
         baseColor: Color = Misc.getTextColor(),
         highlightColor: Color = Misc.getHighlightColor(),
@@ -99,7 +95,7 @@ internal class ProgressBarInternal(
         paragraph = innerElement.addPara(text, 0f, baseColor, highlightColor, *highlights.toTypedArray())
     }
 
-    fun centerText() {
+    private fun centerText() {
         if (paragraph == null) {
             addText("")
         }
@@ -125,7 +121,7 @@ internal class ProgressBarInternal(
     override fun render(alphaMult: Float) {
 
         if (renderBorder) {
-            var c = borderColor
+            val c = borderColor
             GL11.glPushMatrix()
 
             GL11.glTranslatef(0f, 0f, 0f)
@@ -202,7 +198,7 @@ internal class ProgressBarInternal(
                 }
             }
 
-            if (event.isMouseDownEvent && position != null) {
+            if (event.isMouseDownEvent) {
                 if (event.x.toFloat() in x..(x + width) && event.y.toFloat() in y..(y + height)) {
                     isHeld = true
                     for (onClick in onClickFunctions) {
@@ -235,33 +231,33 @@ internal class ProgressBarInternal(
         }
     }
 
-    fun onClick(input: InputEventAPI) {}
+    private fun onClick(input: InputEventAPI) {}
 
-    fun onClickOutside(input: InputEventAPI) {}
+    private fun onClickOutside(input: InputEventAPI) {}
 
-    fun onHover(input: InputEventAPI) {}
+    private fun onHover(input: InputEventAPI) {}
 
-    fun onHoverEnter(input: InputEventAPI) {}
+    private fun onHoverEnter(input: InputEventAPI) {}
 
-    fun onHoverExit(input: InputEventAPI) {}
+    private fun onHoverExit(input: InputEventAPI) {}
 
-    fun advance(function: (Float) -> Unit) {
+    private fun advance(function: (Float) -> Unit) {
         advanceFunc.add(function)
     }
 
-    fun render(function: (Float) -> Unit) {
+    private fun render(function: (Float) -> Unit) {
         renderFunc.add(function)
     }
 
-    fun onClick(function: (InputEventAPI) -> Unit) {
+    private fun onClick(function: (InputEventAPI) -> Unit) {
         onClickFunctions.add(function)
     }
 
-    fun onHover(function: (InputEventAPI) -> Unit) {
+    private fun onHover(function: (InputEventAPI) -> Unit) {
         onHoverFunctions.add(function)
     }
 
-    final override fun buttonPressed(buttonId: Any?) {
+    override fun buttonPressed(buttonId: Any?) {
 
     }
 
@@ -281,7 +277,7 @@ internal class ProgressBarInternal(
         renderBorder = true
     }
 
-    fun getValue() = value
+    private fun getValue() = value
 
     override fun renderBelow(alphaMult: Float) {
         // LunaElement
@@ -290,7 +286,7 @@ internal class ProgressBarInternal(
         }
 
         // LunaProgressBar
-        var level = (value - minvalue) / (maxValue - minvalue)
+        val level = (value - minvalue) / (maxValue - minvalue)
 
         GL11.glPushMatrix()
         GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -303,16 +299,16 @@ internal class ProgressBarInternal(
         }
 
         var curPos = x
-        var segments = 30
-        var colorPerSegment = 1f / segments
+        val segments = 30
+        val colorPerSegment = 1f / segments
         var curColor = 1f
 
         GL11.glBegin(GL11.GL_QUAD_STRIP)
 
         for (segment in 0..segments) {
 
-            var bc = backgroundColor
-            var c = Color((bc.red * curColor).toInt(), (bc.green * curColor).toInt(), (bc.blue * curColor).toInt())
+            val bc = backgroundColor
+            val c = Color((bc.red * curColor).toInt(), (bc.green * curColor).toInt(), (bc.blue * curColor).toInt())
             curColor -= colorPerSegment / 3
 
             GL11.glColor4f(

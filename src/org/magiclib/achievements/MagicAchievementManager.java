@@ -178,15 +178,22 @@ public class MagicAchievementManager {
 
     /**
      * Unloads all current achievements from the sector and reloads them from files.
+     * <p>
+     * Achievement specs are loaded from the mod's magic_achievements.csv file, allowing mods to update/change achievements,
+     * and player progress is loaded from common.
+     * <p>
+     * If a mod has removed an achievement (or the player is no longer using the mod),
+     * the achievement will be loaded as an "unloaded" achievement and still shown using the spec saved in common.
      *
-     * @param isSaveGameLoaded Whether a save game is being loaded.
+     * @param isSaveGameLoaded Whether a save game is loaded. If true, calls {@link MagicAchievement#onSaveGameLoaded()} on all achievements.
      */
     public void reloadAchievements(boolean isSaveGameLoaded) {
-        Map<String, MagicAchievement> newAchievementsById = generateAchievementsFromSpec(instance.achievementSpecs);
+        // Generate fresh, unused achievements from the specs.
+        Map<String, MagicAchievement> generatedAchievementsById = generateAchievementsFromSpec(instance.achievementSpecs);
 
         // Load achievements already saved in Common and overwrite the generated ones with their data.
         JSONUtils.CommonDataJSONObject commonJson;
-        JSONArray savedAchievements;
+        JSONArray savedAchievementsJson;
 
         try {
             // Create file if it doesn't exist.
@@ -195,9 +202,8 @@ public class MagicAchievementManager {
             }
 
             try {
-                //noinspection resource
                 commonJson = JSONUtils.loadCommonJSON(commonFilename);
-                savedAchievements = commonJson.getJSONArray(achievementsJsonObjectKey);
+                savedAchievementsJson = commonJson.getJSONArray(achievementsJsonObjectKey);
             } catch (JSONException ex) {
                 // If the achievement file is broken, make a backup and then remake it.
                 logger.warn("Unable to load achievements from " + commonFilename + ", making a backup and remaking it.", ex);
@@ -205,7 +211,7 @@ public class MagicAchievementManager {
                 Global.getSettings().deleteTextFileFromCommon(commonFilename);
                 saveAchievements();
                 commonJson = JSONUtils.loadCommonJSON(commonFilename);
-                savedAchievements = commonJson.getJSONArray(achievementsJsonObjectKey);
+                savedAchievementsJson = commonJson.getJSONArray(achievementsJsonObjectKey);
             }
         } catch (Exception e) {
             logger.warn("Unable to load achievements from " + commonFilename, e);
@@ -217,12 +223,12 @@ public class MagicAchievementManager {
 
         // If the specId doesn't exist in the current mod list, load it as an "unloaded" achievement.
         // This prevents achievements from being lost if a mod is removed or the achievement is removed from a mod.
-        for (int i = 0; i < savedAchievements.length(); i++) {
+        for (int i = 0; i < savedAchievementsJson.length(); i++) {
             try {
-                JSONObject savedAchievementJson = savedAchievements.getJSONObject(i);
+                JSONObject savedAchievementJson = savedAchievementsJson.getJSONObject(i);
                 String specId = savedAchievementJson.optString("id", "");
                 // Try to load the achievement from a spec in a loaded mod.
-                MagicAchievement loadedAchievement = newAchievementsById.get(specId);
+                MagicAchievement loadedAchievement = generatedAchievementsById.get(specId);
 
                 if (loadedAchievement == null) {
                     // If the achievement isn't in a loaded mod, load it as an "unloaded" achievement.
@@ -230,9 +236,10 @@ public class MagicAchievementManager {
                     loadedAchievement = new MagicUnloadedAchievement();
                 }
 
+                // Hydrate the generated achievement from the saved data containing the player's progress.
                 loadedAchievement.loadFromJsonObject(savedAchievementJson);
 
-                // If the achievement was loaded from a spec (ie mod is loaded), use that spec, rather than the spec saved in common.
+                // If the achievement was loaded from a spec (i.e. mod is loaded), use that spec, rather than the spec saved in common.
                 // This will load any changes made to the achievement's spec in the mod without affecting completion or saved data.
                 MagicAchievementSpec achievementSpec = instance.achievementSpecs.get(specId);
 
@@ -240,7 +247,7 @@ public class MagicAchievementManager {
                     loadedAchievement.spec = achievementSpec;
                 }
 
-                newAchievementsById.put(loadedAchievement.getSpecId(), loadedAchievement);
+                generatedAchievementsById.put(loadedAchievement.getSpecId(), loadedAchievement);
             } catch (Exception e) {
                 logger.warn("Unable to load achievement #" + i, e);
             }
@@ -252,7 +259,7 @@ public class MagicAchievementManager {
 
         // Not removing old achievements; we never want to risk deleting any,
         // and putting the new ones in the map will overwrite the old ones.
-        achievements.putAll(newAchievementsById);
+        achievements.putAll(generatedAchievementsById);
 
         // Calling onApplicationLoaded and onGameLoaded would seem to make more sense to do
         // in their respective methods, but doing it here ensures that they're called.
@@ -286,6 +293,7 @@ public class MagicAchievementManager {
 
     /**
      * Creates achievements from the given specs, creates the script instances from the class name, and returns them.
+     * Note that this is not loading achievements from previous sessions, just creating fresh, unused ones.
      */
     public static @NotNull Map<String, MagicAchievement> generateAchievementsFromSpec(@NotNull Map<String, MagicAchievementSpec> specs) {
         Map<String, MagicAchievement> newAchievementsById = new HashMap<>();
@@ -443,7 +451,9 @@ public class MagicAchievementManager {
         }
     }
 
-    // Set of achievement IDs that have thrown an error in their advance method.
+    /**
+     * Set of achievement IDs that have thrown an error in their advance method.
+     */
     public Set<String> achievementScriptsWithRunError = new HashSet<>();
 
     /**
@@ -499,7 +509,9 @@ public class MagicAchievementManager {
         }
     }
 
-    // Set of achievement IDs that have thrown an error in their advance method.
+    /**
+     * Set of achievement IDs that have thrown an error in their advanceInCombat method.
+     */
     public Set<String> achievementScriptsWithCombatRunError = new HashSet<>();
 
     /**
