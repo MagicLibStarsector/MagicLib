@@ -16,7 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.JSONUtils;
-import org.magiclib.achievements.builtin.Spoilers;
 import org.magiclib.util.MagicMisc;
 import org.magiclib.util.MagicVariables;
 
@@ -52,6 +51,22 @@ public class MagicAchievementManager {
     }
 
     /**
+     * Use this to create achievements that are not defined in magic_achievements.csv. You may want to do this to better hide
+     * an achievement from players.
+     * <p>
+     * If the spec is already present, it will be replaced with <code>spec</code>.
+     * <p>
+     * The <code>script</code> parameter should be the fully qualified class name of the achievement, same as if it were in the csv.
+     */
+    public void addAchievementSpec(@NotNull MagicAchievementSpec spec) {
+        achievementSpecs.put(spec.getId(), spec);
+    }
+
+    public void removeAchievementSpec(@NotNull String specId) {
+        achievementSpecs.remove(specId);
+    }
+
+    /**
      * Loads achievements (so that any that track stuff outside of the campaign are started).
      */
     public void onApplicationLoad() {
@@ -84,7 +99,7 @@ public class MagicAchievementManager {
     }
 
     /**
-     * (Re)loads achievements (so that any that track stuff outside of the campaign are started).
+     * (Re)loads achievements (so that any that track stuff outside the campaign are started).
      */
     public void onGameLoad() {
         setAchievementsEnabled(areAchievementsEnabled, true);
@@ -92,13 +107,6 @@ public class MagicAchievementManager {
 
     public void setAchievementsEnabled(boolean areAchievementsEnabled, boolean isSaveLoaded) {
         if (areAchievementsEnabled) {
-            // Add MagicLib achievements that are code-only, rather than being in the csv for anyone to see.
-            for (MagicAchievementSpec spec : Spoilers.getSpoilerAchievementSpecs()) {
-                if (!achievementSpecs.containsKey(spec.getId())) {
-                    achievementSpecs.put(spec.getId(), spec);
-                }
-            }
-
             MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
 
             if (isSaveLoaded) {
@@ -138,6 +146,9 @@ public class MagicAchievementManager {
         }
     }
 
+    /**
+     * Do not add achievements this way. Use {@link #addAchievementSpec(MagicAchievementSpec)} instead.
+     */
     @NotNull
     public Map<String, MagicAchievement> getAchievements() {
         return achievements;
