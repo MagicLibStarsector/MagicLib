@@ -88,7 +88,6 @@ class ColonyItemsAchievement : MagicAchievement() {
 
     override fun createTooltip(tooltipMakerAPI: TooltipMakerAPI, isExpanded: Boolean, width: Float) {
         createTooltipHeader(tooltipMakerAPI)
-        tooltipMakerAPI.addPara(description, 3f)
         targets.mapNotNull { item -> Global.getSettings().getSpecialItemSpec(item) }
             .sortedBy { it.name }
             .forEach { spec ->
