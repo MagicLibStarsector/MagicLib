@@ -64,7 +64,7 @@ class MagicAchievementParticleScript {
         val velocityScale = .015f
         val sizeScale = 0.75f
         val durationScale = 4f
-        val rampUpScale = 4.0f
+        val rampUpScale = 2.0f
         val rampDownScale = 1.0f
         val endSizeScale = 1.55f
         val densityScale = 6f // Lower is more dense

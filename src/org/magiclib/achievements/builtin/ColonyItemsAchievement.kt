@@ -2,8 +2,13 @@ package org.magiclib.achievements.builtin
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.ids.Items
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
+import org.json.JSONArray
 import org.magiclib.achievements.MagicAchievement
 import org.magiclib.kotlin.getFactionMarkets
+import org.magiclib.kotlin.toStringList
 
 class ColonyItemsAchievement : MagicAchievement() {
     companion object {
@@ -13,7 +18,7 @@ class ColonyItemsAchievement : MagicAchievement() {
     private val targets: MutableSet<String> = HashSet()
 
     val itemsAcquiredSoFar: Set<String>
-        get() = (memory[key] as? MutableSet<String>?) ?: mutableSetOf()
+        get() =  ((memory[key] as? JSONArray)?.toStringList() ?: emptyList()).toSet()
 
     override fun onApplicationLoaded() {
         super.onApplicationLoaded()
@@ -78,4 +83,21 @@ class ColonyItemsAchievement : MagicAchievement() {
 
     override fun getProgress(): Float = itemsAcquiredSoFar.size.toFloat()
     override fun getMaxProgress(): Float = targets.size.toFloat()
+
+    override fun hasTooltip() = true
+
+    override fun createTooltip(tooltipMakerAPI: TooltipMakerAPI, isExpanded: Boolean, width: Float) {
+        createTooltipHeader(tooltipMakerAPI)
+        tooltipMakerAPI.addPara(description, 3f)
+        targets.mapNotNull { item -> Global.getSettings().getSpecialItemSpec(item) }
+            .sortedBy { it.name }
+            .forEach { spec ->
+                val hasItem = spec.id in itemsAcquiredSoFar
+                tooltipMakerAPI.addPara(
+                    spec.name,
+                    if (hasItem) Misc.getTextColor() else Misc.getNegativeHighlightColor(),
+                    3f
+                )
+            }
+    }
 }

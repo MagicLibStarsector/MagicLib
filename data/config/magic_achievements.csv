@@ -23,6 +23,7 @@ aicore,"I'm Sorry, Dave","Had a colony AI Core go rogue.",,org.magiclib.achievem
 gatetravel,"Big Hop","Traveled 60 LY in a single jump.",,org.magiclib.achievements.builtin.GateTravelAchievement,,,VISIBLE,UNCOMMON
 neural,"Assuming Direct Control","Used Neural Link to control an automated ship.",,org.magiclib.achievements.builtin.NeuralAchievement,,,VISIBLE,UNCOMMON
 satbombeverybody,"And Over The Ashes","Saturation bombed all vanilla faction homeworlds.",,org.magiclib.achievements.builtin.SatBombEverybodyAchievement,,true,VISIBLE,UNCOMMON
+distresscallreversal,"Call An Ambulance, But Not For Me","Turn around a bogus distress call.",,org.magiclib.achievements.builtin.DistressCallReversalAchievement,,false,VISIBLE,UNCOMMON
 
 # Rare
 javaupgrade,"BIG DECIMAL","Upgraded the game's Java version.",,org.magiclib.achievements.builtin.JavaUpgradeAchievement,,,HIDDEN,RARE
@@ -31,11 +32,12 @@ noconditions,"Unconditional","Surveyed a planet with no conditions.",,org.magicl
 powerofthesun,"The Power Of The Sun, In The Palm Of My Hand","Gave one of your colonies extra sunlight.",,org.magiclib.achievements.builtin.PowerOfTheSunAchievement,,,VISIBLE,RARE
 motes,"Who You Gonna Call?","Encountered eight different hyperspace ghosts.",,org.magiclib.achievements.builtin.MotesAchievement,,true,VISIBLE,RARE
 luckystart, "Lucky Start","Found a capital derelict within the first month.",,org.magiclib.achievements.builtin.LuckyStartAchievement,,false,VISIBLE,RARE
-oriondrive, "Cool Guys Don't Look At Explosions","Destroyed an enemy using the orion drive.",,org.magiclib.achievements.builtin.OrionDriveAchievement,,false,VISIBLE,RARE
+# Hard to do intentionally, let alone unintentionally, and hard to detect via code.
+# oriondrive, "Cool Guys Don't Look At Explosions","Destroyed an enemy using the orion drive.",,org.magiclib.achievements.builtin.OrionDriveAchievement,,false,VISIBLE,RARE
 
 # Epic
 fleetdoctrine,"What Is 'Fleet Doctrine'?","Deployed ships of every vanilla design type in a single battle.",,org.magiclib.achievements.builtin.FleetDoctrineAchievement,,,VISIBLE,EPIC
 omegaLowDp,"I Am The Alpha","Defeated <ultra redacted> using a maximum of 80 deployment points.",,org.magiclib.achievements.builtin.OmegaLowDpAchievement,,,VISIBLE,EPIC
-colonyitems,"Behold! My Stuff.","Install every colony item.",,org.magiclib.achievements.builtin.ColonyItemsAchievement,,true,VISIBLE,EPIC
+colonyitems,"Behold! My Stuff.","Installed every colony item.",,org.magiclib.achievements.builtin.ColonyItemsAchievement,,true,VISIBLE,EPIC
 
 # Legendary

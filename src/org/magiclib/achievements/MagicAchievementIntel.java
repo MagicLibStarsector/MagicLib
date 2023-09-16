@@ -156,7 +156,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             // Mod name header
             if (!achievement.getModId().equals(prevModId)) {
-                info.addSectionHeading(achievement.getModName(), faction.getBaseUIColor(), faction.getSecondaryUIColor(), Alignment.LMID, 10f);
+                info.addSectionHeading("   " + achievement.getModName(), faction.getBaseUIColor(), faction.getSecondaryUIColor(), Alignment.LMID, 10f);
                 info.getPrev().getPosition().setXAlignOffset(10f);
                 prevModId = achievement.getModId();
             }
@@ -193,14 +193,14 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             TooltipMakerAPI rightElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
 
             // Tooltip
-            if (achievement.getTooltip() != null && !achievement.getTooltip().trim().isEmpty()) {
+            if (achievement.hasTooltip()) {
                 leftElement.addTooltipTo(getTooltipCreator(achievement, pad), row, TooltipMakerAPI.TooltipLocation.ABOVE);
 //                rightElement.addTooltipToPrevious(getTooltipCreator(achievement, pad), TooltipMakerAPI.TooltipLocation.ABOVE);
             }
 
             boolean showDescription = achievement.isComplete() || achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Visible;
             if (!showDescription) {
-                // Blank line if the desc isn't show to put title in the middle.
+                // Blank line if the desc isn't shown to put title in the middle.
                 leftElement.addPara("", 3);
             }
 
@@ -212,7 +212,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             leftElement.addPara(name, achievement.isComplete()
                     ? Misc.getHighlightColor()
-                    : Misc.getTextColor(), 0);
+                    : Misc.getTextColor(), 10);
 
             // Error message if there is one.
             if (achievement.errorMessage == null) {

@@ -1,8 +1,21 @@
-Version 1.2.1
+Verison 1.3.0
+**MagicAchievements**
+- **New feature!** Cross-save achievements framework that any mod may add to.
+- Comes with 15+ achievements out of the box.
+- May be disabled using LunaLib's settings menu.
+- Achievements work similarly to Steam's; once unlocked, they are unlocked forever and across all saves.
+  - Nexerelin's Milestones, in contrast, are per-save.
+- Find them under your Intel under `Personal`.
+
+**CombatGUI**
+- Properly released to everybody!
+- Breaking changes from the 1.2.0 version to add `MagicCombat` to the class names.
+
+Version 1.2.1 (discord-only)
 **MagicBounty**
 - Text now supports all vanilla variables (requested by CivilYoshi).
 
-Version 1.2.0
+Version 1.2.0 (discord-only)
 **CombatGUI**
 - **New feature!** Contributed by @Jannes/DesperatePeter!
 

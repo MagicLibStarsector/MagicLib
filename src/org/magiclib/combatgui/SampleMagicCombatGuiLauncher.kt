@@ -13,7 +13,7 @@ import com.fs.starfarer.api.input.InputEventAPI
  *
  * Example:
  * ```java
- * public class ExampleCombatGuiLauncher extends SampleGuiLauncher{
+ * public class ExampleCombatGuiLauncher extends SampleMagicCombatGuiLauncher{
  *     public ExampleCombatGuiLauncher(){
  *         super('+'); // use + as hotkey to open/close GUI
  *     }

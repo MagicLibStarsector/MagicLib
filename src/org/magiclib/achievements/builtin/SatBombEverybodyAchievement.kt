@@ -6,9 +6,13 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.listeners.ColonyPlayerHostileActListener
-import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
+import org.json.JSONArray
 import org.magiclib.achievements.MagicAchievement
+import org.magiclib.kotlin.toStringList
 
 class SatBombEverybodyAchievement : MagicAchievement(), ColonyPlayerHostileActListener {
     companion object {
@@ -18,7 +22,7 @@ class SatBombEverybodyAchievement : MagicAchievement(), ColonyPlayerHostileActLi
     private val targets: MutableSet<String> = HashSet()
 
     val targetsBombardedSoFar: Set<String>
-        get() = (memory[key] as? MutableSet<String>?) ?: mutableSetOf()
+        get() = ((memory[key] as? JSONArray)?.toStringList() ?: emptyList()).toSet()
 
     override fun onApplicationLoaded() {
         super.onApplicationLoaded()
@@ -70,6 +74,23 @@ class SatBombEverybodyAchievement : MagicAchievement(), ColonyPlayerHostileActLi
     override fun getProgress(): Float = targetsBombardedSoFar.size.toFloat()
     override fun getMaxProgress(): Float = targets.size.toFloat()
 
+    override fun hasTooltip() = true
+
+    override fun createTooltip(tooltipMakerAPI: TooltipMakerAPI, isExpanded: Boolean, width: Float) {
+        createTooltipHeader(tooltipMakerAPI)
+        val allPlanets = Global.getSector().starSystems.flatMap { it.planets }
+        targets.mapNotNull { planetId -> allPlanets.first { it.id == planetId } }
+            .sortedBy { it.name ?: "" }
+            .forEach { spec ->
+                val hasItem = spec.id in targetsBombardedSoFar
+                tooltipMakerAPI.addPara(
+                    spec.name,
+                    if (hasItem) Misc.getTextColor() else Misc.getNegativeHighlightColor(),
+                    3f
+                )
+            }
+    }
+
     override fun reportRaidForValuablesFinishedBeforeCargoShown(
         dialog: InteractionDialogAPI?,
         market: MarketAPI?,
@@ -89,5 +110,4 @@ class SatBombEverybodyAchievement : MagicAchievement(), ColonyPlayerHostileActLi
         market: MarketAPI?,
         actionData: MarketCMD.TempData?
     ) = Unit
-
 }

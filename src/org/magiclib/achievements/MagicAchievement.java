@@ -3,6 +3,7 @@ package org.magiclib.achievements;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
@@ -284,17 +285,6 @@ public class MagicAchievement {
         this.maxProgress = maxProgress;
     }
 
-    /**
-     * Allows full control of the tooltip.
-     * Called when the achievement is hovered over in the Intel screen.
-     * By default, shows the name and tooltip.
-     */
-    public void createTooltip(@NotNull TooltipMakerAPI tooltipMakerAPI, boolean isExpanded, float width) {
-        if (getTooltip() != null && !getTooltip().isEmpty()) {
-            tooltipMakerAPI.addPara(getName(), Misc.getHighlightColor(), 3f);
-            tooltipMakerAPI.addPara(getTooltip(), 3f);
-        }
-    }
 
     public @NotNull String getModId() {
         return spec.getModId();
@@ -324,12 +314,37 @@ public class MagicAchievement {
         spec.setDescription(description);
     }
 
+    public boolean hasTooltip() {
+        return getTooltip() != null && !getTooltip().isEmpty();
+    }
+
     public @Nullable String getTooltip() {
         return spec.getTooltip();
     }
 
     public void setTooltip(@Nullable String tooltip) {
         spec.setTooltip(tooltip);
+    }
+
+    public void createTooltipHeader(@NotNull TooltipMakerAPI tooltipMakerAPI) {
+        tooltipMakerAPI.addSectionHeading("", Alignment.TMID, 0f);
+        tooltipMakerAPI.addSectionHeading(getName(), Alignment.TMID, 0f);
+        tooltipMakerAPI.addSectionHeading("", Alignment.TMID, 0f);
+        tooltipMakerAPI.addPara(getDescription() + "\n", 3f);
+    }
+
+    /**
+     * Allows full control of the tooltip.
+     * Called when the achievement is hovered over in the Intel screen.
+     * By default, shows the name and tooltip.
+     * <p>
+     * Make sure to override {@link #hasTooltip()} to return true if {@link #getTooltip()} returns an empty string but this is overridden.
+     */
+    public void createTooltip(@NotNull TooltipMakerAPI tooltipMakerAPI, boolean isExpanded, float width) {
+        if (getTooltip() != null && !getTooltip().isEmpty()) {
+            createTooltipHeader(tooltipMakerAPI);
+            tooltipMakerAPI.addPara(getTooltip(), 3f);
+        }
     }
 
     public @NotNull String getScript() {
@@ -402,7 +417,7 @@ public class MagicAchievement {
                 return Color.YELLOW;
             case Epic:
                 // Purple
-                return new Color(0x7754C9);
+                return new Color(0x9876EC);
             case Legendary:
                 // Purple
                 return new Color(0x7754C9);
