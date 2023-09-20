@@ -453,7 +453,7 @@ public final class MagicBountyCoordinator {
 
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-                    Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey);
                 }
             } else {
                 throw new RuntimeException(String.format("Couldn't find %s.", bountyKey));

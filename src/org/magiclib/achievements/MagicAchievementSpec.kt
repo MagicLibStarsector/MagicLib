@@ -22,7 +22,7 @@ open class MagicAchievementSpec(
     fun toJsonObject(): JSONObject {
         val json = JSONObject()
         json.put("modId", modId)
-        json.put("modName", modId)
+        json.put("modName", modName)
         json.put("id", id)
         json.put("name", name)
         json.put("description", description)

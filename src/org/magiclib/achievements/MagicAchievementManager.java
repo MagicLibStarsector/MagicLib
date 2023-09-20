@@ -102,10 +102,16 @@ public class MagicAchievementManager {
      * (Re)loads achievements (so that any that track stuff outside the campaign are started).
      */
     public void onGameLoad() {
+        if (areAchievementsEnabled && Global.getSettings().isDevMode()) {
+            instance.achievementSpecs = getSpecsFromFiles();
+        }
+
         setAchievementsEnabled(areAchievementsEnabled, true);
     }
 
     public void setAchievementsEnabled(boolean areAchievementsEnabled, boolean isSaveLoaded) {
+        this.areAchievementsEnabled = areAchievementsEnabled;
+
         if (areAchievementsEnabled) {
             MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
 
@@ -126,6 +132,10 @@ public class MagicAchievementManager {
                 magicAchievement.onDestroyed();
             }
         }
+    }
+
+    public boolean areAchievementsEnabled() {
+        return areAchievementsEnabled;
     }
 
     public void initIntel() {

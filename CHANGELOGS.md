@@ -1,7 +1,7 @@
 Verison 1.3.0
 **MagicAchievements**
 - **New feature!** Cross-save achievements framework that any mod may add to.
-- Comes with 15+ achievements out of the box.
+- 20+ achievements available in a separate mod, Magic Achievements: Vanilla Pack.
 - May be disabled using LunaLib's settings menu.
 - Achievements work similarly to Steam's; once unlocked, they are unlocked forever and across all saves.
   - Nexerelin's Milestones, in contrast, are per-save.
@@ -10,6 +10,9 @@ Verison 1.3.0
 **CombatGUI**
 - Properly released to everybody!
 - Breaking changes from the 1.2.0 version to add `MagicCombat` to the class names.
+
+**MagicBounty**
+- Fixed a potential crash after resetting a bounty via console command (reported by mrmagolor).
 
 Version 1.2.1 (discord-only)
 **MagicBounty**

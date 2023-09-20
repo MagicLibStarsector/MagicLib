@@ -3,6 +3,7 @@ package org.magiclib.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
@@ -898,18 +899,20 @@ public class MagicCampaign {
             return false;
         }
 
+        MemoryAPI memory = Global.getSector().getMemoryWithoutUpdate();
+
         //checking trigger_memKeys_all
         if (memKeys_all != null && !memKeys_all.isEmpty()) {
             for (String f : memKeys_all.keySet()) {
                 //check if the memKey exists 
-                if (!Global.getSector().getMemoryWithoutUpdate().getKeys().contains(f)) {
+                if (!memory.getKeys().contains(f) || memory.get(f) == null) {
                     if (MagicVariables.verbose) {
-                        log.info(String.format("Requirement not met: memKeys_all %s key not fount.", f));
+                        log.info(String.format("Requirement not met: memKeys_all %s key not found.", f));
                     }
                     return false;
                 }
                 //check if it has the proper value
-                if (memKeys_all.get(f) != Global.getSector().getMemoryWithoutUpdate().getBoolean(f)) {
+                if (memKeys_all.get(f) != memory.getBoolean(f)) {
                     if (MagicVariables.verbose) {
                         log.info(String.format("Requirement not met: memKeys_all %s key is not %s.", f, memKeys_all.get(f)));
                     }
@@ -921,8 +924,8 @@ public class MagicCampaign {
         //checking memKeys_none
         if (memKeys_none != null && !memKeys_none.isEmpty()) {
             for (Map.Entry<String, Boolean> entry : memKeys_none.entrySet()) {
-                if (Global.getSector().getMemoryWithoutUpdate().contains(entry.getKey())) {
-                    if (Global.getSector().getMemoryWithoutUpdate().getBoolean(entry.getKey()) == entry.getValue()) {
+                if (memory.contains(entry.getKey()) && memory.get(entry.getKey()) != null) {
+                    if (memory.getBoolean(entry.getKey()) == entry.getValue()) {
                         if (MagicVariables.verbose) {
                             log.info(String.format("Requirement not met: memKeys_none %s value %s is present.", entry.getKey(), entry.getValue()));
                         }
@@ -936,9 +939,9 @@ public class MagicCampaign {
         if (memKeys_any != null && !memKeys_any.isEmpty()) {
             for (String key : memKeys_any.keySet()) {
                 //check if the memKey exists 
-                if (Global.getSector().getMemoryWithoutUpdate().getKeys().contains(key)) {
+                if (memory.getKeys().contains(key)) {
                     //check if it has the proper value
-                    if (memKeys_any.get(key) == Global.getSector().getMemoryWithoutUpdate().getBoolean(key)) {
+                    if (memKeys_any.get(key) == memory.getBoolean(key)) {
                         return true;
                     }
                 }
