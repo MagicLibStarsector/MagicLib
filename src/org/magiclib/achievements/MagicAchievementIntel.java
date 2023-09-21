@@ -1,7 +1,6 @@
 package org.magiclib.achievements;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.ui.*;
@@ -15,8 +14,6 @@ import java.util.*;
 
 public class MagicAchievementIntel extends BaseIntelPlugin {
     private static final Logger logger = Global.getLogger(MagicAchievementIntel.class);
-    public static final int ENTRY_HEIGHT = 72;
-    public static final int IMAGE_HEIGHT = 48;
     public transient MagicAchievement tempAchievement;
 
     public MagicAchievementIntel() {
@@ -113,9 +110,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
      */
     @SuppressWarnings("SuspiciousNameCombination")
     public void displayAchievements(CustomPanelAPI panel, TooltipMakerAPI info, float rowWidth, List<MagicAchievement> achievements) {
+        final int entryHeight = 72;
+        final int imageHeight = 48;
+        final int rowSpacing = 10;
         final float pad = 3;
         float opad = 10;
-        FactionAPI faction = Global.getSector().getPlayerFaction();
         boolean isFirstItem = true;
         String defaultImage = Global.getSettings().getSpriteName("intel", "achievement");
 
@@ -123,14 +122,14 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             @Override
             public int compare(MagicAchievement leftAch, MagicAchievement rightAch) {
                 // sort by mod, then by achievement completion time, then rarity, then name
-                ModSpecAPI leftMod = Global.getSettings().getModManager().getModSpec(leftAch.getModId());
-                ModSpecAPI rightMod = Global.getSettings().getModManager().getModSpec(rightAch.getModId());
-
-                String leftModName = leftMod != null ? leftMod.getName() : leftAch.getModId();
-                String rightModName = rightMod != null ? rightMod.getName() : rightAch.getModId();
-
-                int modNameCompare = leftModName.compareTo(rightModName);
-                if (modNameCompare != 0) return modNameCompare;
+//                ModSpecAPI leftMod = Global.getSettings().getModManager().getModSpec(leftAch.getModId());
+//                ModSpecAPI rightMod = Global.getSettings().getModManager().getModSpec(rightAch.getModId());
+//
+//                String leftModName = leftMod != null ? leftMod.getName() : leftAch.getModId();
+//                String rightModName = rightMod != null ? rightMod.getName() : rightAch.getModId();
+//
+//                int modNameCompare = leftModName.compareTo(rightModName);
+//                if (modNameCompare != 0) return modNameCompare;
 
                 if (leftAch.getDateCompleted() != null && rightAch.getDateCompleted() != null) {
                     int dateCompare = rightAch.getDateCompleted().compareTo(leftAch.getDateCompleted());
@@ -158,27 +157,27 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 continue;
 
             // Mod name header
-            if (!achievement.getModId().equals(prevModId)) {
-                info.addSectionHeading("   " + achievement.getModName(), faction.getBaseUIColor(), faction.getSecondaryUIColor(), Alignment.LMID, 10f);
-                info.getPrev().getPosition().setXAlignOffset(10f);
-                prevModId = achievement.getModId();
-            }
+//            if (!achievement.getModId().equals(prevModId)) {
+//                info.addSectionHeading("   " + achievement.getModName(), faction.getBaseUIColor(), faction.getSecondaryUIColor(), Alignment.LMID, 10f);
+//                info.getPrev().getPosition().setXAlignOffset(10f);
+//                prevModId = achievement.getModId();
+//            }
 
             // Icon
-            CustomPanelAPI row = panel.createCustomPanel(rowWidth, ENTRY_HEIGHT, null);
-            TooltipMakerAPI image = row.createUIElement(IMAGE_HEIGHT, ENTRY_HEIGHT, false);
+            CustomPanelAPI row = panel.createCustomPanel(rowWidth, entryHeight, null);
+            TooltipMakerAPI image = row.createUIElement(imageHeight, entryHeight, false);
             if (achievement.isComplete()) {
                 if (achievement.getImage() != null && !achievement.getImage().isEmpty()) {
                     try {
-                        image.addImage(achievement.getImage(), IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
+                        image.addImage(achievement.getImage(), imageHeight, imageHeight, 3);
                     } catch (Exception ex) {
-                        image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
+                        image.addImage(defaultImage, imageHeight, imageHeight, 3);
                     }
                 } else {
-                    image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
+                    image.addImage(defaultImage, imageHeight, imageHeight, 3);
                 }
             } else {
-                image.addImage(defaultImage, IMAGE_HEIGHT, IMAGE_HEIGHT, 3);
+                image.addImage(defaultImage, imageHeight, imageHeight, 3);
             }
 
             row.addUIElement(image).inTL(0, 0);
@@ -186,14 +185,15 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Particle effect, if complete and not common.
             if (achievement.isComplete() && !achievement.getRarity().equals(MagicAchievementRarity.Common)) {
                 row.addComponent(row.createCustomPanel(
-                        IMAGE_HEIGHT,
-                        IMAGE_HEIGHT,
-                        new MagicAchievementIntelParticleEffect(image.getPosition(), IMAGE_HEIGHT, achievement)));
+                        imageHeight,
+                        imageHeight,
+                        new MagicAchievementIntelParticleEffect(image.getPosition(), imageHeight, achievement)));
             }
 
             // Description
-            TooltipMakerAPI leftElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
-            TooltipMakerAPI rightElement = row.createUIElement(rowWidth * 0.75f - IMAGE_HEIGHT, ENTRY_HEIGHT, false);
+            TooltipMakerAPI leftElement = row.createUIElement(rowWidth * 0.50f - imageHeight, entryHeight, false);
+            TooltipMakerAPI rightElement = row.createUIElement(rowWidth * 0.30f, entryHeight, false);
+            TooltipMakerAPI farRightElement = row.createUIElement(rowWidth * 0.20f, entryHeight, false);
 
             // Tooltip
             if (achievement.hasTooltip()) {
@@ -215,7 +215,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             leftElement.addPara(name, achievement.isComplete()
                     ? Misc.getHighlightColor()
-                    : Misc.getTextColor(), 10);
+                    : Misc.getTextColor(), opad);
 
             // Error message if there is one.
             if (achievement.errorMessage == null) {
@@ -234,24 +234,13 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                     leftElement.addButton(MagicTxt.getString("resetAchievement"), achievement.getSpecId(), 128, 16, pad);
             }
 
-            // Completed info, shown on the right.
-            if (achievement.isComplete()) {
-                Date date = achievement.getDateCompleted();
-                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateInstance().format(date), DateFormat.getTimeInstance(DateFormat.SHORT).format(date));
-                rightElement.addPara(str, pad);
-
-                if (achievement.getCompletedByUserName() != null) {
-                    rightElement.addPara(MagicTxt.getString("achievementCompletedBy", achievement.getCompletedByUserName()), pad);
-                }
-            }
-
             // Progress bar
             float barWidth = rowWidth / 6;
 
             if (achievement.getHasProgressBar()) {
                 try {
                     if (!achievement.isComplete()) {
-                        rightElement.addPara("", pad);
+                        rightElement.addPara("", 8f);
                     }
                     new ProgressBarInternal(
                             achievement.getProgress(),
@@ -260,21 +249,38 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                             Misc.getTextColor(),
                             rightElement,
                             barWidth,
-                            15f,
+                            11f,
                             !achievement.isComplete());
-                    rightElement.getPrev().getPosition().setYAlignOffset(-5f);
+                    rightElement.getPrev().getPosition().setYAlignOffset(-13f);
                 } catch (Exception ex) {
                     logger.info(String.format("Failed to create progress bar for achievement %s from mod %s: %s",
                             achievement.getSpecId(), achievement.getModId(), ex.getMessage()));
                 }
+            } else if (achievement.isComplete()) {
+                rightElement.addPara("", 8f);
             }
+
+            // Completed info, shown on the right.
+            if (achievement.isComplete()) {
+                Date date = achievement.getDateCompleted();
+                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateInstance().format(date), DateFormat.getTimeInstance(DateFormat.SHORT).format(date));
+                rightElement.addPara(str, pad + 2f);
+
+                if (achievement.getCompletedByUserName() != null) {
+                    rightElement.addPara(MagicTxt.getString("achievementCompletedBy", achievement.getCompletedByUserName()), pad);
+                }
+            }
+
+            // Mod name
+            farRightElement.addPara("\nAdded by: " + achievement.getModName(), Misc.getGrayColor(), opad + 2f);
 
             // Put it all together.
             row.addUIElement(leftElement).rightOfTop(image, 16);
-            row.addUIElement(rightElement).rightOfTop(image, 16).setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
+            row.addUIElement(rightElement).rightOfTop(image, 16).setXAlignOffset(leftElement.getWidthSoFar() + imageHeight);//.setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
+            row.addUIElement(farRightElement).rightOfTop(image, 16).setXAlignOffset(leftElement.getWidthSoFar() + rightElement.getWidthSoFar());//.setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
             PositionAPI pos = row.getPosition();
 
-            TooltipMakerAPI pointsText = row.createUIElement(rowWidth * 0.25f, ENTRY_HEIGHT, false);
+            TooltipMakerAPI pointsText = row.createUIElement(rowWidth * 0.25f, entryHeight, false);
             pointsText.setParaOrbitronVeryLarge();
 //            pointsText.addPara(def.points + "", pad);
 

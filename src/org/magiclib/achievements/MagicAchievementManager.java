@@ -164,20 +164,26 @@ public class MagicAchievementManager {
         return achievements;
     }
 
+    private String lastSavedJson = "";
+
     /**
-     * TODO: add in a safeguard to prevent this from being called every frame or worse.
      * This writes to disk.
      */
     protected void saveAchievements() {
-        JSONUtils.CommonDataJSONObject commonJson;
+        JSONObject commonJson;
         JSONArray savedAchievements = new JSONArray();
 
+//        try {
         try {
-            commonJson = JSONUtils.loadCommonJSON(commonFilename);
-        } catch (Exception e) {
-            logger.warn("Unable to load achievements from " + commonFilename, e);
-            return;
+            commonJson = new JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename));
+            commonJson = (commonJson.length() > 0 ? commonJson : new JSONObject());
+        } catch (Exception ex) {
+            commonJson = new JSONObject();
         }
+//        } catch (Exception e) {
+//            logger.warn("Unable to load achievements from " + commonFilename, e);
+//            return;
+//        }
 
         for (MagicAchievement achievement : achievements.values()) {
             try {
@@ -189,7 +195,15 @@ public class MagicAchievementManager {
 
         try {
             commonJson.put(achievementsJsonObjectKey, savedAchievements);
-            commonJson.save();
+            String newJsonString = commonJson.toString(3); // 3 indent
+
+            if (newJsonString.equals(lastSavedJson)) {
+                logger.info("Not saving achievements because they haven't changed.");
+                return;
+            }
+
+            Global.getSettings().writeTextFileToCommon(commonFilename, newJsonString);
+            lastSavedJson = newJsonString;
         } catch (Exception e) {
             logger.warn("Unable to save achievements to " + commonFilename, e);
         }
