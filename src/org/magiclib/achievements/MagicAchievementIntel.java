@@ -122,28 +122,31 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         Collections.sort(achievements, new Comparator<MagicAchievement>() {
             @Override
             public int compare(MagicAchievement leftAch, MagicAchievement rightAch) {
+                // sort by mod, then by achievement completion time, then rarity, then name
+                ModSpecAPI leftMod = Global.getSettings().getModManager().getModSpec(leftAch.getModId());
+                ModSpecAPI rightMod = Global.getSettings().getModManager().getModSpec(rightAch.getModId());
+
+                String leftModName = leftMod != null ? leftMod.getName() : leftAch.getModId();
+                String rightModName = rightMod != null ? rightMod.getName() : rightAch.getModId();
+
+                int modNameCompare = leftModName.compareTo(rightModName);
+                if (modNameCompare != 0) return modNameCompare;
+
+                if (leftAch.getDateCompleted() != null && rightAch.getDateCompleted() != null) {
+                    int dateCompare = rightAch.getDateCompleted().compareTo(leftAch.getDateCompleted());
+                    if (dateCompare != 0) return dateCompare;
+                }
+
                 // spoilered, incomplete achievements go to the bottom
                 if (leftAch.getSpoilerLevel() == MagicAchievementSpoilerLevel.Spoiler && !leftAch.isComplete())
                     return 1;
                 if (rightAch.getSpoilerLevel() == MagicAchievementSpoilerLevel.Spoiler && !rightAch.isComplete())
                     return -1;
 
-                // sort by mod name, then by achievement completion time, then rarity, then name
-                if (leftAch.getDateCompleted() != null && rightAch.getDateCompleted() != null) {
-                    int dateCompare = rightAch.getDateCompleted().compareTo(leftAch.getDateCompleted());
-                    if (dateCompare != 0) return dateCompare;
-                }
-
                 if (leftAch.getRarity() != rightAch.getRarity()) {
                     return leftAch.getRarity().compareTo(rightAch.getRarity());
                 }
 
-                ModSpecAPI leftMod = Global.getSettings().getModManager().getModSpec(leftAch.getModId());
-                ModSpecAPI rightMod = Global.getSettings().getModManager().getModSpec(rightAch.getModId());
-                String leftModName = leftMod != null ? leftMod.getName() : leftAch.getModId();
-                String rightModName = rightMod != null ? rightMod.getName() : rightAch.getModId();
-                int modNameCompare = leftModName.compareTo(rightModName);
-                if (modNameCompare != 0) return modNameCompare;
                 return leftAch.getSpecId().compareTo(rightAch.getSpecId());
             }
         });

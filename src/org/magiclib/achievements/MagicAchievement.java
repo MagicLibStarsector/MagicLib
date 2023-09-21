@@ -52,7 +52,7 @@ public class MagicAchievement {
 
     /**
      * Do not use this constructor. It is called automatically using reflection to instantiate this class.
-     * Put your initialization code in {@link #onApplicationLoaded()} or {@link #onSaveGameLoaded()} instead.
+     * Put your initialization code in {@link #onApplicationLoaded(boolean)} or {@link #onSaveGameLoaded(boolean)} instead.
      */
     public MagicAchievement() {
     }
@@ -64,17 +64,19 @@ public class MagicAchievement {
 
     /**
      * Called when Starsector is loaded.
-     * Not called if the achievement is complete.
+     * Called even if the achievement is complete.
+     * <p>
+     * Also called during `onSaveGameLoaded`, so ensure that logic here is idempotent (can be called multiple times without problems).
      */
-    public void onApplicationLoaded() {
+    public void onApplicationLoaded(boolean isComplete) {
     }
 
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
-     * Not called if the achievement is completed.
+     * Called even if the achievement is completed.
      */
-    public void onSaveGameLoaded() {
+    public void onSaveGameLoaded(boolean isComplete) {
     }
 
     /**
@@ -343,10 +345,9 @@ public class MagicAchievement {
     }
 
     public void createTooltipHeader(@NotNull TooltipMakerAPI tooltipMakerAPI) {
-        tooltipMakerAPI.addSectionHeading("", Alignment.TMID, 0f);
-        tooltipMakerAPI.addSectionHeading(getName(), Alignment.TMID, 0f);
-        tooltipMakerAPI.addSectionHeading("", Alignment.TMID, 0f);
-        tooltipMakerAPI.addPara(getDescription() + "\n", 3f);
+        tooltipMakerAPI.addTitle(getName());
+        tooltipMakerAPI.addPara(getDescription(), 10f);
+        tooltipMakerAPI.addSpacer(10f);
     }
 
     /**
@@ -354,12 +355,15 @@ public class MagicAchievement {
      * Called when the achievement is hovered over in the Intel screen.
      * By default, shows the name and tooltip.
      * <p>
-     * Make sure to override {@link #hasTooltip()} to return true if {@link #getTooltip()} returns an empty string but this is overridden.
+     * Make sure {@link #hasTooltip()} is true.
      */
     public void createTooltip(@NotNull TooltipMakerAPI tooltipMakerAPI, boolean isExpanded, float width) {
-        if (getTooltip() != null && !getTooltip().isEmpty()) {
+        if (hasTooltip()) {
             createTooltipHeader(tooltipMakerAPI);
-            tooltipMakerAPI.addPara(getTooltip(), 3f);
+
+            if (getTooltip() != null && !getTooltip().isEmpty()) {
+                tooltipMakerAPI.addPara(getTooltip(), 0f);
+            }
         }
     }
 

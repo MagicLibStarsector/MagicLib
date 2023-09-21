@@ -103,7 +103,7 @@ public class MagicAchievementManager {
      */
     public void onGameLoad() {
         if (areAchievementsEnabled && Global.getSettings().isDevMode()) {
-            instance.achievementSpecs = getSpecsFromFiles();
+            instance.achievementSpecs.putAll(getSpecsFromFiles());
         }
 
         setAchievementsEnabled(areAchievementsEnabled, true);
@@ -206,7 +206,7 @@ public class MagicAchievementManager {
      * If a mod has removed an achievement (or the player is no longer using the mod),
      * the achievement will be loaded as an "unloaded" achievement and still shown using the spec saved in common.
      *
-     * @param isSaveGameLoaded Whether a save game is loaded. If true, calls {@link MagicAchievement#onSaveGameLoaded()} on all achievements.
+     * @param isSaveGameLoaded Whether a save game is loaded. If true, calls {@link MagicAchievement#onSaveGameLoaded(boolean)} on all achievements.
      */
     public void reloadAchievements(boolean isSaveGameLoaded) {
         // Generate fresh, unused achievements from the specs.
@@ -284,18 +284,15 @@ public class MagicAchievementManager {
 
         // Calling onApplicationLoaded and onGameLoaded would seem to make more sense to do
         // in their respective methods, but doing it here ensures that they're called.
+        // This method is called from both onApplicationLoad and onGameLoad.
         for (MagicAchievement achievement : achievements.values()) {
-            if (!achievement.isComplete()) {
-                achievement.onApplicationLoaded();
-            }
+            achievement.onApplicationLoaded(achievement.isComplete());
         }
 
         // Can't just check GameState, it shows a TITLE after pressing Continue on the title page.
         if (isSaveGameLoaded) {
             for (MagicAchievement achievement : achievements.values()) {
-                if (!achievement.isComplete()) {
-                    achievement.onSaveGameLoaded();
-                }
+                achievement.onSaveGameLoaded(achievement.isComplete());
             }
         }
 

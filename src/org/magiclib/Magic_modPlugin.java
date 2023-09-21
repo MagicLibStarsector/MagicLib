@@ -4,7 +4,9 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
+import org.magiclib.achievements.MagicAchievement;
 import org.magiclib.achievements.MagicAchievementManager;
+import org.magiclib.achievements.TestingAchievementSpec;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
 import org.magiclib.plugins.MagicAutoTrails;
@@ -133,6 +135,11 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicKotlinModPlugin.INSTANCE.onGameLoad(newGame);
+
+        if (Global.getSettings().isDevMode()) {
+            MagicAchievementManager.getInstance().addAchievementSpec(new TestingAchievementSpec());
+        }
+
         MagicAchievementManager.getInstance().onGameLoad();
     }
 
