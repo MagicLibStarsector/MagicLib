@@ -21,6 +21,19 @@ import org.magiclib.util.MagicVariables;
 
 import java.util.*;
 
+/**
+ * Manages and tracks achievements.
+ * <p>
+ * An achievement is made from a spec, which is used to create the achievement class with the code to detect the achievement conditions.
+ * <p>
+ * To add an achievement, add it to the magic_achievements.csv file in your mod's data/config folder.
+ * Alternatively, call {@link #addAchievementSpec(MagicAchievementSpec)} in your mod plugin's onGameLoad() method.
+ * <p>
+ * Then, create a class that extends MagicAchievement and implement the detection logic.
+ * You will need to call setComplete() and then saveChanges() to complete the achievement.
+ *
+ * @since 1.3.0
+ */
 public class MagicAchievementManager {
     private static MagicAchievementManager instance;
     private static final Logger logger = Global.getLogger(MagicAchievementManager.class);
