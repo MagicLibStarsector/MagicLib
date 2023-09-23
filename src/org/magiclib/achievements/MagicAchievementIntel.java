@@ -18,8 +18,15 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
     public MagicAchievementIntel() {
         super();
-        if (!Global.getSector().hasScript(MagicAchievementIntel.class)) {
-            Global.getSector().addScript(this);
+
+        // Previous dev version added this as non-transient, so remove it if it's there.
+        if (Global.getSector().hasScript(MagicAchievementIntel.class)) {
+            Global.getSector().removeScriptsOfClass(MagicAchievementIntel.class);
+        }
+
+        // Add this as a transient script if it's not already there.
+        if (!Global.getSector().hasTransientScript(MagicAchievementIntel.class)) {
+            Global.getSector().addTransientScript(this);
         }
     }
 
