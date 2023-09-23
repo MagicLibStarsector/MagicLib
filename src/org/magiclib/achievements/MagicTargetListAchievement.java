@@ -133,11 +133,7 @@ public class MagicTargetListAchievement extends MagicAchievement {
             return;
 
         // If all targets are complete, complete the achievement.
-        for (Data data : targets.values()) {
-            if (!data.isComplete) {
-                return;
-            }
-        }
+        if (shouldComplete(targets)) return;
 
         completeAchievement();
         saveChanges();
@@ -155,16 +151,35 @@ public class MagicTargetListAchievement extends MagicAchievement {
         if (targets.isEmpty())
             return;
 
-        // If all targets are complete, complete the achievement.
-        for (Data data : targets.values()) {
-            if (!data.isComplete) {
-                return;
-            }
-        }
+        if (shouldComplete(targets)) return;
 
         completeAchievement();
         saveChanges();
         onDestroyed();
+    }
+
+    /**
+     * Returns true if progress and max progress are the same, or, if either of them are null, if all targets are complete.
+     * <p>
+     * Override this method to change the completion logic.
+     */
+    public boolean shouldComplete(Map<String, Data> targets) {
+        Float progress = getProgress();
+        Float maxProgress = getMaxProgress();
+
+        if (progress != null
+                && maxProgress != null
+                && maxProgress > 0
+                && progress >= maxProgress) {
+            return true;
+        }
+
+        for (Data data : targets.values()) {
+            if (!data.isComplete) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
