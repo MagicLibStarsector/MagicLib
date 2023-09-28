@@ -51,5 +51,6 @@
     </orderEntry>
     <orderEntry type="library" name="Kotlin-Runtime" level="application" />
     <orderEntry type="library" name="LunaLib-1.8" level="application" />
+    <orderEntry type="library" name="ExerelinCore" level="application" />
   </component>
 </module>

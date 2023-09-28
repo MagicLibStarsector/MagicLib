@@ -1,9 +1,9 @@
 package org.magiclib.achievements;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
@@ -43,6 +43,8 @@ public class MagicAchievement {
     private String completedByUserName;
     @NotNull
     private final Map<String, Object> memory = new HashMap<>();
+    @Nullable
+    private Boolean hasProgressBar = null;
 
     /**
      * Shown if set. Only persisted in memory, not save file.
@@ -67,6 +69,8 @@ public class MagicAchievement {
      * Called even if the achievement is complete.
      * <p>
      * Also called during `onSaveGameLoaded`, so ensure that logic here is idempotent (can be called multiple times without problems).
+     * <p>
+     * If possible, use transient listeners to prevent them from being added to the save file.
      */
     public void onApplicationLoaded(boolean isComplete) {
     }
@@ -74,6 +78,8 @@ public class MagicAchievement {
     /**
      * Called each time the achievement is loaded, for example when the game is loaded.
      * Place any code here that registers itself with the game, such as adding a listener.
+     * Make sure the listener isn't already added, and that it's removed in {@link #onDestroyed()} (or add it as transient).
+     * <p>
      * Called even if the achievement is completed.
      */
     public void onSaveGameLoaded(boolean isComplete) {
@@ -107,7 +113,7 @@ public class MagicAchievement {
      * Sets the date completed and the current player as the completer.
      */
     public void completeAchievement() {
-        completeAchievement(Global.getSector().getPlayerPerson());
+        completeAchievement(Global.getSector() == null ? null : Global.getSector().getPlayerPerson());
     }
 
     /**
@@ -127,6 +133,7 @@ public class MagicAchievement {
             this.completedByUserName = completedByPlayer.getName().getFullName();
         }
 
+        saveChangesWithoutLogging();
         getLogger().info("Achievement completed! " + spec.getId());
     }
 
@@ -134,11 +141,16 @@ public class MagicAchievement {
      * Don't use this except for very good reasons, e.g. debugging!
      * Imagine if you had a Steam achievement go and take itself away.
      */
-    public void uncompleteAchievement() {
+    public void uncompleteAchievement(boolean clearMemory) {
         setDateCompleted(null);
         setCompletedByUserId(null);
         setCompletedByUserName(null);
 
+        if (clearMemory) {
+            getMemory().clear();
+        }
+
+        saveChangesWithoutLogging();
         getLogger().info("Achievement uncompleted! " + spec.getId());
     }
 
@@ -175,7 +187,11 @@ public class MagicAchievement {
      */
     public void saveChanges() {
         getLogger().info("Saving achievements triggered by '" + spec.getId() + "' from mod '" + spec.getModName() + "'.");
-        MagicAchievementManager.getInstance().saveAchievements();
+        MagicAchievementManager.getInstance().saveAchievements(true);
+    }
+
+    private void saveChangesWithoutLogging() {
+        MagicAchievementManager.getInstance().saveAchievements(false);
     }
 
     /**
@@ -259,12 +275,23 @@ public class MagicAchievement {
         advanceInterval = interval;
     }
 
+    /**
+     * Whether or not to show a progress bar for this achievement.
+     * <p>
+     * By default, returns true if {@link #getMaxProgress()} is not null.
+     * Use {@link #setHasProgressBar(boolean)} to override this (or simply override this method).
+     */
     public boolean getHasProgressBar() {
-        return spec.getHasProgressBar();
+        if (hasProgressBar == null) {
+            return getMaxProgress() != null && getMaxProgress() > 0;
+        } else {
+            return hasProgressBar;
+        }
     }
 
     public void setHasProgressBar(boolean hasProgressBar) {
-        spec.setHasProgressBar(hasProgressBar);
+        this.hasProgressBar = hasProgressBar;
+        saveChangesWithoutLogging();
     }
 
     /**
@@ -285,6 +312,7 @@ public class MagicAchievement {
      */
     public void setProgress(@Nullable Float progress) {
         this.progress = progress;
+        saveChangesWithoutLogging();
     }
 
     /**
@@ -301,6 +329,7 @@ public class MagicAchievement {
      */
     public void setMaxProgress(@Nullable Float maxProgress) {
         this.maxProgress = maxProgress;
+        saveChangesWithoutLogging();
     }
 
 
@@ -322,6 +351,7 @@ public class MagicAchievement {
 
     public void setName(@NotNull String name) {
         spec.setName(name);
+        saveChangesWithoutLogging();
     }
 
     public @NotNull String getDescription() {
@@ -330,6 +360,7 @@ public class MagicAchievement {
 
     public void setDescription(@NotNull String description) {
         spec.setDescription(description);
+        saveChangesWithoutLogging();
     }
 
     public boolean hasTooltip() {
@@ -342,6 +373,7 @@ public class MagicAchievement {
 
     public void setTooltip(@Nullable String tooltip) {
         spec.setTooltip(tooltip);
+        saveChangesWithoutLogging();
     }
 
     public void createTooltipHeader(@NotNull TooltipMakerAPI tooltipMakerAPI) {
@@ -373,6 +405,7 @@ public class MagicAchievement {
 
     public void setScript(@NotNull String script) {
         spec.setScript(script);
+        saveChangesWithoutLogging();
     }
 
     public @Nullable String getImage() {
@@ -396,6 +429,7 @@ public class MagicAchievement {
 
     public void setImage(@Nullable String image) {
         spec.setImage(image);
+        saveChangesWithoutLogging();
     }
 
     public @NotNull MagicAchievementSpoilerLevel getSpoilerLevel() {
@@ -404,6 +438,7 @@ public class MagicAchievement {
 
     public void setSpoilerLevel(@NotNull MagicAchievementSpoilerLevel spoilerLevel) {
         spec.setSpoilerLevel(spoilerLevel);
+        saveChangesWithoutLogging();
     }
 
     public @NotNull MagicAchievementRarity getRarity() {
@@ -440,6 +475,7 @@ public class MagicAchievement {
 
     public void setRarity(@NotNull MagicAchievementRarity rarity) {
         spec.setRarity(rarity);
+        saveChangesWithoutLogging();
     }
 
     public boolean isComplete() {
@@ -452,6 +488,7 @@ public class MagicAchievement {
 
     public void setDateCompleted(@Nullable Date dateCompleted) {
         this.dateCompleted = dateCompleted;
+        saveChangesWithoutLogging();
     }
 
     public @Nullable String getCompletedByUserId() {
@@ -460,6 +497,7 @@ public class MagicAchievement {
 
     public void setCompletedByUserId(@Nullable String completedByUserId) {
         this.completedByUserId = completedByUserId;
+        saveChangesWithoutLogging();
     }
 
     public @Nullable String getCompletedByUserName() {
@@ -468,13 +506,57 @@ public class MagicAchievement {
 
     public void setCompletedByUserName(@Nullable String completedByUserName) {
         this.completedByUserName = completedByUserName;
+        saveChangesWithoutLogging();
     }
 
+    private transient SaveAfterOneTickScript saveAfterOneTickScript = null;
+
+    /**
+     * A map for storing arbitrary data. Works like the vanilla MemoryAPI, except it is saved outside of save files.
+     */
     public @NotNull Map<String, Object> getMemory() {
+        if (Global.getSector() == null) return memory;
+
+        // There's no way to tell if a mod mutates an object in the map,
+        // so save it automatically one tick after a mod gets it.
+        if (saveAfterOneTickScript == null) {
+            saveAfterOneTickScript = new SaveAfterOneTickScript();
+            Global.getSector().addTransientScript(saveAfterOneTickScript);
+        }
+
+        saveAfterOneTickScript.saveNextTick = true;
+
         return memory;
     }
 
+    /**
+     * Defined in sounds.json.
+     */
     public String getSoundEffectId() {
         return "magiclib_achievementunlocked";
+    }
+
+    private class SaveAfterOneTickScript implements EveryFrameScript {
+        public boolean saveNextTick;
+
+        @Override
+        public boolean isDone() {
+            // Transient, so it's not going into saves.
+            return false;
+        }
+
+        @Override
+        public boolean runWhilePaused() {
+            // In case memory is modified while paused and then player quits without unpausing.
+            return true;
+        }
+
+        @Override
+        public void advance(float amount) {
+            if (!saveNextTick) return;
+
+            saveChangesWithoutLogging();
+            saveNextTick = false;
+        }
     }
 }

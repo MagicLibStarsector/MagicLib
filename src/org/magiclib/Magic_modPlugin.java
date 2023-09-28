@@ -136,8 +136,8 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicKotlinModPlugin.INSTANCE.onGameLoad(newGame);
 
-        if (Global.getSettings().isDevMode()) {
-            MagicAchievementManager.getInstance().addAchievementSpec(new TestingAchievementSpec());
+        if (isMagicLibTestMode()) {
+            MagicAchievementManager.getInstance().addAchievementSpecs(new TestingAchievementSpec());
         }
 
         MagicAchievementManager.getInstance().onGameLoad();
@@ -178,6 +178,10 @@ public class Magic_modPlugin extends BaseModPlugin {
         // The game will automatically swap to the Magic replacements on load because `terrain.json` replaces the vanilla ones.
         x.alias("AsteroidBeltTerrainPlugin", MagicAsteroidBeltTerrainPlugin.class);
         x.alias("AsteroidFieldTerrainPlugin", MagicAsteroidFieldTerrainPlugin.class);
+    }
+
+    public static boolean isMagicLibTestMode() {
+        return Global.getSector() != null && Global.getSector().getPlayerPerson().getNameString().equalsIgnoreCase("ML_Test");
     }
 
     //    //debugging magic bounties

@@ -17,7 +17,6 @@ internal class TestingAchievementSpec : MagicAchievementSpec(
     tooltip = null,
     script = TestingAchievement::class.java.name,
     image = null,
-    hasProgressBar = true,
     spoilerLevel = MagicAchievementSpoilerLevel.Visible,
     rarity = MagicAchievementRarity.Common
 )

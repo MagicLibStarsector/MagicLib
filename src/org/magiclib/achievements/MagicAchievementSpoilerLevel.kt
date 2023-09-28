@@ -6,7 +6,7 @@ package org.magiclib.achievements
  */
 enum class MagicAchievementSpoilerLevel {
     /**
-     * The achievement is visible to the player, and its progress is shown.
+     * The achievement is visible to the player at all times, and its progress is shown.
      */
     Visible,
 

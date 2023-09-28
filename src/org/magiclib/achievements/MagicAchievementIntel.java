@@ -9,7 +9,9 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.magiclib.util.MagicTxt;
 
+import java.awt.*;
 import java.text.DateFormat;
+import java.util.List;
 import java.util.*;
 
 public class MagicAchievementIntel extends BaseIntelPlugin {
@@ -77,7 +79,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
         }
 
-        info.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
         int listedAchievements = achievements.size();
 
         // Remove achievements that aren't displayed at all from the total and percent calculation.
@@ -87,13 +88,28 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
         }
 
-        info.addSectionHeading(MagicTxt.getString("achievementCompletionProgress",
-                        Integer.toString(unlockedAchievements.size()),
-                        Integer.toString(listedAchievements),
-                        Integer.toString((int) ((float) unlockedAchievements.size() / listedAchievements * 100))
-                ), faction.getBaseUIColor(),
-                faction.getDarkUIColor(), Alignment.MID, 0f);
-        info.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
+
+        int headerHeight = 30;
+        String defaultImage = Global.getSettings().getSpriteName("intel", "achievement");
+        String headerText = MagicTxt.getString("achievementCompletionProgress",
+                Integer.toString(unlockedAchievements.size()),
+                Integer.toString(listedAchievements),
+                Integer.toString((int) ((float) unlockedAchievements.size() / listedAchievements * 100))
+        );
+
+        CustomPanelAPI headerPanel = panel.createCustomPanel(width, headerHeight, null);
+        TooltipMakerAPI headerHolder = headerPanel.createUIElement(width, headerHeight, false);
+//        headerHolder.addSpacer(opad * 3);
+        TooltipMakerAPI label = headerHolder.beginImageWithText(defaultImage, 40);
+        label.setTitleOrbitronVeryLarge();
+        label.addTitle(headerText, Misc.getTextColor());
+        headerHolder.addImageWithText(opad);
+//        headerHolder.addSpacer(opad * 2);
+        headerPanel.addUIElement(headerHolder).inTL(width * 0.24f, 0);
+        info.addCustom(headerPanel, 0);
+
+        info.addSpacer(28);
+        new DividerCustomPanelPlugin(width, Global.getSettings().getBasePlayerColor()).addTo(info);
 
         if (!unlockedAchievements.isEmpty()) {
 //            info.addSectionHeading(MagicTxt.getString("unlockedAchievementsTitle"), faction.getBaseUIColor(),
@@ -173,18 +189,24 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Icon
             CustomPanelAPI row = panel.createCustomPanel(rowWidth, entryHeight, null);
             TooltipMakerAPI image = row.createUIElement(imageHeight, entryHeight, false);
-            if (achievement.isComplete()) {
-                if (achievement.getImage() != null && !achievement.getImage().isEmpty()) {
-                    try {
-                        image.addImage(achievement.getImage(), imageHeight, imageHeight, 3);
-                    } catch (Exception ex) {
-                        image.addImage(defaultImage, imageHeight, imageHeight, 3);
-                    }
-                } else {
+
+            if (achievement.getImage() != null && !achievement.getImage().isEmpty()) {
+                try {
+                    image.addImage(achievement.getImage(), imageHeight, imageHeight, 3);
+                } catch (Exception ex) {
                     image.addImage(defaultImage, imageHeight, imageHeight, 3);
                 }
             } else {
                 image.addImage(defaultImage, imageHeight, imageHeight, 3);
+            }
+
+            if (!achievement.isComplete()) {
+                if (image.getPrev() instanceof com.fs.starfarer.ui.ooO0) {
+                    ((com.fs.starfarer.ui.ooO0) image.getPrev())
+                            .getSprite()
+                            .setColor(Color.gray);
+                }
+//                image.addImage(defaultImage, imageHeight, imageHeight, 3);
             }
 
             row.addUIElement(image).inTL(0, 0);
@@ -197,10 +219,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                         new MagicAchievementIntelParticleEffect(image.getPosition(), imageHeight, achievement)));
             }
 
-            // Description
-            TooltipMakerAPI leftElement = row.createUIElement(rowWidth * 0.50f - imageHeight, entryHeight, false);
-            TooltipMakerAPI rightElement = row.createUIElement(rowWidth * 0.30f, entryHeight, false);
-            TooltipMakerAPI farRightElement = row.createUIElement(rowWidth * 0.20f, entryHeight, false);
+            float leftColWidth = rowWidth * 0.50f - imageHeight;
+            float rightColWidth = rowWidth * 0.50f;
+            TooltipMakerAPI leftElement = row.createUIElement(leftColWidth, entryHeight, false);
+            TooltipMakerAPI rightElement = row.createUIElement(rightColWidth, entryHeight, false);
+//            TooltipMakerAPI farRightElement = row.createUIElement(rowWidth * 0.20f, entryHeight, false);
 
             // Tooltip
             if (achievement.hasTooltip()) {
@@ -208,9 +231,10 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 //                rightElement.addTooltipToPrevious(getTooltipCreator(achievement, pad), TooltipMakerAPI.TooltipLocation.ABOVE);
             }
 
+            // If no description, add a blank line to put the name in the middle.
             boolean showDescription = achievement.isComplete() || achievement.getSpoilerLevel() == MagicAchievementSpoilerLevel.Visible;
             if (!showDescription) {
-                // Blank line if the desc isn't shown to put title in the middle.
+                // Blank line if the desc isn't shown to put name in the middle.
                 leftElement.addPara("", 3);
             }
 
@@ -220,11 +244,17 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 name = "(hidden)";
             }
 
-            leftElement.addPara(name, achievement.isComplete()
+            leftElement.setTitleOrbitronLarge();
+            leftElement.addSpacer(2);
+            leftElement.addTitle(name, achievement.isComplete()
                     ? Misc.getHighlightColor()
-                    : Misc.getTextColor(), opad);
+                    : Misc.getTextColor());
 
-            // Error message if there is one.
+            // Name of mod that added the achievement.
+            leftElement.addPara(achievement.getModName(), Misc.getGrayColor(), pad);
+            leftElement.addSpacer(2);
+
+            // Description or error message if there is one.
             if (achievement.errorMessage == null) {
                 if (showDescription) {
                     leftElement.addPara(achievement.getDescription(), 3);
@@ -242,29 +272,31 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
 
             // Progress bar
-            float barWidth = rowWidth / 6;
+            float progressBarWidth = 225;
+            float progressBarHeight = 15f;
+            float progressBarYOffset = -pad;
 
             if (achievement.getHasProgressBar()) {
                 try {
                     if (!achievement.isComplete()) {
-                        rightElement.addPara("", 8f);
+//                        rightElement.addPara("", progressBarHeight + progressBarYOffset);
                     }
                     new ProgressBarInternal(
-                            achievement.getProgress(),
+                            achievement.isComplete() ? achievement.getMaxProgress() : achievement.getProgress(),
                             0,
                             achievement.getMaxProgress(),
                             Misc.getTextColor(),
                             rightElement,
-                            barWidth,
-                            11f,
+                            progressBarWidth,
+                            progressBarHeight,
                             !achievement.isComplete());
-                    rightElement.getPrev().getPosition().setYAlignOffset(-13f);
+                    rightElement.getPrev().getPosition().setYAlignOffset(progressBarYOffset);
                 } catch (Exception ex) {
                     logger.info(String.format("Failed to create progress bar for achievement %s from mod %s: %s",
                             achievement.getSpecId(), achievement.getModId(), ex.getMessage()));
                 }
             } else if (achievement.isComplete()) {
-                rightElement.addPara("", 8f);
+                rightElement.addSpacer(progressBarHeight + progressBarYOffset + pad + 1);
             }
 
             // Completed info, shown on the right.
@@ -278,13 +310,10 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 }
             }
 
-            // Mod name
-            farRightElement.addPara("\nAdded by: " + achievement.getModName(), Misc.getGrayColor(), opad + 2f);
-
             // Put it all together.
             row.addUIElement(leftElement).rightOfTop(image, 16);
             row.addUIElement(rightElement).rightOfTop(image, 16).setXAlignOffset(leftElement.getWidthSoFar() + imageHeight);//.setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
-            row.addUIElement(farRightElement).rightOfTop(image, 16).setXAlignOffset(leftElement.getWidthSoFar() + rightElement.getWidthSoFar());//.setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
+//            row.addUIElement(farRightElement).rightOfTop(image, 16).setXAlignOffset(leftElement.getWidthSoFar() + rightElement.getWidthSoFar());//.setXAlignOffset((rowWidth * 0.75f) - barWidth - IMAGE_HEIGHT - pad);
             PositionAPI pos = row.getPosition();
 
             TooltipMakerAPI pointsText = row.createUIElement(rowWidth * 0.25f, entryHeight, false);
@@ -321,7 +350,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         if (!achievement.isComplete()) {
             achievement.completeAchievement(Global.getSector().getPlayerPerson());
         } else {
-            achievement.uncompleteAchievement();
+            achievement.uncompleteAchievement(true);
         }
 
         achievement.saveChanges();

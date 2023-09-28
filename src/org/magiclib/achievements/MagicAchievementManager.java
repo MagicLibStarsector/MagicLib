@@ -27,7 +27,7 @@ import java.util.*;
  * An achievement is made from a spec, which is used to create the achievement class with the code to detect the achievement conditions.
  * <p>
  * To add an achievement, add it to the magic_achievements.csv file in your mod's data/config folder.
- * Alternatively, call {@link #addAchievementSpec(MagicAchievementSpec)} in your mod plugin's onGameLoad() method.
+ * Alternatively, call {@link #addAchievementSpecs(MagicAchievementSpec...)} in your mod plugin's onGameLoad() method.
  * <p>
  * Then, create a class that extends MagicAchievement and implement the detection logic.
  * You will need to call setComplete() and then saveChanges() to complete the achievement.
@@ -40,6 +40,7 @@ public class MagicAchievementManager {
     private static final String specsFilename = "data/config/magic_achievements.csv";
     private static final String commonFilename = "magic_achievements.json";
     private static final String achievementsJsonObjectKey = "achievements";
+    private static final String isIntelImportantMemKey = "$magiclib_isAchievementIntelImportant";
 
     /**
      * Loaded once at launch and not again.
@@ -71,8 +72,12 @@ public class MagicAchievementManager {
      * <p>
      * The <code>script</code> parameter should be the fully qualified class name of the achievement, same as if it were in the csv.
      */
-    public void addAchievementSpec(@NotNull MagicAchievementSpec spec) {
-        achievementSpecs.put(spec.getId(), spec);
+    public void addAchievementSpecs(@NotNull MagicAchievementSpec... specs) {
+        for (MagicAchievementSpec spec : specs) {
+            achievementSpecs.put(spec.getId(), spec);
+        }
+
+        reloadAchievements(Global.getSector() != null);
     }
 
     public void removeAchievementSpec(@NotNull String specId) {
@@ -80,7 +85,7 @@ public class MagicAchievementManager {
     }
 
     /**
-     * Loads achievements (so that any that track stuff outside of the campaign are started).
+     * Loads achievements (so that any that track stuff outside the campaign are started).
      */
     public void onApplicationLoad() {
         // Set up LunaLib settings.
@@ -122,11 +127,18 @@ public class MagicAchievementManager {
         setAchievementsEnabled(areAchievementsEnabled, true);
     }
 
+    /**
+     * Sets whether achievements are enabled or not.
+     * <p>
+     * If setting them to enabled, reloads them, even if they were already enabled.
+     *
+     * @param isSaveLoaded Whether a save game is loaded. If true, calls {@link MagicAchievement#onSaveGameLoaded(boolean)} on all achievements.
+     */
     public void setAchievementsEnabled(boolean areAchievementsEnabled, boolean isSaveLoaded) {
         this.areAchievementsEnabled = areAchievementsEnabled;
 
         if (areAchievementsEnabled) {
-            MagicAchievementManager.getInstance().reloadAchievements(isSaveLoaded);
+            reloadAchievements(isSaveLoaded);
 
             if (isSaveLoaded) {
                 initIntel();
@@ -138,7 +150,7 @@ public class MagicAchievementManager {
         } else {
             logger.info("MagicLib achievements are disabled.");
             removeIntel();
-            saveAchievements();
+            saveAchievements(true);
             Global.getSector().removeTransientScriptsOfClass(MagicAchievementRunner.class);
 
             for (MagicAchievement magicAchievement : achievements.values()) {
@@ -157,6 +169,7 @@ public class MagicAchievementManager {
 
         MagicAchievementIntel intel = new MagicAchievementIntel();
         Global.getSector().getIntelManager().addIntel(intel, true);
+        intel.setNew(false);
     }
 
     @Nullable
@@ -170,7 +183,9 @@ public class MagicAchievementManager {
     }
 
     /**
-     * Do not add achievements this way. Use {@link #addAchievementSpec(MagicAchievementSpec)} instead.
+     * Gets loaded achievements.
+     * <p>
+     * Do not add achievements this way. Use {@link #addAchievementSpecs(MagicAchievementSpec...)} instead.
      */
     @NotNull
     public Map<String, MagicAchievement> getAchievements() {
@@ -182,22 +197,11 @@ public class MagicAchievementManager {
     /**
      * This writes to disk.
      */
-    protected void saveAchievements() {
+    protected void saveAchievements(boolean printUnchangedResultToLog) {
         JSONObject commonJson;
         JSONArray savedAchievements = new JSONArray();
 
-//        try {
-        try {
-            commonJson = new JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename));
-            commonJson = (commonJson.length() > 0 ? commonJson : new JSONObject());
-        } catch (Exception ex) {
-            commonJson = new JSONObject();
-        }
-//        } catch (Exception e) {
-//            logger.warn("Unable to load achievements from " + commonFilename, e);
-//            return;
-//        }
-
+        // Put all achievements into a json array.
         for (MagicAchievement achievement : achievements.values()) {
             try {
                 savedAchievements.put(achievement.toJsonObject());
@@ -206,17 +210,37 @@ public class MagicAchievementManager {
             }
         }
 
+        // Compare the json for the current achievements to the json for the most recently saved achievements.
+        String newAchievementsJsonString = "";
+        try {
+            newAchievementsJsonString = savedAchievements.toString(3); // 3 indent
+
+            if (newAchievementsJsonString.equals(lastSavedJson)) {
+                if (printUnchangedResultToLog) {
+                    logger.info("Not saving achievements because they haven't changed.");
+                }
+                return;
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to save achievements to " + commonFilename, e);
+        }
+
+        // Read the current json from the file.
+        try {
+            commonJson = new JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename));
+            commonJson = (commonJson.length() > 0 ? commonJson : new JSONObject());
+        } catch (Exception ex) {
+            commonJson = new JSONObject();
+        }
+
+        // Replace the achievements loaded from disk with the current achievements.
         try {
             commonJson.put(achievementsJsonObjectKey, savedAchievements);
             String newJsonString = commonJson.toString(3); // 3 indent
 
-            if (newJsonString.equals(lastSavedJson)) {
-                logger.info("Not saving achievements because they haven't changed.");
-                return;
-            }
-
+            // Save to disk.
             Global.getSettings().writeTextFileToCommon(commonFilename, newJsonString);
-            lastSavedJson = newJsonString;
+            lastSavedJson = newAchievementsJsonString;
         } catch (Exception e) {
             logger.warn("Unable to save achievements to " + commonFilename, e);
         }
@@ -232,6 +256,8 @@ public class MagicAchievementManager {
      * <p>
      * If a mod has removed an achievement (or the player is no longer using the mod),
      * the achievement will be loaded as an "unloaded" achievement and still shown using the spec saved in common.
+     * <p>
+     * This is fine to call multiple times, but it will reload achievements from files each time.
      *
      * @param isSaveGameLoaded Whether a save game is loaded. If true, calls {@link MagicAchievement#onSaveGameLoaded(boolean)} on all achievements.
      */
@@ -246,7 +272,7 @@ public class MagicAchievementManager {
         try {
             // Create file if it doesn't exist.
             if (!Global.getSettings().fileExistsInCommon(commonFilename)) {
-                saveAchievements();
+                saveAchievements(true);
             }
 
             try {
@@ -257,7 +283,7 @@ public class MagicAchievementManager {
                 logger.warn("Unable to load achievements from " + commonFilename + ", making a backup and remaking it.", ex);
                 Global.getSettings().writeTextFileToCommon(commonFilename + ".backup", Global.getSettings().readTextFileFromCommon(commonFilename));
                 Global.getSettings().deleteTextFileFromCommon(commonFilename);
-                saveAchievements();
+                saveAchievements(true);
                 commonJson = JSONUtils.loadCommonJSON(commonFilename);
                 savedAchievementsJson = commonJson.getJSONArray(achievementsJsonObjectKey);
             }
@@ -396,7 +422,6 @@ public class MagicAchievementManager {
                     String script = item.getString("script").trim();
                     String image = item.optString("image", null);
                     image = image == null ? null : image.trim();
-                    boolean hasProgressBar = item.optBoolean("hasProgressBar", false);
                     String spoilerLevelStr = item.optString("spoilerLevel", MagicAchievementSpoilerLevel.Visible.name());
                     MagicAchievementSpoilerLevel spoilerLevel = getSpoilerLevel(spoilerLevelStr);
                     String rarityStr = item.optString("rarity", MagicAchievementRarity.Common.name());
@@ -423,7 +448,6 @@ public class MagicAchievementManager {
                                 tooltip,
                                 script,
                                 image,
-                                hasProgressBar,
                                 spoilerLevel,
                                 rarity
                         ));
@@ -473,6 +497,9 @@ public class MagicAchievementManager {
      * Calls all achievements' beforeGameSave() method.
      */
     public void beforeGameSave() {
+        if (getIntel() != null)
+            Global.getSector().getMemoryWithoutUpdate().set(isIntelImportantMemKey, getIntel().isImportant());
+
         // No reason to add intel to the save.
         removeIntel();
 
@@ -488,6 +515,9 @@ public class MagicAchievementManager {
      */
     public void afterGameSave() {
         initIntel();
+        if (getIntel() != null) {
+            getIntel().setImportant(Global.getSector().getMemoryWithoutUpdate().getBoolean(isIntelImportantMemKey));
+        }
 
         for (MagicAchievement achievement : achievements.values()) {
             if (!achievement.isComplete()) {

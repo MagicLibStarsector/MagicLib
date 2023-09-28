@@ -15,7 +15,6 @@ open class MagicAchievementSpec(
     var tooltip: String?,
     var script: String,
     var image: String?,
-    var hasProgressBar: Boolean,
     var spoilerLevel: MagicAchievementSpoilerLevel,
     var rarity: MagicAchievementRarity,
 ) {
@@ -29,7 +28,6 @@ open class MagicAchievementSpec(
         json.put("tooltip", tooltip)
         json.put("script", script)
         json.put("image", image)
-        json.put("hasProgressBar", hasProgressBar)
         json.put("spoilerLevel", spoilerLevel.toString())
         json.put("rarity", rarity.toString())
         return json
@@ -46,7 +44,6 @@ open class MagicAchievementSpec(
             val tooltip = json.optString("tooltip", null)
             val script = json.getString("script")
             val image = json.optString("image", null)
-            val hasProgressBar = json.optBoolean("hasProgressBar", false)
             val spoilerLevel = MagicAchievementSpoilerLevel.valueOf(
                 json.optString("spoilerLevel", "VISIBLE").lowercase().let { Misc.ucFirst(it) })
             val rarity =
@@ -61,7 +58,6 @@ open class MagicAchievementSpec(
                 tooltip,
                 script,
                 image,
-                hasProgressBar,
                 spoilerLevel,
                 rarity
             )
