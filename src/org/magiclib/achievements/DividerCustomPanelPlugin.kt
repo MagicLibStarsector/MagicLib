@@ -1,9 +1,10 @@
 package org.magiclib.achievements
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
 import com.fs.starfarer.api.ui.CustomPanelAPI
+import com.fs.starfarer.api.ui.PositionAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import exerelin.campaign.ui.CustomPanelPluginWithInput
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -11,8 +12,9 @@ class DividerCustomPanelPlugin @JvmOverloads constructor(
     val width: Float,
     val height: Float = 1f,
     var color: Color,
-) : CustomPanelPluginWithInput() {
+) : BaseCustomUIPanelPlugin() {
     private var sideRatio: Float = 0.5f
+    private var pos: PositionAPI? = null
 
     fun addTo(tooltip: TooltipMakerAPI) {
         val elementPanel: CustomPanelAPI = Global.getSettings().createCustom(width, height, this)
@@ -24,9 +26,10 @@ class DividerCustomPanelPlugin @JvmOverloads constructor(
     }
 
     override fun render(alphaMult: Float) {
-        val x = pos.x
-        val y = pos.y
-        val w = pos.width
+        val position = pos ?: return
+        val x = position.x
+        val y = position.y
+        val w = position.width
         val h = height
 
         renderBox(x, y, w, h, alphaMult)

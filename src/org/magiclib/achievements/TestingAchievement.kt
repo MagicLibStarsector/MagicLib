@@ -13,7 +13,7 @@ internal class TestingAchievementSpec : MagicAchievementSpec(
     modName = Global.getSettings().modManager.getModSpec(MagicVariables.MAGICLIB_ID).name,
     id = "testing",
     name = "Testing",
-    description = "MagicLib test that also has a very long description to check text wrapping and make sure it doesn't overlap or cause any other problems.",
+    description = "MagicLib test that also has a very long description to check text wrapping and make sure it doesn't overlap or cause any other problems. It certainly shouldn't go to three lines! Definitely not, the full thing should only appear in the tooltip.",
     tooltip = null,
     script = TestingAchievement::class.java.name,
     image = null,

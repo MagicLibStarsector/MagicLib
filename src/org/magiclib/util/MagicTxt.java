@@ -52,6 +52,21 @@ public class MagicTxt {
         }
     }
 
+    /**
+     * If the string is longer than the given length, returns the string truncated to the given length with "..." appended.
+     * <p>
+     * Note that "..." is 3 characters, so the returned string will be a max of length + 3.
+     *
+     * @since 1.3.0
+     */
+    public static String ellipsizeStringAfterLength(String str, int length) {
+        if (str.length() <= length) {
+            return str;
+        } else {
+            return str.substring(0, length) + "...";
+        }
+    }
+
     private static final Pattern highlightPattern = Pattern.compile("==(.*?)==", Pattern.DOTALL);
     private static final Pattern uppercaseFirstPattern = Pattern.compile(".*(?<!\\\\)\\^(.).*");
 

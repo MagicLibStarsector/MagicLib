@@ -14,6 +14,9 @@ Verison 1.3.0
 **MagicBounty**
 - Fixed a potential crash after resetting a bounty via console command (reported by mrmagolor).
 
+**Other**
+- Added `MagicTxt.ellipsizeStringAfterLength(String str, int length)`.
+
 Version 1.2.1 (discord-only)
 **MagicBounty**
 - Text now supports all vanilla variables (requested by CivilYoshi).

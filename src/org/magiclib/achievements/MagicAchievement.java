@@ -390,12 +390,10 @@ public class MagicAchievement {
      * Make sure {@link #hasTooltip()} is true.
      */
     public void createTooltip(@NotNull TooltipMakerAPI tooltipMakerAPI, boolean isExpanded, float width) {
-        if (hasTooltip()) {
-            createTooltipHeader(tooltipMakerAPI);
+        createTooltipHeader(tooltipMakerAPI);
 
-            if (getTooltip() != null && !getTooltip().isEmpty()) {
-                tooltipMakerAPI.addPara(getTooltip(), 0f);
-            }
+        if (getTooltip() != null && !getTooltip().isEmpty()) {
+            tooltipMakerAPI.addPara(getTooltip(), 0f);
         }
     }
 

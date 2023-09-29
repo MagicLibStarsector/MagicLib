@@ -169,6 +169,7 @@ public class MagicAchievementManager {
 
         MagicAchievementIntel intel = new MagicAchievementIntel();
         Global.getSector().getIntelManager().addIntel(intel, true);
+        intel.setImportant(Global.getSector().getMemoryWithoutUpdate().getBoolean(isIntelImportantMemKey));
         intel.setNew(false);
     }
 
@@ -515,9 +516,6 @@ public class MagicAchievementManager {
      */
     public void afterGameSave() {
         initIntel();
-        if (getIntel() != null) {
-            getIntel().setImportant(Global.getSector().getMemoryWithoutUpdate().getBoolean(isIntelImportantMemKey));
-        }
 
         for (MagicAchievement achievement : achievements.values()) {
             if (!achievement.isComplete()) {
