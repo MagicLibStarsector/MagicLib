@@ -588,6 +588,18 @@ public class MagicAchievementManager {
     public Set<String> achievementScriptsWithCombatRunError = new HashSet<>();
 
     /**
+     * You shouldn't need to call this. It's called automatically when an achievement is completed.
+     */
+    public static void playSoundEffect(MagicAchievement achievement) {
+        try {
+            if (!Global.getSettings().isSoundEnabled()) return;
+            Global.getSoundPlayer().playUISound(achievement.getSoundEffectId(), 1, 1);
+        } catch (Exception e) {
+            logger.warn("Unable to play sound effect for achievement " + achievement.getSpecId() + " in mod " + achievement.getModName(), e);
+        }
+    }
+
+    /**
      * Called by MagicAchievementCombatScript.
      */
     void advanceInCombat(float amount, List<InputEventAPI> events) {
@@ -673,15 +685,6 @@ public class MagicAchievementManager {
 
         while (intelManager.hasIntelOfClass(MagicAchievementIntel.class)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicAchievementIntel.class));
-        }
-    }
-
-    private static void playSoundEffect(MagicAchievement achievement) {
-        try {
-            if (!Global.getSettings().isSoundEnabled()) return;
-            Global.getSoundPlayer().playUISound(achievement.getSoundEffectId(), 1, 1);
-        } catch (Exception e) {
-            logger.warn("Unable to play sound effect for achievement " + achievement.getSpecId() + " in mod " + achievement.getModName(), e);
         }
     }
 }
