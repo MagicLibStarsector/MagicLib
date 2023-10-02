@@ -46,6 +46,7 @@
       "achievement_silver": "graphics/magic/icons/achievement_silver.png",
       "achievement_gold": "graphics/magic/icons/achievement_gold.png",
       "achievement_purple": "graphics/magic/icons/achievement_purple.png",
+      "achievement_orange": "graphics/magic/icons/achievement_orange2.png",
     },
   },
   "ruleCommandPackages": [

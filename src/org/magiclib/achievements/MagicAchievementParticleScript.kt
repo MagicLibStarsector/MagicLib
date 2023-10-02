@@ -5,8 +5,6 @@ import org.lazywizard.lazylib.ext.rotate
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.getDistance
 import org.magiclib.kotlin.random
-import org.magiclib.kotlin.setAlpha
-import java.awt.Color
 import java.awt.Rectangle
 import kotlin.random.Random
 
@@ -61,13 +59,14 @@ internal class MagicAchievementParticleScript {
             )
         )
 
+        val visualEffectData = achievement.visualEffectData
         val velocityScale = .015f
         val sizeScale = 0.75f
         val durationScale = 4f
         val rampUpScale = 2.0f
         val rampDownScale = 1.0f
         val endSizeScale = 1.55f
-        val densityScale = 6f // Lower is more dense
+        val densityScale = 8f * (1f / visualEffectData.particleDensity) // Lower is more dense
         val vel = Vector2f(100f * velocityScale, 100f * velocityScale)
             .rotate(Random.nextFloat() * 360f)
 
@@ -91,7 +90,7 @@ internal class MagicAchievementParticleScript {
             duration = (1.2f..1.5f).random() * durationScale,
             inFraction = 0.1f * rampUpScale,
             outFraction = 0.5f * rampDownScale,
-            color = achievement.rarityColor,
+            color = visualEffectData.color,
             type = CustomRenderer.NebulaType.NORMAL,
             negative = false
         )

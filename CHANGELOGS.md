@@ -16,6 +16,7 @@ Verison 1.3.0
 
 **Other**
 - Added `MagicTxt.ellipsizeStringAfterLength(String str, int length)`.
+- Added some more logging when checking if items can be installed in industries (reported by MnHebi).
 
 Version 1.2.1 (discord-only)
 **MagicBounty**

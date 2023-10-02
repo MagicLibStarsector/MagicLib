@@ -418,8 +418,9 @@ public class MagicAchievement {
             case Rare:
                 return Global.getSettings().getSpriteName("intel", "achievement_gold");
             case Epic:
-            case Legendary:
                 return Global.getSettings().getSpriteName("intel", "achievement_purple");
+            case Legendary:
+                return Global.getSettings().getSpriteName("intel", "achievement_orange");
             default:
                 return null;
         }
@@ -447,28 +448,43 @@ public class MagicAchievement {
      * Returns the color of the particle effect for this achievement's rarity.
      * Common rarity doesn't have a particle effect.
      */
-    public @NotNull Color getRarityColor() {
+    public @NotNull VisualEffectData getVisualEffectData() {
         switch (getRarity()) {
             case Common:
                 // Not shown as a particle effect, but used for the text color during combat.
-                return Misc.getTextColor();
+                return new VisualEffectData(Misc.getTextColor());
             case Uncommon:
                 // Bronze
 //                return new Color(0xCD7F32);
                 // Silver
-                return new Color(0xE0DFDF);
+                return new VisualEffectData(new Color(0xE0DFDF));
             case Rare:
                 // Gold
-                return Color.YELLOW;
+                return new VisualEffectData(Color.YELLOW);
             case Epic:
                 // Purple
-                return new Color(0x9876EC);
+                return new VisualEffectData(new Color(0x9876EC), 1.2f);
             case Legendary:
-                // Purple
-                return new Color(0x7754C9);
+                // Orange
+                return new VisualEffectData(new Color(0x1ccab8), 1.2f);
         }
 
-        return Color.red;
+        return new VisualEffectData(Color.red);
+    }
+
+    public static class VisualEffectData {
+        public final @NotNull Color color;
+        public final float particleDensity;
+
+        public VisualEffectData(@NotNull Color color, float particleDensity) {
+            this.color = color;
+            this.particleDensity = particleDensity;
+        }
+
+        public VisualEffectData(@NotNull Color color) {
+            this.color = color;
+            this.particleDensity = 1f;
+        }
     }
 
     public void setRarity(@NotNull MagicAchievementRarity rarity) {

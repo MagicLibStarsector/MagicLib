@@ -167,6 +167,9 @@ public class MagicAchievementManager {
         if (Global.getSector() == null) return;
         removeIntel();
 
+        // Don't show achievements if there aren't any.
+        if (getAchievementSpecs().isEmpty()) return;
+
         MagicAchievementIntel intel = new MagicAchievementIntel();
         Global.getSector().getIntelManager().addIntel(intel, true);
         intel.setImportant(Global.getSector().getMemoryWithoutUpdate().getBoolean(isIntelImportantMemKey));
@@ -615,7 +618,7 @@ public class MagicAchievementManager {
                 combatEngine.addFloatingText(combatEngine.getPlayerShip().getLocation(),
                         "Achievement Unlocked: " + achievement.getName(),
                         40,
-                        achievement.getRarityColor(),
+                        achievement.getVisualEffectData().color,
                         combatEngine.getPlayerShip(),
                         0, 0);
                 playSoundEffect(achievement);
