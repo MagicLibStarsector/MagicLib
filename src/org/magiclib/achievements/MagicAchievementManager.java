@@ -216,8 +216,9 @@ public class MagicAchievementManager {
 
         // Compare the json for the current achievements to the json for the most recently saved achievements.
         String newAchievementsJsonString = "";
+        int indent = 3;
         try {
-            newAchievementsJsonString = savedAchievements.toString(3); // 3 indent
+            newAchievementsJsonString = savedAchievements.toString(indent);
 
             if (newAchievementsJsonString.equals(lastSavedJson)) {
                 if (printUnchangedResultToLog) {
@@ -240,7 +241,7 @@ public class MagicAchievementManager {
         // Replace the achievements loaded from disk with the current achievements.
         try {
             commonJson.put(achievementsJsonObjectKey, savedAchievements);
-            String newJsonString = commonJson.toString(3); // 3 indent
+            String newJsonString = commonJson.toString(indent); // 3 indent
 
             // Save to disk.
             Global.getSettings().writeTextFileToCommon(commonFilename, newJsonString);

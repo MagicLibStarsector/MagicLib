@@ -4,11 +4,12 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
-import org.magiclib.achievements.MagicAchievement;
 import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.achievements.TestingAchievementSpec;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
+import org.magiclib.paintjobs.MagicPaintjobManager;
+import org.magiclib.paintjobs.MagicPaintjobSpec;
 import org.magiclib.plugins.MagicAutoTrails;
 import org.magiclib.plugins.MagicCampaignTrailPlugin;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
@@ -141,18 +142,24 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicAchievementManager.getInstance().onGameLoad();
+
+        MagicPaintjobManager.getInstance().diable$MagicLib();
+
+        MagicPaintjobManager.onGameLoad();
     }
 
     @Override
     public void beforeGameSave() {
         super.beforeGameSave();
         MagicAchievementManager.getInstance().beforeGameSave();
+        MagicPaintjobManager.beforeGameSave();
     }
 
     @Override
     public void afterGameSave() {
         super.afterGameSave();
         MagicAchievementManager.getInstance().afterGameSave();
+        MagicPaintjobManager.afterGameSave();
     }
 
     /**

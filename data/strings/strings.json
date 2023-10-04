@@ -259,13 +259,16 @@
     "mb_var_fleet": "fleet",
 
     # MagicAchievements
-    "grantAchievement": "Grant",
-    "resetAchievement": "Uncomplete",
-    "achievementCompletionProgress": "%s of %s achievements unlocked  (%s%%)",
-    "unlockedAchievementsTitle": "Unlocked Achievements",
-    "lockedAchievementsTitle": "Locked Achievements",
-    "achievementCompletedDate": "Unlocked on %s, %s",
-    "achievementCompletedBy": "by Captain %s",
-    "achievementUnlockedNotification": "Achievement Unlocked!",
+    "ml_ma_grantAchievement": "Grant",
+    "ml_ma_resetAchievement": "Uncomplete",
+    "ml_ma_achievementCompletionProgress": "%s of %s achievements unlocked  (%s%%)",
+    "ml_ma_unlockedAchievementsTitle": "Unlocked Achievements",
+    "ml_ma_lockedAchievementsTitle": "Locked Achievements",
+    "ml_ma_achievementCompletedDate": "Unlocked on %s, %s",
+    "ml_ma_achievementCompletedBy": "by Captain %s",
+    "ml_ma_achievementUnlockedNotification": "Achievement Unlocked!",
+    
+    # MagicPaintjobs
+    "ml_mp_intelName": "Paintjobs"
   }
 }

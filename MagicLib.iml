@@ -47,13 +47,12 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Console Commands-2023.5" level="application" />
-    <orderEntry type="library" name="LazyLib" level="application" />
-    <orderEntry type="library" name="zz GraphicsLib-1.7" level="application" />
-    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
-    <orderEntry type="library" name="LazyLib-Kotlin" level="application" />
-    <orderEntry type="library" name="starfarer.api" level="project" />
+    <orderEntry type="library" name="Console Commands-2023.5" level="project" />
+    <orderEntry type="library" name="LunaLib" level="project" />
+    <orderEntry type="library" name="starfarer-api" level="project" />
+    <orderEntry type="library" name="Vayra's Sector" level="project" />
+    <orderEntry type="library" name="Kotlin-Runtime" level="project" />
     <orderEntry type="library" name="SWP" level="project" />
-    <orderEntry type="library" name="LunaLib-1.8" level="application" />
+    <orderEntry type="library" name="GraphicsLib" level="project" />
   </component>
 </module>

@@ -7,3 +7,4 @@ Those weapons interferences are rated %s, %s or %s. They reduce the ship's passi
 
 That effect can be reduced by %s when installing the %s hullmod.",,graphics/magic/hullmods/interference.png
 HULLMOD CONFLICT,ML_incompatibleHullmodWarning,,,,,,,,TRUE,,0,0,0,0,org.magiclib.hullmods.MagicIncompatibleWarning,"%s, this hullmod cannot be installed on this ship or conflict with another previously installed hullmod.",,graphics/icons/intel/investigation.png
+Repaint,ML_skinSwap,,,,special,,,TRUE,FALSE,,0,0,0,0,org.magiclib.paintjobs.MagicSkinSwapHullMod,"This hullmod allows you to swap the paintjob of the ship with another one.",,graphics/icons/intel/investigation.png

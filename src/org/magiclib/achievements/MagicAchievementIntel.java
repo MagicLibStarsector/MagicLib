@@ -35,7 +35,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
     @Override
     protected String getName() {
         return tempAchievement != null
-                ? MagicTxt.getString("achievementUnlockedNotification", tempAchievement.getName())
+                ? MagicTxt.getString("ml_ma_achievementUnlockedNotification", tempAchievement.getName())
                 : "Achievements";
     }
 
@@ -95,7 +95,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         int progressBarHeight = 10;
         int imageHeight = 40;
         String defaultImage = Global.getSettings().getSpriteName("intel", "achievement");
-        String headerText = MagicTxt.getString("achievementCompletionProgress",
+        String headerText = MagicTxt.getString("ml_ma_achievementCompletionProgress",
                 Integer.toString(unlockedAchievements.size()),
                 Integer.toString(listedAchievements),
                 Integer.toString((int) ((float) unlockedAchievements.size() / listedAchievements * 100))
@@ -132,7 +132,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
         TooltipMakerAPI achievementsComponent = panel.createUIElement(width, height - headerHeight - 24, true);
         if (!unlockedAchievements.isEmpty()) {
-//            info.addSectionHeading(MagicTxt.getString("unlockedAchievementsTitle"), faction.getBaseUIColor(),
+//            info.addSectionHeading(MagicTxt.getString("ml_ma_unlockedAchievementsTitle"), faction.getBaseUIColor(),
 //                    faction.getDarkUIColor(), Alignment.MID, opad);
             displayAchievements(panel, achievementsComponent, width, unlockedAchievements);
         }
@@ -140,7 +140,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         if (!lockedAchievements.isEmpty()) {
 //            achievementsComponent.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
             achievementsComponent.setParaOrbitronLarge();
-            achievementsComponent.addPara(MagicTxt.getString("lockedAchievementsTitle"), opad);
+            achievementsComponent.addPara(MagicTxt.getString("ml_ma_lockedAchievementsTitle"), opad);
             achievementsComponent.setParaFontDefault();
 //            achievementsComponent.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
             displayAchievements(panel, achievementsComponent, width, lockedAchievements);
@@ -282,9 +282,9 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Debug buttons
             if (Global.getSettings().isDevMode()) {
                 if (!achievement.isComplete())
-                    leftElement.addButton(MagicTxt.getString("grantAchievement"), achievement.getSpecId(), 128, 16, pad);
+                    leftElement.addButton(MagicTxt.getString("ml_ma_grantAchievement"), achievement.getSpecId(), 128, 16, pad);
                 if (achievement.isComplete())
-                    leftElement.addButton(MagicTxt.getString("resetAchievement"), achievement.getSpecId(), 128, 16, pad);
+                    leftElement.addButton(MagicTxt.getString("ml_ma_resetAchievement"), achievement.getSpecId(), 128, 16, pad);
             }
 
             // Tooltip
@@ -323,11 +323,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             // Completed info, shown on the right.
             if (achievement.isComplete()) {
                 Date date = achievement.getDateCompleted();
-                String str = MagicTxt.getString("achievementCompletedDate", DateFormat.getDateInstance().format(date), DateFormat.getTimeInstance(DateFormat.SHORT).format(date));
+                String str = MagicTxt.getString("ml_ma_achievementCompletedDate", DateFormat.getDateInstance().format(date), DateFormat.getTimeInstance(DateFormat.SHORT).format(date));
                 rightElement.addPara(str, pad + 1);
 
                 if (achievement.getCompletedByUserName() != null) {
-                    rightElement.addPara(MagicTxt.getString("achievementCompletedBy", achievement.getCompletedByUserName()), pad);
+                    rightElement.addPara(MagicTxt.getString("ml_ma_achievementCompletedBy", achievement.getCompletedByUserName()), pad);
                 }
             }
 
