@@ -108,6 +108,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         label.setTitleOrbitronVeryLarge();
         label.addTitle(headerText, Misc.getBasePlayerColor());
         headerHolder.addImageWithText(opad);
+        // TODO: warning, uses obfuscated code
         if (headerHolder.getPrev() instanceof com.fs.starfarer.ui.interfacenew) {
             ((com.fs.starfarer.ui.interfacenew) headerHolder.getPrev())
                     .getChildrenCopy().get(0).getPosition().setYAlignOffset(-8);
@@ -214,6 +215,7 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
 
             if (!achievement.isComplete()) {
+                // TODO: warning, uses obfuscated code
                 if (image.getPrev() instanceof com.fs.starfarer.ui.ooO0) {
                     ((com.fs.starfarer.ui.ooO0) image.getPrev())
                             .getSprite()

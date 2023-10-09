@@ -1,6 +1,6 @@
 package org.magiclib.paintjobs
 
-class MagicPaintjobSpec @JvmOverloads constructor(
+data class MagicPaintjobSpec @JvmOverloads constructor(
     val id: String,
     val hullId: String,
     var name: String,

@@ -1,6 +1,9 @@
 package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.fleet.FleetMemberAPI
+import org.dark.shaders.util.ShaderLib
 import org.json.JSONObject
 import org.magiclib.kotlin.toStringList
 
@@ -217,6 +220,48 @@ object MagicPaintjobManager {
         } catch (ex: Exception) {
             logger.warn("Unable to get MagicPaintjobIntel.", ex)
             null
+        }
+    }
+
+    @JvmStatic
+    fun getPaintjob(paintjobId: String): MagicPaintjobSpec? = paintjobsInner.firstOrNull { it.id == paintjobId }
+
+    @JvmStatic
+    fun applyPaintjob(fleetMember: FleetMemberAPI?, combatShip: ShipAPI?, paintjob: MagicPaintjobSpec) {
+        // In case it's a sprite path that wasn't loaded, load it.
+        val spriteId = paintjob.spriteId
+        Global.getSettings().loadTexture(spriteId)
+
+        if (fleetMember != null) {
+            val variant = fleetMember.variant
+            if (variant?.hasHullMod(MagicSkinSwapHullMod.ID) == true) {
+                variant.addMod(MagicSkinSwapHullMod.ID)
+            }
+
+            if (variant != null) {
+                variant.tags.filter { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+                    .forEach { variant.removeTag(it) }
+                variant.addTag(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
+            }
+
+            fleetMember.spriteOverride = paintjob.spriteId
+        }
+
+        if (combatShip != null) {
+            val sprite = Global.getSettings().getSprite(spriteId) ?: return
+            val x = combatShip.spriteAPI.centerX
+            val y = combatShip.spriteAPI.centerY
+            val alpha = combatShip.spriteAPI.alphaMult
+            val angle = combatShip.spriteAPI.angle
+            val color = combatShip.spriteAPI.color
+            combatShip.setSprite(sprite)
+            if (Global.getSettings().modManager.isModEnabled("shaderLib")) {
+                ShaderLib.overrideShipTexture(combatShip, spriteId)
+            }
+            combatShip.spriteAPI.setCenter(x, y)
+            combatShip.spriteAPI.alphaMult = alpha
+            combatShip.spriteAPI.angle = angle
+            combatShip.spriteAPI.color = color
         }
     }
 

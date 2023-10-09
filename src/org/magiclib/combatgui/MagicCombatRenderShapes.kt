@@ -19,9 +19,14 @@ object MagicCombatRenderShapes {
      */
     data class Highlight(val x: Float, val y: Float, val r: Float, var a: Float)
 
-    @JvmStatic val defaultHighlightColor: Color = Color.GREEN
-    @JvmStatic val defaultTextBoxColor: Color = Color.BLACK
-    @JvmStatic val defaultFrameColor: Color = Color.WHITE
+    @JvmStatic
+    val defaultHighlightColor: Color = Color.GREEN
+
+    @JvmStatic
+    val defaultTextBoxColor: Color = Color.BLACK
+
+    @JvmStatic
+    val defaultFrameColor: Color = Color.WHITE
     private const val CIRCLE_POINTS = 50
     private const val RADIUS_MULTIPLIER = 0.6f
 
@@ -67,12 +72,20 @@ object MagicCombatRenderShapes {
      *                      );
      * ```
      */
-    @JvmStatic fun renderHighlights(highlights: List<Highlight>, viewMult: Float, color: Color = defaultHighlightColor) {
+    @JvmStatic
+    @JvmOverloads
+    fun renderHighlights(highlights: List<Highlight>, viewMult: Float, color: Color = defaultHighlightColor) {
         val uiMult = Global.getSettings()?.screenScaleMult ?: 1f
         preRender()
         highlights.forEach {
             GL11.glColor4f(color.red.toFloat() / 255f, color.green.toFloat() / 255f, color.blue.toFloat() / 255f, it.a)
-            DrawUtils.drawCircle(it.x, it.y, it.r * RADIUS_MULTIPLIER / viewMult * uiMult, CIRCLE_POINTS, true)
+            DrawUtils.drawCircle(
+                /* centerX = */ it.x * uiMult,
+                /* centerY = */ it.y * uiMult,
+                /* radius = */ it.r * RADIUS_MULTIPLIER / viewMult * uiMult,
+                /* numSegments = */ CIRCLE_POINTS,
+                /* drawFilled = */ true
+            )
         }
         postRender()
     }
@@ -89,7 +102,9 @@ object MagicCombatRenderShapes {
      * @param color background color of the textbox
      * @param frameColor color of the surrounding frame
      */
-    @JvmStatic fun renderTextbox(
+    @JvmStatic
+    @JvmOverloads
+    fun renderTextbox(
         text: LazyFont.DrawableString,
         xPos: Float,
         yPos: Float,
@@ -97,10 +112,12 @@ object MagicCombatRenderShapes {
         color: Color = defaultTextBoxColor,
         frameColor: Color = defaultFrameColor
     ) {
-        val x = xPos - buffer / 2f
-        val y = yPos + buffer / 2f
-        val w = text.width + buffer
-        val h = text.height + buffer
+        val uiMult = Global.getSettings().screenScaleMult
+        val x = (xPos - buffer / 2f) * uiMult
+        val y = (yPos + buffer / 2f) * uiMult
+        val w = (text.width + buffer) * uiMult
+        val h = (text.height + buffer) * uiMult
+
         // assume TOP_LEFT anchor for now, move later
         val vertices = arrayOf(
             x, y, // top left
