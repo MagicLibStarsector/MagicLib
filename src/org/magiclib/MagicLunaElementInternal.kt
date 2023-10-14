@@ -22,6 +22,7 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
 
     private var elementID = Misc.genUID() ?: ""
 
+    var parentPanel: CustomPanelAPI? = null
     lateinit var parentElement: TooltipMakerAPI
     lateinit var elementPanel: CustomPanelAPI
     lateinit var innerElement: TooltipMakerAPI
@@ -91,6 +92,14 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
     private var onHoverEnterFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
     private var onHoverExitFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
 
+    fun addTo(panelAPI: CustomPanelAPI, width: Float, height: Float, xPos: Float, yPos: Float): MagicLunaElementInternal {
+        this.parentPanel = panelAPI
+        val tooltip = panelAPI.createUIElement(width, height, false)
+        addTo(tooltip, width, height)
+        panelAPI.addUIElement(tooltip).inTL(xPos, yPos)
+        return this
+    }
+
     fun addTo(tooltip: TooltipMakerAPI, width: Float, height: Float): MagicLunaElementInternal {
         this.parentElement = tooltip
         this.elementPanel = Global.getSettings().createCustom(width, height, this)
@@ -106,6 +115,12 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
         selectionGroup = "all"
         isAdded = true
         return this
+    }
+
+    fun removeFromParent() {
+        parentPanel?.removeComponent(parentElement)
+        parentElement.removeComponent(elementPanel)
+        isAdded = false
     }
 
     fun playClickSound() {
@@ -124,9 +139,10 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
         text: String,
         baseColor: Color = Misc.getTextColor(),
         highlightColor: Color = Misc.getHighlightColor(),
-        highlights: List<String> = listOf()
+        highlights: List<String> = listOf(),
+        padding: Float = 0f
     ) {
-        paragraph = innerElement.addPara(text, 0f, baseColor, highlightColor, *highlights.toTypedArray())
+        paragraph = innerElement.addPara(text, padding, baseColor, highlightColor, *highlights.toTypedArray())
     }
 
     fun changeText(text: String, highlights: List<String> = listOf()) {

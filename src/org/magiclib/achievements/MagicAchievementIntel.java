@@ -187,8 +187,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
             }
         });
 
-        String prevModId = null;
-
         for (final MagicAchievement achievement : achievements) {
             if (!achievement.shouldShowInIntel())
                 continue;

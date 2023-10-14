@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.SectorMapAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.MagicLunaElementInternal
 import org.magiclib.util.MagicTxt
@@ -24,12 +25,13 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
         val cellHeight = baseUnit * 20
         val imageSize = baseUnit * 12
         val gridWidth = (width / cellWidth).toInt()
+        val padding = 10f
 
         var x = 0
         var y = 0
         for (pj in pjs) {
             val isUnlocked = MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
-            val pjCell = pjMain.createUIElement(cellWidth, cellHeight, false)
+            val pjCell = pjMain.createUIElement(cellWidth + padding, cellHeight, false)
             Global.getSettings().loadTexture(pj.spriteId)
             pjCell.addImage(pj.spriteId, imageSize, imageSize, opad)
             pjCell.addPara(pj.name, Misc.getHighlightColor(), opad)
@@ -46,13 +48,61 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
             }
             val xPos = x * cellWidth
             val yPos = y * cellHeight
-            pjMain.addUIElement(pjCell).inTL(xPos, yPos)
+            pjMain.addUIElement(pjCell).inTL(xPos + padding, yPos)
 
-//            if (!isUnlocked) {
+            if (!isUnlocked)
                 addDarkenCover(pjMain, cellWidth, cellHeight, xPos, yPos)
-                    .also { cover -> pjMain.bringComponentToTop(cover.elementPanel) }
-//            }
-            addHoverHighlight(pjMain, cellWidth, cellHeight, xPos, yPos)
+            val hoverElement = addHoverHighlight(pjMain, cellWidth, cellHeight, xPos, yPos)
+
+            // When you click on a paintjob, it will show you the ships in your fleet that it may apply to.
+            hoverElement.onClick { inputEvent ->
+                val pjApplierUIElement = MagicLunaElementInternal()
+                    .apply {
+                        if (shipsThatPjMayApplyTo.none())
+                            addTo(pjMain, cellWidth * 2, baseUnit * 10, xPos, yPos)
+                        else
+                            addTo(pjMain, width, height, xPos, yPos)
+
+                        renderBackground = true
+                        renderBorder = true
+                        val timer = IntervalUtil(.4f, .4f)
+
+                        // Remove after mouse leaves it (after initial timeout has elapsed).
+                        advance {
+                            timer.advance(it)
+                            if (timer.intervalElapsed() && !isHovering) {
+                                removeFromParent()
+                            }
+                        }
+                    }
+
+                if (shipsThatPjMayApplyTo.none()) {
+                    pjApplierUIElement.addText(
+                        text = "This paintjob cannot be applied",
+                        baseColor = Misc.getHighlightColor(),
+                        padding = pad
+                    )
+                    pjApplierUIElement.addText(
+                        text = "to any ships in your fleet.",
+                        baseColor = Misc.getHighlightColor()
+                    )
+                } else {
+                    shipsThatPjMayApplyTo.forEach { fleetShip ->
+                        val shipInFleetPanel = Global.getSettings().createCustom(baseUnit * 8f, baseUnit * 10f, null)
+                        val shipInFleetTooltip = shipInFleetPanel.createUIElement(
+                            shipInFleetPanel.position.width,
+                            shipInFleetPanel.position.height,
+                            false
+                        )
+                        shipInFleetPanel.addUIElement(shipInFleetTooltip).inTL(0f, 0f)
+                        shipInFleetTooltip.addPara(fleetShip.shipName, Misc.getHighlightColor(), opad)
+                        shipInFleetTooltip.addImage(
+                            fleetShip.spriteOverride ?: fleetShip.hullSpec.spriteName, imageSize, imageSize, opad
+                        )
+                        pjApplierUIElement.innerElement.addCustom(shipInFleetPanel, 0f)
+                    }
+                }
+            }
 
 //            pjCell.addShipList(
 //                5,
@@ -92,11 +142,14 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
         yPos: Float
     ): MagicLunaElementInternal {
         val pjCellHover = pjMain.createUIElement(cellWidth, cellHeight, false)
+        pjMain.addUIElement(pjCellHover).inTL(xPos, yPos)
+        val baselineAlpha = 0.3f
         val element = MagicLunaElementInternal()
+            .addTo(pjCellHover, cellWidth, cellHeight)
             .apply {
                 renderForeground = true
-                foregroundAlpha = 0.01f
-                foregroundColor = Color.yellow
+                foregroundAlpha = baselineAlpha
+                foregroundColor = Color.black
                 enableTransparency = true
                 var alpha = foregroundAlpha
                 advance {
@@ -106,12 +159,11 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
                         alpha += 1 * it
                     }
 
-                    alpha = alpha.coerceIn(0f, .01f)
+                    alpha = alpha.coerceIn(0f, baselineAlpha)
                     foregroundAlpha = alpha
                 }
             }
-            .addTo(pjCellHover, cellWidth, cellHeight)
-        pjMain.addUIElement(pjCellHover).inTL(xPos, yPos)
+        pjCellHover.bringComponentToTop(element.elementPanel)
         return element
     }
 
@@ -121,9 +173,10 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
         cellHeight: Float,
         xPos: Float,
         yPos: Float
-    ) {
+    ): MagicLunaElementInternal {
         val pjCellHover = pjMain.createUIElement(cellWidth, cellHeight, false)
-        MagicLunaElementInternal()
+        val element = MagicLunaElementInternal()
+            .addTo(pjCellHover, cellWidth, cellHeight)
             .apply {
                 renderBorder = true
                 renderBackground = true
@@ -143,8 +196,8 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
                     borderAlpha = alpha
                 }
             }
-            .addTo(pjCellHover, cellWidth, cellHeight)
         pjMain.addUIElement(pjCellHover).inTL(xPos, yPos)
+        return element
     }
 
     override fun getIntelTags(map: SectorMapAPI?): Set<String> = super.getIntelTags(map) + "Personal"

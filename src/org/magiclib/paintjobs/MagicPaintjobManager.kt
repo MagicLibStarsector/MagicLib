@@ -5,7 +5,9 @@ import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONObject
+import org.magiclib.Magic_modPlugin
 import org.magiclib.kotlin.toStringList
+import org.magiclib.util.MagicMisc
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
@@ -158,7 +160,6 @@ object MagicPaintjobManager {
      */
     @JvmStatic
     fun addPaintJob(paintjob: MagicPaintjobSpec) {
-
         if (runCatching { Global.getSettings().getHullSpec(paintjob.hullId) }.getOrNull() == null) {
             logger.error("Did not add paintjob ${paintjob.id}. Hull with id ${paintjob.hullId} does not exist.")
             return
@@ -173,7 +174,7 @@ object MagicPaintjobManager {
         paintjobsInner.removeAll { it.id == paintjob.id }
         paintjobsInner.add(paintjob)
 
-        if (Global.getSettings().isDevMode) {
+        if (Magic_modPlugin.isMagicLibTestMode()) {
             unlockPaintjob(paintjob.id)
         }
     }
@@ -185,7 +186,10 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
-    fun onGameLoad() = initIntel()
+    fun onGameLoad() {
+        loadUnlockedPaintjobs()
+        initIntel()
+    }
 
     @JvmStatic
     fun beforeGameSave() {

@@ -9,7 +9,6 @@ import org.magiclib.achievements.TestingAchievementSpec;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
 import org.magiclib.paintjobs.MagicPaintjobManager;
-import org.magiclib.paintjobs.MagicPaintjobSpec;
 import org.magiclib.plugins.MagicAutoTrails;
 import org.magiclib.plugins.MagicCampaignTrailPlugin;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
@@ -188,7 +187,9 @@ public class Magic_modPlugin extends BaseModPlugin {
     }
 
     public static boolean isMagicLibTestMode() {
-        return Global.getSector() != null && Global.getSector().getPlayerPerson().getNameString().equalsIgnoreCase("ML_Test");
+        return Global.getSector() != null
+                && Global.getSector().getPlayerPerson().getNameString()
+                .equalsIgnoreCase("ML_Test");
     }
 
     //    //debugging magic bounties
