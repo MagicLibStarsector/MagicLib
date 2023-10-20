@@ -7,7 +7,6 @@ import org.dark.shaders.util.ShaderLib
 import org.json.JSONObject
 import org.magiclib.Magic_modPlugin
 import org.magiclib.kotlin.toStringList
-import org.magiclib.util.MagicMisc
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
@@ -267,6 +266,14 @@ object MagicPaintjobManager {
             combatShip.spriteAPI.angle = angle
             combatShip.spriteAPI.color = color
         }
+    }
+
+    @JvmStatic
+    fun getCurrentShipPaintjob(fleetMember: FleetMemberAPI): MagicPaintjobSpec? {
+        val variant = fleetMember.variant ?: return null
+        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+        val paintjobId = pjTag?.removePrefix(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+        return getPaintjob(paintjobId)
     }
 
     private fun removeIntel() {

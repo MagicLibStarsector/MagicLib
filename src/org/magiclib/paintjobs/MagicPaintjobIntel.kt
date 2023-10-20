@@ -78,26 +78,41 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
 
                 if (shipsThatPjMayApplyTo.none()) {
                     pjApplierUIElement.addText(
-                        text = "This paintjob cannot be applied",
+                        text = " This paintjob cannot be applied",
                         baseColor = Misc.getHighlightColor(),
-                        padding = pad
+                        padding = opad
                     )
                     pjApplierUIElement.addText(
-                        text = "to any ships in your fleet.",
+                        text = " to any ships in your fleet.",
                         baseColor = Misc.getHighlightColor()
                     )
                 } else {
+                    // Display ships in fleet that this paintjob may apply to (and whether it's applied).
                     shipsThatPjMayApplyTo.forEach { fleetShip ->
-                        val shipInFleetPanel = Global.getSettings().createCustom(baseUnit * 8f, baseUnit * 10f, null)
+                        val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(fleetShip)?.id == pj.id
+                        val spriteName = fleetShip.spriteOverride ?: fleetShip.hullSpec.spriteName
+                        Global.getSettings().loadTexture(spriteName)
+                        val sprite = Global.getSettings().getSprite(spriteName)
+                        val ratio = sprite.width / sprite.height
+                        val isWide = ratio > 1
+                        val fleetShipWidth = (if (isWide) imageSize else imageSize * ratio) + (baseUnit * 6)
+                        val fleetShipHeight = (if (isWide) imageSize / ratio else imageSize) + (baseUnit * 8)
+
+                        val shipInFleetPanel = Global.getSettings().createCustom(fleetShipWidth, fleetShipHeight, null)
                         val shipInFleetTooltip = shipInFleetPanel.createUIElement(
-                            shipInFleetPanel.position.width,
-                            shipInFleetPanel.position.height,
+                            fleetShipWidth,
+                            fleetShipHeight,
                             false
                         )
                         shipInFleetPanel.addUIElement(shipInFleetTooltip).inTL(0f, 0f)
                         shipInFleetTooltip.addPara(fleetShip.shipName, Misc.getHighlightColor(), opad)
                         shipInFleetTooltip.addImage(
-                            fleetShip.spriteOverride ?: fleetShip.hullSpec.spriteName, imageSize, imageSize, opad
+                            spriteName, imageSize, imageSize, opad
+                        )
+                        addHoverHighlight(
+                            shipInFleetPanel, fleetShipWidth + opad, fleetShipHeight, -opad, 0f,
+                            backgroundColor = if (isWearingPj) Misc.getPositiveHighlightColor() else Misc.getBasePlayerColor(),
+                            baseAlpha = if (isWearingPj) .1f else 0f
                         )
                         pjApplierUIElement.innerElement.addCustom(shipInFleetPanel, 0f)
                     }
@@ -172,18 +187,20 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
         cellWidth: Float,
         cellHeight: Float,
         xPos: Float,
-        yPos: Float
+        yPos: Float,
+        backgroundColor: Color = Misc.getBasePlayerColor(),
+        baseAlpha: Float = 0f
     ): MagicLunaElementInternal {
         val pjCellHover = pjMain.createUIElement(cellWidth, cellHeight, false)
         val element = MagicLunaElementInternal()
             .addTo(pjCellHover, cellWidth, cellHeight)
             .apply {
-                renderBorder = true
-                renderBackground = true
-                backgroundAlpha = 0f
-                backgroundColor = Misc.getBasePlayerColor()
-                enableTransparency = true
-                var alpha = backgroundAlpha
+                this.renderBorder = true
+                this.renderBackground = true
+                this.backgroundAlpha = baseAlpha
+                this.backgroundColor = backgroundColor
+                this.enableTransparency = true
+                var alpha = this.backgroundAlpha
                 advance {
                     if (isHovering) {
                         alpha += 2 * it
@@ -191,7 +208,7 @@ class MagicPaintjobIntel : BaseIntelPlugin() {
                         alpha -= 1 * it
                     }
 
-                    alpha = alpha.coerceIn(0f, .1f)
+                    alpha = alpha.coerceIn(baseAlpha, .1f)
                     backgroundAlpha = alpha
                     borderAlpha = alpha
                 }
