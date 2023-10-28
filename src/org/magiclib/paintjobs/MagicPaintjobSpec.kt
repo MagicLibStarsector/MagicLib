@@ -1,10 +1,13 @@
 package org.magiclib.paintjobs
 
 data class MagicPaintjobSpec @JvmOverloads constructor(
+    val modId: String,
+    val modName: String,
     val id: String,
     val hullId: String,
     var name: String,
     var description: String? = null,
+    var unlockedAutomatically: Boolean = true,
     var spriteId: String,
 ) {
 //    fun toJsonObject(): JSONObject {

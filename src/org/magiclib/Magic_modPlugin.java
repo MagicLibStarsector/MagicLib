@@ -142,6 +142,7 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicAchievementManager.getInstance().onGameLoad();
 
+        MagicPaintjobManager.getInstance().onApplicationLoad();
         MagicPaintjobManager.getInstance().diable$MagicLib();
 
         MagicPaintjobManager.onGameLoad();

@@ -1,0 +1,10 @@
+id,hullId,name,description,unlockedAutomatically,spriteId
+# id: Required. The id of the paintjob. Must be unique. Prefix with your mod id.
+# hullId: Required. The id of the hull that this paintjob applies to. Must be a valid hull id.
+# name: Required. The name of the paintjob.
+# description: Optional, default none. The description of the paintjob. Aim for one or two sentences. If not unlocked by default, put unlock conditions here.
+# unlockedAutomatically: Optional, default true. If true, the paintjob is unlocked by default. Otherwise, it must be manually unlocked using code (e.g. in achievement complete code).
+# spriteId: Required. The path or spriteName of the ship sprite.
+
+# Example
+# magiclib_examplePaintjob, "onslaught","Oldslaught","Original Onslaught sprite. Unlocked after completing the 'Slayer' achievement.",false,"graphics/ships/oldslaught.png"

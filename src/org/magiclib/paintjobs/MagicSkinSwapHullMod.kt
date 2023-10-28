@@ -15,6 +15,10 @@ class MagicSkinSwapHullMod : BaseHullMod() {
         ship ?: return
         id ?: return
 
+        if (!MagicPaintjobManager.isEnabled) {
+            return
+        }
+
         // TODO remove this part
         val randomPaintjob = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId).firstOrNull { it.hullId == ship.hullSpec.hullId }
         if (randomPaintjob != null) {

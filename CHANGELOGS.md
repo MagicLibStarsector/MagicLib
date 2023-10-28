@@ -1,4 +1,5 @@
 Verison 1.3.0
+
 **MagicAchievements**
 - **New feature!** Cross-save achievements framework that any mod may add to.
 - 20+ achievements available in a separate mod, Magic Achievements: Vanilla Pack.
@@ -7,9 +8,16 @@ Verison 1.3.0
   - Nexerelin's Milestones, in contrast, are per-save.
 - Find them under your Intel under `Personal`.
 
+**MagicPaintjobs**
+- **New feature!** Cross-save paintjobs (ship skins) framework that any mod may add to.
+- Useful as rewards for achievements! Or for any other reason.
+- Mods may add paintjobs, which will be locked by default. The modder chooses when/how to unlock them.
+- Caution: because Starsector preloads almost everything, paintjobs in a mod will be loaded into VRAM even if they aren't applied. 
+
 **CombatGUI**
 - Properly released to everybody!
-- Breaking changes from the 1.2.0 version to add `MagicCombat` to the class names.
+- Breaking changes from the Discord-only 1.2.0 version to add `MagicCombat` to the class names.
+  - I don't believe anybody was using this, but I'll release a backwards-compat patch if someone asks me to.
 
 **MagicBounty**
 - Fixed a potential crash after resetting a bounty via console command (reported by mrmagolor).
@@ -17,12 +25,15 @@ Verison 1.3.0
 **Other**
 - Added `MagicTxt.ellipsizeStringAfterLength(String str, int length)`.
 - Added some more logging when checking if items can be installed in industries (reported by MnHebi).
+- Added `MagicRefreshableBaseIntelPlugin`, which adds a method to refresh Intel's center panel. Used by MagicPaintjobs.
 
 Version 1.2.1 (discord-only)
+
 **MagicBounty**
 - Text now supports all vanilla variables (requested by CivilYoshi).
 
 Version 1.2.0 (discord-only)
+
 **CombatGUI**
 - **New feature!** Contributed by @Jannes/DesperatePeter!
 

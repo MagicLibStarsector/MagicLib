@@ -92,11 +92,11 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
     private var onHoverEnterFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
     private var onHoverExitFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
 
-    fun addTo(panelAPI: CustomPanelAPI, width: Float, height: Float, xPos: Float, yPos: Float): MagicLunaElementInternal {
+    fun addTo(panelAPI: CustomPanelAPI, width: Float, height: Float, position: (PositionAPI) -> Unit): MagicLunaElementInternal {
         this.parentPanel = panelAPI
         val tooltip = panelAPI.createUIElement(width, height, false)
         addTo(tooltip, width, height)
-        panelAPI.addUIElement(tooltip).inTL(xPos, yPos)
+        panelAPI.addUIElement(tooltip).also(position)
         return this
     }
 
