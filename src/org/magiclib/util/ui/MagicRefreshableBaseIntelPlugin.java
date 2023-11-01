@@ -22,8 +22,6 @@ public class MagicRefreshableBaseIntelPlugin extends BaseIntelPlugin {
 
     @Override
     public final void createLargeDescription(CustomPanelAPI rootPanel, float width, float height) {
-        super.createLargeDescription(rootPanel, width, height);
-
         largeDescBasePanel = rootPanel;
         refreshPanel();
     }
