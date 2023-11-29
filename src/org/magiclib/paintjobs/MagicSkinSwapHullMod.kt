@@ -20,12 +20,13 @@ class MagicSkinSwapHullMod : BaseHullMod() {
         }
 
         // TODO remove this part
-        val randomPaintjob = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId).firstOrNull { it.hullId == ship.hullSpec.hullId }
-        if (randomPaintjob != null) {
-            MagicPaintjobManager.applyPaintjob(null, ship, randomPaintjob)
-        }
+//        val randomPaintjob = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId).firstOrNull { it.hullId == ship.hullSpec.hullId }
+//        if (randomPaintjob != null) {
+//            MagicPaintjobManager.applyPaintjob(null, ship, randomPaintjob)
+//        }
 
-        val tag = ship.tags.firstOrNull { it.startsWith(PAINTJOB_TAG_PREFIX) }
+        // (the tag should only be on the variant but I don't trust myself)
+        val tag = (ship.tags + ship.variant.tags).firstOrNull { it.startsWith(PAINTJOB_TAG_PREFIX) }
         val paintjob = if (tag != null) {
             val paintjobId = tag.removePrefix(PAINTJOB_TAG_PREFIX)
             MagicPaintjobManager.getPaintjob(paintjobId) ?: return
@@ -33,6 +34,7 @@ class MagicSkinSwapHullMod : BaseHullMod() {
 
         MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
     }
+
 
     override fun addPostDescriptionSection(
         tooltip: TooltipMakerAPI?,
