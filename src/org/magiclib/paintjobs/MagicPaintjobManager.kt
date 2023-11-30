@@ -398,6 +398,13 @@ object MagicPaintjobManager {
         val variant = fleetMember.variant ?: return null
         val pjTag = variant.tags.firstOrNull { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
         val paintjobId = pjTag?.removePrefix(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+
+        // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
+        if (!fleetMember.variant.hasHullMod(MagicSkinSwapHullMod.ID)) {
+            removePaintjobFromShip(fleetMember)
+            return null
+        }
+
         return getPaintjob(paintjobId)
     }
 
