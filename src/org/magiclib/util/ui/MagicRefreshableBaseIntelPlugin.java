@@ -101,4 +101,16 @@ public class MagicRefreshableBaseIntelPlugin extends BaseIntelPlugin {
     public void createLargeDescriptionImpl(@NotNull CustomPanelAPI panel, float width, float height) {
 
     }
+
+    @Override
+    public boolean hasLargeDescription() {
+        // If you aren't using this class to display a large description, what are you doing?
+        return true;
+    }
+
+    @Override
+    public boolean hasSmallDescription() {
+        // Large and small are mutually exclusive since they occupy the same space.
+        return false;
+    }
 }

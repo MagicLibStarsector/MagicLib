@@ -83,7 +83,7 @@ object MagicPaintjobManager {
                         modName = "MagicLib",
                         id = "ml_$spriteId",
                         hullId = name,
-                        name = name.takeLastWhile { it != '_' }.replaceFirstChar { it.uppercase() },
+                        name = spriteId.removePrefix("graphics/pj_test/da/").takeWhile { it != '/' }.replaceFirstChar { it.uppercase() },
                         description = null,
                         spriteId = spriteId
                     )
