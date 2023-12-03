@@ -10,6 +10,13 @@ import org.magiclib.util.ui.MagicRefreshableBaseIntelPlugin
 import java.awt.Color
 import kotlin.math.ceil
 
+/**
+ * To anybody reading this code: I'm sorry. Please don't try to understand it or learn from it.
+ *
+ * Deepest apologies,
+ *
+ * Wisp
+ */
 class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     companion object {
         const val TOGGLE_VIEW_MEMKEY = "\$ML_displaybyPaintjob"
@@ -18,6 +25,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
     @Transient
     private var scrollPos: Float? = null
+
+    @Transient
+    private var mainGridScrollPos: Float? = null
 
     @Transient
     var pjBeingViewed: MagicPaintjobSpec? = null
@@ -86,6 +96,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
         doBeforeRefresh { scrollPos = grid.externalScroller.yOffset }
         doAfterRefresh { grid.externalScroller.yOffset = scrollPos ?: 0f }
+
+        doBeforeRefresh { mainGridScrollPos = mainGridTooltip.externalScroller.yOffset }
+        doAfterRefresh { mainGridTooltip.externalScroller.yOffset = mainGridScrollPos ?: 0f }
 
         dumbPanel.addUIElement(grid).inTL(0f, 0f)
         mainGridTooltip.addCustom(grid, 0f)
@@ -409,10 +422,10 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 spriteName, imageSize, imageSize, opad
             )
             if (isWearingPj) shipInFleetTooltip.addPara("Applied", Misc.getPositiveHighlightColor(), opad)
-                .apply {
-                    setAlignment(Alignment.MID)
-                    position.setXAlignOffset(-(this.computeTextWidth(this.text) / 2))
-                }
+//                .apply {
+//                    setAlignment(Alignment.MID)
+//                    position.setXAlignOffset(-(this.computeTextWidth(this.text) / 2))
+//                }
             else shipInFleetTooltip.addPara("", opad)
 
             addHoverHighlight(
@@ -472,7 +485,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 )
                 {
                     it.inTL(xPos, yPos)
-//                    .setYAlignOffset(paintjobSelectionViewHeight)
                 }
 
                 renderBackground = true
@@ -499,18 +511,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             padding = padding,
             items = items
         ) { paintjobTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow ->
-//        paintjobsForShip.forEach { paintjob ->
             val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(ship)?.id == paintjob?.id
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
 
-//            val paintjobPanel =
-//                Global.getSettings().createCustom(paintjobSelectionViewWidth, paintjobSelectionViewHeight, null)
-//            val paintjobTooltip = paintjobPanel.createUIElement(
-//                paintjobSelectionViewWidth + padding,
-//                paintjobSelectionViewHeight,
-//                false
-//            )
-//            paintjobPanel.addUIElement(paintjobTooltip).inTL(opad, 0f)
             paintjobTooltip.addPara(paintjob?.name ?: "Default", Misc.getHighlightColor(), opad)
             Global.getSettings().loadTexture(spriteName)
             paintjobTooltip.addImage(
@@ -529,8 +532,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 panel = row,
                 cellWidth = cellWidth,
                 cellHeight = cellHeight,
-                xPos = 0f,
-                yPos = 0f,
+                xPos = xPosOfCellOnRow,
+                yPos = yPosOfCellOnRow,
                 backgroundColor = if (isWearingPj) Misc.getPositiveHighlightColor() else Misc.getBasePlayerColor(),
                 baseAlpha = if (isWearingPj) .1f else 0f,
                 borderOnly = true
