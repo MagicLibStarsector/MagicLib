@@ -1,4 +1,5 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
 
 # MagicLib: toggle achievements
-magiclib_enableAchievements,Enable MagicAchievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
+magiclib_enableAchievements,Enable Achievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
+magiclib_enablePaintjobs,Enable Paintjobs,Boolean,true,,"Disabling paintjobs will not affect unlocks.",,,

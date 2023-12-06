@@ -3,7 +3,7 @@ package org.magiclib.paintjobs
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
-import lunalib.lunaSettings.LunaSettings.addSettingsListener
+import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettings.getBoolean
 import lunalib.lunaSettings.LunaSettingsListener
 import org.dark.shaders.util.ShaderLib
@@ -83,7 +83,8 @@ object MagicPaintjobManager {
                         modName = "MagicLib",
                         id = "ml_$spriteId",
                         hullId = name,
-                        name = spriteId.removePrefix("graphics/pj_test/da/").takeWhile { it != '/' }.replaceFirstChar { it.uppercase() },
+                        name = spriteId.removePrefix("graphics/pj_test/da/").takeWhile { it != '/' }
+                            .replaceFirstChar { it.uppercase() },
                         description = null,
                         spriteId = spriteId
                     )
@@ -119,10 +120,17 @@ object MagicPaintjobManager {
         // Set up LunaLib settings.
         if (Global.getSettings().modManager.isModEnabled("lunalib")) {
             // Add settings listener.
-            addSettingsListener(object : LunaSettingsListener {
+            LunaSettings.addSettingsListener(object : LunaSettingsListener {
                 override fun settingsChanged(settings: String) {
-                    getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs")?.also { lunaIsEnabled ->
+                    val lunaIsEnabled = getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
+
+                    if (isEnabled != lunaIsEnabled) {
                         isEnabled = lunaIsEnabled
+                        if (isEnabled) {
+                            initIntel()
+                        } else {
+                            removeIntel()
+                        }
                     }
                 }
             })
