@@ -1,5 +1,7 @@
 package org.magiclib.paintjobs
 
+import com.fs.starfarer.api.campaign.CampaignUIAPI
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -19,22 +21,24 @@ class MagicSkinSwapHullMod : BaseHullMod() {
             return
         }
 
-        // TODO remove this part
-//        val randomPaintjob = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId).firstOrNull { it.hullId == ship.hullSpec.hullId }
-//        if (randomPaintjob != null) {
-//            MagicPaintjobManager.applyPaintjob(null, ship, randomPaintjob)
-//        }
-
-        // (the tag should only be on the variant but I don't trust myself)
-        val tag = (ship.tags + ship.variant.tags).firstOrNull { it.startsWith(PAINTJOB_TAG_PREFIX) }
-        val paintjob = if (tag != null) {
-            val paintjobId = tag.removePrefix(PAINTJOB_TAG_PREFIX)
-            MagicPaintjobManager.getPaintjob(paintjobId) ?: return
-        } else return
+        val paintjob = getAppliedPaintjob(ship) ?: return
 
         MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
     }
 
+    private fun getAppliedPaintjob(ship: ShipAPI): MagicPaintjobSpec? {
+        // (the tag should only be on the variant, not the ship, but I don't trust myself)
+        val tag = (ship.tags + ship.variant.tags).firstOrNull { it.startsWith(PAINTJOB_TAG_PREFIX) }
+        return tag?.removePrefix(PAINTJOB_TAG_PREFIX)?.let { paintjobId ->
+            MagicPaintjobManager.getPaintjob(paintjobId)
+        }
+    }
+
+    override fun canBeAddedOrRemovedNow(
+        ship: ShipAPI?,
+        marketOrNull: MarketAPI?,
+        mode: CampaignUIAPI.CoreUITradeMode?
+    ): Boolean = ship != null && getAppliedPaintjob(ship)?.isPermament != true
 
     override fun addPostDescriptionSection(
         tooltip: TooltipMakerAPI?,

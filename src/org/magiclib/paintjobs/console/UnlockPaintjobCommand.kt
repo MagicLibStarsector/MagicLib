@@ -8,16 +8,17 @@ class UnlockPaintjobCommand : BaseCommand {
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
         val trimmedArgs = args.trim { it <= ' ' }
 
+        val paintjobs = MagicPaintjobManager.getPaintjobs()
         if (trimmedArgs.isEmpty()) {
             Console.showMessage("Missing arg ('all' or a specific paintjob id).")
-            Console.showMessage(MagicPaintjobManager.paintjobs.joinToString(separator = "\n") { "  Name: ${it.name}, Id: ${it.id}" })
+            Console.showMessage(paintjobs.joinToString(separator = "\n") { "  Name: ${it.name}, Id: ${it.id}" })
             return BaseCommand.CommandResult.BAD_SYNTAX
         } else {
             try {
                 if (trimmedArgs == "all") {
-                    MagicPaintjobManager.paintjobs.forEach { MagicPaintjobManager.unlockPaintjob(it.id) }
+                    paintjobs.forEach { MagicPaintjobManager.unlockPaintjob(it.id) }
                 } else {
-                    if (MagicPaintjobManager.paintjobs.none { it.id == trimmedArgs }) {
+                    if (paintjobs.none { it.id == trimmedArgs }) {
                         Console.showMessage("No paintjob with id '$trimmedArgs' found.")
                         return BaseCommand.CommandResult.ERROR
                     } else {

@@ -9,7 +9,13 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var description: String? = null,
     var unlockedAutomatically: Boolean = true,
     var spriteId: String,
+    var tags: List<String>?,
 ) {
+    val isShiny: Boolean
+        get() = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
+
+    val isPermament: Boolean
+        get() = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true
 //    fun toJsonObject(): JSONObject {
 //        val json = JSONObject()
 //        json.put("id", id)
