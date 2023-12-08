@@ -2,3 +2,6 @@ fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValu
 
 # MagicLib: toggle achievements
 magiclib_enableAchievements,Enable MagicAchievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
+
+# MagicLib: toggle bounty deadlines
+magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,false,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,

@@ -12,9 +12,12 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
+import lunalib.lunaSettings.LunaSettings;
+import lunalib.lunaSettings.LunaSettingsListener;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicTxt;
@@ -36,6 +39,7 @@ public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
     private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
+    private static Boolean DEADLINES_ENABLED = false;
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -45,6 +49,21 @@ public final class MagicBountyCoordinator {
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
         MagicBountyLoader.validateAndCullLoadedBounties();
+
+        if (!Global.getSector().getIntelManager().hasIntelOfClass(BountyBoardIntelPlugin.class)) {
+            Global.getSector().getIntelManager().addIntel(new BountyBoardIntelPlugin());
+        }
+
+        LunaSettings.addSettingsListener(new LunaSettingsListener() {
+            @Override
+            public void settingsChanged(@NotNull String s) {
+                DEADLINES_ENABLED = LunaSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
+
+                if (DEADLINES_ENABLED == null) {
+                    DEADLINES_ENABLED = false;
+                }
+            }
+        });
     }
 
     @Nullable
@@ -526,5 +545,9 @@ public final class MagicBountyCoordinator {
 
     public void setPostScalingCreditRewardMultiplier(float postScalingCreditRewardMultiplier) {
         this.postScalingCreditRewardMultiplier = postScalingCreditRewardMultiplier;
+    }
+
+    public static Boolean getDeadlinesEnabled() {
+        return DEADLINES_ENABLED;
     }
 }
