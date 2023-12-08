@@ -99,7 +99,7 @@ open class MagicCombatGuiBase @JvmOverloads constructor(private val guiLayout: M
     private val xAnchor = guiLayout.xAnchorRel * gSettings.screenWidthPixels / gSettings.screenScaleMult
     private val yAnchor = guiLayout.yAnchorRel * gSettings.screenHeightPixels / gSettings.screenScaleMult
     private val xMessage = guiLayout.xMessageRel * gSettings.screenWidthPixels / gSettings.screenScaleMult
-    private val yMessage = guiLayout.yMessageRel * gSettings.screenWidthPixels / gSettings.screenScaleMult
+    private val yMessage = guiLayout.yMessageRel * gSettings.screenHeightPixels / gSettings.screenScaleMult
     val color = guiLayout.color
 
     protected var font: LazyFont? = null

@@ -1,12 +1,23 @@
 package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.fleet.FleetMemberAPI
+import lunalib.lunaSettings.LunaSettings
+import lunalib.lunaSettings.LunaSettings.getBoolean
+import lunalib.lunaSettings.LunaSettingsListener
+import org.dark.shaders.util.ShaderLib
+import org.json.JSONArray
 import org.json.JSONObject
+import org.magiclib.Magic_modPlugin
 import org.magiclib.kotlin.toStringList
+import org.magiclib.util.MagicMisc
+import org.magiclib.util.MagicVariables
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
     private const val commonFilename = "magic_paintjobs.json"
+    const val specsFilename = "magic_paintjobs.csv"
     private val jsonObjectKey = "unlockedPaintjobs"
     private val unlockedPaintjobsInner = mutableSetOf<String>()
     private val paintjobsInner = mutableListOf<MagicPaintjobSpec>()
@@ -68,15 +79,21 @@ object MagicPaintjobManager {
                 val name = spriteId.removeSuffix(".png").takeLastWhile { it != '/' }
                 addPaintJob(
                     MagicPaintjobSpec(
+                        modId = "magiclib",
+                        modName = "MagicLib",
                         id = "ml_$spriteId",
                         hullId = name,
-                        name = name.takeLastWhile { it != '_' }.replaceFirstChar { it.uppercase() },
+                        name = spriteId.removePrefix("graphics/pj_test/da/").takeWhile { it != '/' }
+                            .replaceFirstChar { it.uppercase() },
                         description = null,
                         spriteId = spriteId
                     )
                 )
             }
     }
+
+    @JvmStatic
+    var isEnabled = true
 
     @JvmStatic
     val unlockedPaintjobIds: List<String>
@@ -97,6 +114,112 @@ object MagicPaintjobManager {
     // make java users feel better
     @JvmStatic
     fun getInstance() = this
+
+    @JvmStatic
+    fun onApplicationLoad() {
+        // Set up LunaLib settings.
+        if (Global.getSettings().modManager.isModEnabled("lunalib")) {
+            // Add settings listener.
+            LunaSettings.addSettingsListener(object : LunaSettingsListener {
+                override fun settingsChanged(settings: String) {
+                    val lunaIsEnabled = getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
+
+                    if (isEnabled != lunaIsEnabled) {
+                        isEnabled = lunaIsEnabled
+                        if (isEnabled) {
+                            initIntel()
+                        } else {
+                            removeIntel()
+                        }
+                    }
+                }
+            })
+        }
+
+        paintjobsInner.addAll(loadPaintjobs().values)
+    }
+
+    @JvmStatic
+    fun loadPaintjobs(): Map<String, MagicPaintjobSpec> {
+        val newSpecs: MutableList<MagicPaintjobSpec> = mutableListOf()
+
+        for (mod in Global.getSettings().modManager.enabledModsCopy) {
+            var modCsv: JSONArray? = null
+            try {
+                modCsv = Global.getSettings().loadCSV(specsFilename, mod.id)
+            } catch (e: java.lang.Exception) {
+                if (e is RuntimeException && e.message!!.contains("not found in")) {
+                    // Swallow exceptions caused by the mod not having pjs.
+                } else {
+                    logger.warn(
+                        "Unable to load paintjobs in " + mod.id + " by " + MagicMisc.takeFirst(
+                            mod.author,
+                            50
+                        ) + " from file " + specsFilename, e
+                    )
+                }
+            }
+            if (modCsv == null) continue
+
+            logger.info(modCsv)
+
+            for (i in 0 until modCsv.length()) {
+                var id: String? = null
+                try {
+                    val item = modCsv.getJSONObject(i)
+                    id = item.getString("id").trim()
+                    val hullId = item.getString("hullId").trim()
+                    val name = item.getString("name").trim()
+                    val description = item.getString("description").trim()
+                    val unlockedAutomatically = item.optBoolean("unlockedAutomatically", true)
+                    var spriteId = item.getString("spriteId").trim()
+
+                    var skip = false
+                    for (paintjobSpec in newSpecs) {
+                        if (paintjobSpec.id == id) {
+                            skip = true
+                            logger.warn(
+                                String.format(
+                                    "Paintjob with id %s in mod %s already exists in mod %s, skipping.",
+                                    id, mod.id, paintjobSpec.modId
+                                )
+                            )
+                            break
+                        }
+                    }
+                    if (!skip) {
+                        newSpecs.add(
+                            MagicPaintjobSpec(
+                                modId = mod.id,
+                                modName = mod.name,
+                                id = id,
+                                hullId = hullId,
+                                name = name,
+                                unlockedAutomatically = unlockedAutomatically,
+                                description = description,
+                                spriteId = spriteId
+                            )
+                        )
+                    }
+                } catch (e: java.lang.Exception) {
+                    logger.warn(
+                        "Unable to load paintjob #" + i + " (" + id + ") in " + mod.id + " by " + mod.author.substring(
+                            0,
+                            30
+                        ) + " from file " + specsFilename, e
+                    )
+                }
+            }
+        }
+
+        val newPaintjobSpecsById: MutableMap<String, MagicPaintjobSpec> = HashMap()
+
+        for (newSpec in newSpecs) {
+            newPaintjobSpecsById[newSpec.id] = newSpec
+        }
+
+        return newPaintjobSpecsById
+    }
 
     @JvmStatic
     fun getPaintjobsForHull(hullId: String): List<MagicPaintjobSpec> {
@@ -155,7 +278,6 @@ object MagicPaintjobManager {
      */
     @JvmStatic
     fun addPaintJob(paintjob: MagicPaintjobSpec) {
-
         if (runCatching { Global.getSettings().getHullSpec(paintjob.hullId) }.getOrNull() == null) {
             logger.error("Did not add paintjob ${paintjob.id}. Hull with id ${paintjob.hullId} does not exist.")
             return
@@ -170,7 +292,7 @@ object MagicPaintjobManager {
         paintjobsInner.removeAll { it.id == paintjob.id }
         paintjobsInner.add(paintjob)
 
-        if (Global.getSettings().isDevMode) {
+        if (Magic_modPlugin.isMagicLibTestMode()) {
             unlockPaintjob(paintjob.id)
         }
     }
@@ -182,7 +304,10 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
-    fun onGameLoad() = initIntel()
+    fun onGameLoad() {
+        loadUnlockedPaintjobs()
+        initIntel()
+    }
 
     @JvmStatic
     fun beforeGameSave() {
@@ -201,7 +326,7 @@ object MagicPaintjobManager {
         if (Global.getSector() == null) return
         removeIntel()
 
-        // Don't show achievements if there aren't any.
+        // Don't show if there aren't any.
         if (paintjobs.isEmpty()) return
 
         val intel = MagicPaintjobIntel()
@@ -218,6 +343,77 @@ object MagicPaintjobManager {
             logger.warn("Unable to get MagicPaintjobIntel.", ex)
             null
         }
+    }
+
+    @JvmStatic
+    fun getPaintjob(paintjobId: String): MagicPaintjobSpec? = paintjobsInner.firstOrNull { it.id == paintjobId }
+
+    @JvmStatic
+    fun removePaintjobFromShip(fleetMember: FleetMemberAPI) {
+        val variant = fleetMember.variant ?: return
+
+        variant.tags.filter { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+            .forEach { variant.removeTag(it) }
+
+        if (variant.hasHullMod(MagicSkinSwapHullMod.ID)) {
+            variant.removeMod(MagicSkinSwapHullMod.ID)
+        }
+
+        fleetMember.spriteOverride = null
+    }
+
+    @JvmStatic
+    fun applyPaintjob(fleetMember: FleetMemberAPI?, combatShip: ShipAPI?, paintjob: MagicPaintjobSpec) {
+        // In case it's a sprite path that wasn't loaded, load it.
+        val spriteId = paintjob.spriteId
+        Global.getSettings().loadTexture(spriteId)
+
+        if (fleetMember != null) {
+            val variant = fleetMember.variant
+            if (variant?.hasHullMod(MagicSkinSwapHullMod.ID) != true) {
+                variant.addMod(MagicSkinSwapHullMod.ID)
+            }
+
+            if (variant != null) {
+                variant.tags.filter { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+                    .forEach { variant.removeTag(it) }
+                variant.addTag(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
+            }
+
+            fleetMember.spriteOverride = paintjob.spriteId
+        }
+
+        if (combatShip != null) {
+            val sprite = Global.getSettings().getSprite(spriteId) ?: return
+            val x = combatShip.spriteAPI.centerX
+            val y = combatShip.spriteAPI.centerY
+            val alpha = combatShip.spriteAPI.alphaMult
+            val angle = combatShip.spriteAPI.angle
+            val color = combatShip.spriteAPI.color
+            combatShip.setSprite(sprite)
+            if (Global.getSettings().modManager.isModEnabled("shaderLib")) {
+                ShaderLib.overrideShipTexture(combatShip, spriteId)
+            }
+            combatShip.spriteAPI.setCenter(x, y)
+            combatShip.spriteAPI.alphaMult = alpha
+            combatShip.spriteAPI.angle = angle
+            combatShip.spriteAPI.color = color
+        }
+    }
+
+    @JvmStatic
+    fun getCurrentShipPaintjob(fleetMember: FleetMemberAPI): MagicPaintjobSpec? {
+        val variant = fleetMember.variant ?: return null
+        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+        val paintjobId = pjTag?.removePrefix(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+
+        // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
+        if (!fleetMember.variant.hasHullMod(MagicSkinSwapHullMod.ID)) {
+            removePaintjobFromShip(fleetMember)
+            return null
+        }
+
+        return getPaintjob(paintjobId)
     }
 
     private fun removeIntel() {

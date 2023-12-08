@@ -1,41 +1,40 @@
 package org.magiclib.paintjobs
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import org.dark.shaders.util.ShaderLib
 
 class MagicSkinSwapHullMod : BaseHullMod() {
+    companion object {
+        const val ID = "ML_skinSwap"
+        const val PAINTJOB_TAG_PREFIX = "ML_paintjob-"
+    }
+
     override fun applyEffectsAfterShipCreation(ship: ShipAPI?, id: String?) {
         super.applyEffectsAfterShipCreation(ship, id)
         ship ?: return
         id ?: return
 
-        val skins = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId)
-
-        if (skins.isEmpty()) return
-
-        val spriteId = skins.random().spriteId
-        // In case it's a sprite path that wasn't loaded, load it.
-        Global.getSettings().loadTexture(spriteId)
-
-        val sprite = Global.getSettings().getSprite(spriteId) ?: return
-
-        val x = ship.spriteAPI.centerX
-        val y = ship.spriteAPI.centerY
-        val alpha = ship.spriteAPI.alphaMult
-        val angle = ship.spriteAPI.angle
-        val color = ship.spriteAPI.color
-        ship.setSprite(sprite)
-        if (Global.getSettings().modManager.isModEnabled("shaderLib")) {
-            ShaderLib.overrideShipTexture(ship, spriteId)
+        if (!MagicPaintjobManager.isEnabled) {
+            return
         }
-        ship.spriteAPI.setCenter(x, y)
-        ship.spriteAPI.alphaMult = alpha
-        ship.spriteAPI.angle = angle
-        ship.spriteAPI.color = color
+
+        // TODO remove this part
+//        val randomPaintjob = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId).firstOrNull { it.hullId == ship.hullSpec.hullId }
+//        if (randomPaintjob != null) {
+//            MagicPaintjobManager.applyPaintjob(null, ship, randomPaintjob)
+//        }
+
+        // (the tag should only be on the variant but I don't trust myself)
+        val tag = (ship.tags + ship.variant.tags).firstOrNull { it.startsWith(PAINTJOB_TAG_PREFIX) }
+        val paintjob = if (tag != null) {
+            val paintjobId = tag.removePrefix(PAINTJOB_TAG_PREFIX)
+            MagicPaintjobManager.getPaintjob(paintjobId) ?: return
+        } else return
+
+        MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
     }
+
 
     override fun addPostDescriptionSection(
         tooltip: TooltipMakerAPI?,
