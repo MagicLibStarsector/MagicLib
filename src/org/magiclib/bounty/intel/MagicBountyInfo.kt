@@ -41,15 +41,35 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun getBountyPayout(): Int {
-        return bountySpec.job_credit_reward
+        return activeBounty?.calculateCreditReward()?.toInt() ?: bountySpec.job_credit_reward
     }
 
     override fun getJobIcon(): String? {
-        return bountySpec.target_portrait
+        return activeBounty?.fleet?.commander?.portraitSprite ?: bountySpec.target_portrait
     }
 
     override fun getLocationIfBountyIsActive(): LocationAPI? {
         return activeBounty?.fleetSpawnLocation?.containingLocation
+    }
+
+    override fun notifyWhenAvailable(): Boolean {
+        return true
+    }
+
+    override fun notifiedUserThatBountyIsAvailable() {
+        val activeBountyLocal: ActiveBounty = activeBounty
+            ?: MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
+            ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
+        activeBounty = activeBountyLocal
+    }
+
+    override fun addNotificationBulletpoints(info: TooltipMakerAPI) {
+        activeBounty!!.givingFaction?.let {
+            info.addPara(MagicTxt.getString("mb_intel_offeredBy").format(it.displayName), 2f, activeBounty!!.givingFactionTextColor, it.displayName)
+        }
+
+        val rewardText = Misc.getDGSCredits(getBountyPayout().toFloat())
+        info.addPara(MagicTxt.getString("mb_credits").format(rewardText), 1f, Misc.getHighlightColor(), rewardText)
     }
 
     override fun shouldShow(): Boolean {
@@ -117,11 +137,9 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             shouldShow = withinRange
         }
 
-        if (shouldShow) {
-            val activeBountyLocal: ActiveBounty = activeBounty
-                ?: MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
+        if (shouldShow && activeBounty == null) {
+            val activeBountyLocal: ActiveBounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
                 ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
-                ?: return false
             activeBounty = activeBountyLocal
         }
 

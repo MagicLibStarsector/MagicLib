@@ -29,7 +29,7 @@ abstract class ListUIPanelPlugin<T>(protected var parentPanel: CustomPanelAPI) :
         return rowWidth
     }
 
-    fun getListHeight(rows: Int): Float {
+    open fun getListHeight(rows: Int): Float {
         return opad + (rowHeight + pad) * rows
     }
 

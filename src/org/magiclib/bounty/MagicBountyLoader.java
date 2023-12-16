@@ -326,7 +326,14 @@ public class MagicBountyLoader {
 
         validateAndCullLoadedBounties();
 
-        BountyBoardIntelPlugin.Companion.addProvider(new MagicBountyBoardProvider());
+        BountyBoardIntelPlugin.Companion.getPROVIDERS().clear();
+        try {
+            for (String className : MagicSettings.getList(MagicVariables.MAGICLIB_ID, "bountyProviders")) {
+                BountyBoardIntelPlugin.Companion.addProvider((BountyBoardProvider) Global.getSettings().getScriptClassLoader().loadClass(className).newInstance());
+            }
+        } catch (Throwable ex) {
+            throw new RuntimeException(ex);
+        }
 
         if (MagicVariables.verbose) {
             LOG.info("\n ######################\n\n MAGIC BOUNTIES LOADING COMPLETE\n\n ######################");

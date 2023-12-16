@@ -85,7 +85,7 @@ class LocationFilter: ListFilter<BountyInfo, LocationAPI> {
             refreshSettings()
         }
 
-        val fuelRangeCheckboxLocal = enableButtonTooltip.addCheckbox(16f, 16f, MagicTxt.getString("mb_filters_Location_FuelRange"), null, ButtonAPI.UICheckboxSize.SMALL, 0f)
+        val fuelRangeCheckboxLocal = enableButtonTooltip.addCheckbox(16f, 16f, MagicTxt.getString("mb_filters_Location_FuelRange"), null, ButtonAPI.UICheckboxSize.SMALL, 4f)
         fuelRangeCheckbox = fuelRangeCheckboxLocal
         fuelRangeCheckboxLocal.isChecked = fuelRangeOnly
         filterPlugin.addCheckbox(fuelRangeCheckboxLocal) { checked ->

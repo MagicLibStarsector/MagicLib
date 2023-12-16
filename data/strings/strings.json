@@ -267,6 +267,7 @@
     "mb_var_ship": "ship",
     "mb_var_fleet": "fleet",
 
+    "mb_intel_offeredBy": "Faction: %s",
     "mb_plot_course": "Plot course",
     "mb_filters_Location_Distance": "Filter by distance",
     "mb_filters_Location_FuelRange": "Filter by fuel range",

@@ -44,6 +44,10 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         return BountyItemPanelPlugin(item, rowWidth, rowHeight)
     }
 
+    override fun getListHeight(rows: Int): Float {
+        return super.getListHeight(rows) + (4f * rows)
+    }
+
     override fun layoutPanels(members: List<BountyInfo>): CustomPanelAPI {
         finalItem = members.lastOrNull()
 

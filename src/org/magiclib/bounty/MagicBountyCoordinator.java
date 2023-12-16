@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
@@ -50,9 +51,12 @@ public final class MagicBountyCoordinator {
         instance = new MagicBountyCoordinator();
         MagicBountyLoader.validateAndCullLoadedBounties();
 
-        if (!Global.getSector().getIntelManager().hasIntelOfClass(BountyBoardIntelPlugin.class)) {
-            Global.getSector().getIntelManager().addIntel(new BountyBoardIntelPlugin());
-        }
+
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+        while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
+            intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
+
+        intelManager.addIntel(new BountyBoardIntelPlugin(), true);
 
         LunaSettings.addSettingsListener(new LunaSettingsListener() {
             @Override
@@ -121,7 +125,7 @@ public final class MagicBountyCoordinator {
             long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - entry.getValue().getBountyCreatedTimestamp());
 
             // Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
-            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted) {
+            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted && getDeadlinesEnabled()) {
                 LOG.info(
                         String.format("Removing expired bounty '%s' (not accepted after %d days), \"%s\"",
                                 entry.getKey(),
