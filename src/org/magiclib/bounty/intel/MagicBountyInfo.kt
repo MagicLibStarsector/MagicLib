@@ -79,8 +79,17 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun shouldShow(): Boolean {
-        if (activeBounty != null && activeBounty!!.stage == ActiveBounty.Stage.Accepted) {
-            return true
+        if (activeBounty != null) {
+            when (activeBounty!!.stage) {
+                ActiveBounty.Stage.Accepted -> return true
+                ActiveBounty.Stage.Succeeded -> return false
+                ActiveBounty.Stage.ExpiredAfterAccepting -> return false
+                ActiveBounty.Stage.ExpiredWithoutAccepting -> return false
+                ActiveBounty.Stage.FailedSalvagedFlagship -> return false
+                ActiveBounty.Stage.EndedWithoutPlayerInvolvement -> return false
+                ActiveBounty.Stage.Dismissed -> return false
+                else -> { /* do nothing */ } //NotAccepted
+            }
         }
 
         var shouldShow = true
