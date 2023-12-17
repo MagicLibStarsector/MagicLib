@@ -134,7 +134,12 @@ public class MagicAchievement {
         }
 
         saveChangesWithoutLogging();
+        onCompleted(completedByPlayer);
         getLogger().info("Achievement completed! " + spec.getId());
+    }
+
+    public void onCompleted(@Nullable PersonAPI completedByPlayer) {
+
     }
 
     /**

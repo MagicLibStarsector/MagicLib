@@ -331,8 +331,9 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun beforeGameSave() {
-        if (getIntel() != null) Global.getSector().memoryWithoutUpdate[isIntelImportantMemKey] =
-            getIntel()!!.isImportant
+        // Save whether the intel is important.
+        if (getIntel() != null)
+            Global.getSector().memoryWithoutUpdate[isIntelImportantMemKey] = getIntel()!!.isImportant
 
         // No reason to add intel to the save.
         removeIntel()
@@ -357,6 +358,9 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun getIntel(): MagicPaintjobIntel? {
+        if (!Global.getSector().intelManager.hasIntelOfClass(MagicPaintjobIntel::class.java))
+            return null
+
         return try {
             Global.getSector().intelManager.getFirstIntel(MagicPaintjobIntel::class.java) as MagicPaintjobIntel
         } catch (ex: Exception) {
@@ -400,7 +404,8 @@ object MagicPaintjobManager {
                 variant.addTag(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
             }
 
-            fleetMember.spriteOverride = paintjob.spriteId
+            // This causes the sprite to show at full size on game (re)load, ie massive hyperspace ships.
+//            fleetMember.spriteOverride = paintjob.spriteId
         }
 
         if (combatShip != null) {

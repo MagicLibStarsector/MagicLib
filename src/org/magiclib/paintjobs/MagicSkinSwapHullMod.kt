@@ -5,7 +5,12 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
 
+/**
+ * This hullmod displays the paintjob itself. It determines which to display by looking for a tag on the variant.
+ * The hullmod also allows the player to see in refit if a paintjob is applied and remove it.
+ */
 class MagicSkinSwapHullMod : BaseHullMod() {
     companion object {
         const val ID = "ML_skinSwap"
@@ -52,7 +57,7 @@ class MagicSkinSwapHullMod : BaseHullMod() {
 
         val skins = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId)
         skins.forEach { skin ->
-            tooltip?.addPara(skin.name, 10f)
+            tooltip?.addPara("Applied: %s", 10f, Misc.getTextColor(), Misc.getPositiveHighlightColor(), skin.name)
         }
     }
 }
