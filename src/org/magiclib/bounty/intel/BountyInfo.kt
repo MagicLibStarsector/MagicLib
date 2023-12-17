@@ -3,8 +3,8 @@ package org.magiclib.bounty.intel
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import org.magiclib.bounty.intel.filters.LocationParam
-import org.magiclib.bounty.ui.lists.filtered.FilterableParam
 import org.magiclib.bounty.ui.lists.filtered.Filterable
+import org.magiclib.bounty.ui.lists.filtered.FilterableParam
 
 interface BountyInfo : Filterable<BountyInfo> {
     fun getBountyId(): String

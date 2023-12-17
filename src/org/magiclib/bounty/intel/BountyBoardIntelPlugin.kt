@@ -1,7 +1,6 @@
 package org.magiclib.bounty.intel
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
@@ -9,7 +8,6 @@ import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
-import com.fs.starfarer.api.util.Misc
 import org.magiclib.kotlin.elapsedDaysSinceGameStart
 import org.magiclib.util.MagicTxt
 import java.awt.Color
@@ -17,10 +15,13 @@ import java.awt.Color
 class BountyBoardIntelPlugin : BaseIntelPlugin() {
     @Transient
     private var parentPanel: CustomPanelAPI? = null
+
     @Transient
     private var holdingPanel: CustomPanelAPI? = null
+
     @Transient
     private var lastWidth: Float = 0f
+
     @Transient
     private var lastHeight: Float = 0f
 
@@ -48,9 +49,8 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
         return MagicTxt.getString("mb_intelTitle")
     }
 
-    override fun getIcon(): String {
-        return tempBountyInfo?.getJobIcon() ?: Global.getSettings().getSpriteName("intel", "magicBoard")
-    }
+    override fun getIcon(): String =
+        tempBountyInfo?.getJobIcon() ?: Global.getSettings().getSpriteName("intel", "magicBoard")
 
     override fun addBulletPoints(
         info: TooltipMakerAPI,
@@ -68,7 +68,8 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
 
     fun loadNotifiedBounties() {
         if (Global.getSector().persistentData.containsKey(NOTIFIED_BOUNTY_KEY)) {
-            bountiesThatUserHasBeenNotifiedFor = Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>
+            bountiesThatUserHasBeenNotifiedFor =
+                Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>
         }
     }
 
@@ -84,6 +85,8 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
     }
 
     override fun advance(amount: Float) {
+        // Don't show bounties until the player has been playing for a few days.
+        // This prevents the player from being overwhelmed with bounties right at the start of the game.
         if (Global.getSector().clock.elapsedDaysSinceGameStart() < 3) return
 
         interval.advance(Global.getSector().clock.convertToDays(amount))
@@ -183,7 +186,9 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
         }
 
         fun refreshPanel(desiredItem: BountyInfo) {
-            (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).layoutPanel(desiredItem = desiredItem)
+            (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).layoutPanel(
+                desiredItem = desiredItem
+            )
         }
     }
 }

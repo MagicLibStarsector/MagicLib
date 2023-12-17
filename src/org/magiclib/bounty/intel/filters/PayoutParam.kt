@@ -1,13 +1,10 @@
 package org.magiclib.bounty.intel.filters
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.LocationAPI
-import com.fs.starfarer.api.ui.ButtonAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.bounty.intel.BountyInfo
-import org.magiclib.bounty.ui.ButtonHandler
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.SliderUIPanelPlugin
 import org.magiclib.bounty.ui.lists.filtered.Filterable
@@ -37,7 +34,7 @@ class PayoutFilter: ListFilter<BountyInfo, Int> {
     override fun matches(filterData: List<FilterableParam<BountyInfo, *>>): Boolean {
         return filterData
             .filter { it.getData() is Int }
-            .none { !matches(it as FilterableParam<BountyInfo, Int>) }
+            .all { matches(it as FilterableParam<BountyInfo, Int>) }
     }
 
     override fun createPanel(tooltip: TooltipMakerAPI, width: Float, lastItems: List<Filterable<BountyInfo>>): CustomPanelAPI {

@@ -356,7 +356,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                                 MagicTxt.getString("mb_type_obliteration1"), MagicTxt.getString("mb_type_obliteration2")
                                         );
                                         break;
-                                    case Neutralisation:
+                                    case Neutralization:
                                         text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),

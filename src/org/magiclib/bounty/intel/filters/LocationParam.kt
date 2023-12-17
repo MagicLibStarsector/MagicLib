@@ -7,25 +7,22 @@ import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.bounty.intel.BountyInfo
-import org.magiclib.bounty.ui.ButtonHandler
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.SliderUIPanelPlugin
 import org.magiclib.bounty.ui.lists.filtered.Filterable
 import org.magiclib.bounty.ui.lists.filtered.FilterableParam
 import org.magiclib.bounty.ui.lists.filtered.ListFilter
-import org.magiclib.kotlin.autoSizeToText
-import org.magiclib.kotlin.getRoundedValue
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 
-class LocationParam(item: BountyInfo): FilterableParam<BountyInfo, LocationAPI>(item) {
+class LocationParam(item: BountyInfo) : FilterableParam<BountyInfo, LocationAPI>(item) {
     override fun getData(): LocationAPI? {
         return item.getLocationIfBountyIsActive()
     }
 }
 
-class LocationFilter: ListFilter<BountyInfo, LocationAPI> {
+class LocationFilter : ListFilter<BountyInfo, LocationAPI> {
     private var rangeFilterActive = false
     private var fuelRangeOnly = false
     private var hyperspaceRange = (0f..0f)
@@ -52,11 +49,14 @@ class LocationFilter: ListFilter<BountyInfo, LocationAPI> {
         if (!rangeFilterActive) return true
         return filterData
             .filter { it.getData() is LocationAPI }
-            .map { matches(it as FilterableParam<BountyInfo, LocationAPI>) }
-            .none { !it }
+            .all { matches(it as FilterableParam<BountyInfo, LocationAPI>) }
     }
 
-    override fun createPanel(tooltip: TooltipMakerAPI, width: Float, lastItems: List<Filterable<BountyInfo>>): CustomPanelAPI {
+    override fun createPanel(
+        tooltip: TooltipMakerAPI,
+        width: Float,
+        lastItems: List<Filterable<BountyInfo>>
+    ): CustomPanelAPI {
         val validBounties = lastItems
             .map { it as BountyInfo }
             .filter { it.getLocationIfBountyIsActive() != null }
@@ -77,7 +77,14 @@ class LocationFilter: ListFilter<BountyInfo, LocationAPI> {
         //checkbox tooltip
         val enableButtonTooltip = filterPanel.createUIElement(width, 12f, false)
 
-        val enableCheckboxLocal = enableButtonTooltip.addCheckbox(16f, 16f, MagicTxt.getString("mb_filters_Location_Distance"), null, ButtonAPI.UICheckboxSize.SMALL, 0f)
+        val enableCheckboxLocal = enableButtonTooltip.addCheckbox(
+            16f,
+            16f,
+            MagicTxt.getString("mb_filters_Location_Distance"),
+            null,
+            ButtonAPI.UICheckboxSize.SMALL,
+            0f
+        )
         enabledCheckbox = enableCheckboxLocal
         enableCheckboxLocal.isChecked = rangeFilterActive
         filterPlugin.addCheckbox(enableCheckboxLocal) { checked ->
@@ -85,7 +92,14 @@ class LocationFilter: ListFilter<BountyInfo, LocationAPI> {
             refreshSettings()
         }
 
-        val fuelRangeCheckboxLocal = enableButtonTooltip.addCheckbox(16f, 16f, MagicTxt.getString("mb_filters_Location_FuelRange"), null, ButtonAPI.UICheckboxSize.SMALL, 4f)
+        val fuelRangeCheckboxLocal = enableButtonTooltip.addCheckbox(
+            16f,
+            16f,
+            MagicTxt.getString("mb_filters_Location_FuelRange"),
+            null,
+            ButtonAPI.UICheckboxSize.SMALL,
+            4f
+        )
         fuelRangeCheckbox = fuelRangeCheckboxLocal
         fuelRangeCheckboxLocal.isChecked = fuelRangeOnly
         filterPlugin.addCheckbox(fuelRangeCheckboxLocal) { checked ->
@@ -127,13 +141,14 @@ class LocationFilter: ListFilter<BountyInfo, LocationAPI> {
 
     override fun loadFromPersistentData() {
         if (Global.getSector().persistentData.containsKey("MagicLib.LocationParam.SelectedRange"))
-            hyperspaceRange = Global.getSector().persistentData["MagicLib.LocationParam.SelectedRange"] as ClosedFloatingPointRange<Float>
+            hyperspaceRange =
+                Global.getSector().persistentData["MagicLib.LocationParam.SelectedRange"] as ClosedFloatingPointRange<Float>
 
         if (Global.getSector().persistentData.containsKey("MagicLib.LocationParam.RangeEnabled"))
-            rangeFilterActive =  Global.getSector().persistentData["MagicLib.LocationParam.RangeEnabled"] as Boolean
+            rangeFilterActive = Global.getSector().persistentData["MagicLib.LocationParam.RangeEnabled"] as Boolean
 
         if (Global.getSector().persistentData.containsKey("MagicLib.LocationParam.FuelRangeOnly"))
-            fuelRangeOnly =  Global.getSector().persistentData["MagicLib.LocationParam.FuelRangeOnly"] as Boolean
+            fuelRangeOnly = Global.getSector().persistentData["MagicLib.LocationParam.FuelRangeOnly"] as Boolean
     }
 
     fun refreshSettings() {

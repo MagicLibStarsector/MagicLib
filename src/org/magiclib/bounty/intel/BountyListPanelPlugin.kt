@@ -8,7 +8,6 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.opengl.GL11
 import org.magiclib.bounty.intel.filters.LocationFilter
-import org.magiclib.bounty.intel.filters.PayoutFilter
 import org.magiclib.bounty.ui.BaseUIPanelPlugin
 import org.magiclib.bounty.ui.lists.ListItemUIPanelPlugin
 import org.magiclib.bounty.ui.lists.filtered.FilteredListPanelPlugin
@@ -160,12 +159,10 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
                 }
             }
 
-            if (wasSelected) {
-                bgColor = selectedColor
-            } else if (wasHovered) {
-                bgColor = hoveredColor
-            } else {
-                bgColor = baseBgColor
+            bgColor = when {
+                wasSelected -> selectedColor
+                wasHovered -> hoveredColor
+                else -> baseBgColor
             }
         }
 

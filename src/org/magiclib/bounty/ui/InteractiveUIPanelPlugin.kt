@@ -126,9 +126,12 @@ open class InteractiveUIPanelPlugin : BaseUIPanelPlugin() {
     }
 }
 
-private class CheckboxData(val button: ButtonAPI, val handler:  CheckboxHandler) {
+private class CheckboxData(val button: ButtonAPI, val handler: CheckboxHandler) {
     var wasChecked = false
 
+    /**
+     * Every frame, check state of button. If different than last frame, call click handler.
+     */
     fun checkButton() {
         if (!button.isEnabled) return
 

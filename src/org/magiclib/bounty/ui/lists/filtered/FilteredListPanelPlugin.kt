@@ -104,8 +104,7 @@ abstract class FilteredListPanelPlugin<T: Filterable<T>>(parentPanel: CustomPane
     private fun shouldFilterItem(item: T): Boolean {
         if (filtersForItems.isEmpty()) return true
         return filtersForItems
-            .map { it.matches(item.getFilterData()) }
-            .none { !it }
+            .all { it.matches(item.getFilterData()) }
     }
 
     inner class FilterButtonHandler : ButtonHandler() {

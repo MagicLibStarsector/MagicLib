@@ -7,7 +7,6 @@ import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.MapParams
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import org.magiclib.bounty.MagicBountySpec
-import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.kotlin.ucFirst
 import org.magiclib.util.MagicTxt
 import java.awt.Color
@@ -15,7 +14,8 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpec): MagicBountyInfo(bountyKey, bountySpec) {
+class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpec) :
+    MagicBountyInfo(bountyKey, bountySpec) {
     override fun showTargetInfo(panel: CustomPanelAPI, width: Float, height: Float): TooltipMakerAPI {
         val targetInfoTooltip = panel.createUIElement(width, height, true)
         val childPanelWidth = width - 16f
@@ -46,10 +46,15 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
 
             val map = targetInfoTooltip.createSectorMap(childPanelWidth, 200f, params, null)
             targetInfoTooltip.addCustom(map, 4f)
-            targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocation").format(location.name), 0f, location.lightColor, location.name)
+            targetInfoTooltip.addPara(
+                MagicTxt.getString("mb_descLocation").format(location.name),
+                3f,
+                location.lightColor,
+                location.name
+            )
         } else {
             targetInfoTooltip.setButtonFontOrbitron20Bold()
-            targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 0f, Color.RED).position.inTMid(2f)
+            targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 3f, Color.RED).position.inTMid(2f)
         }
 
         val ships = activeBounty!!.fleet.fleetData.membersInPriorityOrder

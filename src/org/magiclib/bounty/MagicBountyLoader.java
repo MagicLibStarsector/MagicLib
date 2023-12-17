@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,8 +13,6 @@ import org.lazywizard.lazylib.MathUtils;
 import org.magiclib.Magic_modPlugin;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
-import org.magiclib.bounty.intel.BountyInfo;
-import org.magiclib.bounty.intel.MagicBountyBoardProvider;
 import org.magiclib.util.*;
 
 import java.io.IOException;
@@ -852,7 +849,7 @@ public class MagicBountyLoader {
         /**
          * Requires the destruction or disabling of 2/3rd of the enemy fleet.
          */
-        Neutralisation,
+        Neutralization,
     }
 
     public enum ShowFleet {

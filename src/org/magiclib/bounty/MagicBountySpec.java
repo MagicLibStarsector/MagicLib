@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class MagicBountySpec {
 
-    /**
+    /*
      * trigger parameters
      * ALL OPTIONAL
      */
@@ -79,7 +79,7 @@ public class MagicBountySpec {
      */
     public String job_name;
     /**
-     * full text of the bounty offer, the description will handle some text variables such as "$he_or_she". See documentation for more details
+     * Full text of the bounty offer. The description will handle some text variables such as "$he_or_she". See documentation for more details
      */
     public String job_description;
     /**
@@ -117,7 +117,7 @@ public class MagicBountySpec {
     @NotNull
     public Map<String, Integer> job_item_reward;
     /**
-     * assassination, destruction, obliteration, neutralisation
+     * assassination, destruction, obliteration, neutralization
      */
     public MagicBountyLoader.JobType job_type;
     /**
@@ -429,7 +429,7 @@ public class MagicBountySpec {
                 this.job_type = MagicBountyLoader.JobType.Obliteration;
             } else if (job_type.equalsIgnoreCase("neutralisation")
                     || job_type.equalsIgnoreCase("neutralization")) {
-                this.job_type = MagicBountyLoader.JobType.Neutralisation;
+                this.job_type = MagicBountyLoader.JobType.Neutralization;
             } else {
                 this.job_type = MagicBountyLoader.JobType.Assassination;
             }

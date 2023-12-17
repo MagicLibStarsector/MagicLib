@@ -1,11 +1,7 @@
 package org.magiclib.bounty.ui.lists
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.ui.Alignment
-import com.fs.starfarer.api.ui.CustomPanelAPI
-import com.fs.starfarer.api.ui.TooltipMakerAPI
-import com.fs.starfarer.api.ui.UIComponentAPI
-import com.fs.starfarer.api.ui.UIPanelAPI
+import com.fs.starfarer.api.ui.*
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 
 abstract class ListUIPanelPlugin<T>(protected var parentPanel: CustomPanelAPI) : InteractiveUIPanelPlugin() {
@@ -73,7 +69,7 @@ abstract class ListUIPanelPlugin<T>(protected var parentPanel: CustomPanelAPI) :
         validMembers
             .map { it to createPanelForItem(tooltip, it) }
             .filter { (_, rowPlugin) -> rowPlugin != null }
-            .forEach { (item, rowPlugin) ->
+            .forEach { (_, rowPlugin) ->
                 lastItem = placeItem(tooltip, rowPlugin!!, lastItem)
             }
 

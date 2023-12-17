@@ -113,7 +113,7 @@
     "mb_type_destruction2": "destroy the enemy flagship and make sure it is not recovered",
     "mb_type_obliteration1": "obliteration",
     "mb_type_obliteration2": "disable every single enemy ship",
-    "mb_type_neutralisation1": "neutralisation",
+    "mb_type_neutralisation1": "neutralization",
     "mb_type_neutralisation2": "disable at least ",
     "mb_type_neutralisation3": "% of the enemy fleet",
     "mb_noRecovery1": "This bounty requires the %s of the flagship. Its recovery will forfeit any reward.",
