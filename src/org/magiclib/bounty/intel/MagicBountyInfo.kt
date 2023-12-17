@@ -131,9 +131,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         }
 
         //check if close enough to receive from faction
+        val rangeToShowBounties = 10f
         if (bountySpec.job_forFaction != null && shouldShow) {
             var withinRange = false
-            for (s in Misc.getNearbyStarSystems(Global.getSector().playerFleet, 10f)) {
+            for (s in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {
                 if (Misc.getMarketsInLocation(s, bountySpec.job_forFaction).isNotEmpty()) {
                     withinRange = true
                     break

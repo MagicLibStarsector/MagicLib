@@ -62,10 +62,10 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
         val columns = floor(childPanelWidth / iconSize).toInt()
         val rows = ceil(ships.size / columns.toDouble()).toInt()
         targetInfoTooltip.addPara(MagicTxt.getString("mb_fleet2"), 8f)
-        targetInfoTooltip.addShipList(columns, rows, iconSize, Color.white, ships, 2f)
+        targetInfoTooltip.addShipList(columns, rows, iconSize, Color.white, ships, 3f)
 
         targetInfoTooltip.addPara(MagicTxt.getString("mb_hvb_skillsHeader"), 8f)
-        targetInfoTooltip.addSkillPanel(activeBounty!!.captain, 2f)
+        targetInfoTooltip.addSkillPanel(activeBounty!!.captain, 3f)
 
         panel.addUIElement(targetInfoTooltip).inTL(0f, 0f)
 
