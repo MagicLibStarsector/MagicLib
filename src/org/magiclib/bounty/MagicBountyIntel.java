@@ -370,7 +370,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
-                        case Neutralisation:
+                        case Neutralization:
                             if (bounty.getTargetFaction() == null) {
                                 info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,

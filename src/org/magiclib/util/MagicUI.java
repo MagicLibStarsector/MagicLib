@@ -1072,7 +1072,7 @@ public class MagicUI {
     /**
      * GL11 to start, when you want render text of Lazyfont.
      */
-    private static void openGL11ForText() {
+    public static void openGL11ForText() {
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
@@ -1086,7 +1086,7 @@ public class MagicUI {
     /**
      * GL11 to close, when you want render text of Lazyfont.
      */
-    private static void closeGL11ForText() {
+    public static void closeGL11ForText() {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();

@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.VisualPanelAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.ui.LabelAPI
 
 /**
  * Shows the given people in the [VisualPanelAPI].
@@ -53,4 +54,13 @@ fun VisualPanelAPI.showPeople(
  */
 fun IntelInfoPlugin.addToManager(shouldNotifyPlayer: Boolean = false) {
     Global.getSector().intelManager.addIntel(this, !shouldNotifyPlayer)
+}
+
+/**
+ * Automatically sizes the [LabelAPI] to the given text, or to the label's text if no text is given.
+ * Usage: tooltip.addPara().autoSizeToText().position.inMid()
+ */
+fun LabelAPI.autoSizeToText(text: String = this.text): LabelAPI {
+    this.autoSizeToWidth(this.computeTextWidth(text))
+    return this
 }

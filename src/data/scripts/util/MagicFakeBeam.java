@@ -210,12 +210,12 @@ public class MagicFakeBeam {
         Vector2f end = MathUtils.getPoint(from, range, angle);
 
         //list all nearby entities that could be hit
-        List<CombatEntityAPI> entity = CombatUtils.getEntitiesWithinRange(from, range + 500);
-        if (!entity.isEmpty()) {
-            for (CombatEntityAPI e : entity) {
+        List<CombatEntityAPI> entitiesInRange = CombatUtils.getEntitiesWithinRange(from, range + 500);
+        if (!entitiesInRange.isEmpty()) {
+            for (CombatEntityAPI entity : entitiesInRange) {
 
                 //ignore un-hittable stuff like phased ships
-                if (e.getCollisionClass() == CollisionClass.NONE) {
+                if (entity.getCollisionClass() == CollisionClass.NONE) {
                     continue;
                 }
 
@@ -224,21 +224,18 @@ public class MagicFakeBeam {
 
                 Vector2f col = new Vector2f(1000000, 1000000);
                 //ignore everything but ships...
-                if (e instanceof ShipAPI) {
-                    if (
-                            e != source
-                                    &&
-                                    ((ShipAPI) e).getParentStation() != e
-                                    &&
-                                    e.getCollisionClass() != CollisionClass.NONE
-                                    &&
-                                    !(e.getCollisionClass() == CollisionClass.FIGHTER && e.getOwner() == source.getOwner() && !((ShipAPI) e).getEngineController().isFlamedOut())
-                                    &&
-                                    CollisionUtils.getCollides(from, end, e.getLocation(), e.getCollisionRadius())
+                if (entity instanceof ShipAPI) {
+                    if (entity != source
+                            && ((ShipAPI) entity).getParentStation() != entity
+                            && entity.getCollisionClass() != CollisionClass.NONE
+                            && !(entity.getCollisionClass() == CollisionClass.FIGHTER
+                            && entity.getOwner() == source.getOwner()
+                            && !((ShipAPI) entity).getEngineController().isFlamedOut())
+                            && CollisionUtils.getCollides(from, end, entity.getLocation(), entity.getCollisionRadius())
                     ) {
 
                         //check for a shield impact, then hull and take the closest one                  
-                        ShipAPI s = (ShipAPI) e;
+                        ShipAPI s = (ShipAPI) entity;
 
                         //find the collision point with shields/hull
                         Vector2f hitPoint = getShipCollisionPoint(from, end, s, angle);
@@ -253,28 +250,21 @@ public class MagicFakeBeam {
                     }
                 } else
                     //...and asteroids!
-                    if (
-                            (e instanceof CombatAsteroidAPI
-                                    ||
-                                    (e instanceof MissileAPI)
-                                            &&
-                                            e.getOwner() != source.getOwner()
-                            )
-                                    &&
-                                    CollisionUtils.getCollides(from, end, e.getLocation(), e.getCollisionRadius())
-                    ) {
-                        Vector2f cAst = getCollisionPointOnCircumference(from, end, e.getLocation(), e.getCollisionRadius());
+                    if ((entity instanceof CombatAsteroidAPI
+                            || (entity instanceof MissileAPI)
+                            && entity.getOwner() != source.getOwner()
+                    ) && CollisionUtils.getCollides(from, end, entity.getLocation(), entity.getCollisionRadius())) {
+                        Vector2f cAst = getCollisionPointOnCircumference(from, end, entity.getLocation(), entity.getCollisionRadius());
                         if (cAst != null) {
                             col = cAst;
                         }
                     }
 
                 //if there was an impact and it is closer than the curent beam end point, set it as the new end point and store the target to apply damage later damage
-                if (
-                        col.x != 1000000 &&
-                                MathUtils.getDistanceSquared(from, col) < MathUtils.getDistanceSquared(from, end)) {
+                if (col.x != 1000000
+                        && MathUtils.getDistanceSquared(from, col) < MathUtils.getDistanceSquared(from, end)) {
                     end = col;
-                    theTarget = e;
+                    theTarget = entity;
                     damage = newDamage;
                 }
             }

@@ -305,7 +305,7 @@ public class MagicBountyUtilsInternal {
         }
     }
 
-    static String createLocationPreciseText(final ActiveBounty bounty) {
+    public static String createLocationPreciseText(final ActiveBounty bounty) {
 
         String loc = MagicTxt.getString("mb_distance_last");
 

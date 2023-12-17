@@ -55,6 +55,8 @@
     "interferenceHullmod3": " hullmod.",
 
     #magic bounties
+    "mb_intelTitle": "Bounty Board",
+    "mb_listHeader": "Bounties",
     "mb_greeting": "A subroutine from your implant informs you that this establishment is broadcasting an informal job board.",
     "mb_connect": "Connect to the local unsanctioned bounty board.",
     "mb_job": "job is",
@@ -111,7 +113,7 @@
     "mb_type_destruction2": "destroy the enemy flagship and make sure it is not recovered",
     "mb_type_obliteration1": "obliteration",
     "mb_type_obliteration2": "disable every single enemy ship",
-    "mb_type_neutralisation1": "neutralisation",
+    "mb_type_neutralisation1": "neutralization",
     "mb_type_neutralisation2": "disable at least ",
     "mb_type_neutralisation3": "% of the enemy fleet",
     "mb_noRecovery1": "This bounty requires the %s of the flagship. Its recovery will forfeit any reward.",
@@ -151,10 +153,16 @@
     "mb_intelTitleCompleted": "Bounty Completed - %s",
     "mb_intelTitleFailed": "Bounty Failed - %s",
     "mb_intelTitleInProgress": "Bounty Board - %s",
+    "mb_descAccepted": "You have accepted this bounty.",
     "mb_descSuccess": "You have successfully completed this bounty.",
     "mb_descFailure": "You have failed this mission.",
     "mb_descUninvolved": "Someone else completed this mission.",
     "mb_descExpired": "This job has expired.",
+    "mb_descLocation": "Location: %s",
+    "mb_descLocationUnknown": "LOCATION UNKNOWN",
+    "mb_descAnonymousReward": "This bounty posting is offering a %s reward.",
+    "mb_descFactionReward": "This bounty is offered by %s, who is offering a %s reward.",
+    "mb_descFactionNoReward": "This bounty is offered by %s, who is offering no reward.",
     "mb_descRewarded": "%s credits received",
     "mb_descRep": "Relationship with %s %s, currently at %s",
     "mb_descRepGood": "improved by ",
@@ -182,6 +190,7 @@
     "mb_hvb_levelHigh": "a highly capable officer",
     "mb_hvb_levelMax": "an exceptionally capable officer",
 
+    "mb_hvb_skillsHeader": "Target skills",
     "mb_hvb_skillWD": "a great number of illegal weapon modifications",
     "mb_hvb_skillAS": "armed-to-the-teeth support ships",
     "mb_hvb_skillCM": "a high effectiveness in coordinating the maneuvers of ships during combat",
@@ -257,6 +266,12 @@
 
     "mb_var_ship": "ship",
     "mb_var_fleet": "fleet",
+
+    "mb_intel_offeredBy": "Faction: %s",
+    "mb_plot_course": "Plot course",
+    "mb_filters_Location_Distance": "Filter by distance",
+    "mb_filters_Location_FuelRange": "Filter by fuel range",
+    "mb_filters_Location_SliderTitle": "Distance (LY)",
 
     # MagicAchievements
     "ml_ma_grantAchievement": "Grant",
