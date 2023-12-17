@@ -17,11 +17,14 @@ import org.magiclib.util.MagicVariables
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
     private const val commonFilename = "magic_paintjobs.json"
-    const val specsFilename = "magic_paintjobs.csv"
+    const val specsFilename = "data/config/magic_paintjobs.csv"
     private val jsonObjectKey = "unlockedPaintjobs"
     private val unlockedPaintjobsInner = mutableSetOf<String>()
     private val paintjobsInner = mutableListOf<MagicPaintjobSpec>()
     private const val isIntelImportantMemKey = "\$magiclib_isPaintjobIntelImportant"
+
+    const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
+    const val PJTAG_SHINY = "MagicLib_ShinyPJ"
 
     // TODO remove before release
     internal fun diable() {
@@ -86,7 +89,8 @@ object MagicPaintjobManager {
                         name = spriteId.removePrefix("graphics/pj_test/da/").takeWhile { it != '/' }
                             .replaceFirstChar { it.uppercase() },
                         description = null,
-                        spriteId = spriteId
+                        spriteId = spriteId,
+                        tags = null,
                     )
                 )
             }
@@ -103,9 +107,15 @@ object MagicPaintjobManager {
     val unlockedPaintjobs: List<MagicPaintjobSpec>
         get() = unlockedPaintjobsInner.mapNotNull { id -> paintjobsInner.firstOrNull { it.id == id } }
 
+    /**
+     * Returns the paintjobs that are available to the player.
+     * Shiny paintjobs should not be shown to the player and cannot be manually applied or unlocked.
+     */
     @JvmStatic
-    val paintjobs: Set<MagicPaintjobSpec>
-        get() = paintjobsInner.toSet()
+    @JvmOverloads
+    fun getPaintjobs(includeShiny: Boolean = false): Set<MagicPaintjobSpec> {
+        return paintjobsInner.filter { it.isShiny == includeShiny }.toSet()
+    }
 
     init {
         initIntel()
@@ -140,6 +150,15 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
+    fun onGameLoad() {
+        loadUnlockedPaintjobs()
+        initIntel()
+
+        Global.getSector().addTransientListener(MagicPaintjobShinyAdder())
+    }
+
+
+    @JvmStatic
     fun loadPaintjobs(): Map<String, MagicPaintjobSpec> {
         val newSpecs: MutableList<MagicPaintjobSpec> = mutableListOf()
 
@@ -172,7 +191,8 @@ object MagicPaintjobManager {
                     val name = item.getString("name").trim()
                     val description = item.getString("description").trim()
                     val unlockedAutomatically = item.optBoolean("unlockedAutomatically", true)
-                    var spriteId = item.getString("spriteId").trim()
+                    val spriteId = item.getString("spriteId").trim()
+                    val tags = item.optString("tags", "")?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
 
                     var skip = false
                     for (paintjobSpec in newSpecs) {
@@ -197,8 +217,13 @@ object MagicPaintjobManager {
                                 name = name,
                                 unlockedAutomatically = unlockedAutomatically,
                                 description = description,
-                                spriteId = spriteId
+                                spriteId = spriteId,
+                                tags = tags
                             )
+                                .also {
+                                    if (unlockedAutomatically)
+                                        unlockPaintjob(it.id)
+                                }
                         )
                     }
                 } catch (e: java.lang.Exception) {
@@ -218,6 +243,7 @@ object MagicPaintjobManager {
             newPaintjobSpecsById[newSpec.id] = newSpec
         }
 
+        logger.info("Loaded " + newPaintjobSpecsById.size + " paintjobs.")
         return newPaintjobSpecsById
     }
 
@@ -304,15 +330,10 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
-    fun onGameLoad() {
-        loadUnlockedPaintjobs()
-        initIntel()
-    }
-
-    @JvmStatic
     fun beforeGameSave() {
-        if (getIntel() != null) Global.getSector().memoryWithoutUpdate[isIntelImportantMemKey] =
-            getIntel()!!.isImportant
+        // Save whether the intel is important.
+        if (getIntel() != null)
+            Global.getSector().memoryWithoutUpdate[isIntelImportantMemKey] = getIntel()!!.isImportant
 
         // No reason to add intel to the save.
         removeIntel()
@@ -327,7 +348,7 @@ object MagicPaintjobManager {
         removeIntel()
 
         // Don't show if there aren't any.
-        if (paintjobs.isEmpty()) return
+        if (getPaintjobs().isEmpty()) return
 
         val intel = MagicPaintjobIntel()
         Global.getSector().intelManager.addIntel(intel, true)
@@ -337,6 +358,9 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun getIntel(): MagicPaintjobIntel? {
+        if (!Global.getSector().intelManager.hasIntelOfClass(MagicPaintjobIntel::class.java))
+            return null
+
         return try {
             Global.getSector().intelManager.getFirstIntel(MagicPaintjobIntel::class.java) as MagicPaintjobIntel
         } catch (ex: Exception) {
@@ -380,7 +404,8 @@ object MagicPaintjobManager {
                 variant.addTag(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
             }
 
-            fleetMember.spriteOverride = paintjob.spriteId
+            // This causes the sprite to show at full size on game (re)load, ie massive hyperspace ships.
+//            fleetMember.spriteOverride = paintjob.spriteId
         }
 
         if (combatShip != null) {

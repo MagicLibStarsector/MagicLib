@@ -45,7 +45,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     override fun createLargeDescriptionImpl(panel: CustomPanelAPI, width: Float, height: Float) {
         val opad = 10f
         val pad = 3f
-        val pjs = MagicPaintjobManager.paintjobs.toList()
+        val pjs = MagicPaintjobManager.getPaintjobs().toList()
         val mainGridTooltip = panel.createUIElement(width, height, true)
         val baseUnit = opad
         val scaleMult = 5f
@@ -148,7 +148,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }.getOrElse { pj.hullId }
             cellUnderlay.addImage(pj.spriteId, imageSize, imageSize, opad)
             cellUnderlay.addPara(pj.name + " " + hullName, Misc.getHighlightColor(), opad)
-//            pjCellTooltip.addPara(hullName, Misc.getTextColor(), pad)
             if (pj.description.isNullOrBlank().not()) {
                 cellUnderlay.addPara(pj.description, pad)
             }
@@ -432,7 +431,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                         yPos.coerceAtMost(panel.position.height - popupHeight - (padding * 2))
                             .coerceAtLeast(0f)
                     )
-                        .setYAlignOffset(shipSelectionViewHeight)
                 }
 
                 renderBackground = true
