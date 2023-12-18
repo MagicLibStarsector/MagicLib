@@ -74,8 +74,11 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             )
         }
 
-        val rewardText = Misc.getDGSCredits(getBountyPayout().toFloat())
-        info.addPara(MagicTxt.getString("mb_credits").format(rewardText), 1f, Misc.getHighlightColor(), rewardText)
+        val creditReward = getBountyPayout().toFloat()
+        if (creditReward > 0f) {
+            val rewardText = Misc.getDGSCredits(creditReward)
+            info.addPara(MagicTxt.getString("mb_credits").format(rewardText), 1f, Misc.getHighlightColor(), rewardText)
+        }
     }
 
     override fun shouldShow(): Boolean {
