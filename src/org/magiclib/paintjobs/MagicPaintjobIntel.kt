@@ -133,8 +133,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     ): TooltipMakerAPI {
         return createGrid(
             panel, cellsPerRow, width, height, cellHeight, cellWidth, padding, pjs
-        )
-        { pjCellTooltip, row, pj, _, xPosOfCellOnRow, yPosOfCellOnRow ->
+        ) { pjCellTooltip, row, pj, _, xPosOfCellOnRow, yPosOfCellOnRow ->
             val isUnlocked = MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
@@ -143,13 +142,43 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             pjCellTooltip.addCustom(cellPanel, 0f)
 
             Global.getSettings().loadTexture(pj.spriteId)
-            val hullName = runCatching {
-                Global.getSettings().getHullSpec(pj.hullId).hullName
-            }.getOrElse { pj.hullId }
             cellUnderlay.addImage(pj.spriteId, imageSize, imageSize, opad)
-            cellUnderlay.addPara(pj.name + " " + hullName, Misc.getHighlightColor(), opad)
-            if (pj.description.isNullOrBlank().not()) {
-                cellUnderlay.addPara(pj.description, pad)
+            cellUnderlay.addPara(createPaintjobName(pj), Misc.getHighlightColor(), opad)
+
+            // Description hover tooltip
+            val shouldShowUnlockConditions =
+                pj.id !in MagicPaintjobManager.unlockedPaintjobIds && !pj.unlockConditions.isNullOrBlank()
+            if (!pj.description.isNullOrBlank() || shouldShowUnlockConditions) {
+                MagicLunaElementInternal().apply {
+                    addTo(cellPanel, pjCellTooltip.widthSoFar, pjCellTooltip.heightSoFar) { it.inTL(0f, 0f) }
+                    renderBorder = false
+                    renderBackground = false
+                    renderForeground = false
+                    onHoverEnter {
+                        pjCellTooltip.addTooltipTo(
+                            object : BaseTooltipCreator() {
+                                override fun getTooltipWidth(tooltipParam: Any?) = 250f
+
+                                override fun createTooltip(
+                                    tooltip: TooltipMakerAPI,
+                                    expanded: Boolean,
+                                    tooltipParam: Any?
+                                ) {
+                                    tooltip.addSectionHeading(createPaintjobName(pj), Alignment.MID, 3f)
+                                    if (!pj.description.isNullOrBlank()) {
+                                        tooltip.addPara(pj.description!!, 10f)
+                                        if (shouldShowUnlockConditions)
+                                            tooltip.addSpacer(10f)
+                                    }
+                                    if (shouldShowUnlockConditions) {
+                                        tooltip.addPara(pj.unlockConditions!!, Misc.getHighlightColor(), 10f)
+                                    }
+                                }
+                            },
+                            cellPanel, TooltipMakerAPI.TooltipLocation.RIGHT
+                        )
+                    }
+                }
             }
 
             if (!isUnlocked) {
@@ -240,6 +269,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }
         }
     }
+
+    private fun createPaintjobName(pj: MagicPaintjobSpec) =
+        pj.name + " " + runCatching { Global.getSettings().getHullSpec(pj.hullId).hullName }.getOrElse { pj.hullId }
 
     private fun displayShipGrid(
         cellsPerRow: Int,
@@ -562,7 +594,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(ship)?.id == paintjob?.id
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
 
-            paintjobTooltip.addPara(paintjob?.name ?: "Default", if (paintjob == null) Misc.getTextColor() else Misc.getHighlightColor(), opad)
+            paintjobTooltip.addPara(
+                paintjob?.name ?: "Default",
+                if (paintjob == null) Misc.getTextColor() else Misc.getHighlightColor(),
+                opad
+            )
                 .apply {
                     setAlignment(Alignment.MID)
                 }

@@ -190,6 +190,7 @@ object MagicPaintjobManager {
                     val hullId = item.getString("hullId").trim()
                     val name = item.getString("name").trim()
                     val description = item.getString("description").trim()
+                    val unlockConditions = item.getString("unlockConditions").trim()
                     val unlockedAutomatically = item.optBoolean("unlockedAutomatically", true)
                     val spriteId = item.getString("spriteId").trim()
                     val tags = item.optString("tags", "")?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
@@ -207,6 +208,24 @@ object MagicPaintjobManager {
                             break
                         }
                     }
+
+                    if (id.isBlank()) {
+                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
+                        skip = true
+                    }
+                    if (hullId.isBlank()) {
+                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no hullId, skipping.")
+                        skip = true
+                    }
+                    if (name.isBlank()) {
+                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no name, skipping.")
+                        skip = true
+                    }
+                    if (spriteId.isBlank()) {
+                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
+                        skip = true
+                    }
+
                     if (!skip) {
                         newSpecs.add(
                             MagicPaintjobSpec(
@@ -217,6 +236,7 @@ object MagicPaintjobManager {
                                 name = name,
                                 unlockedAutomatically = unlockedAutomatically,
                                 description = description,
+                                unlockConditions = unlockConditions,
                                 spriteId = spriteId,
                                 tags = tags
                             )

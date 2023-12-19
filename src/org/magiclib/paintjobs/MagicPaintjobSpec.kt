@@ -6,6 +6,7 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     val id: String,
     val hullId: String,
     var name: String,
+    var unlockConditions: String? = null,
     var description: String? = null,
     var unlockedAutomatically: Boolean = true,
     var spriteId: String,
