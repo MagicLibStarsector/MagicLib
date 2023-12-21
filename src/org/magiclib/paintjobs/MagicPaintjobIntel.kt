@@ -52,7 +52,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         val cellWidth = baseUnit * 3f * scaleMult
         val cellHeight = baseUnit * 4f * scaleMult // 4:3 aspect ratio
         val imageSize = baseUnit * 12
-        val cellsPerRow = (width / cellWidth).toInt()
+//        val cellsPerRow = (width / cellWidth).toInt()
         val padding = 10f
 
         val isViewByPaintjobs =
@@ -67,25 +67,29 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             30f,
             0f
         )
-        val dumbPanel = panel.createCustomPanel(width, height - 100f, null)
+        val dumbassPanelThatIsNeverUsedButSomehowThisWorks = panel.createCustomPanel(width, height - 100f, null)
+        val overlayPanel = panel.createCustomPanel(width, height - 100f, null)
 
-        val grid = if (isViewByPaintjobs) createPaintjobGrid(
-            pjs = pjs,
-            cellsPerRow = cellsPerRow,
-            panel = dumbPanel,
-            width = width,
-            height = height,
-            cellHeight = cellHeight,
-            cellWidth = cellWidth,
-            padding = padding,
-            imageSize = imageSize,
-            opad = opad,
-            pad = pad,
+        val grid = if (isViewByPaintjobs)
+            createPaintjobGrid(
+                pjs = pjs,
+//            cellsPerRow = cellsPerRow,
+                createFromThisPanel = dumbassPanelThatIsNeverUsedButSomehowThisWorks,
+                placePopupsOnThisPanel = overlayPanel,
+                width = width,
+                height = height,
+                cellHeight = cellHeight,
+                cellWidth = cellWidth,
+                padding = padding,
+                imageSize = imageSize,
+                opad = opad,
+                pad = pad,
 //            mainGridTooltip
-        ) else
+            ) else
             displayShipGrid(
-                cellsPerRow = cellsPerRow,
-                createFromThisPanel = dumbPanel,
+//                cellsPerRow = cellsPerRow,
+                createFromThisPanel = dumbassPanelThatIsNeverUsedButSomehowThisWorks,
+                placePopupsOnThisPanel = overlayPanel,
                 width = width,
                 height = height,
                 cellHeight = cellHeight + 10,
@@ -102,10 +106,12 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         doBeforeRefresh { mainGridScrollPos = mainGridTooltip.externalScroller.yOffset }
         doAfterRefresh { mainGridTooltip.externalScroller.yOffset = mainGridScrollPos ?: 0f }
 
-        dumbPanel.addUIElement(grid).inTL(0f, 0f)
+        // for some reason this line is important, `doAfterRefresh { grid.externalScroller.yOffset = scrollPos ?: 0f }` breaks otherwise.
+        dumbassPanelThatIsNeverUsedButSomehowThisWorks.addUIElement(grid).inTL(0f, 0f)
         mainGridTooltip.addCustom(grid, 0f)
 
         panel.addUIElement(mainGridTooltip).inTL(0f, 0f)
+        panel.addComponent(overlayPanel).inTL(0f, 0f)
     }
 
     override fun buttonPressConfirmed(buttonId: Any?, ui: IntelUIAPI?) {
@@ -120,8 +126,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
     private fun createPaintjobGrid(
         pjs: List<MagicPaintjobSpec>,
-        cellsPerRow: Int,
-        panel: CustomPanelAPI,
+//        cellsPerRow: Int,
+        createFromThisPanel: CustomPanelAPI,
+        placePopupsOnThisPanel: CustomPanelAPI,
         width: Float,
         height: Float,
         cellHeight: Float,
@@ -132,8 +139,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         pad: Float
     ): TooltipMakerAPI {
         return createGrid(
-            panel, cellsPerRow, width, height, cellHeight, cellWidth, padding, pjs
-        ) { pjCellTooltip, row, pj, _, xPosOfCellOnRow, yPosOfCellOnRow ->
+            createFromThisPanel, width, height, cellHeight, cellWidth, padding, pjs
+        ) { pjCellTooltip, row, pj, _, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
             val isUnlocked = MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
@@ -145,41 +152,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             cellUnderlay.addImage(pj.spriteId, imageSize, imageSize, opad)
             cellUnderlay.addPara(createPaintjobName(pj), Misc.getHighlightColor(), opad)
 
-            // Description hover tooltip
-            val shouldShowUnlockConditions =
-                pj.id !in MagicPaintjobManager.unlockedPaintjobIds && !pj.unlockConditions.isNullOrBlank()
-            if (!pj.description.isNullOrBlank() || shouldShowUnlockConditions) {
-                MagicLunaElementInternal().apply {
-                    addTo(cellPanel, pjCellTooltip.widthSoFar, pjCellTooltip.heightSoFar) { it.inTL(0f, 0f) }
-                    renderBorder = false
-                    renderBackground = false
-                    renderForeground = false
-                    onHoverEnter {
-                        pjCellTooltip.addTooltipTo(
-                            object : BaseTooltipCreator() {
-                                override fun getTooltipWidth(tooltipParam: Any?) = 250f
-
-                                override fun createTooltip(
-                                    tooltip: TooltipMakerAPI,
-                                    expanded: Boolean,
-                                    tooltipParam: Any?
-                                ) {
-                                    tooltip.addSectionHeading(createPaintjobName(pj), Alignment.MID, 3f)
-                                    if (!pj.description.isNullOrBlank()) {
-                                        tooltip.addPara(pj.description!!, 10f)
-                                        if (shouldShowUnlockConditions)
-                                            tooltip.addSpacer(10f)
-                                    }
-                                    if (shouldShowUnlockConditions) {
-                                        tooltip.addPara(pj.unlockConditions!!, Misc.getHighlightColor(), 10f)
-                                    }
-                                }
-                            },
-                            cellPanel, TooltipMakerAPI.TooltipLocation.RIGHT
-                        )
-                    }
-                }
-            }
+            addPaintjobHoverTooltipIfNeeded(pj, cellPanel, pjCellTooltip)
 
             if (!isUnlocked) {
                 val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
@@ -196,20 +169,23 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 val appliedToCount =
                     shipsThatPjMayApplyTo.count { MagicPaintjobManager.getCurrentShipPaintjob(it)?.id == pj.id }
 
-                if (appliedToCount > 0)
-                    cellUnderlay.addPara(
-                        "Applied to $appliedToCount of $count in fleet",
-                        pad,
-                        Misc.getHighlightColor(),
-                        appliedToCount.toString(), count.toString()
-                    )
-                else
-                    cellUnderlay.addPara(
-                        "Applies to $count in fleet",
-                        pad,
-                        Misc.getHighlightColor(),
-                        count.toString()
-                    )
+//                if (appliedToCount > 0)
+                cellUnderlay.addPara(
+                    "$appliedToCount of $count in use",
+                    pad,
+                    arrayOf(
+                        if (appliedToCount > 0) Misc.getHighlightColor() else Misc.getTextColor(),
+                        Misc.getHighlightColor()
+                    ),
+                    appliedToCount.toString(), count.toString()
+                )
+//                else
+//                    cellUnderlay.addPara(
+//                        "Available for $count in fleet",
+//                        pad,
+//                        Misc.getHighlightColor(),
+//                        count.toString()
+//                    )
             }
 
             if (!isUnlocked)
@@ -231,8 +207,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 // Restore UI state if refreshing
                 doAfterRefresh {
                     if (pjBeingViewed != null && pjBeingViewed!!.id == pj.id) {
-                        displayPaintjobApplicatorPopup(
-                            row,
+                        displaySelectShipPopup(
+                            placePopupsOnThisPanel,
                             shipSelectionViewWidth,
                             shipsThatPjMayApplyTo,
                             shipSelectionCellsPerRow,
@@ -251,19 +227,19 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 // When you click on a paintjob, it will show you the ships in your fleet that it may apply to.
                 hoverElement.onClick { inputEvent ->
                     if (shipsThatPjMayApplyTo.none()) return@onClick
-                    displayPaintjobApplicatorPopup(
-                        row,
-                        shipSelectionViewWidth,
-                        shipsThatPjMayApplyTo,
-                        shipSelectionCellsPerRow,
-                        opad,
-                        shipSelectionViewHeight,
-                        pad,
-                        pj,
-                        padding,
-                        imageSize,
-                        xPosOfCellOnRow,
-                        yPosOfCellOnRow
+                    displaySelectShipPopup(
+                        panel = placePopupsOnThisPanel,
+                        shipSelectionViewWidth = shipSelectionViewWidth,
+                        shipsThatPjMayApplyTo = shipsThatPjMayApplyTo,
+                        shipSelectionCellsPerRow = shipSelectionCellsPerRow,
+                        opad = opad,
+                        shipSelectionViewHeight = shipSelectionViewHeight,
+                        pad = pad,
+                        pj = pj,
+                        padding = padding,
+                        imageSize = imageSize,
+                        xPos = xPosOfCellOnRow,
+                        yPos = rowYPos
                     )
                 }
             }
@@ -274,8 +250,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         pj.name + " " + runCatching { Global.getSettings().getHullSpec(pj.hullId).hullName }.getOrElse { pj.hullId }
 
     private fun displayShipGrid(
-        cellsPerRow: Int,
+//        cellsPerRow: Int,
         createFromThisPanel: CustomPanelAPI,
+        placePopupsOnThisPanel: CustomPanelAPI,
         width: Float,
         height: Float,
         cellHeight: Float,
@@ -290,17 +267,18 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
         val shipGrid = createGrid(
             createFromThisPanel,
-            cellsPerRow,
+//            cellsPerRow,
             width,
             height,
             cellHeight,
             cellWidth,
             padding,
             ships
-        ) { cellTooltip, row, ship, index, xPos, yPos ->
+        ) { cellTooltip, row, ship, index, xPos, yPos, rowYPos ->
             val paintjobsForShip = MagicPaintjobManager.getPaintjobsForHull(ship.hullId)
+            val shipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship)
 
-            val spriteName = ship.spriteOverride ?: ship.hullSpec.spriteName
+            val spriteName = ship.spriteOverride ?: shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
             Global.getSettings().loadTexture(spriteName)
             val shipThumbnailPanel = row.createCustomPanel(imageSize, imageSize, null)
             val shipThumbnailUnderlay = shipThumbnailPanel.createUIElement(imageSize, imageSize, false)
@@ -322,7 +300,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 )
             }
 
-            val shipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship)
             val paintjobsNotAppliedCount = paintjobsForShip.count { it.id != shipPaintjob?.id }
 
             cellTooltip.addPara(
@@ -330,7 +307,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 opad + opad,
                 arrayOf(
                     if (shipPaintjob != null) Misc.getPositiveHighlightColor() else Misc.getGrayColor(),
-                    Misc.getPositiveHighlightColor()
+                    Misc.getHighlightColor()
                 ),
                 shipPaintjob?.name ?: "Default",
                 paintjobsNotAppliedCount.toString()
@@ -338,7 +315,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             cellTooltip.addPara(ship.shipName, Misc.getHighlightColor(), pad)
             cellTooltip.addPara(ship.variant.displayName, pad)
-
 
             val hoverElement = addHoverHighlight(
                 panel = row,
@@ -350,7 +326,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             fun displayPaintjobsForShip(
             ) = displaySelectPaintjobPopup(
-                panel = row,
+                panel = placePopupsOnThisPanel,
                 cellWidth = cellWidth,
                 paintjobsForShip = paintjobsForShip,
                 opad = opad,
@@ -360,7 +336,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 padding = padding,
                 imageSize = imageSize,
                 xPos = xPos,
-                yPos = yPos
+                yPos = rowYPos
             )
 //                .coerceAtMost(width - this.width - (padding * 2))
             doAfterRefresh {
@@ -381,18 +357,19 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         return shipGrid
     }
 
-
     private fun <T> createGrid(
         rootPanel: CustomPanelAPI,
-        cellsPerRow: Int,
+//        cellsPerRow: Int,
         gridWidth: Float,
         gridHeight: Float,
         cellHeight: Float,
         cellWidth: Float,
         padding: Float,
         items: List<T>,
-        cellBuilder: (tooltip: TooltipMakerAPI, row: CustomPanelAPI, item: T, index: Int, xPosOfCellOnRow: Float, yPosOfCellOnRow: Float) -> Unit
+        cellBuilder: (tooltip: TooltipMakerAPI, row: CustomPanelAPI, item: T, index: Int, xPosOfCellOnRow: Float, yPosOfCellOnRow: Float, yPosOfRowOnGrid: Float) -> Unit
     ): TooltipMakerAPI {
+        val cellsPerRow = (gridWidth / (cellWidth + padding)).toInt()
+
         @Suppress("ComplexRedundantLet")
         val numRows = (items.count() / cellsPerRow.toFloat())
             .let { ceil(it) }.toInt()
@@ -406,17 +383,16 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 val index = i * cellsPerRow + j
                 if (index >= items.count()) break
 
-                val paddedCellWidth = cellWidth + padding
-                val xPos = j * cellWidth + padding
-                val yPos = i * cellHeight
+                val xPosOfCell = j * cellWidth + padding + (padding * j)
+                val yPosOfRow = i * cellHeight
 
                 val item = items[index]
                 // Build cell tooltip
-                val cellTooltip = row.createUIElement(paddedCellWidth, cellHeight, false)
+                val cellTooltip = row.createUIElement(cellWidth, cellHeight, false)
                 // Add cell tooltip to row, adjusting it so it doesn't go out of bounds.
-                row.addUIElement(cellTooltip).inTL((xPos), 0f)
+                row.addUIElement(cellTooltip).inTL((xPosOfCell), 0f)
                 // Populate cell tooltip
-                cellBuilder(cellTooltip, row, item, index, xPos, 0f)
+                cellBuilder(cellTooltip, row, item, index, xPosOfCell, 0f, yPosOfRow)
             }
 
             // Add row to tooltip
@@ -426,7 +402,49 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         return gridTooltip
     }
 
-    private fun displayPaintjobApplicatorPopup(
+
+    private fun addPaintjobHoverTooltipIfNeeded(
+        pj: MagicPaintjobSpec,
+        cellPanel: CustomPanelAPI,
+        pjCellTooltip: TooltipMakerAPI
+    ) {
+        val shouldShowUnlockConditions =
+            pj.id !in MagicPaintjobManager.unlockedPaintjobIds && !pj.unlockConditions.isNullOrBlank()
+        if (!pj.description.isNullOrBlank() || shouldShowUnlockConditions) {
+            MagicLunaElementInternal().apply {
+                addTo(cellPanel, pjCellTooltip.widthSoFar, pjCellTooltip.heightSoFar) { it.inTL(0f, 0f) }
+                renderBorder = false
+                renderBackground = false
+                renderForeground = false
+                onHoverEnter {
+                    pjCellTooltip.addTooltipTo(
+                        object : BaseTooltipCreator() {
+                            override fun getTooltipWidth(tooltipParam: Any?) = 250f
+
+                            override fun createTooltip(
+                                tooltip: TooltipMakerAPI,
+                                expanded: Boolean,
+                                tooltipParam: Any?
+                            ) {
+                                tooltip.addSectionHeading(createPaintjobName(pj), Alignment.MID, 3f)
+                                if (!pj.description.isNullOrBlank()) {
+                                    tooltip.addPara(pj.description!!, 10f)
+                                    if (shouldShowUnlockConditions)
+                                        tooltip.addSpacer(10f)
+                                }
+                                if (shouldShowUnlockConditions) {
+                                    tooltip.addPara(pj.unlockConditions!!, Misc.getHighlightColor(), 10f)
+                                }
+                            }
+                        },
+                        cellPanel, TooltipMakerAPI.TooltipLocation.RIGHT
+                    )
+                }
+            }
+        }
+    }
+
+    private fun displaySelectShipPopup(
         panel: CustomPanelAPI,
         shipSelectionViewWidth: Float,
         shipsThatPjMayApplyTo: List<FleetMemberAPI>,
@@ -496,10 +514,10 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 spriteName, imageSize, imageSize, opad
             )
             if (isWearingPj) shipInFleetTooltip.addPara("Applied", Misc.getPositiveHighlightColor(), opad)
-//                .apply {
-//                    setAlignment(Alignment.MID)
-//                    position.setXAlignOffset(-(this.computeTextWidth(this.text) / 2))
-//                }
+                .apply {
+                    setAlignment(Alignment.MID)
+                    position.setXAlignOffset(-(this.computeTextWidth(this.text) / 2) + 13)
+                }
             else shipInFleetTooltip.addPara("", opad)
 
             addHoverHighlight(
@@ -543,7 +561,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         // Add null as the first item as a default paintjob.
         val items = listOf(null) + paintjobsForShip
         val paintjobSelectionCellsPerRow = 2
-        val popupWidth = (cellWidth * items.count()
+        val popupWidth = ((cellWidth + padding) * items.count()
             .coerceAtMost(paintjobSelectionCellsPerRow)
                 + opad * 6) // padding
         val popupHeight = (cellHeight * ceil(items.count().toFloat() / paintjobSelectionCellsPerRow)
@@ -578,19 +596,19 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }
 
         paintjobSelectionDialog.innerElement.addTitle("Select paintjob...", Misc.getBasePlayerColor())
-            .position.setYAlignOffset(-pad)
+            .position.setYAlignOffset(-pad * 1.5f)
 
         // Display paintjobs that may apply to this ship.
         val grid = createGrid(
             rootPanel = paintjobSelectionDialog.elementPanel,
-            cellsPerRow = paintjobSelectionCellsPerRow,
+//            cellsPerRow = paintjobSelectionCellsPerRow,
             gridWidth = popupWidth,
             gridHeight = popupHeight,
             cellHeight = cellHeight,
             cellWidth = cellWidth,
             padding = padding,
             items = items
-        ) { paintjobTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow ->
+        ) { paintjobTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
             val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(ship)?.id == paintjob?.id
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
 
@@ -618,9 +636,12 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 paintjobTooltip.addPara("", opad)
             paintjobTooltip.prev.position.belowMid(image, opad)
 
-            if (paintjob?.description.isNullOrBlank().not()) {
-                paintjobTooltip.addPara(paintjob?.description, pad)
-            }
+            if (paintjob != null)
+                addPaintjobHoverTooltipIfNeeded(
+                    pj = paintjob,
+                    cellPanel = row.createCustomPanel(cellWidth, cellHeight, null),
+                    pjCellTooltip = paintjobTooltip
+                )
 
             addHoverHighlight(
                 panel = row,

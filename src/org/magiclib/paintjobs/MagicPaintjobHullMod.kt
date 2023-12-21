@@ -11,7 +11,7 @@ import com.fs.starfarer.api.util.Misc
  * This hullmod displays the paintjob itself. It determines which to display by looking for a tag on the variant.
  * The hullmod also allows the player to see in refit if a paintjob is applied and remove it.
  */
-class MagicSkinSwapHullMod : BaseHullMod() {
+class MagicPaintjobHullMod : BaseHullMod() {
     companion object {
         const val ID = "ML_skinSwap"
         const val PAINTJOB_TAG_PREFIX = "ML_paintjob-"

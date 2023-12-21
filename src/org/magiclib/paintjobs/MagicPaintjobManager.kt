@@ -396,11 +396,11 @@ object MagicPaintjobManager {
     fun removePaintjobFromShip(fleetMember: FleetMemberAPI) {
         val variant = fleetMember.variant ?: return
 
-        variant.tags.filter { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+        variant.tags.filter { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
             .forEach { variant.removeTag(it) }
 
-        if (variant.hasHullMod(MagicSkinSwapHullMod.ID)) {
-            variant.removeMod(MagicSkinSwapHullMod.ID)
+        if (variant.hasHullMod(MagicPaintjobHullMod.ID)) {
+            variant.removeMod(MagicPaintjobHullMod.ID)
         }
 
         fleetMember.spriteOverride = null
@@ -414,14 +414,14 @@ object MagicPaintjobManager {
 
         if (fleetMember != null) {
             val variant = fleetMember.variant
-            if (variant?.hasHullMod(MagicSkinSwapHullMod.ID) != true) {
-                variant.addMod(MagicSkinSwapHullMod.ID)
+            if (variant?.hasHullMod(MagicPaintjobHullMod.ID) != true) {
+                variant.addMod(MagicPaintjobHullMod.ID)
             }
 
             if (variant != null) {
-                variant.tags.filter { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
+                variant.tags.filter { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
                     .forEach { variant.removeTag(it) }
-                variant.addTag(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
+                variant.addTag(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
             }
 
             // This causes the sprite to show at full size on game (re)load, ie massive hyperspace ships.
@@ -449,11 +449,11 @@ object MagicPaintjobManager {
     @JvmStatic
     fun getCurrentShipPaintjob(fleetMember: FleetMemberAPI): MagicPaintjobSpec? {
         val variant = fleetMember.variant ?: return null
-        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) }
-        val paintjobId = pjTag?.removePrefix(MagicSkinSwapHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
+        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) ?: return null
 
         // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
-        if (!fleetMember.variant.hasHullMod(MagicSkinSwapHullMod.ID)) {
+        if (!fleetMember.variant.hasHullMod(MagicPaintjobHullMod.ID)) {
             removePaintjobFromShip(fleetMember)
             return null
         }
