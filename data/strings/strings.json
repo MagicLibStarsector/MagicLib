@@ -284,6 +284,14 @@
     "ml_ma_achievementUnlockedNotification": "Achievement Unlocked!",
     
     # MagicPaintjobs
-    "ml_mp_intelName": "Paintjobs"
+    "ml_mp_intelName": "Paintjobs",
+    "ml_mp_applyPaintjob": "Apply paintjob to...",
+    "ml_mp_viewFleet": "View Fleet",
+    "ml_mp_viewPaintjobs": "View Paintjobs",
+    "ml_mp_appliedPaintjobNoMore": "%s",
+    "ml_mp_appliedPaintjobMore": "%s (+%s more)",
+    "ml_mp_default": "Default",
+    "ml_mp_applied": "Applied",
+    "ml_mp_selectPaintjob":"Select paintjob...",
   }
 }

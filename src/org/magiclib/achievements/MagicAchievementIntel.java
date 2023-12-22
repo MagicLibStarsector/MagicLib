@@ -90,6 +90,27 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         }
 
 
+        addAchievementsHeader(panel, width, unlockedAchievements, listedAchievements, opad, headerComponent);
+
+        TooltipMakerAPI achievementsComponent = panel.createUIElement(width, height - headerHeight - 24, true);
+        if (!unlockedAchievements.isEmpty()) {
+            displayAchievements(panel, achievementsComponent, width, unlockedAchievements);
+        }
+
+        if (!lockedAchievements.isEmpty()) {
+//            achievementsComponent.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
+            achievementsComponent.setParaOrbitronLarge();
+            achievementsComponent.addPara(MagicTxt.getString("ml_ma_lockedAchievementsTitle"), opad);
+            achievementsComponent.setParaFontDefault();
+//            achievementsComponent.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
+            displayAchievements(panel, achievementsComponent, width, lockedAchievements);
+        }
+
+        panel.addUIElement(headerComponent).inTL(0, 0);
+        panel.addUIElement(achievementsComponent).belowLeft(headerComponent, 0);
+    }
+
+    private static void addAchievementsHeader(CustomPanelAPI panel, float width, List<MagicAchievement> unlockedAchievements, int listedAchievements, float opad, TooltipMakerAPI headerComponent) {
         int headerTextHeight = 30;
         float headerStartX = width * 0.24f;
         int progressBarHeight = 10;
@@ -103,7 +124,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
         CustomPanelAPI headerSubPanel = panel.createCustomPanel(width, headerTextHeight, null);
         TooltipMakerAPI headerHolder = headerSubPanel.createUIElement(width, headerTextHeight, false);
-//        headerHolder.addSpacer(opad * 3);
         TooltipMakerAPI label = headerHolder.beginImageWithText(defaultImage, imageHeight);
         label.setTitleOrbitronVeryLarge();
         label.addTitle(headerText, Misc.getBasePlayerColor());
@@ -124,31 +144,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 false);
         headerHolder.getPrev().getPosition().setXAlignOffset(imageHeight + 22);
         headerHolder.getPrev().getPosition().setYAlignOffset(5);
-//        headerHolder.addSpacer(opad * 2);
         headerSubPanel.addUIElement(headerHolder).inTL(headerStartX, 0);
         headerComponent.addCustom(headerSubPanel, 0);
 
         headerComponent.addSpacer(23 + progressBarHeight);
         new DividerCustomPanelPlugin(width - 7, Global.getSettings().getBasePlayerColor()).addTo(headerComponent);
-
-        TooltipMakerAPI achievementsComponent = panel.createUIElement(width, height - headerHeight - 24, true);
-        if (!unlockedAchievements.isEmpty()) {
-//            info.addSectionHeading(MagicTxt.getString("ml_ma_unlockedAchievementsTitle"), faction.getBaseUIColor(),
-//                    faction.getDarkUIColor(), Alignment.MID, opad);
-            displayAchievements(panel, achievementsComponent, width, unlockedAchievements);
-        }
-
-        if (!lockedAchievements.isEmpty()) {
-//            achievementsComponent.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
-            achievementsComponent.setParaOrbitronLarge();
-            achievementsComponent.addPara(MagicTxt.getString("ml_ma_lockedAchievementsTitle"), opad);
-            achievementsComponent.setParaFontDefault();
-//            achievementsComponent.addSectionHeading("", faction.getBaseUIColor(), faction.getDarkUIColor(), Alignment.MID, 0f);
-            displayAchievements(panel, achievementsComponent, width, lockedAchievements);
-        }
-
-        panel.addUIElement(headerComponent).inTL(0, 0);
-        panel.addUIElement(achievementsComponent).belowLeft(headerComponent, 0);
     }
 
     /**

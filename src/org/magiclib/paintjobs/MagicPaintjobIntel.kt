@@ -5,6 +5,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.MagicLunaElementInternal
+import org.magiclib.achievements.DividerCustomPanelPlugin
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.ui.MagicRefreshableBaseIntelPlugin
 import java.awt.Color
@@ -59,21 +60,12 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             Global.getSector().memoryWithoutUpdate.contains(TOGGLE_VIEW_MEMKEY) && Global.getSector().memoryWithoutUpdate.getBoolean(
                 TOGGLE_VIEW_MEMKEY
             )
-
-        mainGridTooltip.addButton(
-            if (isViewByPaintjobs) "View Fleet" else "View Paintjobs",
-            TOGGLE_BUTTON_ID,
-            200f,
-            30f,
-            0f
-        )
         val dumbassPanelThatIsNeverUsedButSomehowThisWorks = panel.createCustomPanel(width, height - 100f, null)
         val overlayPanel = panel.createCustomPanel(width, height - 100f, null)
 
         val grid = if (isViewByPaintjobs)
             createPaintjobGrid(
                 pjs = pjs,
-//            cellsPerRow = cellsPerRow,
                 createFromThisPanel = dumbassPanelThatIsNeverUsedButSomehowThisWorks,
                 placePopupsOnThisPanel = overlayPanel,
                 width = width,
@@ -84,10 +76,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 imageSize = imageSize,
                 opad = opad,
                 pad = pad,
-//            mainGridTooltip
             ) else
             displayShipGrid(
-//                cellsPerRow = cellsPerRow,
                 createFromThisPanel = dumbassPanelThatIsNeverUsedButSomehowThisWorks,
                 placePopupsOnThisPanel = overlayPanel,
                 width = width,
@@ -108,6 +98,13 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
         // for some reason this line is important, `doAfterRefresh { grid.externalScroller.yOffset = scrollPos ?: 0f }` breaks otherwise.
         dumbassPanelThatIsNeverUsedButSomehowThisWorks.addUIElement(grid).inTL(0f, 0f)
+        addPaintjobsHeader(
+            isViewByPaintjobs = isViewByPaintjobs,
+            panel = panel,
+            width = width,
+            opad = opad,
+            headerComponent = mainGridTooltip
+        )
         mainGridTooltip.addCustom(grid, 0f)
 
         panel.addUIElement(mainGridTooltip).inTL(0f, 0f)
@@ -124,9 +121,46 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         }
     }
 
+    private fun addPaintjobsHeader(
+        isViewByPaintjobs: Boolean,
+        panel: CustomPanelAPI,
+        width: Float,
+        opad: Float,
+        headerComponent: TooltipMakerAPI
+    ) {
+        val headerTextHeight = 30
+        val headerStartX = width * 0.34f
+        val imageHeight = 40
+        val defaultImage = Global.getSettings().getSpriteName("intel", "magicPaintjobs")
+        val headerText = MagicTxt.getString("ml_mp_intelName")
+
+        val headerSubPanel = panel.createCustomPanel(width, headerTextHeight.toFloat(), null)
+        val headerHolder = headerSubPanel.createUIElement(width, headerTextHeight.toFloat(), false)
+        val buttonHolder = headerSubPanel.createUIElement(width, headerTextHeight.toFloat(), false)
+
+        buttonHolder.addButton(
+            MagicTxt.getString(if (isViewByPaintjobs) "ml_mp_viewFleet" else "ml_mp_viewPaintjobs"),
+            TOGGLE_BUTTON_ID,
+            200f,
+            30f,
+            15f
+        )
+
+        val label = headerHolder.beginImageWithText(defaultImage, imageHeight.toFloat())
+        label.setTitleOrbitronVeryLarge()
+        label.addTitle(headerText, Misc.getBasePlayerColor())
+        headerHolder.addImageWithText(opad)
+
+        headerSubPanel.addUIElement(buttonHolder).inTL(0f, 0f)
+        headerSubPanel.addUIElement(headerHolder).inTL(headerStartX, 0f)
+        headerComponent.addCustom(headerSubPanel, 0f)
+
+        headerComponent.addSpacer((28).toFloat())
+        DividerCustomPanelPlugin(width - 7, color = Global.getSettings().basePlayerColor).addTo(headerComponent)
+    }
+
     private fun createPaintjobGrid(
         pjs: List<MagicPaintjobSpec>,
-//        cellsPerRow: Int,
         createFromThisPanel: CustomPanelAPI,
         placePopupsOnThisPanel: CustomPanelAPI,
         width: Float,
@@ -169,7 +203,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 val appliedToCount =
                     shipsThatPjMayApplyTo.count { MagicPaintjobManager.getCurrentShipPaintjob(it)?.id == pj.id }
 
-//                if (appliedToCount > 0)
                 cellUnderlay.addPara(
                     "$appliedToCount of $count in use",
                     pad,
@@ -179,13 +212,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     ),
                     appliedToCount.toString(), count.toString()
                 )
-//                else
-//                    cellUnderlay.addPara(
-//                        "Available for $count in fleet",
-//                        pad,
-//                        Misc.getHighlightColor(),
-//                        count.toString()
-//                    )
             }
 
             if (!isUnlocked)
@@ -250,7 +276,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         pj.name + " " + runCatching { Global.getSettings().getHullSpec(pj.hullId).hullName }.getOrElse { pj.hullId }
 
     private fun displayShipGrid(
-//        cellsPerRow: Int,
         createFromThisPanel: CustomPanelAPI,
         placePopupsOnThisPanel: CustomPanelAPI,
         width: Float,
@@ -267,7 +292,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
         val shipGrid = createGrid(
             createFromThisPanel,
-//            cellsPerRow,
             width,
             height,
             cellHeight,
@@ -303,13 +327,16 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             val paintjobsNotAppliedCount = paintjobsForShip.count { it.id != shipPaintjob?.id }
 
             cellTooltip.addPara(
-                "%s".let { if (paintjobsNotAppliedCount > 0) "$it  (+%s more)" else it },
+                MagicTxt.getString(
+                    if (paintjobsNotAppliedCount > 0) "ml_mp_appliedPaintjobMore"
+                    else "ml_mp_appliedPaintjobNoMore"
+                ),
                 opad + opad,
                 arrayOf(
                     if (shipPaintjob != null) Misc.getPositiveHighlightColor() else Misc.getGrayColor(),
                     Misc.getHighlightColor()
                 ),
-                shipPaintjob?.name ?: "Default",
+                shipPaintjob?.name ?: MagicTxt.getString("ml_mp_default"),
                 paintjobsNotAppliedCount.toString()
             )
 
@@ -338,7 +365,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 xPos = xPos,
                 yPos = rowYPos
             )
-//                .coerceAtMost(width - this.width - (padding * 2))
             doAfterRefresh {
                 // Restore UI state if refreshing
                 if (shipBeingViewed != null && shipBeingViewed!!.id == ship.id) {
@@ -359,7 +385,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
     private fun <T> createGrid(
         rootPanel: CustomPanelAPI,
-//        cellsPerRow: Int,
         gridWidth: Float,
         gridHeight: Float,
         cellHeight: Float,
@@ -373,7 +398,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         @Suppress("ComplexRedundantLet")
         val numRows = (items.count() / cellsPerRow.toFloat())
             .let { ceil(it) }.toInt()
-//        val height = (cellHeight * numRows) + (padding * numRows)
         val gridTooltip = rootPanel.createUIElement(gridWidth, gridHeight, true)
 
         for (i in 0 until numRows) {
@@ -493,7 +517,10 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 }
             }
 
-        paintjobApplicationDialog.innerElement.addTitle("Apply paintjob to...", Misc.getBasePlayerColor())
+        paintjobApplicationDialog.innerElement.addTitle(
+            MagicTxt.getString("ml_mp_applyPaintjob"),
+            Misc.getBasePlayerColor()
+        )
             .position.setYAlignOffset(-pad)
 
         // Display ships in fleet that this paintjob may apply to (and whether it's applied).
@@ -513,7 +540,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             shipInFleetTooltip.addImage(
                 spriteName, imageSize, imageSize, opad
             )
-            if (isWearingPj) shipInFleetTooltip.addPara("Applied", Misc.getPositiveHighlightColor(), opad)
+            if (isWearingPj) shipInFleetTooltip.addPara(
+                MagicTxt.getString("ml_mp_applied"),
+                Misc.getPositiveHighlightColor(),
+                opad
+            )
                 .apply {
                     setAlignment(Alignment.MID)
                     position.setXAlignOffset(-(this.computeTextWidth(this.text) / 2) + 13)
@@ -595,7 +626,10 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 }
             }
 
-        paintjobSelectionDialog.innerElement.addTitle("Select paintjob...", Misc.getBasePlayerColor())
+        paintjobSelectionDialog.innerElement.addTitle(
+            MagicTxt.getString("ml_mp_selectPaintjob"),
+            Misc.getBasePlayerColor()
+        )
             .position.setYAlignOffset(-pad * 1.5f)
 
         // Display paintjobs that may apply to this ship.
@@ -613,7 +647,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
 
             paintjobTooltip.addPara(
-                paintjob?.name ?: "Default",
+                paintjob?.name ?: MagicTxt.getString("ml_mp_default"),
                 if (paintjob == null) Misc.getTextColor() else Misc.getHighlightColor(),
                 opad
             )
@@ -628,7 +662,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             val image = paintjobTooltip.prev
             paintjobTooltip.prev.position.belowMid(title, opad)
             if (isWearingPj) {
-                paintjobTooltip.addPara("Applied", Misc.getPositiveHighlightColor(), opad)
+                paintjobTooltip.addPara(MagicTxt.getString("ml_mp_applied"), Misc.getPositiveHighlightColor(), opad)
                     .apply {
                         setAlignment(Alignment.MID)
                     }
