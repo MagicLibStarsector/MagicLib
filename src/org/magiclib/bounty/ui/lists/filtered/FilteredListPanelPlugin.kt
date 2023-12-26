@@ -27,7 +27,7 @@ abstract class FilteredListPanelPlugin<T : Filterable<T>>(parentPanel: CustomPan
         filtersForItems.forEach { it.loadFromPersistentData() }
         var validMembers = members.filter { shouldMakePanelForItem(it) }
         lastMembers = validMembers
-        validMembers = validMembers.filter { shouldFilterItem(it) }
+        validMembers = validMembers.filter {  shouldFilterItem(it) }
         validMembers = sortMembers(validMembers)
 
         val outerTooltipLocal = outerPanelLocal.createUIElement(panelWidth, panelHeight, false)

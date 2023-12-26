@@ -114,6 +114,8 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
     }
 
     fun layoutPanel(width: Float = lastWidth, height: Float = lastHeight, desiredItem: BountyInfo? = null) {
+        parentPanel ?: return // somehow, "apocrita_belcher" is getting here with a null parentPanel
+
         if (holdingPanel != null) {
             parentPanel!!.removeComponent(holdingPanel)
         }

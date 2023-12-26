@@ -448,14 +448,14 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         if (reward != null && givingFaction != null) {
             val rewardText = Misc.getDGSCredits(reward)
             textTooltip.addPara(
-                MagicTxt.getString("mb_descFactionReward").format(givingFaction.displayNameWithArticle, rewardText),
+                MagicTxt.getString("mb_descFactionReward").format(givingFaction.displayNameWithArticle, givingFaction.displayNameIsOrAre, rewardText),
                 2f,
                 arrayOf(givingFaction.color, Misc.getHighlightColor()),
                 givingFaction.displayNameWithArticle, rewardText
             )
         } else if (givingFaction != null) {
             textTooltip.addPara(
-                MagicTxt.getString("mb_descFactionNoReward").format(givingFaction.displayNameWithArticle),
+                MagicTxt.getString("mb_descFactionNoReward").format(givingFaction.displayNameWithArticle, givingFaction.displayNameIsOrAre),
                 2f,
                 givingFaction.color,
                 givingFaction.displayNameWithArticle

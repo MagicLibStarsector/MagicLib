@@ -1,3 +1,7 @@
+Version 1.3.2
+**MagicBounty**
+- Fixed a crash when accepting "apocrita_belcher" bounty (reported by rosnok).
+
 Version 1.3.1
 **MagicBounty**
 - Fixed a crash on load ("No enum constant", reported by timediver0)
