@@ -58,7 +58,7 @@
   <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.achievements</a><span class="delimiter">/</span><span class="current">MagicAchievementManager</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Magic</span><wbr></wbr><span>Achievement</span><wbr></wbr><span><span>Manager</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">MagicAchievementManager</a></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">MagicAchievementManager</a></div><p class="paragraph">Manages and tracks achievements. </p><p class="paragraph"> An achievement is made from a spec, which is used to create the achievement class with the code to detect the achievement conditions. </p><p class="paragraph"> To add an achievement, add it to the magic_achievements.csv file in your mod's data/config folder. Alternatively, call <a href="add-achievement-specs.html">addAchievementSpecs</a> in your mod plugin's onGameLoad() method. </p><p class="paragraph"> Then, create a class that extends MagicAchievement and implement the detection logic. You will need to call setComplete() and then saveChanges() to complete the achievement.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
@@ -84,7 +84,22 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-102981099%2FFunctions%2F1247924383" anchor-label="afterGameSave" id="-102981099%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+        <div class="table"><a data-name="-2076120103%2FFunctions%2F1247924383" anchor-label="addAchievementSpecs" id="-2076120103%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-achievement-specs.html"><span>add</span><wbr></wbr><span>Achievement</span><wbr></wbr><span><span>Specs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2076120103%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="add-achievement-specs.html"><span class="token function">addAchievementSpecs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="../-magic-achievement-spec/index.html">MagicAchievementSpec</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief ">Use this to create achievements that are not defined in magic_achievements.csv.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-102981099%2FFunctions%2F1247924383" anchor-label="afterGameSave" id="-102981099%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
           <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -95,6 +110,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="after-game-save.html"><span class="token function">afterGameSave</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Calls all achievements' afterGameSave() method.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1114079183%2FFunctions%2F1247924383" anchor-label="areAchievementsEnabled" id="-1114079183%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="are-achievements-enabled.html"><span>are</span><wbr></wbr><span>Achievements</span><wbr></wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1114079183%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="are-achievements-enabled.html"><span class="token function">areAchievementsEnabled</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -199,7 +229,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-application-load.html"><span class="token function">onApplicationLoad</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Loads achievements (so that any that track stuff outside of the campaign are started).</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-application-load.html"><span class="token function">onApplicationLoad</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Loads achievements (so that any that track stuff outside the campaign are started).</div></div></div>
                 </div>
               </div>
             </div>
@@ -214,7 +244,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-game-load.html"><span class="token function">onGameLoad</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">(Re)loads achievements (so that any that track stuff outside of the campaign are started).</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-game-load.html"><span class="token function">onGameLoad</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">(Re)loads achievements (so that any that track stuff outside the campaign are started).</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-798693454%2FFunctions%2F1247924383" anchor-label="playSoundEffect" id="-798693454%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="play-sound-effect.html"><span>play</span><wbr></wbr><span>Sound</span><wbr></wbr><span><span>Effect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-798693454%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="play-sound-effect.html"><span class="token function">playSoundEffect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">achievement<span class="token operator">: </span>MagicAchievement</span></span><span class="token punctuation">)</span></div><div class="brief ">You shouldn't need to call this.</div></div></div>
                 </div>
               </div>
             </div>
@@ -230,6 +275,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reload-achievements.html"><span class="token function">reloadAchievements</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isSaveGameLoaded<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Unloads all current achievements from the sector and reloads them from files.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="841233813%2FFunctions%2F1247924383" anchor-label="removeAchievementSpec" id="841233813%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-achievement-spec.html"><span>remove</span><wbr></wbr><span>Achievement</span><wbr></wbr><span><span>Spec</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="841233813%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="remove-achievement-spec.html"><span class="token function">removeAchievementSpec</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specId<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -259,7 +319,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-achievements-enabled.html"><span class="token function">setAchievementsEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">areAchievementsEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">isSaveLoaded<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-achievements-enabled.html"><span class="token function">setAchievementsEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">areAchievementsEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">isSaveLoaded<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets whether achievements are enabled or not.</div></div></div>
                 </div>
               </div>
             </div>
@@ -293,7 +353,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="achievement-scripts-with-combat-run-error.html">achievementScriptsWithCombatRunError</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html">Set</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="achievement-scripts-with-combat-run-error.html">achievementScriptsWithCombatRunError</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html">Set</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div><div class="brief ">Set of achievement IDs that have thrown an error in their advanceInCombat method.</div></div></div>
                 </div>
               </div>
             </div>
@@ -308,7 +368,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="achievement-scripts-with-run-error.html">achievementScriptsWithRunError</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html">Set</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="achievement-scripts-with-run-error.html">achievementScriptsWithRunError</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html">Set</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div><div class="brief ">Set of achievement IDs that have thrown an error in their advance method.</div></div></div>
                 </div>
               </div>
             </div>

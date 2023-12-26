@@ -1,154 +1,25 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
-$dokka.location:org.magiclib.achievements.builtin////PointingToDeclaration/root/org.magiclib.achievements.builtin/index.html
-$dokka.location:org.magiclib.achievements.builtin/AICoreAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-a-i-core-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/AICoreAchievement/AICoreAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-a-i-core-achievement/-a-i-core-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/AICoreAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-a-i-core-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/AbandonedAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-abandoned-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/AbandonedAchievement/AbandonedAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-abandoned-achievement/-abandoned-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/AbandonedAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-abandoned-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/AbandonedAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-abandoned-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/AbandonedAchievement/reportPlayerAbandonedColony/#MarketAPI/PointingToDeclaration/root/org.magiclib.achievements.builtin/-abandoned-achievement/report-player-abandoned-colony.html
-$dokka.location:org.magiclib.achievements.builtin/AbandonedAchievement/reportPlayerColonizedPlanet/#PlanetAPI/PointingToDeclaration/root/org.magiclib.achievements.builtin/-abandoned-achievement/report-player-colonized-planet.html
-$dokka.location:org.magiclib.achievements.builtin/BlackHoleAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-black-hole-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/BlackHoleAchievement/BlackHoleAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-black-hole-achievement/-black-hole-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/BlackHoleAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-black-hole-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/BlackHoleAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-black-hole-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/BombardmentAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/-bombardment-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/reportRaidForValuablesFinishedBeforeCargoShown/#InteractionDialogAPI#MarketAPI#MarketCMD.TempData#CargoAPI/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/report-raid-for-valuables-finished-before-cargo-shown.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/reportRaidToDisruptFinished/#InteractionDialogAPI#MarketAPI#MarketCMD.TempData#Industry/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/report-raid-to-disrupt-finished.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/reportSaturationBombardmentFinished/#InteractionDialogAPI#MarketAPI#MarketCMD.TempData/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/report-saturation-bombardment-finished.html
-$dokka.location:org.magiclib.achievements.builtin/BombardmentAchievement/reportTacticalBombardmentFinished/#InteractionDialogAPI#MarketAPI#MarketCMD.TempData/PointingToDeclaration/root/org.magiclib.achievements.builtin/-bombardment-achievement/report-tactical-bombardment-finished.html
-$dokka.location:org.magiclib.achievements.builtin/BuiltInsAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-built-ins-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/BuiltInsAchievement/BuiltInsAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-built-ins-achievement/-built-ins-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/BuiltInsAchievement/advanceAfterInterval/#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-built-ins-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement.Companion///PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/-companion/index.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/ColonyItemsAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/-colony-items-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/advanceAfterInterval/#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/get-progress.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/itemsAcquiredSoFar/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/items-acquired-so-far.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/onApplicationLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/on-application-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/ColonyItemsAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-colony-items-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/FleetDoctrineAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-fleet-doctrine-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/FleetDoctrineAchievement/FleetDoctrineAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-fleet-doctrine-achievement/-fleet-doctrine-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/FleetDoctrineAchievement/advanceInCombat/#float#java.util.List<InputEventAPI>#boolean/PointingToDeclaration/root/org.magiclib.achievements.builtin/-fleet-doctrine-achievement/advance-in-combat.html
-$dokka.location:org.magiclib.achievements.builtin/FleetDoctrineAchievement/getTooltip/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-fleet-doctrine-achievement/get-tooltip.html
-$dokka.location:org.magiclib.achievements.builtin/FleetDoctrineAchievement/onApplicationLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-fleet-doctrine-achievement/on-application-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/FleetDoctrineAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-fleet-doctrine-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/GateTravelAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-gate-travel-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/GateTravelAchievement/GateTravelAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-gate-travel-achievement/-gate-travel-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/GateTravelAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-gate-travel-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/GateTravelAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-gate-travel-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/GateTravelAchievement/reportFleetTransitingGate/#CampaignFleetAPI#SectorEntityToken#SectorEntityToken/PointingToDeclaration/root/org.magiclib.achievements.builtin/-gate-travel-achievement/report-fleet-transiting-gate.html
-$dokka.location:org.magiclib.achievements.builtin/IcarusAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-icarus-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/IcarusAchievement/IcarusAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-icarus-achievement/-icarus-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/IcarusAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-icarus-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/InspectionAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-inspection-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/InspectionAchievement/InspectionAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-inspection-achievement/-inspection-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/InspectionAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-inspection-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/JavaUpgradeAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-java-upgrade-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/JavaUpgradeAchievement/JavaUpgradeAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-java-upgrade-achievement/-java-upgrade-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/JavaUpgradeAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-java-upgrade-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/LuckyStartAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-lucky-start-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/LuckyStartAchievement/LuckyStartAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-lucky-start-achievement/-lucky-start-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/LuckyStartAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-lucky-start-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/LuckyStartAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-lucky-start-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/LuckyStartAchievement/reportEntityDiscovered/#SectorEntityToken/PointingToDeclaration/root/org.magiclib.achievements.builtin/-lucky-start-achievement/report-entity-discovered.html
-$dokka.location:org.magiclib.achievements.builtin/MeantToDoThatAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-meant-to-do-that-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/MeantToDoThatAchievement/MeantToDoThatAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-meant-to-do-that-achievement/-meant-to-do-that-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/MeantToDoThatAchievement/advanceInCombat/#kotlin.Float#kotlin.collections.MutableList[[Error type: Unresolved type for InputEventAPI]]?#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.achievements.builtin/-meant-to-do-that-achievement/advance-in-combat.html
-$dokka.location:org.magiclib.achievements.builtin/MotesAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-motes-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/MotesAchievement/MotesAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-motes-achievement/-motes-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/MotesAchievement/advanceAfterInterval/#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-motes-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/MotesAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-motes-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/MotesAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-motes-achievement/get-progress.html
-$dokka.location:org.magiclib.achievements.builtin/MotesAchievement/key/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-motes-achievement/key.html
-$dokka.location:org.magiclib.achievements.builtin/NeuralAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-neural-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/NeuralAchievement/NeuralAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-neural-achievement/-neural-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/NeuralAchievement/advanceInCombat/#kotlin.Float#kotlin.collections.MutableList[[Error type: Unresolved type for InputEventAPI]]?#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.achievements.builtin/-neural-achievement/advance-in-combat.html
-$dokka.location:org.magiclib.achievements.builtin/NeverCompleteTestAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-never-complete-test-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/NeverCompleteTestAchievement/NeverCompleteTestAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-never-complete-test-achievement/-never-complete-test-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/NoConditionsAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-no-conditions-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/NoConditionsAchievement/NoConditionsAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-no-conditions-achievement/-no-conditions-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/NoConditionsAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-no-conditions-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/NoConditionsAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-no-conditions-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/NoConditionsAchievement/reportPlayerSurveyedPlanet/#[Error type: Unresolved type for PlanetAPI]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-no-conditions-achievement/report-player-surveyed-planet.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement.OmegaLowDpAchievementListener///PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/-omega-low-dp-achievement-listener/index.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement.OmegaLowDpAchievementListener/OmegaLowDpAchievementListener/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/-omega-low-dp-achievement-listener/-omega-low-dp-achievement-listener.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement.OmegaLowDpAchievementListener/reportPlayerEngagement/#[Error type: Unresolved type for EngagementResultAPI]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/-omega-low-dp-achievement-listener/report-player-engagement.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement/OmegaLowDpAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/-omega-low-dp-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/OmegaLowDpAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-omega-low-dp-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/OrionDriveAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-orion-drive-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/OrionDriveAchievement/OrionDriveAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-orion-drive-achievement/-orion-drive-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/OrionDriveAchievement/advanceInCombat/#kotlin.Float#kotlin.collections.MutableList[[Error type: Unresolved type for InputEventAPI]]?#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.achievements.builtin/-orion-drive-achievement/advance-in-combat.html
-$dokka.location:org.magiclib.achievements.builtin/ParadiseAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-paradise-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/ParadiseAchievement/ParadiseAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-paradise-achievement/-paradise-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/ParadiseAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-paradise-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/ParadiseAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-paradise-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/ParadiseAchievement/reportPlayerSurveyedPlanet/#[Error type: Unresolved type for PlanetAPI]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-paradise-achievement/report-player-surveyed-planet.html
-$dokka.location:org.magiclib.achievements.builtin/PowerOfTheSunAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-power-of-the-sun-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/PowerOfTheSunAchievement/PowerOfTheSunAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-power-of-the-sun-achievement/-power-of-the-sun-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/PowerOfTheSunAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-power-of-the-sun-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/RevisionistAchievement.Companion///PointingToDeclaration/root/org.magiclib.achievements.builtin/-revisionist-achievement/-companion/index.html
-$dokka.location:org.magiclib.achievements.builtin/RevisionistAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-revisionist-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/RevisionistAchievement/RevisionistAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-revisionist-achievement/-revisionist-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/RevisionistAchievement/advanceInCombat/#kotlin.Float#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.achievements.builtin/-revisionist-achievement/advance-in-combat.html
-$dokka.location:org.magiclib.achievements.builtin/RevisionistAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-revisionist-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement.Companion///PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/-companion/index.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/SatBombEverybodyAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/-sat-bomb-everybody-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/get-progress.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/onApplicationLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/on-application-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/reportRaidForValuablesFinishedBeforeCargoShown/#[Error type: Unresolved type for InteractionDialogAPI]?#[Error type: Unresolved type for MarketAPI]?#[Error type: Unresolved type for MarketCMD.TempData]?#[Error type: Unresolved type for CargoAPI]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/report-raid-for-valuables-finished-before-cargo-shown.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/reportRaidToDisruptFinished/#[Error type: Unresolved type for InteractionDialogAPI]?#[Error type: Unresolved type for MarketAPI]?#[Error type: Unresolved type for MarketCMD.TempData]?#[Error type: Unresolved type for Industry]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/report-raid-to-disrupt-finished.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/reportSaturationBombardmentFinished/#[Error type: Unresolved type for InteractionDialogAPI]?#[Error type: Unresolved type for MarketAPI]?#[Error type: Unresolved type for MarketCMD.TempData]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/report-saturation-bombardment-finished.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/reportTacticalBombardmentFinished/#[Error type: Unresolved type for InteractionDialogAPI]?#[Error type: Unresolved type for MarketAPI]?#[Error type: Unresolved type for MarketCMD.TempData]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/report-tactical-bombardment-finished.html
-$dokka.location:org.magiclib.achievements.builtin/SatBombEverybodyAchievement/targetsBombardedSoFar/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-sat-bomb-everybody-achievement/targets-bombarded-so-far.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer10000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer10000-magic-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer10000MagicAchievement/Slayer10000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer10000-magic-achievement/-slayer10000-magic-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer10000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer10000-magic-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer1000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer1000-magic-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer1000MagicAchievement/Slayer1000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer1000-magic-achievement/-slayer1000-magic-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer1000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer1000-magic-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer100MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer100-magic-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer100MagicAchievement/Slayer100MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer100-magic-achievement/-slayer100-magic-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer100MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer100-magic-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer2000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer2000-magic-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer2000MagicAchievement/Slayer2000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer2000-magic-achievement/-slayer2000-magic-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer2000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer2000-magic-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer5000MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer5000-magic-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer5000MagicAchievement/Slayer5000MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer5000-magic-achievement/-slayer5000-magic-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/Slayer5000MagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer5000-magic-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement.Listener///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-listener/index.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement.Listener/Listener/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-listener/-listener.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement.Listener/reportBattleFinished/#[Error type: Unresolved type for CampaignFleetAPI]?#[Error type: Unresolved type for BattleAPI]?/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-listener/report-battle-finished.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/SlayerMagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/-slayer-magic-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/get-progress.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/listener/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/listener.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/on-save-game-loaded.html
-$dokka.location:org.magiclib.achievements.builtin/SlayerMagicAchievement/shipsKilled/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-slayer-magic-achievement/ships-killed.html
-$dokka.location:org.magiclib.achievements.builtin/TestAchievement///PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/index.html
-$dokka.location:org.magiclib.achievements.builtin/TestAchievement/TestAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/-test-achievement.html
-$dokka.location:org.magiclib.achievements.builtin/TestAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/advance-after-interval.html
-$dokka.location:org.magiclib.achievements.builtin/TestAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/get-max-progress.html
-$dokka.location:org.magiclib.achievements.builtin/TestAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements.builtin/-test-achievement/get-progress.html
+$dokka.location:org.magiclib.achievements.examples////PointingToDeclaration/root/org.magiclib.achievements.examples/index.html
+$dokka.location:org.magiclib.achievements.examples/ExampleTargetListAchievement///PointingToDeclaration/root/org.magiclib.achievements.examples/-example-target-list-achievement/index.html
+$dokka.location:org.magiclib.achievements.examples/ExampleTargetListAchievement/ExampleTargetListAchievement/#/PointingToDeclaration/root/org.magiclib.achievements.examples/-example-target-list-achievement/-example-target-list-achievement.html
+$dokka.location:org.magiclib.achievements.examples/ExampleTargetListAchievement/advanceInCombat/#float#java.util.List<InputEventAPI>#boolean/PointingToDeclaration/root/org.magiclib.achievements.examples/-example-target-list-achievement/advance-in-combat.html
+$dokka.location:org.magiclib.achievements.examples/ExampleTargetListAchievement/onApplicationLoaded/#boolean/PointingToDeclaration/root/org.magiclib.achievements.examples/-example-target-list-achievement/on-application-loaded.html
 $dokka.location:org.magiclib.achievements////PointingToDeclaration/root/org.magiclib.achievements/index.html
 $dokka.location:org.magiclib.achievements//getRandomPointInRectangle/#java.awt.Rectangle/PointingToDeclaration/root/org.magiclib.achievements/get-random-point-in-rectangle.html
 $dokka.location:org.magiclib.achievements//getRandomPointInRectangleAvoidingCenter/#java.awt.Rectangle#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements/get-random-point-in-rectangle-avoiding-center.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin///PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/index.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin/DividerCustomPanelPlugin/#kotlin.Float#kotlin.Float#java.awt.Color/PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/-divider-custom-panel-plugin.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin/addTo/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/add-to.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin/color/#/PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/color.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin/height/#/PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/height.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin/render/#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/render.html
+$dokka.location:org.magiclib.achievements/DividerCustomPanelPlugin/width/#/PointingToDeclaration/root/org.magiclib.achievements/-divider-custom-panel-plugin/width.html
+$dokka.location:org.magiclib.achievements/MagicAchievement.VisualEffectData///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-visual-effect-data/index.html
+$dokka.location:org.magiclib.achievements/MagicAchievement.VisualEffectData/VisualEffectData/#java.awt.Color#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-visual-effect-data/-visual-effect-data.html
+$dokka.location:org.magiclib.achievements/MagicAchievement.VisualEffectData/VisualEffectData/#java.awt.Color/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-visual-effect-data/-visual-effect-data.html
+$dokka.location:org.magiclib.achievements/MagicAchievement.VisualEffectData/color/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-visual-effect-data/color.html
+$dokka.location:org.magiclib.achievements/MagicAchievement.VisualEffectData/particleDensity/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-visual-effect-data/particle-density.html
 $dokka.location:org.magiclib.achievements/MagicAchievement///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/index.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/MagicAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/-magic-achievement.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/advance-after-interval.html
@@ -160,6 +31,7 @@ $dokka.location:org.magiclib.achievements/MagicAchievement/completeAchievement/#
 $dokka.location:org.magiclib.achievements/MagicAchievement/completedByUserId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/completed-by-user-id.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/completedByUserName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/completed-by-user-name.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/createTooltip/#TooltipMakerAPI#boolean#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/create-tooltip.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/createTooltipHeader/#TooltipMakerAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/create-tooltip-header.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/dateCompleted/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/date-completed.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/errorMessage/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/error-message.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getAdvanceIntervalUtil/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-advance-interval-util.html
@@ -170,19 +42,21 @@ $dokka.location:org.magiclib.achievements/MagicAchievement/getModId/#/PointingTo
 $dokka.location:org.magiclib.achievements/MagicAchievement/getModName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-mod-name.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-name.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getRarity/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-rarity.html
-$dokka.location:org.magiclib.achievements/MagicAchievement/getRarityColor/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-rarity-color.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getScript/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-script.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getSoundEffectId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-sound-effect-id.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getSpecId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-spec-id.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getSpoilerLevel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-spoiler-level.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getTooltip/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-tooltip.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getVisualEffectData/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-visual-effect-data.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/hasTooltip/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/has-tooltip.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/isComplete/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/is-complete.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/loadFromJsonObject/#JSONObject/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/load-from-json-object.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/maxProgress/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/max-progress.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/memory/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/memory.html
-$dokka.location:org.magiclib.achievements/MagicAchievement/onApplicationLoaded/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-application-loaded.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/onApplicationLoaded/#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-application-loaded.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/onCompleted/#PersonAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-completed.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/onDestroyed/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-destroyed.html
-$dokka.location:org.magiclib.achievements/MagicAchievement/onSaveGameLoaded/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-save-game-loaded.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/onSaveGameLoaded/#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/on-save-game-loaded.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/progress/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/progress.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/saveChanges/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/save-changes.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/setAdvanceIntervalUtil/#IntervalUtil/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-advance-interval-util.html
@@ -196,10 +70,8 @@ $dokka.location:org.magiclib.achievements/MagicAchievement/setSpoilerLevel/#org.
 $dokka.location:org.magiclib.achievements/MagicAchievement/setTooltip/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/set-tooltip.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/shouldShowInIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/should-show-in-intel.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/toJsonObject/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/to-json-object.html
-$dokka.location:org.magiclib.achievements/MagicAchievement/uncompleteAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/uncomplete-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/uncompleteAchievement/#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/uncomplete-achievement.html
 $dokka.location:org.magiclib.achievements/MagicAchievementIntel///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/index.html
-$dokka.location:org.magiclib.achievements/MagicAchievementIntel/ENTRY_HEIGHT/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/-e-n-t-r-y_-h-e-i-g-h-t.html
-$dokka.location:org.magiclib.achievements/MagicAchievementIntel/IMAGE_HEIGHT/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/-i-m-a-g-e_-h-e-i-g-h-t.html
 $dokka.location:org.magiclib.achievements/MagicAchievementIntel/MagicAchievementIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/-magic-achievement-intel.html
 $dokka.location:org.magiclib.achievements/MagicAchievementIntel/buttonPressConfirmed/#java.lang.Object#IntelUIAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/button-press-confirmed.html
 $dokka.location:org.magiclib.achievements/MagicAchievementIntel/createLargeDescription/#CustomPanelAPI#float#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-intel/create-large-description.html
@@ -217,7 +89,9 @@ $dokka.location:org.magiclib.achievements/MagicAchievementManager/achievementScr
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/achievementScriptsWithRunError/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/achievement-scripts-with-run-error.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/achievementSpecs/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/achievement-specs.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/achievements/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/achievements.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/addAchievementSpecs/#org.magiclib.achievements.MagicAchievementSpec.../PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/add-achievement-specs.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/afterGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/after-game-save.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/areAchievementsEnabled/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/are-achievements-enabled.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/beforeGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/before-game-save.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/generateAchievementsFromSpec/#java.util.Map<java.lang.String,org.magiclib.achievements.MagicAchievementSpec>/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/generate-achievements-from-spec.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/getAchievement/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/get-achievement.html
@@ -227,13 +101,11 @@ $dokka.location:org.magiclib.achievements/MagicAchievementManager/initIntel/#/Po
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/instance/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/instance.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/onApplicationLoad/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/on-application-load.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/onGameLoad/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/on-game-load.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/playSoundEffect/#MagicAchievement/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/play-sound-effect.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/reloadAchievements/#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/reload-achievements.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/removeAchievementSpec/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/remove-achievement-spec.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/resetAchievementToSpec/#MagicAchievement/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/reset-achievement-to-spec.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/setAchievementsEnabled/#boolean#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/set-achievements-enabled.html
-$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/index.html
-$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript/MagicAchievementParticleScript/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/-magic-achievement-particle-script.html
-$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript/advance/#kotlin.Float/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/advance.html
-$dokka.location:org.magiclib.achievements/MagicAchievementParticleScript/render/#java.awt.Rectangle#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for MagicAchievement]#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-particle-script/render.html
 $dokka.location:org.magiclib.achievements/MagicAchievementRarity.Common///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-common/index.html
 $dokka.location:org.magiclib.achievements/MagicAchievementRarity.Epic///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-epic/index.html
 $dokka.location:org.magiclib.achievements/MagicAchievementRarity.Legendary///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.achievements/-magic-achievement-rarity/-legendary/index.html
@@ -245,9 +117,8 @@ $dokka.location:org.magiclib.achievements/MagicAchievementRarity/values/#/Pointi
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec.Companion///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-companion/index.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec.Companion/fromJsonObject/#[Error type: Unresolved type for JSONObject]/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-companion/from-json-object.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/index.html
-$dokka.location:org.magiclib.achievements/MagicAchievementSpec/MagicAchievementSpec/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#kotlin.String#kotlin.String?#kotlin.Boolean#org.magiclib.achievements.MagicAchievementSpoilerLevel#org.magiclib.achievements.MagicAchievementRarity/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-magic-achievement-spec.html
+$dokka.location:org.magiclib.achievements/MagicAchievementSpec/MagicAchievementSpec/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#kotlin.String#kotlin.String?#org.magiclib.achievements.MagicAchievementSpoilerLevel#org.magiclib.achievements.MagicAchievementRarity/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/-magic-achievement-spec.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec/description/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/description.html
-$dokka.location:org.magiclib.achievements/MagicAchievementSpec/hasProgressBar/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/has-progress-bar.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec/id/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/id.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec/image/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/image.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpec/modId/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spec/mod-id.html
@@ -264,6 +135,27 @@ $dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel.Visible//
 $dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel///PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spoiler-level/index.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel/valueOf/#kotlin.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spoiler-level/value-of.html
 $dokka.location:org.magiclib.achievements/MagicAchievementSpoilerLevel/values/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-spoiler-level/values.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data///PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/index.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data/DISPLAY_NAME/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/-d-i-s-p-l-a-y_-n-a-m-e.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data/Data/#java.lang.String#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/-data.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data/Data/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/-data.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data/IS_COMPLETE/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/-i-s_-c-o-m-p-l-e-t-e.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data/displayName/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/display-name.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement.Data/isComplete/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-data/is-complete.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement///PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/index.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/MagicTargetListAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/-magic-target-list-achievement.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/addTarget/#java.lang.String#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/add-target.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/advanceAfterInterval/#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/advance-after-interval.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/advanceInCombat/#float#java.util.List<InputEventAPI>#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/advance-in-combat.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/createTooltip/#TooltipMakerAPI#boolean#float/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/create-tooltip.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/getMaxProgress/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/get-max-progress.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/getProgress/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/get-progress.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/getTargets/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/get-targets.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/hasTooltip/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/has-tooltip.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/setTargetComplete/#java.lang.String#boolean/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/set-target-complete.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/setTargetComplete/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/set-target-complete.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/setTargets/#java.util.Map<java.lang.String,java.lang.String>/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/set-targets.html
+$dokka.location:org.magiclib.achievements/MagicTargetListAchievement/shouldComplete/#java.util.Map<java.lang.String,org.magiclib.achievements.MagicTargetListAchievement.Data>/PointingToDeclaration/root/org.magiclib.achievements/-magic-target-list-achievement/should-complete.html
 $dokka.location:org.magiclib.achievements/MagicUnloadedAchievement///PointingToDeclaration/root/org.magiclib.achievements/-magic-unloaded-achievement/index.html
 $dokka.location:org.magiclib.achievements/MagicUnloadedAchievement/MagicUnloadedAchievement/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-unloaded-achievement/-magic-unloaded-achievement.html
 $dokka.location:org.magiclib.ai////PointingToDeclaration/root/org.magiclib.ai/index.html
@@ -282,6 +174,123 @@ $dokka.location:org.magiclib.bounty.console/ListBountiesRequirementsCommand/runC
 $dokka.location:org.magiclib.bounty.console/ResetBountyCommand///PointingToDeclaration/root/org.magiclib.bounty.console/-reset-bounty-command/index.html
 $dokka.location:org.magiclib.bounty.console/ResetBountyCommand/ResetBountyCommand/#/PointingToDeclaration/root/org.magiclib.bounty.console/-reset-bounty-command/-reset-bounty-command.html
 $dokka.location:org.magiclib.bounty.console/ResetBountyCommand/runCommand/#java.lang.String#BaseCommand.CommandContext/PointingToDeclaration/root/org.magiclib.bounty.console/-reset-bounty-command/run-command.html
+$dokka.location:org.magiclib.bounty.intel.filters////PointingToDeclaration/root/org.magiclib.bounty.intel.filters/index.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter///PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/index.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/LocationFilter/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/-location-filter.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/createPanel/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.collections.List[org.magiclib.bounty.ui.lists.filtered.Filterable[org.magiclib.bounty.intel.BountyInfo]]/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/create-panel.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/isActive/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/is-active.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/loadFromPersistentData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/load-from-persistent-data.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/matches/#kotlin.collections.List[org.magiclib.bounty.ui.lists.filtered.FilterableParam[org.magiclib.bounty.intel.BountyInfo,*]]/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/matches.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/matches/#org.magiclib.bounty.ui.lists.filtered.FilterableParam[org.magiclib.bounty.intel.BountyInfo,[Error type: Unresolved type for LocationAPI]]/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/matches.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/refreshSettings/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/refresh-settings.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationFilter/saveToPersistentData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-filter/save-to-persistent-data.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationParam///PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-param/index.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationParam/LocationParam/#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-param/-location-param.html
+$dokka.location:org.magiclib.bounty.intel.filters/LocationParam/getData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-location-param/get-data.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter///PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/index.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/PayoutFilter/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/-payout-filter.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/createPanel/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.collections.List[org.magiclib.bounty.ui.lists.filtered.Filterable[org.magiclib.bounty.intel.BountyInfo]]/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/create-panel.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/isActive/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/is-active.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/loadFromPersistentData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/load-from-persistent-data.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/matches/#kotlin.collections.List[org.magiclib.bounty.ui.lists.filtered.FilterableParam[org.magiclib.bounty.intel.BountyInfo,*]]/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/matches.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/matches/#org.magiclib.bounty.ui.lists.filtered.FilterableParam[org.magiclib.bounty.intel.BountyInfo,kotlin.Int]/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/matches.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutFilter/saveToPersistentData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-filter/save-to-persistent-data.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutParam///PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-param/index.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutParam/PayoutParam/#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-param/-payout-param.html
+$dokka.location:org.magiclib.bounty.intel.filters/PayoutParam/getData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-payout-param/get-data.html
+$dokka.location:org.magiclib.bounty.intel.filters/TypeParam///PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-type-param/index.html
+$dokka.location:org.magiclib.bounty.intel.filters/TypeParam/TypeParam/#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-type-param/-type-param.html
+$dokka.location:org.magiclib.bounty.intel.filters/TypeParam/getData/#/PointingToDeclaration/root/org.magiclib.bounty.intel.filters/-type-param/get-data.html
+$dokka.location:org.magiclib.bounty.intel////PointingToDeclaration/root/org.magiclib.bounty.intel/index.html
+$dokka.location:org.magiclib.bounty.intel//calculateCreditReward/[Error type: Unresolved type for ActiveBounty]#/PointingToDeclaration/root/org.magiclib.bounty.intel/calculate-credit-reward.html
+$dokka.location:org.magiclib.bounty.intel/AssassinationMagicBountyInfo///PointingToDeclaration/root/org.magiclib.bounty.intel/-assassination-magic-bounty-info/index.html
+$dokka.location:org.magiclib.bounty.intel/AssassinationMagicBountyInfo/AssassinationMagicBountyInfo/#kotlin.String#[Error type: Unresolved type for MagicBountySpec]/PointingToDeclaration/root/org.magiclib.bounty.intel/-assassination-magic-bounty-info/-assassination-magic-bounty-info.html
+$dokka.location:org.magiclib.bounty.intel/AssassinationMagicBountyInfo/showTargetInfo/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-assassination-magic-bounty-info/show-target-info.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/NOTIFIED_BOUNTY_KEY/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/-n-o-t-i-f-i-e-d_-b-o-u-n-t-y_-k-e-y.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/PROVIDERS/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/-p-r-o-v-i-d-e-r-s.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/addProvider/#org.magiclib.bounty.intel.BountyBoardProvider/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/add-provider.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/refreshPanel/#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/refresh-panel.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/BountyBoardIntelPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-bounty-board-intel-plugin.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/addBulletPoints/#[Error type: Unresolved type for TooltipMakerAPI]#[Error type: Unresolved type for ListInfoMode]#kotlin.Boolean#java.awt.Color#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/add-bullet-points.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/advance/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/advance.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/createIntelInfo/#[Error type: Unresolved type for TooltipMakerAPI]#[Error type: Unresolved type for ListInfoMode]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/create-intel-info.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/createLargeDescription/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/create-large-description.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/getIcon/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/get-icon.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/getIntelTags/#[Error type: Unresolved type for SectorMapAPI]?/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/get-intel-tags.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/getName/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/get-name.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/getSortString/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/get-sort-string.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/hasLargeDescription/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/has-large-description.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/hasSmallDescription/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/has-small-description.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/isImportant/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/is-important.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/layoutPanel/#kotlin.Float#kotlin.Float#org.magiclib.bounty.intel.BountyInfo?/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/layout-panel.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/loadNotifiedBounties/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/load-notified-bounties.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/notifyUserThatBountyIsAvailable/#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/notify-user-that-bounty-is-available.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/saveNotifiedBounties/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/save-notified-bounties.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardProvider///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-provider/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardProvider/getBounties/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-provider/get-bounties.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/addNotificationBulletpoints/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/add-notification-bulletpoints.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/decorateListItem/#org.magiclib.bounty.intel.BountyListPanelPlugin.BountyItemPanelPlugin#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/decorate-list-item.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyId/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-bounty-id.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyName/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-bounty-name.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyPayout/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-bounty-payout.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyType/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-bounty-type.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getFilterData/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-filter-data.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getJobIcon/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-job-icon.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getLocationIfBountyIsActive/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-location-if-bounty-is-active.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getSortIndex/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-sort-index.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/layoutPanel/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/layout-panel.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/notifiedUserThatBountyIsAvailable/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/notified-user-that-bounty-is-available.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/notifyWhenAvailable/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/notify-when-available.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/shouldShow/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/should-show.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/BountyItemPanelPlugin/#org.magiclib.bounty.intel.BountyInfo#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/-bounty-item-panel-plugin.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/advance/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/advance.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/baseBgColor/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/base-bg-color.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/bgColor/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/bg-color.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/hoveredColor/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/hovered-color.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/layoutPanel/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/layout-panel.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/processInput/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/process-input.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountyItemPanelPlugin/selectedColor/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-item-panel-plugin/selected-color.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountySpacerPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-spacer-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountySpacerPanelPlugin/BountySpacerPanelPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-spacer-panel-plugin/-bounty-spacer-panel-plugin.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin.BountySpacerPanelPlugin/renderBelow/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-spacer-panel-plugin/render-below.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/BountyListPanelPlugin/#[Error type: Unresolved type for CustomPanelAPI]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/-bounty-list-panel-plugin.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/createPanelForItem/#[Error type: Unresolved type for TooltipMakerAPI]#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/create-panel-for-item.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/getListHeight/#kotlin.Int/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/get-list-height.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/layoutPanels/#kotlin.collections.List[org.magiclib.bounty.intel.BountyInfo]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/layout-panels.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/render/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/render.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/renderBelow/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/render-below.html
+$dokka.location:org.magiclib.bounty.intel/BountyListPanelPlugin/sortMembers/#kotlin.collections.List[org.magiclib.bounty.intel.BountyInfo]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-list-panel-plugin/sort-members.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyBoardProvider///PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-board-provider/index.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyBoardProvider/MagicBountyBoardProvider/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-board-provider/-magic-bounty-board-provider.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyBoardProvider/getBounties/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-board-provider/get-bounties.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo///PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/index.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/MagicBountyInfo/#kotlin.String#[Error type: Unresolved type for MagicBountySpec]/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/-magic-bounty-info.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/acceptBounty/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/accept-bounty.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/activeBounty/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/active-bounty.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/addNotificationBulletpoints/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/add-notification-bulletpoints.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/bountyKey/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/bounty-key.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/bountySpec/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/bounty-spec.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/decorateListItem/#org.magiclib.bounty.intel.BountyListPanelPlugin.BountyItemPanelPlugin#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/decorate-list-item.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getBountyId/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-bounty-id.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getBountyName/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-bounty-name.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getBountyPayout/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-bounty-payout.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getBountyType/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-bounty-type.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getJobIcon/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-job-icon.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getLocationIfBountyIsActive/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-location-if-bounty-is-active.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/getSortIndex/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/get-sort-index.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/holdingPanel/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/holding-panel.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/layoutPanel/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/layout-panel.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/notifiedUserThatBountyIsAvailable/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/notified-user-that-bounty-is-available.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/notifyWhenAvailable/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/notify-when-available.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/panelThatCanBeRemoved/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/panel-that-can-be-removed.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/shouldShow/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/should-show.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/showBountyText/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/show-bounty-text.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/showTargetInfo/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/show-target-info.html
 $dokka.location:org.magiclib.bounty.rulecmd////PointingToDeclaration/root/org.magiclib.bounty.rulecmd/index.html
 $dokka.location:org.magiclib.bounty.rulecmd/BountyScriptExample///PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-bounty-script-example/index.html
 $dokka.location:org.magiclib.bounty.rulecmd/BountyScriptExample/BountyScriptExample/#/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-bounty-script-example/-bounty-script-example.html
@@ -295,6 +304,128 @@ $dokka.location:org.magiclib.bounty.rulecmd/ShouldShowMagicBountyBoard/execute/#
 $dokka.location:org.magiclib.bounty.rulecmd/ShowMagicBountyBoardCmd///PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-show-magic-bounty-board-cmd/index.html
 $dokka.location:org.magiclib.bounty.rulecmd/ShowMagicBountyBoardCmd/ShowMagicBountyBoardCmd/#/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-show-magic-bounty-board-cmd/-show-magic-bounty-board-cmd.html
 $dokka.location:org.magiclib.bounty.rulecmd/ShowMagicBountyBoardCmd/execute/#java.lang.String#InteractionDialogAPI#java.util.List<Misc.Token>#java.util.Map<java.lang.String,MemoryAPI>/PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-show-magic-bounty-board-cmd/execute.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered////PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/index.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/Filterable///PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filterable/index.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/Filterable/getFilterData/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filterable/get-filter-data.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilterableParam///PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filterable-param/index.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilterableParam/FilterableParam/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filterable-param/-filterable-param.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilterableParam/getData/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filterable-param/get-data.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilterableParam/item/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filterable-param/item.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin.FilterButtonHandler///PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/-filter-button-handler/index.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin.FilterButtonHandler/FilterButtonHandler/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/-filter-button-handler/-filter-button-handler.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin.FilterButtonHandler/onClicked/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/-filter-button-handler/on-clicked.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin/FilteredListPanelPlugin/#[Error type: Unresolved type for CustomPanelAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/-filtered-list-panel-plugin.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin/closeFilterPanel/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/close-filter-panel.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin/filterButton/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/filter-button.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin/filterContainerPanel/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/filter-container-panel.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin/filtersForItems/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/filters-for-items.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/FilteredListPanelPlugin/layoutPanels/#kotlin.collections.List[TypeParam(bounds=[org.magiclib.bounty.ui.lists.filtered.Filterable[^]])]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-filtered-list-panel-plugin/layout-panels.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter///PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/index.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter/createPanel/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.collections.List[org.magiclib.bounty.ui.lists.filtered.Filterable[TypeParam(bounds=[org.magiclib.bounty.ui.lists.filtered.Filterable[^]])]]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/create-panel.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter/isActive/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/is-active.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter/loadFromPersistentData/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/load-from-persistent-data.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter/matches/#kotlin.collections.List[org.magiclib.bounty.ui.lists.filtered.FilterableParam[TypeParam(bounds=[org.magiclib.bounty.ui.lists.filtered.Filterable[^]]),*]]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/matches.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter/matches/#org.magiclib.bounty.ui.lists.filtered.FilterableParam[TypeParam(bounds=[org.magiclib.bounty.ui.lists.filtered.Filterable[^]]),TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/matches.html
+$dokka.location:org.magiclib.bounty.ui.lists.filtered/ListFilter/saveToPersistentData/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists.filtered/-list-filter/save-to-persistent-data.html
+$dokka.location:org.magiclib.bounty.ui.lists////PointingToDeclaration/root/org.magiclib.bounty.ui.lists/index.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemButtonHandler///PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-button-handler/index.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemButtonHandler/ListItemButtonHandler/#org.magiclib.bounty.ui.lists.ListItemUIPanelPlugin[TypeParam(bounds=[kotlin.Any?])]#org.magiclib.bounty.ui.lists.ListUIPanelPlugin[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-button-handler/-list-item-button-handler.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemButtonHandler/listPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-button-handler/list-plugin.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemButtonHandler/onClicked/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-button-handler/on-clicked.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemButtonHandler/rowPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-button-handler/row-plugin.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin/ListItemUIPanelPlugin/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/-list-item-u-i-panel-plugin.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin/disabled/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/disabled.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin/item/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/item.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin/layoutPanel/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/layout-panel.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin/panel/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/panel.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListItemUIPanelPlugin/setUpItem/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-item-u-i-panel-plugin/set-up-item.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin.ListListener///PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/-list-listener/index.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin.ListListener/pickedItem/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/-list-listener/picked-item.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/ListUIPanelPlugin/#[Error type: Unresolved type for CustomPanelAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/-list-u-i-panel-plugin.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/addListener/#org.magiclib.bounty.ui.lists.ListUIPanelPlugin.ListListener[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/add-listener.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/clearItems/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/clear-items.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/createListHeader/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/create-list-header.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/createPanelForItem/#[Error type: Unresolved type for TooltipMakerAPI]#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/create-panel-for-item.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/getListHeight/#kotlin.Int/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/get-list-height.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/getListWidth/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/get-list-width.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/itemClicked/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/item-clicked.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/layoutPanels/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/layout-panels.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/layoutPanels/#kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/layout-panels.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/outerPanel/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/outer-panel.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/panelHeight/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/panel-height.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/panelWidth/#/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/panel-width.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/pickedItem/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/picked-item.html
+$dokka.location:org.magiclib.bounty.ui.lists/ListUIPanelPlugin/sortMembers/#kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/root/org.magiclib.bounty.ui.lists/-list-u-i-panel-plugin/sort-members.html
+$dokka.location:org.magiclib.bounty.ui////PointingToDeclaration/root/org.magiclib.bounty.ui/index.html
+$dokka.location:org.magiclib.bounty.ui//drawOutlined/[Error type: Unresolved type for LazyFont.DrawableString]#kotlin.Float#kotlin.Float#java.awt.Color/PointingToDeclaration/root/org.magiclib.bounty.ui/draw-outlined.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/BaseUIPanelPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/-base-u-i-panel-plugin.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/advance/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/advance.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/bgColor/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/bg-color.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/buttonPressed/#kotlin.Any?/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/button-pressed.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/iconSize/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/icon-size.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/isHovered/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/is-hovered.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/panelHeight/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/panel-height.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/panelWidth/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/panel-width.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/pos/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/pos.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/positionChanged/#[Error type: Unresolved type for PositionAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/position-changed.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/processInput/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/process-input.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/render/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/render.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/renderBackground/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/render-background.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/renderBelow/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/render-below.html
+$dokka.location:org.magiclib.bounty.ui/BaseUIPanelPlugin/setBGColor/#kotlin.Int#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/root/org.magiclib.bounty.ui/-base-u-i-panel-plugin/set-b-g-color.html
+$dokka.location:org.magiclib.bounty.ui/ButtonHandler///PointingToDeclaration/root/org.magiclib.bounty.ui/-button-handler/index.html
+$dokka.location:org.magiclib.bounty.ui/ButtonHandler/ButtonHandler/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-button-handler/-button-handler.html
+$dokka.location:org.magiclib.bounty.ui/ButtonHandler/onClicked/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-button-handler/on-clicked.html
+$dokka.location:org.magiclib.bounty.ui/ButtonHandler/onHighlighted/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-button-handler/on-highlighted.html
+$dokka.location:org.magiclib.bounty.ui/ButtonHandler/onUnhighlighted/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-button-handler/on-unhighlighted.html
+$dokka.location:org.magiclib.bounty.ui/CheckboxHandler///PointingToDeclaration/root/org.magiclib.bounty.ui/-checkbox-handler/index.html
+$dokka.location:org.magiclib.bounty.ui/CheckboxHandler/CheckboxHandler/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-checkbox-handler/-checkbox-handler.html
+$dokka.location:org.magiclib.bounty.ui/CheckboxHandler/onClicked/#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.bounty.ui/-checkbox-handler/on-clicked.html
+$dokka.location:org.magiclib.bounty.ui/CheckboxHandler/onHighlighted/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-checkbox-handler/on-highlighted.html
+$dokka.location:org.magiclib.bounty.ui/CheckboxHandler/onUnhighlighted/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-checkbox-handler/on-unhighlighted.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalButtonHandler///PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-button-handler/index.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalButtonHandler/FunctionalButtonHandler/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-button-handler/-functional-button-handler.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalButtonHandler/handler/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-button-handler/handler.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalButtonHandler/onClicked/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-button-handler/on-clicked.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalCheckboxHandler///PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-checkbox-handler/index.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalCheckboxHandler/FunctionalCheckboxHandler/#kotlin.Function1[kotlin.Boolean,kotlin.Unit]/PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-checkbox-handler/-functional-checkbox-handler.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalCheckboxHandler/handler/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-checkbox-handler/handler.html
+$dokka.location:org.magiclib.bounty.ui/FunctionalCheckboxHandler/onClicked/#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.bounty.ui/-functional-checkbox-handler/on-clicked.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/InteractiveUIPanelPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/-interactive-u-i-panel-plugin.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/addButton/#[Error type: Unresolved type for ButtonAPI]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/add-button.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/addCheckbox/#[Error type: Unresolved type for ButtonAPI]#kotlin.Function1[kotlin.Boolean,kotlin.Unit]/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/add-checkbox.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/addCheckbox/#[Error type: Unresolved type for ButtonAPI]#org.magiclib.bounty.ui.CheckboxHandler/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/add-checkbox.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/advance/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/advance.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/advancePanel/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/advance-panel.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/buttons/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/buttons.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/checkButtons/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/check-buttons.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/checkClickables/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/check-clickables.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/checkHighlightedButton/#[Error type: Unresolved type for UIComponentAPI]#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/check-highlighted-button.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/clickables/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/clickables.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/eatAllClicks/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/eat-all-clicks.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/highlightedButton/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/highlighted-button.html
+$dokka.location:org.magiclib.bounty.ui/InteractiveUIPanelPlugin/processInput/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-interactive-u-i-panel-plugin/process-input.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin.Companion///PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/-companion/index.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin///PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/index.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/SliderUIPanelPlugin/#kotlin.Float#kotlin.Float#kotlin.Float#kotlin.String?/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/-slider-u-i-panel-plugin.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/addListener/#org.magiclib.bounty.ui.SliderValueListener/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/add-listener.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/barHeight/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/bar-height.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/enabled/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/enabled.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/layoutPanel/#[Error type: Unresolved type for CustomPanelAPI]/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/layout-panel.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/panel/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/panel.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/processInput/#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/process-input.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/render/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/render.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/renderBelow/#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/render-below.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/title/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/title.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/updateLabel/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/update-label.html
+$dokka.location:org.magiclib.bounty.ui/SliderUIPanelPlugin/value/#/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-u-i-panel-plugin/value.html
+$dokka.location:org.magiclib.bounty.ui/SliderValueListener///PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-value-listener/index.html
+$dokka.location:org.magiclib.bounty.ui/SliderValueListener/valueChanged/#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.ui/-slider-value-listener/value-changed.html
 $dokka.location:org.magiclib.bounty////PointingToDeclaration/root/org.magiclib.bounty/index.html
 $dokka.location:org.magiclib.bounty/ActiveBounty.BountyResult.DismissedPermanently///PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/-bounty-result/-dismissed-permanently/index.html
 $dokka.location:org.magiclib.bounty/ActiveBounty.BountyResult.DismissedPermanently/DismissedPermanently/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/-bounty-result/-dismissed-permanently/-dismissed-permanently.html
@@ -328,6 +459,7 @@ $dokka.location:org.magiclib.bounty/ActiveBounty/addDescriptionToTextPanel/#Text
 $dokka.location:org.magiclib.bounty/ActiveBounty/addDescriptionToTextPanel/#TooltipMakerAPI#java.awt.Color#float/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/add-description-to-text-panel.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/bountyCreatedTimestamp/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/bounty-created-timestamp.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/bountySource/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/bounty-source.html
+$dokka.location:org.magiclib.bounty/ActiveBounty/calculateCreditReward/#float#float/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/calculate-credit-reward.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/captain/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/captain.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/endBounty/#org.magiclib.bounty.ActiveBounty.BountyResult/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/end-bounty.html
 $dokka.location:org.magiclib.bounty/ActiveBounty/flagshipId/#/PointingToDeclaration/root/org.magiclib.bounty/-active-bounty/flagship-id.html
@@ -383,6 +515,7 @@ $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/getBountiesAcceptedAt
 $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/getBountiesWithChanceToSpawnAtMarketById/#MarketAPI/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/get-bounties-with-chance-to-spawn-at-market-by-id.html
 $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/getBountySlotsAtMarket/#MarketAPI/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/get-bounty-slots-at-market.html
 $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/getCompletedBounties/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/get-completed-bounties.html
+$dokka.location:org.magiclib.bounty/MagicBountyCoordinator/getDeadlinesEnabled/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/get-deadlines-enabled.html
 $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/getMarketBountyBoardGenSeed/#MarketAPI/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/get-market-bounty-board-gen-seed.html
 $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/instance/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/instance.html
 $dokka.location:org.magiclib.bounty/MagicBountyCoordinator/onGameLoad/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-coordinator/on-game-load.html
@@ -423,7 +556,7 @@ $dokka.location:org.magiclib.bounty/MagicBountyLoader.Gender/valueOf/#java.lang.
 $dokka.location:org.magiclib.bounty/MagicBountyLoader.Gender/values/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-loader/-gender/values.html
 $dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType.Assassination///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.bounty/-magic-bounty-loader/-job-type/-assassination/index.html
 $dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType.Destruction///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.bounty/-magic-bounty-loader/-job-type/-destruction/index.html
-$dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType.Neutralisation///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.bounty/-magic-bounty-loader/-job-type/-neutralisation/index.html
+$dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType.Neutralization///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.bounty/-magic-bounty-loader/-job-type/-neutralization/index.html
 $dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType.Obliteration///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}root/org.magiclib.bounty/-magic-bounty-loader/-job-type/-obliteration/index.html
 $dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType///PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-loader/-job-type/index.html
 $dokka.location:org.magiclib.bounty/MagicBountyLoader.JobType/valueOf/#java.lang.String/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-loader/-job-type/value-of.html
@@ -541,6 +674,7 @@ $dokka.location:org.magiclib.bounty/MagicBountySpec/trigger_player_minLevel/#/Po
 $dokka.location:org.magiclib.bounty/MagicBountySpec/trigger_weight_mult/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-spec/trigger_weight_mult.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal///PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/index.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/MagicBountyUtilsInternal/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/-magic-bounty-utils-internal.html
+$dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/createLocationPreciseText/#ActiveBounty/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/create-location-precise-text.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/replaceStringVariables/#ActiveBounty#java.lang.String/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/replace-string-variables.html
 $dokka.location:org.magiclib.campaign////PointingToDeclaration/root/org.magiclib.campaign/index.html
 $dokka.location:org.magiclib.campaign/MagicCaptainBuilder///PointingToDeclaration/root/org.magiclib.campaign/-magic-captain-builder/index.html
@@ -729,6 +863,7 @@ $dokka.location:org.magiclib.kotlin//addAdjustmentMessage/[Error type: Unresolve
 $dokka.location:org.magiclib.kotlin//addAdminGainText/[Error type: Unresolved type for TextPanelAPI]#[Error type: Unresolved type for PersonAPI]/PointingToDeclaration/root/org.magiclib.kotlin/add-admin-gain-text.html
 $dokka.location:org.magiclib.kotlin//addCRLossText/[Error type: Unresolved type for TextPanelAPI]#[Error type: Unresolved type for FleetMemberAPI]#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/add-c-r-loss-text.html
 $dokka.location:org.magiclib.kotlin//addCommodityGainText/[Error type: Unresolved type for TextPanelAPI]#kotlin.String#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/add-commodity-gain-text.html
+$dokka.location:org.magiclib.kotlin//addCommodityInfoToTooltip/[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#[Error type: Unresolved type for CommoditySpecAPI]?#kotlin.Int#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.kotlin/add-commodity-info-to-tooltip.html
 $dokka.location:org.magiclib.kotlin//addCommodityLossText/[Error type: Unresolved type for TextPanelAPI]#kotlin.String#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/add-commodity-loss-text.html
 $dokka.location:org.magiclib.kotlin//addCreditsGainText/[Error type: Unresolved type for TextPanelAPI]#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/add-credits-gain-text.html
 $dokka.location:org.magiclib.kotlin//addCreditsLossText/[Error type: Unresolved type for TextPanelAPI]#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/add-credits-loss-text.html
@@ -771,6 +906,7 @@ $dokka.location:org.magiclib.kotlin//adjustReputationWithPlayer/[Error type: Unr
 $dokka.location:org.magiclib.kotlin//affectAvailabilityWithinReason/[Error type: Unresolved type for CommodityOnMarketAPI]#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/affect-availability-within-reason.html
 $dokka.location:org.magiclib.kotlin//applyDamage/[Error type: Unresolved type for FleetMemberAPI]#java.util.Random#[Error type: Unresolved type for Misc.FleetMemberDamageLevel]#kotlin.Boolean#kotlin.String#kotlin.String#kotlin.Boolean#[Error type: Unresolved type for TextPanelAPI]#kotlin.String/PointingToDeclaration/root/org.magiclib.kotlin/apply-damage.html
 $dokka.location:org.magiclib.kotlin//applyDamage/[Error type: Unresolved type for FleetMemberAPI]#java.util.Random#kotlin.Float#kotlin.Boolean#kotlin.String#kotlin.String#kotlin.Boolean#[Error type: Unresolved type for TextPanelAPI]#kotlin.String/PointingToDeclaration/root/org.magiclib.kotlin/apply-damage.html
+$dokka.location:org.magiclib.kotlin//autoSizeToText/[Error type: Unresolved type for LabelAPI]#kotlin.String/PointingToDeclaration/root/org.magiclib.kotlin/auto-size-to-text.html
 $dokka.location:org.magiclib.kotlin//bezier/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/bezier.html
 $dokka.location:org.magiclib.kotlin//bezierCubic/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/bezier-cubic.html
 $dokka.location:org.magiclib.kotlin//caresAboutPlayerTransponder/[Error type: Unresolved type for CampaignFleetAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/cares-about-player-transponder.html
@@ -785,8 +921,10 @@ $dokka.location:org.magiclib.kotlin//closestPointOnSegmentToPoint/[Error type: U
 $dokka.location:org.magiclib.kotlin//colorsFromString/kotlin.String#/PointingToDeclaration/root/org.magiclib.kotlin/colors-from-string.html
 $dokka.location:org.magiclib.kotlin//colorsToString/kotlin.collections.List[java.awt.Color]#/PointingToDeclaration/root/org.magiclib.kotlin/colors-to-string.html
 $dokka.location:org.magiclib.kotlin//computeEconUnitChangeFromTradeModChange/[Error type: Unresolved type for CommodityOnMarketAPI]#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/compute-econ-unit-change-from-trade-mod-change.html
+$dokka.location:org.magiclib.kotlin//computeNumFighterBays/[Error type: Unresolved type for ShipVariantAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/compute-num-fighter-bays.html
 $dokka.location:org.magiclib.kotlin//computeShutdownRefund/[Error type: Unresolved type for MarketAPI]#[Error type: Unresolved type for Industry]/PointingToDeclaration/root/org.magiclib.kotlin/compute-shutdown-refund.html
 $dokka.location:org.magiclib.kotlin//computeTotalShutdownRefund/[Error type: Unresolved type for MarketAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/compute-total-shutdown-refund.html
+$dokka.location:org.magiclib.kotlin//createDefaultShipAI/[Error type: Unresolved type for ShipAPI]#[Error type: Unresolved type for ShipAIConfig]/PointingToDeclaration/root/org.magiclib.kotlin/create-default-ship-a-i.html
 $dokka.location:org.magiclib.kotlin//createFleet/[Error type: Unresolved type for FleetParamsV3]#/PointingToDeclaration/root/org.magiclib.kotlin/create-fleet.html
 $dokka.location:org.magiclib.kotlin//createLocationAtRandomGap/[Error type: Unresolved type for SectorEntityToken]#java.util.Random?#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/create-location-at-random-gap.html
 $dokka.location:org.magiclib.kotlin//crossesAnySlipstream/[Error type: Unresolved type for LocationAPI]#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/crosses-any-slipstream.html
@@ -824,6 +962,8 @@ $dokka.location:org.magiclib.kotlin//getAndJoined/kotlin.String#kotlin.collectio
 $dokka.location:org.magiclib.kotlin//getAngleDiff/kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-diff.html
 $dokka.location:org.magiclib.kotlin//getAngleInDegrees/[Error type: Unresolved type for Vector2f]#/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-in-degrees.html
 $dokka.location:org.magiclib.kotlin//getAngleInDegrees/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-in-degrees.html
+$dokka.location:org.magiclib.kotlin//getAngleInDegreesFast/[Error type: Unresolved type for Vector2f]#/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-in-degrees-fast.html
+$dokka.location:org.magiclib.kotlin//getAngleInDegreesFast/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-in-degrees-fast.html
 $dokka.location:org.magiclib.kotlin//getAngleInDegreesStrict/[Error type: Unresolved type for Vector2f]#/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-in-degrees-strict.html
 $dokka.location:org.magiclib.kotlin//getAngleInDegreesStrict/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]/PointingToDeclaration/root/org.magiclib.kotlin/get-angle-in-degrees-strict.html
 $dokka.location:org.magiclib.kotlin//getAsteroidSource/[Error type: Unresolved type for SectorEntityToken]#/PointingToDeclaration/root/org.magiclib.kotlin/get-asteroid-source.html
@@ -971,6 +1111,7 @@ $dokka.location:org.magiclib.kotlin//getSurveyLevelString/[Error type: Unresolve
 $dokka.location:org.magiclib.kotlin//getSystemJumpPointHyperExitLocation/[Error type: Unresolved type for JumpPointAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/get-system-jump-point-hyper-exit-location.html
 $dokka.location:org.magiclib.kotlin//getSystemsInRange/[Error type: Unresolved type for SectorEntityToken]#kotlin.collections.Set[[Error type: Unresolved type for StarSystemAPI]]#kotlin.Boolean#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/get-systems-in-range.html
 $dokka.location:org.magiclib.kotlin//getTargetingRadius/[Error type: Unresolved type for CombatEntityAPI]#[Error type: Unresolved type for Vector2f]#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.kotlin/get-targeting-radius.html
+$dokka.location:org.magiclib.kotlin//getTargetingRadius/[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for CombatEntityAPI]#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.kotlin/get-targeting-radius.html
 $dokka.location:org.magiclib.kotlin//getTerrainName/[Error type: Unresolved type for CampaignTerrainAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/get-terrain-name.html
 $dokka.location:org.magiclib.kotlin//getTerrainNameAOrAn/[Error type: Unresolved type for CampaignTerrainAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/get-terrain-name-a-or-an.html
 $dokka.location:org.magiclib.kotlin//getTerrainType/[Error type: Unresolved type for CampaignTerrainAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/get-terrain-type.html
@@ -1073,6 +1214,7 @@ $dokka.location:org.magiclib.kotlin//pickCommonLocation/[Error type: Unresolved 
 $dokka.location:org.magiclib.kotlin//pickHiddenLocation/[Error type: Unresolved type for StarSystemAPI]#java.util.Random?#kotlin.Float#kotlin.collections.Set[[Error type: Unresolved type for SectorEntityToken]]?/PointingToDeclaration/root/org.magiclib.kotlin/pick-hidden-location.html
 $dokka.location:org.magiclib.kotlin//pickHiddenLocationNotNearStar/[Error type: Unresolved type for StarSystemAPI]#java.util.Random?#kotlin.Float#kotlin.collections.Set[[Error type: Unresolved type for SectorEntityToken]]?/PointingToDeclaration/root/org.magiclib.kotlin/pick-hidden-location-not-near-star.html
 $dokka.location:org.magiclib.kotlin//pickOuterEntityToSpawnNear/[Error type: Unresolved type for StarSystemAPI]#java.util.Random?/PointingToDeclaration/root/org.magiclib.kotlin/pick-outer-entity-to-spawn-near.html
+$dokka.location:org.magiclib.kotlin//pickShipAIPlugin/[Error type: Unresolved type for FleetMemberAPI]#[Error type: Unresolved type for ShipAPI]?/PointingToDeclaration/root/org.magiclib.kotlin/pick-ship-a-i-plugin.html
 $dokka.location:org.magiclib.kotlin//pickUncommonLocation/[Error type: Unresolved type for StarSystemAPI]#java.util.Random?#kotlin.Float#kotlin.collections.Set[[Error type: Unresolved type for SectorEntityToken]]?/PointingToDeclaration/root/org.magiclib.kotlin/pick-uncommon-location.html
 $dokka.location:org.magiclib.kotlin//playerHasEnough/[Error type: Unresolved type for CommodityData]#kotlin.Int/PointingToDeclaration/root/org.magiclib.kotlin/player-has-enough.html
 $dokka.location:org.magiclib.kotlin//playerHasStorageAccess/[Error type: Unresolved type for MarketAPI]#/PointingToDeclaration/root/org.magiclib.kotlin/player-has-storage-access.html
@@ -1129,6 +1271,77 @@ $dokka.location:org.magiclib.kotlin//unsetAll/[Error type: Unresolved type for M
 $dokka.location:org.magiclib.kotlin//wiggle/[Error type: Unresolved type for Vector2f]#kotlin.Float/PointingToDeclaration/root/org.magiclib.kotlin/wiggle.html
 $dokka.location:org.magiclib.kotlin/MagicKotlinModPlugin///PointingToDeclaration/root/org.magiclib.kotlin/-magic-kotlin-mod-plugin/index.html
 $dokka.location:org.magiclib.kotlin/MagicKotlinModPlugin/onGameLoad/#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.kotlin/-magic-kotlin-mod-plugin/on-game-load.html
+$dokka.location:org.magiclib.paintjobs.console////PointingToDeclaration/root/org.magiclib.paintjobs.console/index.html
+$dokka.location:org.magiclib.paintjobs.console/UnlockPaintjobCommand///PointingToDeclaration/root/org.magiclib.paintjobs.console/-unlock-paintjob-command/index.html
+$dokka.location:org.magiclib.paintjobs.console/UnlockPaintjobCommand/UnlockPaintjobCommand/#/PointingToDeclaration/root/org.magiclib.paintjobs.console/-unlock-paintjob-command/-unlock-paintjob-command.html
+$dokka.location:org.magiclib.paintjobs.console/UnlockPaintjobCommand/runCommand/#kotlin.String#[Error type: Unresolved type for BaseCommand.CommandContext]/PointingToDeclaration/root/org.magiclib.paintjobs.console/-unlock-paintjob-command/run-command.html
+$dokka.location:org.magiclib.paintjobs////PointingToDeclaration/root/org.magiclib.paintjobs/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod.Companion///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/-companion/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod.Companion/ID/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/-companion/-i-d.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod.Companion/PAINTJOB_TAG_PREFIX/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/-companion/-p-a-i-n-t-j-o-b_-t-a-g_-p-r-e-f-i-x.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod/MagicPaintjobHullMod/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/-magic-paintjob-hull-mod.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod/addPostDescriptionSection/#[Error type: Unresolved type for TooltipMakerAPI]?#[Error type: Unresolved type for ShipAPI.HullSize]?#[Error type: Unresolved type for ShipAPI]?#kotlin.Float#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/add-post-description-section.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod/applyEffectsAfterShipCreation/#[Error type: Unresolved type for ShipAPI]?#kotlin.String?/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/apply-effects-after-ship-creation.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobHullMod/canBeAddedOrRemovedNow/#[Error type: Unresolved type for ShipAPI]?#[Error type: Unresolved type for MarketAPI]?#[Error type: Unresolved type for CampaignUIAPI.CoreUITradeMode]?/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-hull-mod/can-be-added-or-removed-now.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel.Companion///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/-companion/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel.Companion/TOGGLE_BUTTON_ID/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/-companion/-t-o-g-g-l-e_-b-u-t-t-o-n_-i-d.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel.Companion/TOGGLE_VIEW_MEMKEY/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/-companion/-t-o-g-g-l-e_-v-i-e-w_-m-e-m-k-e-y.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/MagicPaintjobIntel/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/-magic-paintjob-intel.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/buttonPressConfirmed/#kotlin.Any?#[Error type: Unresolved type for IntelUIAPI]?/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/button-press-confirmed.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/createLargeDescriptionImpl/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/create-large-description-impl.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/getIcon/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/get-icon.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/getIntelTags/#[Error type: Unresolved type for SectorMapAPI]?/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/get-intel-tags.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/getName/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/get-name.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/hasLargeDescription/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/has-large-description.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/hasSmallDescription/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/has-small-description.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/isEnded/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/is-ended.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/isEnding/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/is-ending.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/pjBeingViewed/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/pj-being-viewed.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobIntel/shipBeingViewed/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-intel/ship-being-viewed.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/PJTAG_PERMA_PJ/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/-p-j-t-a-g_-p-e-r-m-a_-p-j.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/PJTAG_SHINY/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/-p-j-t-a-g_-s-h-i-n-y.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/addPaintJob/#org.magiclib.paintjobs.MagicPaintjobSpec/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/add-paint-job.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/afterGameSave/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/after-game-save.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/applyPaintjob/#[Error type: Unresolved type for FleetMemberAPI]?#[Error type: Unresolved type for ShipAPI]?#org.magiclib.paintjobs.MagicPaintjobSpec/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/apply-paintjob.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/beforeGameSave/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/before-game-save.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/getCurrentShipPaintjob/#[Error type: Unresolved type for FleetMemberAPI]/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/get-current-ship-paintjob.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/getInstance/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/get-instance.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/getIntel/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/get-intel.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/getPaintjob/#kotlin.String/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/get-paintjob.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/getPaintjobs/#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/get-paintjobs.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/getPaintjobsForHull/#kotlin.String/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/get-paintjobs-for-hull.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/initIntel/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/init-intel.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/isEnabled/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/is-enabled.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/loadPaintjobs/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/load-paintjobs.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/loadUnlockedPaintjobs/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/load-unlocked-paintjobs.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/onApplicationLoad/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/on-application-load.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/onGameLoad/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/on-game-load.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/removePaintjobFromShip/#[Error type: Unresolved type for FleetMemberAPI]/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/remove-paintjob-from-ship.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/saveUnlockedPaintJobs/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/save-unlocked-paint-jobs.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/specsFilename/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/specs-filename.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/unlockPaintjob/#kotlin.String/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/unlock-paintjob.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/unlockedPaintjobIds/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/unlocked-paintjob-ids.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobManager/unlockedPaintjobs/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-manager/unlocked-paintjobs.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobShinyAdder///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-shiny-adder/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobShinyAdder/MagicPaintjobShinyAdder/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-shiny-adder/-magic-paintjob-shiny-adder.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobShinyAdder/reportFleetSpawned/#[Error type: Unresolved type for CampaignFleetAPI]?/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-shiny-adder/report-fleet-spawned.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec///PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/index.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/MagicPaintjobSpec/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#kotlin.String?#kotlin.Boolean#kotlin.String#kotlin.collections.List[kotlin.String]?/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/-magic-paintjob-spec.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/description/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/description.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/hullId/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/hull-id.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/id/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/id.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/isPermament/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/is-permament.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/isShiny/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/is-shiny.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/modId/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/mod-id.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/modName/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/mod-name.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/name/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/name.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/spriteId/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/sprite-id.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/tags/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/tags.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/unlockConditions/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/unlock-conditions.html
+$dokka.location:org.magiclib.paintjobs/MagicPaintjobSpec/unlockedAutomatically/#/PointingToDeclaration/root/org.magiclib.paintjobs/-magic-paintjob-spec/unlocked-automatically.html
 $dokka.location:org.magiclib.plugins////PointingToDeclaration/root/org.magiclib.plugins/index.html
 $dokka.location:org.magiclib.plugins/MagicAutoTrails.trailData///PointingToDeclaration/root/org.magiclib.plugins/-magic-auto-trails/trail-data/index.html
 $dokka.location:org.magiclib.plugins/MagicAutoTrails.trailData/trailData/#java.lang.String#float#float#float#float#float#float#java.awt.Color#java.awt.Color#float#int#float#float#float#float#float#boolean#boolean#float#float#float#float#float#float#float#boolean#CombatEngineLayers#float/PointingToDeclaration/root/org.magiclib.plugins/-magic-auto-trails/trail-data/trail-data.html
@@ -1262,6 +1475,15 @@ $dokka.location:org.magiclib.terrain/MagicAsteroidImpact/advance/#float/Pointing
 $dokka.location:org.magiclib.terrain/MagicAsteroidImpact/isDone/#/PointingToDeclaration/root/org.magiclib.terrain/-magic-asteroid-impact/is-done.html
 $dokka.location:org.magiclib.terrain/MagicAsteroidImpact/runWhilePaused/#/PointingToDeclaration/root/org.magiclib.terrain/-magic-asteroid-impact/run-while-paused.html
 $dokka.location:org.magiclib.util.ui////PointingToDeclaration/root/org.magiclib.util.ui/index.html
+$dokka.location:org.magiclib.util.ui/MagicFunction///PointingToDeclaration/root/org.magiclib.util.ui/-magic-function/index.html
+$dokka.location:org.magiclib.util.ui/MagicFunction/doFunction/#/PointingToDeclaration/root/org.magiclib.util.ui/-magic-function/do-function.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin///PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/index.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin/MagicRefreshableBaseIntelPlugin/#/PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/-magic-refreshable-base-intel-plugin.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin/createLargeDescription/#CustomPanelAPI#float#float/PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/create-large-description.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin/createLargeDescriptionImpl/#CustomPanelAPI#float#float/PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/create-large-description-impl.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin/hasLargeDescription/#/PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/has-large-description.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin/hasSmallDescription/#/PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/has-small-description.html
+$dokka.location:org.magiclib.util.ui/MagicRefreshableBaseIntelPlugin/refreshPanel/#/PointingToDeclaration/root/org.magiclib.util.ui/-magic-refreshable-base-intel-plugin/refresh-panel.html
 $dokka.location:org.magiclib.util.ui/StatusBarData///PointingToDeclaration/root/org.magiclib.util.ui/-status-bar-data/index.html
 $dokka.location:org.magiclib.util.ui/StatusBarData/StatusBarData/#ShipAPI#float#java.awt.Color#java.awt.Color#float#java.lang.String#int/PointingToDeclaration/root/org.magiclib.util.ui/-status-bar-data/-status-bar-data.html
 $dokka.location:org.magiclib.util.ui/StatusBarData/drawToScreen/#Vector2f/PointingToDeclaration/root/org.magiclib.util.ui/-status-bar-data/draw-to-screen.html
@@ -1359,6 +1581,8 @@ $dokka.location:org.magiclib.util/MagicMisc///PointingToDeclaration/root/org.ma
 $dokka.location:org.magiclib.util/MagicMisc/MagicMisc/#/PointingToDeclaration/root/org.magiclib.util/-magic-misc/-magic-misc.html
 $dokka.location:org.magiclib.util/MagicMisc/getElapsedDaysSinceGameStart/#/PointingToDeclaration/root/org.magiclib.util/-magic-misc/get-elapsed-days-since-game-start.html
 $dokka.location:org.magiclib.util/MagicMisc/takeFirst/#java.lang.String#int/PointingToDeclaration/root/org.magiclib.util/-magic-misc/take-first.html
+$dokka.location:org.magiclib.util/MagicMisc/toList/#JSONArray/PointingToDeclaration/root/org.magiclib.util/-magic-misc/to-list.html
+$dokka.location:org.magiclib.util/MagicMisc/toMap/#JSONObject/PointingToDeclaration/root/org.magiclib.util/-magic-misc/to-map.html
 $dokka.location:org.magiclib.util/MagicPaginatedBarEvent.MagicPaginatedOption///PointingToDeclaration/root/org.magiclib.util/-magic-paginated-bar-event/-magic-paginated-option/index.html
 $dokka.location:org.magiclib.util/MagicPaginatedBarEvent.MagicPaginatedOption/MagicPaginatedOption/#java.lang.String#java.lang.Object#java.lang.String#java.lang.Integer/PointingToDeclaration/root/org.magiclib.util/-magic-paginated-bar-event/-magic-paginated-option/-magic-paginated-option.html
 $dokka.location:org.magiclib.util/MagicPaginatedBarEvent.MagicPaginatedOption/hotkey/#/PointingToDeclaration/root/org.magiclib.util/-magic-paginated-bar-event/-magic-paginated-option/hotkey.html
@@ -1486,6 +1710,7 @@ $dokka.location:org.magiclib.util/MagicTxt/MagicTxt/#/PointingToDeclaration/roo
 $dokka.location:org.magiclib.util/MagicTxt/addPara/#TextPanelAPI#java.lang.String#java.awt.Color#java.awt.Color/PointingToDeclaration/root/org.magiclib.util/-magic-txt/add-para.html
 $dokka.location:org.magiclib.util/MagicTxt/addPara/#TooltipMakerAPI#java.lang.String#float#java.awt.Color#java.awt.Color/PointingToDeclaration/root/org.magiclib.util/-magic-txt/add-para.html
 $dokka.location:org.magiclib.util/MagicTxt/createMagicDisplayableText/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-txt/create-magic-displayable-text.html
+$dokka.location:org.magiclib.util/MagicTxt/ellipsizeStringAfterLength/#java.lang.String#int/PointingToDeclaration/root/org.magiclib.util/-magic-txt/ellipsize-string-after-length.html
 $dokka.location:org.magiclib.util/MagicTxt/getString/#java.lang.String#java.lang.String.../PointingToDeclaration/root/org.magiclib.util/-magic-txt/get-string.html
 $dokka.location:org.magiclib.util/MagicTxt/getString/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-txt/get-string.html
 $dokka.location:org.magiclib.util/MagicTxt/nullStringIfEmpty/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-txt/null-string-if-empty.html
@@ -1500,6 +1725,7 @@ $dokka.location:org.magiclib.util/MagicUI/TODRAW14/#/PointingToDeclaration/root
 $dokka.location:org.magiclib.util/MagicUI/addInterfaceStatusBar/#ShipAPI#Vector2f#float#java.awt.Color#java.awt.Color#float/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/add-interface-status-bar.html
 $dokka.location:org.magiclib.util/MagicUI/addInterfaceStatusNumber/#ShipAPI#int#Vector2f/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/add-interface-status-number.html
 $dokka.location:org.magiclib.util/MagicUI/addInterfaceStatusText/#ShipAPI#java.lang.String#Vector2f/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/add-interface-status-text.html
+$dokka.location:org.magiclib.util/MagicUI/closeGL11ForText/#/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/close-g-l11-for-text.html
 $dokka.location:org.magiclib.util/MagicUI/drawHUDStatusBar/#ShipAPI#float#java.awt.Color#java.awt.Color#float#java.lang.String#java.lang.String#boolean/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/draw-h-u-d-status-bar.html
 $dokka.location:org.magiclib.util/MagicUI/drawInterfaceStatusBar/#ShipAPI#Vector2f#float#java.awt.Color#java.awt.Color#float#java.lang.String#int/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/draw-interface-status-bar.html
 $dokka.location:org.magiclib.util/MagicUI/drawInterfaceStatusBar/#ShipAPI#float#java.awt.Color#java.awt.Color#float#java.lang.String#int/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/draw-interface-status-bar.html
@@ -1511,6 +1737,7 @@ $dokka.location:org.magiclib.util/MagicUI/drawSystemBox/#ShipAPI#Vector2f#java.a
 $dokka.location:org.magiclib.util/MagicUI/drawSystemBox/#ShipAPI#java.awt.Color#float/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/draw-system-box.html
 $dokka.location:org.magiclib.util/MagicUI/getInterfaceOffsetFromStatusBars/#ShipAPI#ShipVariantAPI/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-interface-offset-from-status-bars.html
 $dokka.location:org.magiclib.util/MagicUI/getInterfaceOffsetFromSystemBar/#ShipAPI#ShipVariantAPI/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-interface-offset-from-system-bar.html
+$dokka.location:org.magiclib.util/MagicUI/openGL11ForText/#/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/open-g-l11-for-text.html
 $dokka.location:org.magiclib.util/MagicUIInternal.Companion///PointingToDeclaration/root/org.magiclib.util/-magic-u-i-internal/-companion/index.html
 $dokka.location:org.magiclib.util/MagicUIInternal///PointingToDeclaration/root/org.magiclib.util/-magic-u-i-internal/index.html
 $dokka.location:org.magiclib.util/MagicUIInternal/MagicUIInternal/#/PointingToDeclaration/root/org.magiclib.util/-magic-u-i-internal/-magic-u-i-internal.html
@@ -1551,14 +1778,6 @@ $dokka.location:org.magiclib.weapons/MagicBasicInterferenceEffect/advance/#float
 $dokka.location:org.magiclib.weapons/MagicGuidedProjectileScript///PointingToDeclaration/root/org.magiclib.weapons/-magic-guided-projectile-script/index.html
 $dokka.location:org.magiclib.weapons/MagicGuidedProjectileScript/MagicGuidedProjectileScript/#DamagingProjectileAPI#CombatEntityAPI/PointingToDeclaration/root/org.magiclib.weapons/-magic-guided-projectile-script/-magic-guided-projectile-script.html
 $dokka.location:org.magiclib.weapons/MagicGuidedProjectileScript/advance/#float#java.util.List<InputEventAPI>/PointingToDeclaration/root/org.magiclib.weapons/-magic-guided-projectile-script/advance.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats///PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/index.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/EngineStats/#kotlin.Float#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/-engine-stats.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/length/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/length.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/state/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/state.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters.EngineStats/width/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-engine-stats/width.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters///PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/index.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters/MagicSystemVectorThrusters/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/-magic-system-vector-thrusters.html
-$dokka.location:org.magiclib.weapons/MagicSystemVectorThrusters/apply/#[Error type: Unresolved type for ShipAPI]#[Error type: Unresolved type for ShipSystemStatsScript.State]#kotlin.Float/PointingToDeclaration/root/org.magiclib.weapons/-magic-system-vector-thrusters/apply.html
 $dokka.location:org.magiclib.weapons/MagicVectorThruster///PointingToDeclaration/root/org.magiclib.weapons/-magic-vector-thruster/index.html
 $dokka.location:org.magiclib.weapons/MagicVectorThruster/MagicVectorThruster/#/PointingToDeclaration/root/org.magiclib.weapons/-magic-vector-thruster/-magic-vector-thruster.html
 $dokka.location:org.magiclib.weapons/MagicVectorThruster/advance/#float#CombatEngineAPI#WeaponAPI/PointingToDeclaration/root/org.magiclib.weapons/-magic-vector-thruster/advance.html
@@ -1569,22 +1788,30 @@ $dokka.location:org.magiclib/Magic_modPlugin/Magic_modPlugin/#/PointingToDeclara
 $dokka.location:org.magiclib/Magic_modPlugin/afterGameSave/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/after-game-save.html
 $dokka.location:org.magiclib/Magic_modPlugin/beforeGameSave/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/before-game-save.html
 $dokka.location:org.magiclib/Magic_modPlugin/configureXStream/#XStream/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/configure-x-stream.html
+$dokka.location:org.magiclib/Magic_modPlugin/isMagicLibTestMode/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/is-magic-lib-test-mode.html
 $dokka.location:org.magiclib/Magic_modPlugin/onApplicationLoad/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/on-application-load.html
 $dokka.location:org.magiclib/Magic_modPlugin/onDevModeF8Reload/#/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/on-dev-mode-f8-reload.html
 $dokka.location:org.magiclib/Magic_modPlugin/onGameLoad/#boolean/PointingToDeclaration/root/org.magiclib/-magic_mod-plugin/on-game-load.html
 org.magiclib
 org.magiclib.achievements
-org.magiclib.achievements.builtin
+org.magiclib.achievements.examples
 org.magiclib.ai
 org.magiclib.bounty
 org.magiclib.bounty.console
+org.magiclib.bounty.intel
+org.magiclib.bounty.intel.filters
 org.magiclib.bounty.rulecmd
+org.magiclib.bounty.ui
+org.magiclib.bounty.ui.lists
+org.magiclib.bounty.ui.lists.filtered
 org.magiclib.campaign
 org.magiclib.combatgui
 org.magiclib.combatgui.buttongroups
 org.magiclib.combatgui.buttons
 org.magiclib.hullmods
 org.magiclib.kotlin
+org.magiclib.paintjobs
+org.magiclib.paintjobs.console
 org.magiclib.plugins
 org.magiclib.terrain
 org.magiclib.util
