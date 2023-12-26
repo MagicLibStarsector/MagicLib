@@ -357,6 +357,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                         );
                                         break;
                                     case Neutralization:
+                                    case Neutralisation:
                                         text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),
                                                 Misc.getHighlightColor(),

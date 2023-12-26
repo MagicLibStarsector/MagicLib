@@ -371,6 +371,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                             }
                             break;
                         case Neutralization:
+                        case Neutralisation:
                             if (bounty.getTargetFaction() == null) {
                                 info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,

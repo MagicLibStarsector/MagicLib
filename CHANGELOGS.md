@@ -1,4 +1,8 @@
-Verison 1.3.0
+Version 1.3.1
+**MagicBounty**
+- Fixed a crash on load ("No enum constant", reported by timediver0)
+
+Version 1.3.0
 
 **MagicAchievements**
 - **New feature!** Cross-save achievements framework that any mod may add to.

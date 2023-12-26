@@ -417,7 +417,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                 label.setHighlightColors(Misc.getHighlightColor(), activeBounty!!.targetFactionTextColor)
             }
 
-            JobType.Neutralization -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
+            JobType.Neutralization,
+            JobType.Neutralisation -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
                 textTooltip.addPara(
                     MagicTxt.getString("mb_intelType"),
                     4f,

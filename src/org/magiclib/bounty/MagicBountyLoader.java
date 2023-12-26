@@ -850,6 +850,7 @@ public class MagicBountyLoader {
          * Requires the destruction or disabling of 2/3rd of the enemy fleet.
          */
         Neutralization,
+        Neutralisation, // Kept for backwards compatibility
     }
 
     public enum ShowFleet {
