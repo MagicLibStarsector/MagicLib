@@ -246,9 +246,6 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             // Name
             String name = achievement.getName();
-            if (!achievement.isComplete() && achievement.getSpoilerLevel() != MagicAchievementSpoilerLevel.Visible) {
-                name = "(hidden)";
-            }
 
             leftElement.setTitleOrbitronLarge();
             leftElement.addSpacer(2);
@@ -265,7 +262,11 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
 
             // Description or error message if there is one.
             if (achievement.errorMessage == null) {
-                if (showDescription) {
+                boolean isSpoilered = !achievement.isComplete() && achievement.getSpoilerLevel() != MagicAchievementSpoilerLevel.Visible;
+
+                if (isSpoilered) {
+                    leftElement.addPara(MagicTxt.getString("ml_ma_spoilered"), Misc.getTextColor().darker(), 0);
+                } else if (showDescription) {
                     String description = MagicTxt.ellipsizeStringAfterLength(achievement.getDescription(), maxLengthOfDescription);
                     doesDescriptionGetCutOff = description.length() < achievement.getDescription().length();
 

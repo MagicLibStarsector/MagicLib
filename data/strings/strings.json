@@ -285,7 +285,8 @@
     "ml_ma_achievementCompletedDate": "Unlocked on %s, %s",
     "ml_ma_achievementCompletedBy": "by Captain %s",
     "ml_ma_achievementUnlockedNotification": "Achievement Unlocked!",
-    
+    "ml_ma_spoilered": "(hidden until unlocked)",
+
     # MagicPaintjobs
     "ml_mp_intelName": "Paintjobs",
     "ml_mp_applyPaintjob": "Apply paintjob to...",
