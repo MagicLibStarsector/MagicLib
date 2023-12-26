@@ -12,15 +12,20 @@ Verison 1.3.0
 - **New feature!** Cross-save paintjobs (ship skins) framework that any mod may add to.
 - Useful as rewards for achievements! Or for any other reason.
 - Mods may add paintjobs, which will be locked by default. The modder chooses when/how to unlock them.
-- Caution: because Starsector preloads almost everything, paintjobs in a mod will be loaded into VRAM even if they aren't applied. 
+- Caution: because Starsector preloads almost everything, paintjobs in a mod will be loaded into VRAM even if they aren't applied.
+
+**MagicBounty**
+-  **New feature!** Intel Board
+  - Displays all bounties (if you meet the conditions) within 10LY of your location.
+  - **You no longer need to travel to a location to accept a bounty.**
+  - Removed MagicBounty default time limits (there will only be a time limit if the bounty maker added one).
+  - Contributed by President Matt Damon. Thank you!
+- Fixed a potential crash after resetting a bounty via console command (reported by mrmagolor).
 
 **CombatGUI**
 - Properly released to everybody!
 - Breaking changes from the Discord-only 1.2.0 version to add `MagicCombat` to the class names.
   - I don't believe anybody was using this, but I'll release a backwards-compat patch if someone asks me to.
-
-**MagicBounty**
-- Fixed a potential crash after resetting a bounty via console command (reported by mrmagolor).
 
 **Other**
 - Added `MagicTxt.ellipsizeStringAfterLength(String str, int length)`.
