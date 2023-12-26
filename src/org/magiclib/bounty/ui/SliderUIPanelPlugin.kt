@@ -83,6 +83,10 @@ open class SliderUIPanelPlugin(private val min: Float,
         }
     }
 
+    fun updateLabel() {
+        currLabel.text = Misc.getRoundedValue(value)
+    }
+
     override fun renderBelow(alphaMult: Float) {
         val c = if (bgColor.alpha > 0) bgColor
         else Color(0, 0, 0)

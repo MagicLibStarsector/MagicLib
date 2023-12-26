@@ -53,6 +53,20 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         return activeBounty?.fleetSpawnLocation?.containingLocation
     }
 
+    override fun getSortIndex(): Int {
+        return when (activeBounty?.stage) {
+            ActiveBounty.Stage.Accepted -> 0
+            ActiveBounty.Stage.NotAccepted -> 1
+            ActiveBounty.Stage.Succeeded -> 3
+            ActiveBounty.Stage.ExpiredAfterAccepting -> 4
+            ActiveBounty.Stage.ExpiredWithoutAccepting -> 4
+            ActiveBounty.Stage.FailedSalvagedFlagship -> 4
+            ActiveBounty.Stage.EndedWithoutPlayerInvolvement -> 4
+            ActiveBounty.Stage.Dismissed -> 4
+            else -> 1
+        }
+    }
+
     override fun notifyWhenAvailable(): Boolean {
         return true
     }
@@ -91,7 +105,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                 ActiveBounty.Stage.FailedSalvagedFlagship -> return false
                 ActiveBounty.Stage.EndedWithoutPlayerInvolvement -> return false
                 ActiveBounty.Stage.Dismissed -> return false
-                else -> { /* do nothing */ } //NotAccepted
+                else -> { /* do nothing */
+                } //NotAccepted
             }
         }
 

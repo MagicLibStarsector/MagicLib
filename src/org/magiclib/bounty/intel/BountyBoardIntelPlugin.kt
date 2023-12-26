@@ -8,8 +8,10 @@ import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
+import com.fs.starfarer.api.util.Misc
 import org.magiclib.kotlin.elapsedDaysSinceGameStart
 import org.magiclib.util.MagicTxt
+import org.magiclib.util.MagicTxt.MagicDisplayableText
 import java.awt.Color
 
 class BountyBoardIntelPlugin : BaseIntelPlugin() {
@@ -133,18 +135,19 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
         val textPanelWidth = width - bountyList.panelWidth
         val textPanelHeight = height - 8f
         var textPanel = panel.createCustomPanel(textPanelWidth, textPanelHeight, null)
-        var descriptionTooltip = textPanel.createUIElement(textPanelWidth, textPanelHeight, true)
+        var descriptionTooltip = textPanel.createUIElement(350f, 150f, true)
+        MagicTxt.addPara(descriptionTooltip, MagicTxt.getString("mb_intelTutorial"), 10f, Misc.getTextColor(), Misc.getHighlightColor())
 
-        textPanel.addUIElement(descriptionTooltip).inTL(0f, 0f)
+        textPanel.addUIElement(descriptionTooltip).inMid()
         panel.addComponent(textPanel).rightOfTop(bountyListPanel, 4f)
 
-        bountyList.addListener {
+        bountyList.addListener { bountyInfo ->
             panel.removeComponent(textPanel)
 
             textPanel = panel.createCustomPanel(textPanelWidth, textPanelHeight, null)
             descriptionTooltip = textPanel.createUIElement(textPanelWidth, textPanelHeight, false)
 
-            it.layoutPanel(descriptionTooltip, textPanelWidth, textPanelHeight)
+            bountyInfo.layoutPanel(descriptionTooltip, textPanelWidth, textPanelHeight)
 
             textPanel.addUIElement(descriptionTooltip).inTL(0f, 0f)
             panel.addComponent(textPanel).rightOfTop(bountyListPanel, 4f)

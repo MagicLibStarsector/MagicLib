@@ -13,6 +13,7 @@ interface BountyInfo : Filterable<BountyInfo> {
     fun getBountyPayout(): Int
     fun getJobIcon(): String?
     fun getLocationIfBountyIsActive(): LocationAPI?
+    fun getSortIndex(): Int = 1
     fun addNotificationBulletpoints(info: TooltipMakerAPI) {
     }
 

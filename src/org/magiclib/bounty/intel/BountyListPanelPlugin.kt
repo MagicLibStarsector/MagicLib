@@ -35,6 +35,11 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         return listOf(item.getBountyType())
     }
 
+    override fun sortMembers(items: List<BountyInfo>): List<BountyInfo> {
+        return super.sortMembers(items)
+            .sortedBy { it.getSortIndex() }
+    }
+
     override fun shouldMakePanelForItem(item: BountyInfo): Boolean {
         return item.shouldShow()
     }

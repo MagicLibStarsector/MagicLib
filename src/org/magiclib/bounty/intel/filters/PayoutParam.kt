@@ -13,14 +13,14 @@ import org.magiclib.bounty.ui.lists.filtered.ListFilter
 import org.magiclib.kotlin.autoSizeToText
 import org.magiclib.kotlin.getRoundedValue
 
-class PayoutParam(item: BountyInfo): FilterableParam<BountyInfo, Int>(item) {
+class PayoutParam(item: BountyInfo) : FilterableParam<BountyInfo, Int>(item) {
     override fun getData(): Int? {
         return item.getBountyPayout()
     }
 }
 
 
-class PayoutFilter: ListFilter<BountyInfo, Int> {
+class PayoutFilter : ListFilter<BountyInfo, Int> {
     private var payoutMinimum = -1
 
     override fun matches(filterableParam: FilterableParam<BountyInfo, Int>): Boolean {
@@ -37,7 +37,11 @@ class PayoutFilter: ListFilter<BountyInfo, Int> {
             .all { matches(it as FilterableParam<BountyInfo, Int>) }
     }
 
-    override fun createPanel(tooltip: TooltipMakerAPI, width: Float, lastItems: List<Filterable<BountyInfo>>): CustomPanelAPI {
+    override fun createPanel(
+        tooltip: TooltipMakerAPI,
+        width: Float,
+        lastItems: List<Filterable<BountyInfo>>
+    ): CustomPanelAPI {
         val validBounties = lastItems
             .map { it as BountyInfo }
 
@@ -69,7 +73,8 @@ class PayoutFilter: ListFilter<BountyInfo, Int> {
         sliderPanel.addUIElement(sliderTooltip).belowMid(sliderTextTooltip, 4f)
 
         val sliderValueTextTooltip = sliderPanel.createUIElement(40f, 12f, false)
-        val sliderValueText = sliderValueTextTooltip.addPara(sliderPlugin.value.getRoundedValue(), Misc.getTextColor(), 0f)
+        val sliderValueText =
+            sliderValueTextTooltip.addPara(sliderPlugin.value.getRoundedValue(), Misc.getTextColor(), 0f)
         sliderValueText.autoSizeToText(max.toString()).position.inMid()
         sliderPanel.addUIElement(sliderValueTextTooltip).belowMid(sliderTextTooltip, -12f)
 
@@ -99,4 +104,6 @@ class PayoutFilter: ListFilter<BountyInfo, Int> {
         if (Global.getSector().persistentData.containsKey("MagicLib.PayoutParam.SelectedMinimum"))
             payoutMinimum = Global.getSector().persistentData["MagicLib.PayoutParam.SelectedMinimum"] as Int
     }
+
+    override fun isActive(): Boolean = payoutMinimum > -1
 }

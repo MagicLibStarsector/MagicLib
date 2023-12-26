@@ -10,6 +10,8 @@ interface ListFilter<T: Filterable<T>, V> {
 
     fun saveToPersistentData()
     fun loadFromPersistentData()
+
+    fun isActive(): Boolean
 }
 
 abstract class FilterableParam<T, V>(val item: T) {

@@ -269,9 +269,12 @@
 
     "mb_intel_offeredBy": "Faction: %s",
     "mb_plot_course": "Plot course",
-    "mb_filters_Location_Distance": "Filter by distance",
-    "mb_filters_Location_FuelRange": "Filter by fuel range",
+    "mb_filters": "Filters",
+    "mb_confirm": "Confirm",
+    "mb_filters_Location_Distance": "Filter by distance to target",
+    "mb_filters_Location_FuelRange": "Lock distance filter to your fuel range",
     "mb_filters_Location_SliderTitle": "Distance (LY)",
+    "mb_intelTutorial": "Select a bounty on the left to see more information.\nFilter the list by clicking \"Filters\" at the top of the list.\nIf the job terms are acceptable, click Accept in the bottom-right of the info panel.",
 
     # MagicAchievements
     "ml_ma_grantAchievement": "Grant",

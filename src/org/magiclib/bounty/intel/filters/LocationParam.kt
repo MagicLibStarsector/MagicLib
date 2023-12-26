@@ -151,6 +151,10 @@ class LocationFilter : ListFilter<BountyInfo, LocationAPI> {
             fuelRangeOnly = Global.getSector().persistentData["MagicLib.LocationParam.FuelRangeOnly"] as Boolean
     }
 
+    override fun isActive(): Boolean {
+        return rangeFilterActive
+    }
+
     fun refreshSettings() {
         if (!rangeFilterActive) {
             fuelRangeCheckbox?.isChecked = false
@@ -159,11 +163,12 @@ class LocationFilter : ListFilter<BountyInfo, LocationAPI> {
         } else {
             fuelRangeCheckbox?.isEnabled = true
             fuelRangeCheckbox?.isChecked = fuelRangeOnly
-            sliderPlugin?.enabled = !fuelRangeOnly
             if (fuelRangeOnly) {
                 hyperspaceRange = (0f..getFuelLY())
                 sliderPlugin?.value = hyperspaceRange.endInclusive
+                sliderPlugin?.updateLabel()
             }
+            sliderPlugin?.enabled = !fuelRangeOnly
         }
     }
 
