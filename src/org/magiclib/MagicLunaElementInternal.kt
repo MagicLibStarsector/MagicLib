@@ -9,8 +9,6 @@ import com.fs.starfarer.api.ui.PositionAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.Misc
-import lunalib.backend.ui.components.util.TooltipHelper
-import lunalib.lunaUI.LunaUIUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -92,7 +90,12 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
     private var onHoverEnterFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
     private var onHoverExitFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
 
-    fun addTo(panelAPI: CustomPanelAPI, width: Float, height: Float, position: (PositionAPI) -> Unit): MagicLunaElementInternal {
+    fun addTo(
+        panelAPI: CustomPanelAPI,
+        width: Float,
+        height: Float,
+        position: (PositionAPI) -> Unit
+    ): MagicLunaElementInternal {
         this.parentPanel = panelAPI
         val tooltip = panelAPI.createUIElement(width, height, false)
         addTo(tooltip, width, height)
@@ -460,4 +463,25 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
     final override fun buttonPressed(buttonId: Any?) {
 
     }
+}
+
+internal class TooltipHelper(var text: String, var width: Float, vararg highlights: String) :
+    TooltipMakerAPI.TooltipCreator {
+    var Highlights = highlights
+
+    override fun isTooltipExpandable(tooltipParam: Any?): Boolean {
+        return false
+    }
+
+    override fun getTooltipWidth(tooltipParam: Any?): Float {
+        return width
+    }
+
+    override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+        tooltip!!.addPara(text, 0f, Misc.getBasePlayerColor(), Misc.getHighlightColor(), *Highlights)
+    }
+}
+
+internal object LunaUIUtils {
+    var selectedElements: HashMap<String, String?> = HashMap()
 }

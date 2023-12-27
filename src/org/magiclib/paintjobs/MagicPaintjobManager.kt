@@ -3,12 +3,11 @@ package org.magiclib.paintjobs
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
-import lunalib.lunaSettings.LunaSettings
-import lunalib.lunaSettings.LunaSettings.getBoolean
-import lunalib.lunaSettings.LunaSettingsListener
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
 import org.json.JSONObject
+import org.magiclib.LunaWrapper
+import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
 import org.magiclib.kotlin.toStringList
 import org.magiclib.util.MagicMisc
@@ -25,76 +24,6 @@ object MagicPaintjobManager {
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
-
-    // TODO remove before release
-    internal fun diable() {
-        listOf(
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_vapor.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_calm_deck.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_chinook.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_cirrus.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_daze.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_derecho.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_draft.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_draftarmor.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_fractus.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_gust.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_hayle.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_haze.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_laminar.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_maelstrom.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_minigust.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_pandemonium.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_rime.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_rime_military.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_rime_p.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_shear.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_sleet.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_storm.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_stratus.png",
-            "graphics/pj_test/da/rosenritter/ships/diableavionics_stratus_p.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_calm_deck.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_chinook.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_cirrus.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_daze.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_derecho.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_draft.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_draftarmor.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_fractus.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_gust.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_hayle.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_haze.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_laminar.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_maelstrom.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_minigust.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_pandemonium.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_rime.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_rime_military.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_rime_p.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_shear.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_sleet.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_storm.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_stratus.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_stratus_p.png",
-            "graphics/pj_test/da/lilium/ships/diableavionics_vapor.png",
-        )
-            .forEach { spriteId ->
-                val name = spriteId.removeSuffix(".png").takeLastWhile { it != '/' }
-                addPaintJob(
-                    MagicPaintjobSpec(
-                        modId = "magiclib",
-                        modName = "MagicLib",
-                        id = "ml_$spriteId",
-                        hullId = name,
-                        name = spriteId.removePrefix("graphics/pj_test/da/").takeWhile { it != '/' }
-                            .replaceFirstChar { it.uppercase() },
-                        description = null,
-                        spriteId = spriteId,
-                        tags = null,
-                    )
-                )
-            }
-    }
 
     @JvmStatic
     var isEnabled = true
@@ -129,10 +58,13 @@ object MagicPaintjobManager {
     fun onApplicationLoad() {
         // Set up LunaLib settings.
         if (Global.getSettings().modManager.isModEnabled("lunalib")) {
+            isEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
+
             // Add settings listener.
-            LunaSettings.addSettingsListener(object : LunaSettingsListener {
-                override fun settingsChanged(settings: String) {
-                    val lunaIsEnabled = getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
+            LunaWrapper.addSettingsListener(object : LunaWrapperSettingsListener {
+                override fun settingsChanged(modID: String) {
+                    val lunaIsEnabled =
+                        LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
 
                     if (isEnabled != lunaIsEnabled) {
                         isEnabled = lunaIsEnabled
@@ -302,22 +234,6 @@ object MagicPaintjobManager {
             .onFailure { logger.error("Failed to load unlocked paintjobs.", it) }
     }
 
-//    @JvmStatic
-//    fun loadPaintjobs() {
-//        runCatching {
-//            val unlockedPJsObj = runCatching {
-//                val result = JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename))
-//                if (result.length() > 0) result
-//                else JSONObject()
-//            }.recover { JSONObject() }
-//                .getOrThrow()
-//
-//            paintjobsInner.addAll(unlockedPJsObj.getJSONArray(jsonObjectKey)
-//                .map<JSONObject, MagicPaintjobSpec> { MagicPaintjobSpec.fromJsonObject(it) })
-//        }
-//            .onFailure { logger.error("Failed to load unlocked paintjobs.", it) }
-//    }
-
     /**
      * Adds a paintjob to the list of paintjobs.
      * Replaces any existing paintjob with the same id.
@@ -330,7 +246,8 @@ object MagicPaintjobManager {
         }
 
         if (Global.getSettings().getSprite(paintjob.spriteId) == null) {
-            Global.getSettings().loadTexture(paintjob.spriteId)
+            // Don't preload the sprite, if feature is disabled it will never be used.
+            // Global.getSettings().loadTexture(paintjob.spriteId)
             logger.error("Did not add paintjob ${paintjob.id}. Sprite with id ${paintjob.spriteId} does not exist.")
             return
         }
@@ -364,6 +281,7 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun initIntel() {
+        if (!isEnabled) return
         if (Global.getSector() == null) return
         removeIntel()
 
@@ -400,7 +318,7 @@ object MagicPaintjobManager {
             .forEach { variant.removeTag(it) }
 
         if (variant.hasHullMod(MagicPaintjobHullMod.ID)) {
-            variant.removeMod(MagicPaintjobHullMod.ID)
+            variant.removePermaMod(MagicPaintjobHullMod.ID)
         }
 
         fleetMember.spriteOverride = null
@@ -408,6 +326,7 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun applyPaintjob(fleetMember: FleetMemberAPI?, combatShip: ShipAPI?, paintjob: MagicPaintjobSpec) {
+        if (!isEnabled) return
         // In case it's a sprite path that wasn't loaded, load it.
         val spriteId = paintjob.spriteId
         Global.getSettings().loadTexture(spriteId)
@@ -415,7 +334,7 @@ object MagicPaintjobManager {
         if (fleetMember != null) {
             val variant = fleetMember.variant
             if (variant?.hasHullMod(MagicPaintjobHullMod.ID) != true) {
-                variant.addMod(MagicPaintjobHullMod.ID)
+                variant.addPermaMod(MagicPaintjobHullMod.ID)
             }
 
             if (variant != null) {

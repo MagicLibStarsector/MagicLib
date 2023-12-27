@@ -191,11 +191,13 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             if (!isUnlocked) {
                 val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
                 cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
-                cellOverlay.addPara("Locked", Misc.getNegativeHighlightColor(), pad)
+                cellOverlay.addPara(MagicTxt.getString("ml_mp_locked"), Misc.getNegativeHighlightColor(), pad)
             }
 
             val shipsThatPjMayApplyTo = Global.getSector().playerFleet.fleetData.membersListCopy
                 .filter { it.hullId == pj.hullId }
+                // If the ship is wearing a permanent paintjob, don't show it in the list.
+                .filter { MagicPaintjobManager.getCurrentShipPaintjob(it)?.isPermanent != true }
 
             if (shipsThatPjMayApplyTo.any()) {
                 val count = shipsThatPjMayApplyTo.count()
@@ -324,6 +326,20 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 )
             }
 
+            if (shipPaintjob?.isPermanent == true) {
+                val cellOverlay = shipThumbnailPanel.createUIElement(80f, 10f, false)
+                shipThumbnailPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding - 4)
+//                cellOverlay.addPara(MagicTxt.getString("ml_mp_permanent"), Misc.getHighlightColor(), pad)
+                addDarkenCover(row, cellWidth, cellHeight, xPos, yPos, highlightOnHover = false)
+                addHoverTooltip(shipThumbnailPanel, cellTooltip) { tooltip ->
+                    tooltip.addPara(
+                        MagicTxt.getString("ml_mp_permanentTooltip"),
+                        Misc.getHighlightColor(),
+                        pad
+                    )
+                }
+            }
+
             val paintjobsNotAppliedCount = paintjobsForShip.count { it.id != shipPaintjob?.id }
 
             cellTooltip.addPara(
@@ -373,7 +389,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }
 
             hoverElement.onClick { inputEvent ->
-                if (paintjobsForShip.none())
+                // If there are no paintjobs for this ship, or the paintjob is permanent, don't show the popup.
+                if (paintjobsForShip.none() || shipPaintjob?.isPermanent == true)
                     return@onClick
 
                 displayPaintjobsForShip()
@@ -435,35 +452,45 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         val shouldShowUnlockConditions =
             pj.id !in MagicPaintjobManager.unlockedPaintjobIds && !pj.unlockConditions.isNullOrBlank()
         if (!pj.description.isNullOrBlank() || shouldShowUnlockConditions) {
-            MagicLunaElementInternal().apply {
-                addTo(cellPanel, pjCellTooltip.widthSoFar, pjCellTooltip.heightSoFar) { it.inTL(0f, 0f) }
-                renderBorder = false
-                renderBackground = false
-                renderForeground = false
-                onHoverEnter {
-                    pjCellTooltip.addTooltipTo(
-                        object : BaseTooltipCreator() {
-                            override fun getTooltipWidth(tooltipParam: Any?) = 250f
-
-                            override fun createTooltip(
-                                tooltip: TooltipMakerAPI,
-                                expanded: Boolean,
-                                tooltipParam: Any?
-                            ) {
-                                tooltip.addSectionHeading(createPaintjobName(pj), Alignment.MID, 3f)
-                                if (!pj.description.isNullOrBlank()) {
-                                    tooltip.addPara(pj.description!!, 10f)
-                                    if (shouldShowUnlockConditions)
-                                        tooltip.addSpacer(10f)
-                                }
-                                if (shouldShowUnlockConditions) {
-                                    tooltip.addPara(pj.unlockConditions!!, Misc.getHighlightColor(), 10f)
-                                }
-                            }
-                        },
-                        cellPanel, TooltipMakerAPI.TooltipLocation.RIGHT
-                    )
+            addHoverTooltip(cellPanel, pjCellTooltip) { tooltip ->
+                tooltip.addSectionHeading(createPaintjobName(pj), Alignment.MID, 3f)
+                if (!pj.description.isNullOrBlank()) {
+                    tooltip.addPara(pj.description!!, 10f)
+                    if (shouldShowUnlockConditions)
+                        tooltip.addSpacer(10f)
                 }
+                if (shouldShowUnlockConditions) {
+                    tooltip.addPara(pj.unlockConditions!!, Misc.getHighlightColor(), 10f)
+                }
+            }
+        }
+    }
+
+    private fun addHoverTooltip(
+        cellPanel: CustomPanelAPI,
+        pjCellTooltip: TooltipMakerAPI,
+        addText: (TooltipMakerAPI) -> Unit
+    ) {
+        MagicLunaElementInternal().apply {
+            addTo(cellPanel, pjCellTooltip.widthSoFar, pjCellTooltip.heightSoFar) { it.inTL(0f, 0f) }
+            renderBorder = false
+            renderBackground = false
+            renderForeground = false
+            onHoverEnter {
+                pjCellTooltip.addTooltipTo(
+                    object : BaseTooltipCreator() {
+                        override fun getTooltipWidth(tooltipParam: Any?) = 250f
+
+                        override fun createTooltip(
+                            tooltip: TooltipMakerAPI,
+                            expanded: Boolean,
+                            tooltipParam: Any?
+                        ) {
+                            addText(tooltip)
+                        }
+                    },
+                    cellPanel, TooltipMakerAPI.TooltipLocation.RIGHT
+                )
             }
         }
     }

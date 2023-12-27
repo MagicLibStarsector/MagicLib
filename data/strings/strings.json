@@ -297,5 +297,8 @@
     "ml_mp_default": "Default",
     "ml_mp_applied": "Applied",
     "ml_mp_selectPaintjob":"Select paintjob...",
+    "ml_mp_locked":"Locked",
+    "ml_mp_permanent":"Permanent",
+    "ml_mp_permanentTooltip":"This ship's paintjob is permanent and cannot be changed.",
   }
 }

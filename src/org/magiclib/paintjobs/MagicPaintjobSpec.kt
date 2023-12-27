@@ -15,7 +15,7 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     val isShiny: Boolean
         get() = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
 
-    val isPermament: Boolean
+    val isPermanent: Boolean
         get() = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true
 //    fun toJsonObject(): JSONObject {
 //        val json = JSONObject()

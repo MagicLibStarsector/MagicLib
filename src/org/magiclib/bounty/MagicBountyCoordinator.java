@@ -13,11 +13,11 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
-import lunalib.lunaSettings.LunaSettings;
-import lunalib.lunaSettings.LunaSettingsListener;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.LunaWrapper;
+import org.magiclib.LunaWrapperSettingsListener;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicSettings;
@@ -58,16 +58,18 @@ public final class MagicBountyCoordinator {
 
         intelManager.addIntel(new BountyBoardIntelPlugin(), true);
 
-        LunaSettings.addSettingsListener(new LunaSettingsListener() {
-            @Override
-            public void settingsChanged(@NotNull String s) {
-                DEADLINES_ENABLED = LunaSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
+        if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
+            LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
+                @Override
+                public void settingsChanged(@NotNull String s) {
+                    DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
 
-                if (DEADLINES_ENABLED == null) {
-                    DEADLINES_ENABLED = false;
+                    if (DEADLINES_ENABLED == null) {
+                        DEADLINES_ENABLED = false;
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Nullable

@@ -7,8 +7,6 @@ import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.Misc;
-import lunalib.lunaSettings.LunaSettings;
-import lunalib.lunaSettings.LunaSettingsListener;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.JSONUtils;
+import org.magiclib.LunaWrapper;
+import org.magiclib.LunaWrapperSettingsListener;
 import org.magiclib.util.MagicMisc;
 import org.magiclib.util.MagicVariables;
 
@@ -91,10 +91,10 @@ public class MagicAchievementManager {
         // Set up LunaLib settings.
         if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
             // Add settings listener.
-            LunaSettings.addSettingsListener(new LunaSettingsListener() {
+            LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
                 @Override
                 public void settingsChanged(@NotNull String settings) {
-                    Boolean lunaAreAchievementsEnabled = LunaSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
+                    Boolean lunaAreAchievementsEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
 
                     if (lunaAreAchievementsEnabled != null) {
                         areAchievementsEnabled = lunaAreAchievementsEnabled;
@@ -106,7 +106,7 @@ public class MagicAchievementManager {
             });
 
             // Read from settings for initial load.
-            Boolean lunaAreAchievementsEnabled = LunaSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
+            Boolean lunaAreAchievementsEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
 
             if (lunaAreAchievementsEnabled != null) {
                 areAchievementsEnabled = lunaAreAchievementsEnabled;

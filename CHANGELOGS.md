@@ -1,3 +1,12 @@
+Version 1.3.3
+**Other**
+- Fixed unintentional dependency on LunaLib.
+
+**MagicPaintjobs**
+- Paintjobs are now built-in hullmods. This prevents changing variants from unapplying them.
+- Paintjobs images are no longer preloaded into VRAM, which unintentionally caused VRAM use when the feature was disabled.
+- <redacted> paintjobs now indicate that they cannot be changed.
+
 Version 1.3.2
 **MagicBounty**
 - Fixed a crash when accepting "apocrita_belcher" bounty (reported by rosnok).

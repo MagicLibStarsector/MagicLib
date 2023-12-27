@@ -43,7 +43,7 @@ class MagicPaintjobHullMod : BaseHullMod() {
         ship: ShipAPI?,
         marketOrNull: MarketAPI?,
         mode: CampaignUIAPI.CoreUITradeMode?
-    ): Boolean = ship != null && getAppliedPaintjob(ship)?.isPermament != true
+    ): Boolean = false
 
     override fun addPostDescriptionSection(
         tooltip: TooltipMakerAPI?,
