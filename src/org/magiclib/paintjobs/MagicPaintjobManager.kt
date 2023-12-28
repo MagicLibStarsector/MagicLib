@@ -173,7 +173,7 @@ object MagicPaintjobManager {
                                 tags = tags
                             )
                                 .also {
-                                    if (unlockedAutomatically)
+                                    if (unlockedAutomatically && it.isUnlockable)
                                         unlockPaintjob(it.id)
                                 }
                         )
@@ -262,6 +262,8 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun unlockPaintjob(id: String) {
+        if (getPaintjob(id)?.isUnlockable != true) return
+
         unlockedPaintjobsInner.add(id)
         saveUnlockedPaintJobs()
     }

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import org.magiclib.util.MagicTxt
 
 /**
  * This hullmod displays the paintjob itself. It determines which to display by looking for a tag on the variant.
@@ -57,7 +58,25 @@ class MagicPaintjobHullMod : BaseHullMod() {
 
         val skins = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.hullId)
         skins.forEach { skin ->
-            tooltip?.addPara("Applied: %s", 10f, Misc.getTextColor(), Misc.getPositiveHighlightColor(), skin.name)
+            tooltip?.addPara(MagicTxt.getString("ml_mp_appliedRefit"), 10f, Misc.getTextColor(), Misc.getPositiveHighlightColor(), skin.name)
+
+            if (skin.isShiny) {
+                tooltip?.addPara(
+                    MagicTxt.getString("ml_mp_shiny"),
+                    3f,
+                    Misc.getHighlightColor(),
+                    Misc.getHighlightColor()
+                )
+            }
+
+            if (skin.isPermanent) {
+                tooltip?.addPara(
+                    MagicTxt.getString("ml_mp_permanentTooltipRefit"),
+                    10f,
+                    Misc.getGrayColor(),
+                    Misc.getHighlightColor()
+                )
+            }
         }
     }
 }

@@ -300,5 +300,8 @@
     "ml_mp_locked":"Locked",
     "ml_mp_permanent":"Permanent",
     "ml_mp_permanentTooltip":"This ship's paintjob is permanent and cannot be changed.",
+    "ml_mp_permanentTooltipRefit":"This paintjob is permanent and cannot be changed.",
+    "ml_mp_shiny":"This is a rare paintjob.",
+    "ml_mp_appliedRefit":"Applied: %s",
   }
 }
