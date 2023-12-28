@@ -41,7 +41,7 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
     }
 
     override fun shouldMakePanelForItem(item: BountyInfo): Boolean {
-        return item.shouldShow()
+        return item.shouldAlwaysShow() || item.shouldShow()
     }
 
     override fun createPanelForItem(tooltip: TooltipMakerAPI, item: BountyInfo): ListItemUIPanelPlugin<BountyInfo> {

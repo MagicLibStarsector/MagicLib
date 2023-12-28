@@ -28,6 +28,9 @@ interface BountyInfo : Filterable<BountyInfo> {
     fun shouldShow(): Boolean {
         return true
     }
+    fun shouldAlwaysShow(): Boolean {
+        return false
+    }
     fun decorateListItem(
         plugin: BountyListPanelPlugin.BountyItemPanelPlugin,
         tooltip: TooltipMakerAPI,

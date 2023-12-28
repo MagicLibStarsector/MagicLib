@@ -25,7 +25,8 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpec) : BountyInfo {
-    var activeBounty: ActiveBounty? = null
+    val activeBounty: ActiveBounty?
+        get() = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
     var holdingPanel: CustomPanelAPI? = null
     var panelThatCanBeRemoved: CustomPanelAPI? = null
 
@@ -72,10 +73,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun notifiedUserThatBountyIsAvailable() {
-        val activeBountyLocal: ActiveBounty = activeBounty
-            ?: MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
-            ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
-        activeBounty = activeBountyLocal
+        activeBounty ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
     }
 
     override fun addNotificationBulletpoints(info: TooltipMakerAPI) {
@@ -93,6 +91,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             val rewardText = Misc.getDGSCredits(creditReward)
             info.addPara(MagicTxt.getString("mb_credits").format(rewardText), 1f, Misc.getHighlightColor(), rewardText)
         }
+    }
+
+    override fun shouldAlwaysShow(): Boolean {
+        return activeBounty != null && activeBounty!!.stage == ActiveBounty.Stage.Accepted
     }
 
     override fun shouldShow(): Boolean {
@@ -172,9 +174,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         }
 
         if (shouldShow && activeBounty == null) {
-            val activeBountyLocal: ActiveBounty = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
-                ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
-            activeBounty = activeBountyLocal
+            MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
         }
 
         return shouldShow
@@ -247,10 +247,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         tooltip.addImageWithText(2f)
 
         val activeBountyLocal: ActiveBounty = activeBounty
-            ?: MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
             ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
             ?: return
-        activeBounty = activeBountyLocal
 
         if (activeBountyLocal.stage == ActiveBounty.Stage.Accepted) {
             plugin.baseBgColor = Misc.getDarkHighlightColor().setAlpha(45)
@@ -274,10 +272,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val width = width - 16f
         val height = height - 16f
         val activeBountyLocal: ActiveBounty = activeBounty
-            ?: MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
             ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
             ?: return
-        activeBounty = activeBountyLocal
 
         val leftPanel = panelThatCanBeRemoved!!.createCustomPanel(width / 2, height, null)
         showBountyText(leftPanel, width / 2, height)
@@ -448,14 +444,16 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         if (reward != null && givingFaction != null) {
             val rewardText = Misc.getDGSCredits(reward)
             textTooltip.addPara(
-                MagicTxt.getString("mb_descFactionReward").format(givingFaction.displayNameWithArticle, givingFaction.displayNameIsOrAre, rewardText),
+                MagicTxt.getString("mb_descFactionReward")
+                    .format(givingFaction.displayNameWithArticle, givingFaction.displayNameIsOrAre, rewardText),
                 2f,
                 arrayOf(givingFaction.color, Misc.getHighlightColor()),
                 givingFaction.displayNameWithArticle, rewardText
             )
         } else if (givingFaction != null) {
             textTooltip.addPara(
-                MagicTxt.getString("mb_descFactionNoReward").format(givingFaction.displayNameWithArticle, givingFaction.displayNameIsOrAre),
+                MagicTxt.getString("mb_descFactionNoReward")
+                    .format(givingFaction.displayNameWithArticle, givingFaction.displayNameIsOrAre),
                 2f,
                 givingFaction.color,
                 givingFaction.displayNameWithArticle

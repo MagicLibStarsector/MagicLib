@@ -48,8 +48,8 @@ class LocationFilter : ListFilter<BountyInfo, LocationAPI> {
     override fun matches(filterData: List<FilterableParam<BountyInfo, *>>): Boolean {
         if (!rangeFilterActive) return true
         return filterData
-            .filter { it.getData() is LocationAPI }
-            .all { matches(it as FilterableParam<BountyInfo, LocationAPI>) }
+            .filterIsInstance<FilterableParam<BountyInfo, LocationAPI>>()
+            .all { it.item.shouldAlwaysShow() || matches(it) }
     }
 
     override fun createPanel(

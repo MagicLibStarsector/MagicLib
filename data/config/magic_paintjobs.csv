@@ -1,12 +1,14 @@
 id,hullId,name,spriteId,unlockedAutomatically,tags,unlockConditions,description
-# id: Required. The id of the paintjob. Must be unique. Prefix with your mod id.,,,,,,,
+# id: Required. The id of the paintjob. Must be unique. Prefix with your mod id. Examples: magiclib_fury_racing, magiclib_onslaught_pirate,,,,,,,
 # hullId: Required. The id of the hull that this paintjob applies to. Must be a valid hull id.,,,,,,,
 # name: Required. The name of the paintjob.,,,,,,,
 # spriteId: Required. The path or spriteName of the ship sprite.,,,,,,,
 # unlockedAutomatically: Optional, default true. If true, the paintjob is unlocked by default. Otherwise, it must be manually unlocked using code (e.g. in achievement complete code).,,,
-# tags: Optional, currently unused.,,,,,,
+# tags: Optional.
+#    MagicLib_PermanentPJ: The paintjob is permanent. It cannot be removed or changed by the player.
+#    MagicLib_ShinyPJ: The paintjob will appear in NPC fleets very rarely. The intended use is to combine this with MagicLib_PermanentPJ and to not make it player-unlockable.
 # unlockConditions: Optional, default none. How to unlock the paintjob. Aim for one or two sentences.,,,,,,
 # description: Optional, default none. The description of the paintjob. Aim for one or two sentences.,,,,,,
 ,,,,,,,
 # Example,,,,,,,
-# magiclib_examplePaintjob," ""onslaught""",Oldslaught,graphics/ships/oldslaught.png,false,,Complete the 'Slayer' achievement to unlock.,Original Onslaught sprite.
+# magiclib_hullid_examplePaintjob," ""onslaught""",Oldslaught,graphics/ships/oldslaught.png,false,,Complete the 'Slayer' achievement to unlock.,Original Onslaught sprite.

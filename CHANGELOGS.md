@@ -1,3 +1,11 @@
+Version 1.3.4
+
+**MagicBounty**
+- Accepted bounties are now always displayed on the Board, even when out of range of the bounty giver.
+
+**MagicPaintjobs**
+- The Paintjob hullmod no longer shows up as installable.
+
 Version 1.3.3
 **Other**
 - Fixed unintentional dependency on LunaLib.
