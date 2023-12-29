@@ -74,10 +74,15 @@ public class MagicTargetListAchievement extends MagicAchievement {
             }
         }
 
+        List<String> targetsToRemove = new ArrayList<>();
         for (String key : savedTargets.keySet()) {
             if (!targets.containsKey(key)) {
-                savedTargets.remove(key);
+                targetsToRemove.add(key);
             }
+        }
+
+        for (String key : targetsToRemove) {
+            savedTargets.remove(key);
         }
 
         getMemory().put(KEY, savedTargets);

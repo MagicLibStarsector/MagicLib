@@ -5,6 +5,7 @@ Version 1.3.4
 
 **MagicPaintjobs**
 - The Paintjob hullmod no longer shows up as installable.
+- Fixed crash from ConcurrentModificationException (reported by Meelock)
 
 Version 1.3.3
 **Other**
