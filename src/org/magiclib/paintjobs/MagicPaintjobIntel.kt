@@ -262,7 +262,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                             padding,
                             imageSize,
                             xPosOfCellOnRow,
-                            yPosOfCellOnRow
+                            rowYPos
                         )
                     }
                 }

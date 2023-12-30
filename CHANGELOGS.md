@@ -9,6 +9,7 @@ Version 1.3.5
   - This change is backwards-compatible. No need to update your csv.
   - `hull_ids` is comma-separated. A single paintjob may now apply to multiple hulls.
 - Added `ShipKillsAchievement` as an abstract class to easily make "Kill X ships using a \<ship\>" achievements.
+- Various UI fixes.
 
 Version 1.3.4
 
