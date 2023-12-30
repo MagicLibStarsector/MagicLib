@@ -1,6 +1,6 @@
-id,hullId,name,spriteId,unlockedAutomatically,tags,unlockConditions,description
+id,hullIds,name,spriteId,unlockedAutomatically,tags,unlockConditions,description
 # id: Required. The id of the paintjob. Must be unique. Prefix with your mod id. Examples: magiclib_fury_racing, magiclib_onslaught_pirate,,,,,,,
-# hullId: Required. The id of the hull that this paintjob applies to. Must be a valid hull id.,,,,,,,
+# hullIds: Required. The ids of the hull that this paintjob applies to. Must contain at least one valid hull id.,,,,,,,
 # name: Required. The name of the paintjob.,,,,,,,
 # spriteId: Required. The path or spriteName of the ship sprite.,,,,,,,
 # unlockedAutomatically: Optional, default true. If true, the paintjob is unlocked by default. Otherwise, it must be manually unlocked using code (e.g. in achievement complete code).,,,

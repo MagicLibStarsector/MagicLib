@@ -1,6 +1,7 @@
 package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.util.Misc
@@ -36,10 +37,24 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     @Transient
     var shipBeingViewed: FleetMemberAPI? = null
 
+    /**
+     * Set, notify intel, then unset. This will display "Unlocked <paintjob>" in the intel notification.
+     */
+    @Transient
+    var tempPaintjobForIntelNotification: MagicPaintjobSpec? = null
+
     @Transient
     private val logger = Global.getLogger(MagicPaintjobIntel::class.java)
 
-    override fun getName(): String = MagicTxt.getString("ml_mp_intelName")
+    override fun getName(): String =
+        tempPaintjobForIntelNotification?.let { MagicTxt.getString("ml_mp_intelUnlockedNotification") }
+            ?: MagicTxt.getString("ml_mp_intelName")
+
+    override fun addBulletPoints(info: TooltipMakerAPI, mode: IntelInfoPlugin.ListInfoMode?) {
+        if (tempPaintjobForIntelNotification != null) {
+            info.addPara(createPaintjobName(tempPaintjobForIntelNotification!!), 3f)
+        }
+    }
 
     override fun getIcon() = Global.getSettings().getSpriteName("intel", "magicPaintjobs")
 
@@ -195,7 +210,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }
 
             val shipsThatPjMayApplyTo = Global.getSector().playerFleet.fleetData.membersListCopy
-                .filter { it.hullId == pj.hullId }
+                .filter { it.hullSpec.baseHullId in pj.hullIds }
                 // If the ship is wearing a permanent paintjob, don't show it in the list.
                 .filter { MagicPaintjobManager.getCurrentShipPaintjob(it)?.isPermanent != true }
 
@@ -275,7 +290,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     }
 
     private fun createPaintjobName(pj: MagicPaintjobSpec) =
-        pj.name + " " + runCatching { Global.getSettings().getHullSpec(pj.hullId).hullName }.getOrElse { pj.hullId }
+        pj.name + " " + runCatching { Global.getSettings().getHullSpec(pj.hullIds.first()).hullName }.getOrElse { pj.hullIds.first() }
 
     private fun displayShipGrid(
         createFromThisPanel: CustomPanelAPI,
@@ -301,7 +316,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             padding,
             ships
         ) { cellTooltip, row, ship, index, xPos, yPos, rowYPos ->
-            val paintjobsForShip = MagicPaintjobManager.getPaintjobsForHull(ship.hullId)
+            val paintjobsForShip = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, includeShiny = false)
             val shipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship)
 
             val spriteName = ship.spriteOverride ?: shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
@@ -669,11 +684,17 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             cellWidth = cellWidth,
             padding = padding,
             items = items
-        ) { paintjobTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
+        ) { pjCellTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
             val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(ship)?.id == paintjob?.id
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
+            val isUnlocked = paintjob == null || MagicPaintjobManager.unlockedPaintjobIds.contains(paintjob.id)
 
-            paintjobTooltip.addPara(
+            val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
+            val cellUnderlay = cellPanel.createUIElement(cellWidth, cellHeight, false)
+            cellPanel.addUIElement(cellUnderlay).inTL(padding, 0f)
+            pjCellTooltip.addCustom(cellPanel, 0f)
+
+            cellUnderlay.addPara(
                 paintjob?.name ?: MagicTxt.getString("ml_mp_default"),
                 if (paintjob == null) Misc.getTextColor() else Misc.getHighlightColor(),
                 opad
@@ -681,29 +702,45 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 .apply {
                     setAlignment(Alignment.MID)
                 }
-            val title = paintjobTooltip.prev
+            val title = cellUnderlay.prev
             Global.getSettings().loadTexture(spriteName)
-            paintjobTooltip.addImage(
+
+            cellUnderlay.addImage(
                 spriteName, imageSize, imageSize, opad
             )
-            val image = paintjobTooltip.prev
-            paintjobTooltip.prev.position.belowMid(title, opad)
+            val image = cellUnderlay.prev
+            cellUnderlay.prev.position.belowMid(title, opad)
             if (isWearingPj) {
-                paintjobTooltip.addPara(MagicTxt.getString("ml_mp_applied"), Misc.getPositiveHighlightColor(), opad)
-                    .apply {
-                        setAlignment(Alignment.MID)
-                    }
+                cellUnderlay.addPara(MagicTxt.getString("ml_mp_applied"), Misc.getPositiveHighlightColor(), opad)
+                    .setAlignment(Alignment.MID)
             } else
-                paintjobTooltip.addPara("", opad)
-            paintjobTooltip.prev.position.belowMid(image, opad)
+                cellUnderlay.addPara("", opad)
+            cellUnderlay.prev.position.belowMid(image, opad)
+
+            if (!isUnlocked) {
+                val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
+                cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
+                cellOverlay.addPara(MagicTxt.getString("ml_mp_locked"), Misc.getNegativeHighlightColor(), pad)
+                    .setAlignment(Alignment.MID)
+            }
 
             if (paintjob != null)
                 addPaintjobHoverTooltipIfNeeded(
                     pj = paintjob,
-                    cellPanel = row.createCustomPanel(cellWidth, cellHeight, null),
-                    pjCellTooltip = paintjobTooltip
+                    cellPanel = cellPanel,
+                    pjCellTooltip = pjCellTooltip
                 )
 
+            if (!isUnlocked)
+                addDarkenCover(
+                    panel = row,
+                    cellWidth = cellWidth,
+                    cellHeight = cellHeight,
+                    xPos = xPosOfCellOnRow,
+                    yPos = yPosOfCellOnRow,
+                    highlightOnHover = true
+                )
+            else
             addHoverHighlight(
                 panel = row,
                 cellWidth = cellWidth,

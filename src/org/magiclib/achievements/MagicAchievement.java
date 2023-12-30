@@ -160,7 +160,9 @@ public class MagicAchievement {
     }
 
     /**
-     * Not meant to be overriden. Use {@link #advanceAfterInterval(float)} instead.
+     * ONLY override if you need to do something EVERY FRAME.
+     * Whenever possible, use {@link #advanceAfterInterval(float)} instead.
+     * <p>
      * Not called if the achievement is complete.
      */
     protected void advanceInternal(float amount) {

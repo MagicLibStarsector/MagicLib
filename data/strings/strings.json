@@ -289,6 +289,7 @@
 
     # MagicPaintjobs
     "ml_mp_intelName": "Paintjobs",
+    "ml_mp_intelUnlockedNotification": "Paintjob Unlocked!",
     "ml_mp_applyPaintjob": "Apply paintjob to...",
     "ml_mp_viewFleet": "View Fleet",
     "ml_mp_viewPaintjobs": "View Paintjobs",

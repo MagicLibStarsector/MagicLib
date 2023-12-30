@@ -1,3 +1,13 @@
+Version 1.3.5
+**MagicPaintjobs**
+- Added a notification when a paintjob is unlocked. 
+  - Actually, this was meant to be in 1.3.0, but somehow I deleted the code without realizing.
+- Paintjobs now apply to `baseHullId` instead of `hullId`.
+  - So, both `wolf` and `wolf_d` will share paintjobs.
+- In `magic_paintjobs.csv`, the `hull_id` column has been replaced with `hull_ids`.
+  - This change is backwards-compatible. No need to update your csv.
+  - `hull_ids` is comma-separated. A single paintjob may now apply to multiple hulls.
+
 Version 1.3.4
 
 **MagicBounty**

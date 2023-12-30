@@ -1,11 +1,14 @@
 package org.magiclib.paintjobs
 
+import com.fs.starfarer.api.EveryFrameScript
+import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
 import org.json.JSONObject
+import org.lazywizard.lazylib.ext.logging.w
 import org.magiclib.LunaWrapper
 import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
@@ -21,6 +24,7 @@ object MagicPaintjobManager {
     private val unlockedPaintjobsInner = mutableSetOf<String>()
     private val paintjobsInner = mutableListOf<MagicPaintjobSpec>()
     private const val isIntelImportantMemKey = "\$magiclib_isPaintjobIntelImportant"
+    private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableListOf<String>()
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
@@ -87,6 +91,9 @@ object MagicPaintjobManager {
         initIntel()
 
         Global.getSector().addTransientListener(MagicPaintjobShinyAdder())
+        if (!Global.getSector().hasTransientScript(MagicPaintjobRunner::class.java)) {
+            Global.getSector().addTransientScript(MagicPaintjobRunner())
+        }
     }
 
 
@@ -120,6 +127,7 @@ object MagicPaintjobManager {
                     val item = modCsv.getJSONObject(i)
                     id = item.getString("id").trim()
                     val hullId = item.getString("hullId").trim()
+                    val hullIds = item.optJSONArray("hullIds")?.toStringList().orEmpty().map { it.trim() } + hullId
                     val name = item.getString("name").trim()
                     val description = item.getString("description").trim()
                     val unlockConditions = item.getString("unlockConditions").trim()
@@ -145,8 +153,8 @@ object MagicPaintjobManager {
                         logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
                         skip = true
                     }
-                    if (hullId.isBlank()) {
-                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no hullId, skipping.")
+                    if (hullIds.isEmpty()) {
+                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no hullIds, skipping.")
                         skip = true
                     }
                     if (name.isBlank()) {
@@ -165,6 +173,7 @@ object MagicPaintjobManager {
                                 modName = mod.name,
                                 id = id,
                                 hullId = hullId,
+                                hullIds = hullIds,
                                 name = name,
                                 unlockedAutomatically = unlockedAutomatically,
                                 description = description,
@@ -195,26 +204,35 @@ object MagicPaintjobManager {
             newPaintjobSpecsById[newSpec.id] = newSpec
         }
 
+        completedPaintjobIdsThatUserHasBeenNotifiedFor.clear()
+        for (prevPj in newSpecs) {
+            if (prevPj.isUnlocked()) {
+                completedPaintjobIdsThatUserHasBeenNotifiedFor.add(prevPj.id)
+            }
+        }
+
         logger.info("Loaded " + newPaintjobSpecsById.size + " paintjobs.")
         return newPaintjobSpecsById
     }
 
     @JvmStatic
-    fun getPaintjobsForHull(hullId: String): List<MagicPaintjobSpec> {
-        return paintjobsInner.filter { it.hullId.equals(hullId, ignoreCase = true) }
-    }
+    @JvmOverloads
+    fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false): List<MagicPaintjobSpec> =
+        paintjobsInner
+            .filter { hullId in it.hullIds }
+            .let { if (includeShiny) it else it.filter { !it.isShiny } }
 
     @JvmStatic
     fun saveUnlockedPaintJobs() {
         // Ensure that we have the latest unlocked pjs before saving
         loadUnlockedPaintjobs()
         if (unlockedPaintjobsInner.isEmpty()) return
-        val magicNumber = 3
 
         runCatching {
             val unlockedPJsObj = JSONObject()
             unlockedPJsObj.put(jsonObjectKey, unlockedPaintjobsInner.toList())
-            Global.getSettings().writeTextFileToCommon(commonFilename, unlockedPJsObj.toString(magicNumber))
+            val indentation = 3
+            Global.getSettings().writeTextFileToCommon(commonFilename, unlockedPJsObj.toString(indentation))
         }
             .onFailure { logger.error("Failed to save unlocked paintjobs.", it) }
     }
@@ -240,8 +258,8 @@ object MagicPaintjobManager {
      */
     @JvmStatic
     fun addPaintJob(paintjob: MagicPaintjobSpec) {
-        if (runCatching { Global.getSettings().getHullSpec(paintjob.hullId) }.getOrNull() == null) {
-            logger.error("Did not add paintjob ${paintjob.id}. Hull with id ${paintjob.hullId} does not exist.")
+        if (paintjob.hullIds.none { runCatching { Global.getSettings().getHullSpec(it) }.getOrNull() != null }) {
+            logger.error("Did not add paintjob ${paintjob.id}. Hull with ids ${paintjob.hullIds} does not exist.")
             return
         }
 
@@ -265,6 +283,18 @@ object MagicPaintjobManager {
         if (getPaintjob(id)?.isUnlockable != true) return
 
         unlockedPaintjobsInner.add(id)
+        saveUnlockedPaintJobs()
+    }
+
+    /**
+     * Don't use this without good reason, such as debugging.
+     */
+    @JvmStatic
+    fun lockPaintjob(id: String) {
+        if (!unlockedPaintjobsInner.contains(id))
+            return
+
+        unlockedPaintjobsInner.remove(id)
         saveUnlockedPaintJobs()
     }
 
@@ -382,6 +412,33 @@ object MagicPaintjobManager {
         return getPaintjob(paintjobId)
     }
 
+    @JvmStatic
+    fun advance(amount: Float) {
+        if (!isEnabled) return
+        val intel = getIntel() ?: return
+
+        // For all paintjobs that were just unlocked, show intel update.
+        // Only notify intel if in campaign and not showing a dialog.
+        // If in combat, the intel will be shown when the player returns to the campaign.
+        if (Global.getCurrentState() == GameState.CAMPAIGN && Global.getSector().campaignUI.currentInteractionDialog == null) {
+            for (paintjob in getPaintjobs()) {
+                if (paintjob.isUnlocked() && !completedPaintjobIdsThatUserHasBeenNotifiedFor.contains(paintjob.id)) {
+                    // Player has unlocked a new paintjob! Let's notify them.
+
+                    try {
+                        intel.tempPaintjobForIntelNotification = paintjob
+                        intel.sendUpdateIfPlayerHasIntel(null, false, false)
+                        intel.tempPaintjobForIntelNotification = null
+//                        MagicAchievementManager.playSoundEffect(paintjob)
+                        completedPaintjobIdsThatUserHasBeenNotifiedFor.add(paintjob.id)
+                    } catch (e: java.lang.Exception) {
+                        logger.w(ex = e, message = { "Unable to notify intel of paintjob " + paintjob.id })
+                    }
+                }
+            }
+        }
+    }
+
     private fun removeIntel() {
         if (Global.getSector() == null) return
         val intelManager = Global.getSector().intelManager
@@ -390,3 +447,16 @@ object MagicPaintjobManager {
         }
     }
 }
+
+
+internal class MagicPaintjobRunner : EveryFrameScript {
+    override fun isDone(): Boolean = false
+
+    override fun runWhilePaused(): Boolean = true
+
+    override fun advance(amount: Float) {
+        MagicPaintjobManager.advance(amount)
+    }
+}
+
+fun MagicPaintjobSpec.isUnlocked() = MagicPaintjobManager.unlockedPaintjobIds.contains(id)

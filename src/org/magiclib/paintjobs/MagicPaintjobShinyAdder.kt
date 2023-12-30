@@ -21,7 +21,7 @@ class MagicPaintjobShinyAdder : BaseCampaignEventListener(false) {
         }
 
         val shipsInFleetWithAvailableShiny =
-            fleet.fleetData.membersListCopy.filter { it.hullId in allShinyPaintjobs.map { pj -> pj.hullId } }
+            fleet.fleetData.membersListCopy.filter { it.hullId in allShinyPaintjobs.flatMap { pj -> pj.hullIds } }
         val probability = 50 // 1 in X chance of getting a shiny
         var addedShiny = false
 
@@ -31,7 +31,7 @@ class MagicPaintjobShinyAdder : BaseCampaignEventListener(false) {
                 MagicPaintjobManager.applyPaintjob(
                     ship,
                     null,
-                    allShinyPaintjobs.filter { it.hullId == ship.hullId }.random()
+                    allShinyPaintjobs.filter { ship.hullId in it.hullIds }.random()
                 )
 
                 if (!ship.variant.hasTag(Tags.UNRECOVERABLE)) {
