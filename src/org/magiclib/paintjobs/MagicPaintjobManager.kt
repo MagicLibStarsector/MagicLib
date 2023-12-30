@@ -14,6 +14,7 @@ import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
 import org.magiclib.kotlin.toStringList
 import org.magiclib.util.MagicMisc
+import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
 
 object MagicPaintjobManager {
@@ -126,8 +127,9 @@ object MagicPaintjobManager {
                 try {
                     val item = modCsv.getJSONObject(i)
                     id = item.getString("id").trim()
-                    val hullId = item.getString("hullId").trim()
-                    val hullIds = item.optJSONArray("hullIds")?.toStringList().orEmpty().map { it.trim() } + hullId
+                    val hullId = item.optString("hullId")?.trim()
+                    val hullIds =
+                        (item.optString("hullIds")?.split(",").orEmpty().map { it.trim() } + hullId).filterNotNull()
                     val name = item.getString("name").trim()
                     val description = item.getString("description").trim()
                     val unlockConditions = item.getString("unlockConditions").trim()
@@ -150,7 +152,8 @@ object MagicPaintjobManager {
                     }
 
                     if (id.isBlank()) {
-                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
+                        // Just a blank row, no need to warn.
+//                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
                         skip = true
                     }
                     if (hullIds.isEmpty()) {
@@ -172,7 +175,7 @@ object MagicPaintjobManager {
                                 modId = mod.id,
                                 modName = mod.name,
                                 id = id,
-                                hullId = hullId,
+                                hullId = hullIds.first(),
                                 hullIds = hullIds,
                                 name = name,
                                 unlockedAutomatically = unlockedAutomatically,
@@ -189,10 +192,13 @@ object MagicPaintjobManager {
                     }
                 } catch (e: java.lang.Exception) {
                     logger.warn(
-                        "Unable to load paintjob #" + i + " (" + id + ") in " + mod.id + " by " + mod.author.substring(
-                            0,
-                            30
-                        ) + " from file " + specsFilename, e
+                        "Unable to load paintjob #$i ($id) in ${mod.id} by ${
+                            MagicTxt.ellipsizeStringAfterLength(
+                                mod.author,
+                                30
+                            )
+                        } from file $specsFilename",
+                        e
                     )
                 }
             }
@@ -202,13 +208,6 @@ object MagicPaintjobManager {
 
         for (newSpec in newSpecs) {
             newPaintjobSpecsById[newSpec.id] = newSpec
-        }
-
-        completedPaintjobIdsThatUserHasBeenNotifiedFor.clear()
-        for (prevPj in newSpecs) {
-            if (prevPj.isUnlocked()) {
-                completedPaintjobIdsThatUserHasBeenNotifiedFor.add(prevPj.id)
-            }
         }
 
         logger.info("Loaded " + newPaintjobSpecsById.size + " paintjobs.")
@@ -248,8 +247,17 @@ object MagicPaintjobManager {
                 .getOrThrow()
 
             unlockedPaintjobsInner.addAll(unlockedPJsObj.getJSONArray(jsonObjectKey).toStringList())
+
+            markAsAlreadyNotifiedPlayerOfNewUnlock(unlockedPaintjobsInner)
         }
             .onFailure { logger.error("Failed to load unlocked paintjobs.", it) }
+    }
+
+    private fun markAsAlreadyNotifiedPlayerOfNewUnlock(paintjobs: Set<String>) {
+        completedPaintjobIdsThatUserHasBeenNotifiedFor.clear()
+        for (paintjobId in paintjobs) {
+            completedPaintjobIdsThatUserHasBeenNotifiedFor.add(paintjobId)
+        }
     }
 
     /**

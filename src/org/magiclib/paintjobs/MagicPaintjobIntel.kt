@@ -290,7 +290,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     }
 
     private fun createPaintjobName(pj: MagicPaintjobSpec) =
-        pj.name + " " + runCatching { Global.getSettings().getHullSpec(pj.hullIds.first()).hullName }.getOrElse { pj.hullIds.first() }
+        pj.name + " " + runCatching {
+            Global.getSettings().getHullSpec(pj.hullIds.first()).hullName
+        }.getOrElse { pj.hullIds.first() }
 
     private fun displayShipGrid(
         createFromThisPanel: CustomPanelAPI,
@@ -316,7 +318,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             padding,
             ships
         ) { cellTooltip, row, ship, index, xPos, yPos, rowYPos ->
-            val paintjobsForShip = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, includeShiny = false)
+            val paintjobsForShip =
+                MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, includeShiny = false)
             val shipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship)
 
             val spriteName = ship.spriteOverride ?: shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
@@ -691,7 +694,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
             val cellUnderlay = cellPanel.createUIElement(cellWidth, cellHeight, false)
-            cellPanel.addUIElement(cellUnderlay).inTL(padding, 0f)
+            cellPanel.addUIElement(cellUnderlay).inTL(0f, 0f)
             pjCellTooltip.addCustom(cellPanel, 0f)
 
             cellUnderlay.addPara(
@@ -719,7 +722,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             if (!isUnlocked) {
                 val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
-                cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
+                cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2 + padding)
                 cellOverlay.addPara(MagicTxt.getString("ml_mp_locked"), Misc.getNegativeHighlightColor(), pad)
                     .setAlignment(Alignment.MID)
             }
@@ -741,25 +744,25 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     highlightOnHover = true
                 )
             else
-            addHoverHighlight(
-                panel = row,
-                cellWidth = cellWidth,
-                cellHeight = cellHeight,
-                xPos = xPosOfCellOnRow,
-                yPos = yPosOfCellOnRow,
-                backgroundColor = if (isWearingPj) Misc.getPositiveHighlightColor() else Misc.getBasePlayerColor(),
-                baseAlpha = if (isWearingPj) .1f else 0f,
-                borderOnly = true
-            )
-                .apply {
-                    onClick {
-                        // Toggle paintjob.
-                        if (isWearingPj || paintjob == null) MagicPaintjobManager.removePaintjobFromShip(ship)
-                        else MagicPaintjobManager.applyPaintjob(ship, null, paintjob)
+                addHoverHighlight(
+                    panel = row,
+                    cellWidth = cellWidth,
+                    cellHeight = cellHeight,
+                    xPos = xPosOfCellOnRow,
+                    yPos = yPosOfCellOnRow,
+                    backgroundColor = if (isWearingPj) Misc.getPositiveHighlightColor() else Misc.getBasePlayerColor(),
+                    baseAlpha = if (isWearingPj) .1f else 0f,
+                    borderOnly = true
+                )
+                    .apply {
+                        onClick {
+                            // Toggle paintjob.
+                            if (isWearingPj || paintjob == null) MagicPaintjobManager.removePaintjobFromShip(ship)
+                            else MagicPaintjobManager.applyPaintjob(ship, null, paintjob)
 
-                        refreshPanel()
+                            refreshPanel()
+                        }
                     }
-                }
 
         }
 
