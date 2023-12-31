@@ -1,0 +1,20 @@
+id,name,description,tooltip,script,image,spoilerLevel,rarity,
+# id: Required. The id of the achievement. Must be unique. Prefix with your mod id.
+# name: Required. The name of the achievement.
+# description: Required. The description of the achievement. Use past tense ("Killed 10 ships"). Aim for one or two sentences.
+# tooltip: Optional. A hardcoded tooltip to display when the player hovers over the achievement in the achievement list,
+#     for example for any detailed explanation that doesn't fit in the description.
+# script: Required. The fully qualified name of the script (Java/Kotlin) class that implements the achievement. Must be a subclass of MagicAchievement.
+# image: Optional. The path to the image to display for the achievement once unlocked. If not specified, the image will be based on rarity.
+# spoilerLevel: Optional. Think about how the visibility may incentivize the player's behavior.
+#     VISIBLE (default): The achievement is visible to the player at all times, and its progress is shown.
+#     SPOILER: Appears as an entry in the achievements list, but the name and description is hidden.
+#              This is intended for achievements that the player is likely to unlock naturally, but that you don't want to spoil.
+#              Avoid using this for achievements that they player would never complete without knowing what to do, as that would be frustrating.
+#     HIDDEN: Not shown at all until unlocked. This is intended for achievements that the player is unlikely to unlock easily, but may unlock rarely.
+#             Good for things that require luck.
+# rarity: Optional. COMMON, UNCOMMON, RARE, EPIC, LEGENDARY. Defaults to COMMON.
+
+# Examples
+#magiclib_exampleSimple,"Example Regular Achievement","Created your first achievement.",,org.magiclib.achievements.ExampleSimpleAchievement,,VISIBLE,UNCOMMON
+#magiclib_exampleCustom,"Example Customized Achievement","Created your first achievement with a custom icon and tooltip.","Optional tooltip. To learn how to create an achievement, read the documentation!",org.magiclib.achievements.ExampleCustomAchievement,"/graphics/magic/icons/example_achievement.png",SPOILER,RARE

@@ -384,6 +384,9 @@ public final class ActiveBounty {
      * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
      */
     public @NotNull Float getDaysRemainingToComplete() {
+        if (!MagicBountyCoordinator.getDeadlinesEnabled())
+            return Float.POSITIVE_INFINITY;
+
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {
             return Math.max(0, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
         } else {
@@ -514,7 +517,7 @@ public final class ActiveBounty {
      * @param postScalingMultiplier The multiplier to apply AFTER all other scaling is applied.
      */
     @Nullable
-    Float calculateCreditReward(float preScalingMultiplier, float postScalingMultiplier) {
+    public Float calculateCreditReward(float preScalingMultiplier, float postScalingMultiplier) {
         int jobCreditReward = (int) (spec.job_credit_reward * preScalingMultiplier);
 
         if (jobCreditReward <= 0) {

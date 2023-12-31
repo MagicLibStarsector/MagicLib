@@ -1,4 +1,92 @@
-Verison 1.1.3
+Version 1.3.5
+
+**MagicPaintjobs**
+- Added a notification when a paintjob is unlocked. 
+  - Actually, this was meant to be in 1.3.0, but somehow I deleted the code without realizing.
+- Paintjobs now apply to `baseHullId` instead of `hullId`.
+  - So, both `wolf` and `wolf_d` will share paintjobs.
+- In `magic_paintjobs.csv`, the `hull_id` column has been replaced with `hull_ids`.
+  - This change is backwards-compatible. No need to update your csv.
+  - `hull_ids` is comma-separated. A single paintjob may now apply to multiple hulls.
+- Added `ShipKillsAchievement` as an abstract class to easily make "Kill X ships using a \<ship\>" achievements.
+- Various UI fixes.
+
+Version 1.3.4
+
+**MagicBounty**
+- Accepted bounties are now always displayed on the Board, even when out of range of the bounty giver.
+
+**MagicPaintjobs**
+- The Paintjob hullmod no longer shows up as installable.
+- Fixed crash from ConcurrentModificationException (reported by Meelock)
+
+Version 1.3.3
+**Other**
+- Fixed unintentional dependency on LunaLib.
+
+**MagicPaintjobs**
+- Paintjobs are now built-in hullmods. This prevents changing variants from unapplying them.
+- Paintjobs images are no longer preloaded into VRAM, which unintentionally caused VRAM use when the feature was disabled.
+- \<redacted\> paintjobs now indicate that they cannot be changed.
+
+Version 1.3.2
+**MagicBounty**
+- Fixed a crash when accepting "apocrita_belcher" bounty (reported by rosnok).
+
+Version 1.3.1
+**MagicBounty**
+- Fixed a crash on load ("No enum constant", reported by timediver0)
+
+Version 1.3.0
+
+**MagicAchievements**
+- **New feature!** Cross-save achievements framework that any mod may add to.
+- 20+ achievements available in a separate mod, Magic Achievements: Vanilla Pack.
+- May be disabled using LunaLib's settings menu.
+- Achievements work similarly to Steam's; once unlocked, they are unlocked forever and across all saves.
+  - Nexerelin's Milestones, in contrast, are per-save.
+- Find them under your Intel under `Personal`.
+
+**MagicPaintjobs**
+- **New feature!** Cross-save paintjobs (ship skins) framework that any mod may add to.
+- Useful as rewards for achievements! Or for any other reason.
+- Mods may add paintjobs, which will be locked by default. The modder chooses when/how to unlock them.
+- Caution: because Starsector preloads almost everything, paintjobs in a mod will be loaded into VRAM even if they aren't applied.
+
+**MagicBounty**
+-  **New feature!** Intel Board
+  - Displays all bounties (if you meet the conditions) within 10LY of your location.
+  - **You no longer need to travel to a location to accept a bounty.**
+  - Removed MagicBounty default time limits (there will only be a time limit if the bounty maker added one).
+  - Contributed by President Matt Damon. Thank you!
+- Fixed a potential crash after resetting a bounty via console command (reported by mrmagolor).
+
+**CombatGUI**
+- Properly released to everybody!
+- Breaking changes from the Discord-only 1.2.0 version to add `MagicCombat` to the class names.
+  - I don't believe anybody was using this, but I'll release a backwards-compat patch if someone asks me to.
+
+**Other**
+- Added `MagicTxt.ellipsizeStringAfterLength(String str, int length)`.
+- Added some more logging when checking if items can be installed in industries (reported by MnHebi).
+- Added `MagicRefreshableBaseIntelPlugin`, which adds a method to refresh Intel's center panel. Used by MagicPaintjobs.
+
+Version 1.2.1 (discord-only)
+
+**MagicBounty**
+- Text now supports all vanilla variables (requested by CivilYoshi).
+
+Version 1.2.0 (discord-only)
+
+**CombatGUI**
+- **New feature!** Contributed by @Jannes/DesperatePeter!
+
+**MagicBounty**
+- Bounty fleets are no longer aggressive toward non-player fleets. They should no longer attack each other (reported by Avanitia).
+- Days elapsed calculation was incorrect; the day of the month was used rather than days since game start during the first cycle.
+  - Bounties that show up after a certain number of days will now do so correctly.
+
+Version 1.1.3
 
 **MagicBounty**
 - Fixed "location_entitiesID" never working (reported by vicegrip).

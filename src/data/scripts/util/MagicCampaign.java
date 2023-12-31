@@ -42,6 +42,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.campaign.MagicCaptainBuilder;
 import org.magiclib.campaign.MagicFleetBuilder;
 import org.magiclib.util.MagicStringMatcher;
+import org.magiclib.util.MagicMisc;
 
 import java.util.*;
 
@@ -1522,7 +1523,7 @@ public class MagicCampaign {
 
         //checking trigger_min_days_elapsed
 //        if(min_days_elapsed>0 && Global.getSector().getClock().getDay()<min_days_elapsed)return false;
-        if (min_days_elapsed > 0 && Global.getSector().getClock().getDay() + (Global.getSector().getClock().getCycle() - 206) * 365 < min_days_elapsed)
+        if (min_days_elapsed > 0 && MagicMisc.getElapsedDaysSinceGameStart() < min_days_elapsed)
             return false;
 
         //checking trigger_player_minLevel

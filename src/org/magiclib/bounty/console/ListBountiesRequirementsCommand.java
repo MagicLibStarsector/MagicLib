@@ -9,11 +9,9 @@ import org.lazywizard.console.Console;
 import org.magiclib.bounty.MagicBountyCoordinator;
 import org.magiclib.bounty.MagicBountyLoader;
 import org.magiclib.bounty.MagicBountySpec;
+import org.magiclib.util.MagicMisc;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ListBountiesRequirementsCommand implements BaseCommand {
 
@@ -153,10 +151,12 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
         //WHEN
         if (bounty.trigger_min_days_elapsed > 0) {
             Console.showMessage(" - " + "Offered only after " + bounty.trigger_min_days_elapsed + " days.");
-            if (Global.getSector().getClock().getDay() + (Global.getSector().getClock().getCycle() - 206) * 365 >= bounty.trigger_min_days_elapsed) {
-                Console.showMessage("   . " + "VALID ( day " + Global.getSector().getClock().getDay() + " cycle " + Global.getSector().getClock().getCycle() + " : " + (Global.getSector().getClock().getDay() + (Global.getSector().getClock().getCycle() - 206) * 365) + " )");
+            int daysElapsed = (int) MagicMisc.getElapsedDaysSinceGameStart();
+
+            if (daysElapsed >= bounty.trigger_min_days_elapsed) {
+                Console.showMessage("   . " + "VALID ( day " + Global.getSector().getClock().getCal().get(Calendar.DAY_OF_YEAR) + " cycle " + Global.getSector().getClock().getCycle() + " : " + daysElapsed + " )");
             } else {
-                Console.showMessage("   . " + "INVALID ( day " + Global.getSector().getClock().getDay() + " cycle " + Global.getSector().getClock().getCycle() + " : " + (Global.getSector().getClock().getDay() + (Global.getSector().getClock().getCycle() - 206) * 365) + " )");
+                Console.showMessage("   . " + "INVALID ( day " + Global.getSector().getClock().getCal().get(Calendar.DAY_OF_YEAR) + " cycle " + Global.getSector().getClock().getCycle() + " : " + daysElapsed + " )");
                 valid = false;
             }
         }

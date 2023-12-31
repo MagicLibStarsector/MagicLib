@@ -4,16 +4,21 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.LunaWrapper;
+import org.magiclib.LunaWrapperSettingsListener;
+import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicTxt;
@@ -35,6 +40,7 @@ public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
     private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
+    private static Boolean DEADLINES_ENABLED = false;
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -44,6 +50,26 @@ public final class MagicBountyCoordinator {
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
         MagicBountyLoader.validateAndCullLoadedBounties();
+
+
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+        while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
+            intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
+
+        intelManager.addIntel(new BountyBoardIntelPlugin(), true);
+
+        if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
+            LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
+                @Override
+                public void settingsChanged(@NotNull String s) {
+                    DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
+
+                    if (DEADLINES_ENABLED == null) {
+                        DEADLINES_ENABLED = false;
+                    }
+                }
+            });
+        }
     }
 
     @Nullable
@@ -101,7 +127,7 @@ public final class MagicBountyCoordinator {
             long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - entry.getValue().getBountyCreatedTimestamp());
 
             // Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
-            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted) {
+            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted && getDeadlinesEnabled()) {
                 LOG.info(
                         String.format("Removing expired bounty '%s' (not accepted after %d days), \"%s\"",
                                 entry.getKey(),
@@ -374,6 +400,9 @@ public final class MagicBountyCoordinator {
             fleet.addTag(MagicBountyLoader.BOUNTY_FLEET_TAG);
             fleet.addTag(bountyKey);
 
+            fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORES_OTHER_FLEETS, true);
+            fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_DO_NOT_IGNORE_PLAYER, true);
+
             // Set fleet to max CR
             for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
                 member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
@@ -449,7 +478,7 @@ public final class MagicBountyCoordinator {
 
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-                    Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey);
                 }
             } else {
                 throw new RuntimeException(String.format("Couldn't find %s.", bountyKey));
@@ -522,5 +551,9 @@ public final class MagicBountyCoordinator {
 
     public void setPostScalingCreditRewardMultiplier(float postScalingCreditRewardMultiplier) {
         this.postScalingCreditRewardMultiplier = postScalingCreditRewardMultiplier;
+    }
+
+    public static Boolean getDeadlinesEnabled() {
+        return DEADLINES_ENABLED;
     }
 }

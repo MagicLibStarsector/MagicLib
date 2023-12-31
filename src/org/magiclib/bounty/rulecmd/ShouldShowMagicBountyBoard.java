@@ -21,14 +21,16 @@ import java.util.Map;
 public class ShouldShowMagicBountyBoard extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
-        if (!MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_enabled")) return false;
-        MarketAPI market = dialog.getInteractionTarget().getMarket();
-        if (market == null) return false;
+        return false; // Superseded by intel-based board.
 
-        if (Global.getSettings().isDevMode()) {
-            return true;
-        }
-
-        return MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market);
+//        if (!MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_enabled")) return false;
+//        MarketAPI market = dialog.getInteractionTarget().getMarket();
+//        if (market == null) return false;
+//
+//        if (Global.getSettings().isDevMode()) {
+//            return true;
+//        }
+//
+//        return MagicBountyCoordinator.getInstance().shouldShowBountyBoardAt(market);
     }
 }

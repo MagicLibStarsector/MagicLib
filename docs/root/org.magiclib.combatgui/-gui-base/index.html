@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GuiBase</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>root</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter="moduleName/main">JVM</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="root::org.magiclib.combatgui/GuiBase///PointingToDeclaration//1247924383">
+  <div class="breadcrumbs"><a href="../../../index.html">root</a><span class="delimiter">/</span><a href="../index.html">org.magiclib.combatgui</a><span class="delimiter">/</span><span class="current">GuiBase</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Gui</span><wbr></wbr><span><span>Base</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">GuiBase</a> <span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">guiLayout<span class="token operator">: </span><a href="../-gui-layout/index.html">GuiLayout</a><span class="token operator"> = </span>defaultGuiLayout</span></span><span class="token punctuation">)</span></div><p class="paragraph">The base class you need to extend/inherit from to create a GUI.</p><p class="paragraph">Call the constructor of this class in your constructor (via super) and pass it a guiLayout object. You can use the <code class="lang-kotlin">defaultGuiLayout</code> by passing nothing if you want to get started quickly.</p><p class="paragraph">Override <span data-unresolved-link="org.magiclib.combatgui/GuiBase/getTitleString/#/PointingToDeclaration/">getTitleString</span> to set a display title.</p><p class="paragraph">Call <span data-unresolved-link="org.magiclib.combatgui/GuiBase/addButton/#org.magiclib.combatgui.buttons.ButtonAction?#kotlin.String#kotlin.String#kotlin.Boolean/PointingToDeclaration/">GuiBase.addButton</span> and/or <span data-unresolved-link="org.magiclib.combatgui/GuiBase/addButtonGroup/#org.magiclib.combatgui.buttongroups.ButtonGroupAction#org.magiclib.combatgui.buttongroups.CreateButtonsAction#org.magiclib.combatgui.buttongroups.RefreshButtonsAction?#kotlin.String/PointingToDeclaration/">addButtonGroup</span> in your constructor to define what the GUI does.</p><p class="paragraph">Call this classes <a href="advance.html">advance</a> and <a href="render.html">render</a> in a BaseEveryFrame(Combat)Script advance/render methods.</p><p class="paragraph">It makes sense to create a new GUI object when a hotkey is pressed.</p><p class="paragraph">To get started quickly, you can use the <a href="../-sample-gui-launcher/index.html">SampleGuiLauncher</a>.</p><p class="paragraph">Example implementation:</p><div class="sample-container"><pre><code class="block lang-java" theme="idea">public class ExampleCombatGui extends GuiBase {<br>    // GUI setup work is done in constructor<br>    public ExampleCombatGui(){<br>        super(<br>                new GuiLayout(0.05f, 0.8f, 100f, 20f, 0.5f,<br>                Color.WHITE,5f, 0.4f, 0.2f, 25f,<br>                &quot;graphics/fonts/insignia15LTaa.fnt&quot;, 0.4f, 0.4f)<br>        );<br><br>        addButton(new MyButtonAction(), // MyButtonAction is a class you need to write that implements [ButtonAction]<br>          &quot;MyButton&quot;, // title of the button, i.e. text displayed on the button<br>          &quot;my tooltip text&quot;, // text to display when user hovers over the button<br>          false // if the button should be disabled (usually false)<br>        );<br><br>        addButtonGroup(<br>                new MyButtonGroupAction(), // A class you need to write that implements [ButtonGroupAction]<br>                new CreateSimpleButtons( // you can also write your own class that implements [CreateButtonsAction]<br>                        Arrays.asList(&quot;button1&quot;, &quot;button2&quot;),<br>                        null,<br>                        null<br>                ),<br>                null,<br>                &quot;Example button group&quot;<br>        );<br>    }<br><br>    @Nullable<br>    @Override<br>    protected String getTitleString() {<br>        return &quot;This is an example title&quot;;<br>    }<br><br>    @Nullable<br>    @Override<br>    protected String getMessageString() {<br>        return &quot;This is a sample message&quot;;<br>    }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">Jannes</p></span><span class="kdoc-tag"><h4 class="">Since</h4><p class="paragraph">1.2.0</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1210147446%2FConstructors%2F1247924383" anchor-label="GuiBase" id="1210147446%2FConstructors%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gui-base.html"><span>Gui</span><wbr></wbr><span><span>Base</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1210147446%2FConstructors%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">guiLayout<span class="token operator">: </span><a href="../-gui-layout/index.html">GuiLayout</a><span class="token operator"> = </span>defaultGuiLayout</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1478060078%2FFunctions%2F1247924383" anchor-label="advance" id="-1478060078%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="advance.html"><span><span>advance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1478060078%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="advance.html"><span class="token function">advance</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this every frame in your e.g. com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin. Executes button logic, such as checking which button was clicked and executing actions when appropriate.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-710334032%2FFunctions%2F1247924383" anchor-label="render" id="-710334032%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="render.html"><span><span>render</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-710334032%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="render.html"><span class="token function">render</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this every frame in your e.g. com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin. Renders buttons, texts and tooltips.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-225700425%2FFunctions%2F1247924383" anchor-label="reRenderButtonGroups" id="-225700425%2FFunctions%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="re-render-button-groups.html"><span>re</span><wbr></wbr><span>Render</span><wbr></wbr><span>Button</span><wbr></wbr><span><span>Groups</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-225700425%2FFunctions%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="re-render-button-groups.html"><span class="token function">reRenderButtonGroups</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Delete all buttons from button groups and re-create them with the given <a href="../../org.magiclib.combatgui.buttongroups/-create-buttons-action/index.html">CreateButtonsAction</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-940209711%2FProperties%2F1247924383" anchor-label="color" id="-940209711%2FProperties%2F1247924383" data-filterable-set="moduleName/main"></a>
+          <div class="table-row" data-filterable-current="moduleName/main" data-filterable-set="moduleName/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="color.html"><span><span>color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-940209711%2FProperties%2F1247924383"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable="moduleName/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="color.html">color</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

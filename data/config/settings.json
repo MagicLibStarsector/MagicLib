@@ -1,48 +1,57 @@
 {
-    "plugins":{
-        "ML_fakeBeamPlugin":"org.magiclib.plugins.MagicFakeBeamPlugin",
-        "ML_spriteRenderManager":"org.magiclib.plugins.MagicRenderPlugin",
-        "MagicCampaignTrailPlugin":"org.magiclib.plugins.MagicCampaignTrailPlugin",
-        "MagicTrailPlugin":"org.magiclib.plugins.MagicTrailPlugin",
-        "MagicAutoTrails":"org.magiclib.plugins.MagicAutoTrails",
+  "plugins": {
+    "ML_fakeBeamPlugin": "org.magiclib.plugins.MagicFakeBeamPlugin",
+    "ML_spriteRenderManager": "org.magiclib.plugins.MagicRenderPlugin",
+    "MagicCampaignTrailPlugin": "org.magiclib.plugins.MagicCampaignTrailPlugin",
+    "MagicTrailPlugin": "org.magiclib.plugins.MagicTrailPlugin",
+    "MagicAutoTrails": "org.magiclib.plugins.MagicAutoTrails",
+    "MagicAchievementCombatScript": "org.magiclib.achievements.MagicAchievementCombatScript",
 
-        "old_ML_fakeBeamPlugin":"data.scripts.plugins.MagicFakeBeamPlugin",
-        "old_ML_spriteRenderManager":"data.scripts.plugins.MagicRenderPlugin",
-        "old_MagicCampaignTrailPlugin":"data.scripts.plugins.MagicCampaignTrailPlugin",
-        "old_MagicTrailPlugin":"data.scripts.plugins.MagicTrailPlugin",
-        "old_MagicAutoTrails":"data.scripts.plugins.MagicAutoTrails",
-        #"MagicModuleRetreatFix":"org.magiclib.plugins.MagicModuleRetreatCleaner",
-		#"MagicNebula":"org.magiclib.plugins.MagicNebula",
-    },
+    "old_ML_fakeBeamPlugin": "data.scripts.plugins.MagicFakeBeamPlugin",
+    "old_ML_spriteRenderManager": "data.scripts.plugins.MagicRenderPlugin",
+    "old_MagicCampaignTrailPlugin": "data.scripts.plugins.MagicCampaignTrailPlugin",
+    "old_MagicTrailPlugin": "data.scripts.plugins.MagicTrailPlugin",
+    "old_MagicAutoTrails": "data.scripts.plugins.MagicAutoTrails",
+    #"MagicModuleRetreatFix":"org.magiclib.plugins.MagicModuleRetreatCleaner",
+    #"MagicNebula":"org.magiclib.plugins.MagicNebula",
+  },
 
-    "graphics":{
-		"character":{
-			"godiva":"graphics/portraits/godiva.jpg",
-		},
-        "beams":{
-            "fakeBeamCore":"graphics/magic/fx/fakebeam/fakeBeamCore.png",
-            "fakeBeamFringe":"graphics/magic/fx/fakebeam/fakeBeamFringe.png",
-        },
-		"fx":{
-            "base_trail_smooth":"graphics/magic/fx/base_trail_smooth.png",
-            "base_trail_contrail":"graphics/magic/fx/base_trail_contrail.png",
-            "base_trail_mild":"graphics/magic/fx/base_trail_mild.png",
-            "base_trail_fuzzy":"graphics/magic/fx/base_trail_fuzzy.png",
-            "base_trail_rough":"graphics/magic/fx/base_trail_rough.png",
-            "base_trail_smoke":"graphics/magic/fx/base_trail_smoke.png",
-            "base_trail_heavySmoke":"graphics/magic/fx/base_trail_heavySmoke.png",
-            "base_trail_heavyBurn":"graphics/magic/fx/base_trail_heavyBurn.png",
-            "base_trail_weave":"graphics/magic/fx/base_trail_weave.png",
-            "base_trail_aura":"graphics/magic/fx/base_trail_aura.png",
-            "base_trail_zap":"graphics/magic/fx/base_trail_zap.png",
-            "base_trail_zapWithCore":"graphics/magic/fx/base_trail_zapWithCore.png",
-		},
-		"intel":{
-			"magicBounties":"graphics/magic/icons/ml_bounty.png",
-			"magicBoard":"graphics/magic/icons/ml_bountyBoard.png",
-		},
+  "graphics": {
+    "character": {
+      "godiva": "graphics/portraits/godiva.jpg",
     },
-    "ruleCommandPackages": [
-        "org.magiclib.bounty.rulecmd"
-    ]
+    "beams": {
+      "fakeBeamCore": "graphics/magic/fx/fakebeam/fakeBeamCore.png",
+      "fakeBeamFringe": "graphics/magic/fx/fakebeam/fakeBeamFringe.png",
+    },
+    "fx": {
+      "base_trail_smooth": "graphics/magic/fx/base_trail_smooth.png",
+      "base_trail_contrail": "graphics/magic/fx/base_trail_contrail.png",
+      "base_trail_mild": "graphics/magic/fx/base_trail_mild.png",
+      "base_trail_fuzzy": "graphics/magic/fx/base_trail_fuzzy.png",
+      "base_trail_rough": "graphics/magic/fx/base_trail_rough.png",
+      "base_trail_smoke": "graphics/magic/fx/base_trail_smoke.png",
+      "base_trail_heavySmoke": "graphics/magic/fx/base_trail_heavySmoke.png",
+      "base_trail_heavyBurn": "graphics/magic/fx/base_trail_heavyBurn.png",
+      "base_trail_weave": "graphics/magic/fx/base_trail_weave.png",
+      "base_trail_aura": "graphics/magic/fx/base_trail_aura.png",
+      "base_trail_zap": "graphics/magic/fx/base_trail_zap.png",
+      "base_trail_zapWithCore": "graphics/magic/fx/base_trail_zapWithCore.png",
+    },
+    "intel": {
+      "magicBounties": "graphics/magic/icons/ml_bounty.png",
+      "magicBoard": "graphics/magic/icons/ml_bountyBoard.png",
+      "achievement": "graphics/magic/icons/achievements.png",
+      "achievement_bronze": "graphics/magic/icons/achievement_bronze.png",
+      "achievement_silver": "graphics/magic/icons/achievement_silver.png",
+      "achievement_gold": "graphics/magic/icons/achievement_gold.png",
+      "achievement_purple": "graphics/magic/icons/achievement_purple.png",
+      "achievement_orange": "graphics/magic/icons/achievement_orange2.png",
+      "magicPaintjobs": "graphics/magic/hullmods/paintjob.png",
+      "magicLibIcon": "graphics/magic/icons/magicLibIcon.png",
+    }
+  },
+  "ruleCommandPackages": [
+    "org.magiclib.bounty.rulecmd"
+  ]
 }

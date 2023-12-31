@@ -14,12 +14,17 @@ import java.util.regex.Pattern;
 
 /**
  * Contains some String-related utility functions.
+ *
  * @author Tartiflette, Wisp
  */
 public class MagicTxt {
 
     public static String getString(String id) {
         return Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id);
+    }
+
+    public static String getString(String id, String... args) {
+        return String.format(Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id), args);
     }
 
     /**
@@ -44,6 +49,21 @@ public class MagicTxt {
             }
         } else {
             return stringToReplace;
+        }
+    }
+
+    /**
+     * If the string is longer than the given length, returns the string truncated to the given length with "..." appended.
+     * <p>
+     * Note that "..." is 3 characters, so the returned string will be a max of length + 3.
+     *
+     * @since 1.3.0
+     */
+    public static String ellipsizeStringAfterLength(String str, int length) {
+        if (str.length() <= length) {
+            return str;
+        } else {
+            return str.substring(0, length) + "...";
         }
     }
 

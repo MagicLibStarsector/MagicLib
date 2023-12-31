@@ -7,10 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="starfarer.api" level="project" />
-    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
-    <orderEntry type="library" name="SWP" level="application" />
-    <orderEntry type="library" name="Vayra's Sector" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -24,13 +20,13 @@
         <jarDirectory url="file://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/Console Commands/jars" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="MagicLib-Kotlin" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
           <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
           <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Console.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/lib/Kotlin-Runtime.jar!/" />
         </CLASSES>
         <JAVADOC>
           <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/javadoc.zip!/" />
@@ -42,6 +38,21 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="MagicLib-Kotlin" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/Vayras Sector-3.2.1/jars/VayraSector.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="Console Commands-2023.5" level="project" />
+    <orderEntry type="library" name="LunaLib" level="project" />
+    <orderEntry type="library" name="starfarer-api" level="project" />
+    <orderEntry type="library" name="Vayra's Sector" level="project" />
+    <orderEntry type="library" name="Kotlin-Runtime" level="project" />
+    <orderEntry type="library" name="SWP" level="project" />
+    <orderEntry type="library" name="GraphicsLib" level="project" />
   </component>
 </module>

@@ -2,3 +2,4 @@ command,class,tags,syntax,help
 MagicLib_ListBounties,org.magiclib.bounty.console.ListBountiesCommand,"MagicLib,campaign",MagicLib_ListBounties [optionalBountyId],Lists bounties loaded on MagicLib's Bounty Board.
 MagicLib_ListRequirements,org.magiclib.bounty.console.ListBountiesRequirementsCommand,"MagicLib,campaign",MagicLib_ListRequirements [optionalBountyId],Lists the currently active bounties loaded on MagicLib's Bounty Board. and their requirements to show up.
 MagicLib_ResetBounty,org.magiclib.bounty.console.ResetBountyCommand,"MagicLib,campaign",MagicLib_ResetBounty <bountyId>,Resets a MagicLib bounty.
+MagicLib_UnlockPaintjob,org.magiclib.paintjobs.console.UnlockPaintjobCommand,"MagicLib,campaign",MagicLib_UnlockPaintjob [all|<paintjobId>],"Use 'all' to unlock all paintjobs permanently, or specify an id. Run with no arguments to list all."

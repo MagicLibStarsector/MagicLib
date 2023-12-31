@@ -134,6 +134,7 @@ public final class MagicBountyBattleListener implements FleetEventListener {
                     }
 
                     break;
+                case Neutralization:
                 case Neutralisation:
                     float fpPostFight = bountyFleet.getFleetPoints();
 

@@ -3,6 +3,7 @@
 package org.magiclib.kotlin
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignClockAPI
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.TextPanelAPI
@@ -128,3 +129,6 @@ inline fun TextPanelAPI.adjustReputationWithPlayer(
 
 fun ClosedFloatingPointRange<Float>.random(): Float =
     Random.nextDouble(this.start.toDouble(), this.endInclusive.toDouble()).toFloat()
+
+fun CampaignClockAPI.elapsedDaysSinceGameStart(): Float =
+    Global.getSector().clock.getElapsedDaysSince(-55661245698000L);

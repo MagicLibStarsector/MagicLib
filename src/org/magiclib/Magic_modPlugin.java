@@ -4,8 +4,11 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
+import org.magiclib.achievements.MagicAchievementManager;
+import org.magiclib.achievements.TestingAchievementSpec;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
+import org.magiclib.paintjobs.MagicPaintjobManager;
 import org.magiclib.plugins.MagicAutoTrails;
 import org.magiclib.plugins.MagicCampaignTrailPlugin;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
@@ -62,6 +65,9 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_test_mode");
+
+        MagicAchievementManager.getInstance();
+        MagicAchievementManager.getInstance().onApplicationLoad();
     }
 
     @Override
@@ -129,6 +135,31 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicKotlinModPlugin.INSTANCE.onGameLoad(newGame);
+
+        if (isMagicLibTestMode()) {
+            MagicAchievementManager.getInstance().addAchievementSpecs(new TestingAchievementSpec());
+        }
+
+        MagicAchievementManager.getInstance().onGameLoad();
+
+        MagicPaintjobManager.onApplicationLoad();
+//        MagicPaintjobManager.getInstance().diable$MagicLib();
+
+        MagicPaintjobManager.onGameLoad();
+    }
+
+    @Override
+    public void beforeGameSave() {
+        super.beforeGameSave();
+        MagicAchievementManager.getInstance().beforeGameSave();
+        MagicPaintjobManager.beforeGameSave();
+    }
+
+    @Override
+    public void afterGameSave() {
+        super.afterGameSave();
+        MagicAchievementManager.getInstance().afterGameSave();
+        MagicPaintjobManager.afterGameSave();
     }
 
     /**
@@ -154,6 +185,12 @@ public class Magic_modPlugin extends BaseModPlugin {
         // The game will automatically swap to the Magic replacements on load because `terrain.json` replaces the vanilla ones.
         x.alias("AsteroidBeltTerrainPlugin", MagicAsteroidBeltTerrainPlugin.class);
         x.alias("AsteroidFieldTerrainPlugin", MagicAsteroidFieldTerrainPlugin.class);
+    }
+
+    public static boolean isMagicLibTestMode() {
+        return Global.getSector() != null
+                && Global.getSector().getPlayerPerson().getNameString()
+                .equalsIgnoreCase("ML_Test");
     }
 
     //    //debugging magic bounties

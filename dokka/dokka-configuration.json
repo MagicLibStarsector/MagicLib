@@ -1,23 +1,23 @@
-{
-  "outputDir": "./docs",
-  "sourceSets": [
-    {
-      "sourceSetID": {
-        "scopeId": "moduleName",
-        "sourceSetName": "main"
-      },
-      "sourceRoots": [
-        "./src/org/magiclib",
-        "F:/Code/Starsector/MagicLib/MagicLib-Kotlin"
-      ]
-    }
-  ],
-  "pluginsClasspath": [
-    "./dokka/dokka-base-1.8.10.jar",
-    "./dokka/kotlinx-html-jvm-0.8.0.jar",
-    "./dokka/dokka-analysis-1.8.10.jar",
-    "./dokka/kotlin-analysis-intellij-1.8.10.jar",
-    "./dokka/kotlin-analysis-compiler-1.8.10.jar",
-    "./dokka/freemarker-2.3.31.jar"
-  ]
-}
+{ 
+  "outputDir": "./docs", 
+  "sourceSets": [ 
+    { 
+      "sourceSetID": { 
+        "scopeId": "moduleName", 
+        "sourceSetName": "main" 
+      }, 
+      "sourceRoots": [ 
+        "F:/Code/Starsector/MagicLib/src/org/magiclib", 
+        "F:/Code/Starsector/MagicLib/MagicLib-Kotlin" 
+      ] 
+    } 
+  ], 
+  "pluginsClasspath": [ 
+    "./dokka/dokka-base-1.8.10.jar", 
+    "./dokka/kotlinx-html-jvm-0.8.0.jar", 
+    "./dokka/dokka-analysis-1.8.10.jar", 
+    "./dokka/kotlin-analysis-intellij-1.8.10.jar", 
+    "./dokka/kotlin-analysis-compiler-1.8.10.jar", 
+    "./dokka/freemarker-2.3.31.jar" 
+  ] 
+} 

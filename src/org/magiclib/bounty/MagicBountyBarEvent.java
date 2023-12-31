@@ -273,7 +273,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //DEADLINE
-                            if (bounty.job_deadline > 0) {
+                            if (bounty.job_deadline > 0 && MagicBountyCoordinator.getDeadlinesEnabled()) {
                                 //"Time limit: %s days"
                                 text.addPara(MagicTxt.getString("mb_time"), Misc.getHighlightColor(), Misc.getWithDGS(bounty.job_deadline));
                             }
@@ -356,6 +356,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                                                 MagicTxt.getString("mb_type_obliteration1"), MagicTxt.getString("mb_type_obliteration2")
                                         );
                                         break;
+                                    case Neutralization:
                                     case Neutralisation:
                                         text.addPara(MagicTxt.getString("mb_type"),
                                                 Misc.getTextColor(),

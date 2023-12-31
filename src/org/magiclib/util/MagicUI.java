@@ -636,7 +636,7 @@ public class MagicUI {
 //    }
 
     /**
-     * Get the UI Element Offset for the Shipsystem bar. (Depends of the group
+     * Get the UI Element Offset for the Shipsystem bar. (Depends if the group
      * layout, or if the player has some wing)
      *
      * @param ship    The player ship.
@@ -657,7 +657,12 @@ public class MagicUI {
      */
     public static Vector2f getInterfaceOffsetFromStatusBars(ShipAPI ship, ShipVariantAPI variant) {
         Vector2f offset = getUIElementOffset(ship, variant, PERCENTBARVEC1, PERCENTBARVEC2);
+
         if (ship.getPhaseCloak() != null && !ship.getHullSpec().isPhase()) {
+            offset = Vector2f.add(new Vector2f(0f, 14f), offset, null);
+        }
+
+        if (Global.getCombatEngine() != null && Global.getCombatEngine().getCombatUI().isStrafeToggledOn()) {
             offset = Vector2f.add(new Vector2f(0f, 14f), offset, null);
         }
 
@@ -1067,7 +1072,7 @@ public class MagicUI {
     /**
      * GL11 to start, when you want render text of Lazyfont.
      */
-    private static void openGL11ForText() {
+    public static void openGL11ForText() {
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
@@ -1081,7 +1086,7 @@ public class MagicUI {
     /**
      * GL11 to close, when you want render text of Lazyfont.
      */
-    private static void closeGL11ForText() {
+    public static void closeGL11ForText() {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
