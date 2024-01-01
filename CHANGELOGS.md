@@ -2,6 +2,7 @@ Version 1.3.6
 
 **MagicBounty**
 - Fixed rare crash if bounty was null.
+- Fixed "Accept this job" sometimes not updating its text after accepting.
 
 **MagicAchievements**
 - Fixed Linux-only crash when viewing intel.

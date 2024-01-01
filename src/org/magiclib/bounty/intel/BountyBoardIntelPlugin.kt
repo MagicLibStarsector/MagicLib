@@ -3,7 +3,6 @@ package org.magiclib.bounty.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.impl.campaign.ids.Tags
-import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -11,25 +10,24 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.kotlin.elapsedDaysSinceGameStart
 import org.magiclib.util.MagicTxt
-import org.magiclib.util.MagicTxt.MagicDisplayableText
+import org.magiclib.util.ui.MagicRefreshableBaseIntelPlugin
 import java.awt.Color
 
-class BountyBoardIntelPlugin : BaseIntelPlugin() {
-    @Transient
-    private var parentPanel: CustomPanelAPI? = null
-
-    @Transient
-    private var holdingPanel: CustomPanelAPI? = null
-
+class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     @Transient
     private var lastWidth: Float = 0f
 
     @Transient
     private var lastHeight: Float = 0f
 
+//    @Transient
     private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
+    @Transient
     private var interval: IntervalUtil = IntervalUtil(1f, 1f)
+    @Transient
     private var tempBountyInfo: BountyInfo? = null
+    @Transient
+    private var selectedItem: BountyInfo? = null
 
     init {
         // Add this as a transient script if it's not already there.
@@ -102,28 +100,9 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
                 }
         }
     }
+//
 
-    override fun createIntelInfo(info: TooltipMakerAPI, mode: ListInfoMode) {
-        if (mode == ListInfoMode.INTEL) {
-            //intel is being recreated
-            parentPanel = null
-            holdingPanel = null
-        }
-
-        super.createIntelInfo(info, mode)
-    }
-
-    fun layoutPanel(width: Float = lastWidth, height: Float = lastHeight, desiredItem: BountyInfo? = null) {
-        parentPanel ?: return // somehow, "apocrita_belcher" is getting here with a null parentPanel
-
-        if (holdingPanel != null) {
-            parentPanel!!.removeComponent(holdingPanel)
-        }
-
-        holdingPanel = parentPanel!!.createCustomPanel(width, height, null)
-        parentPanel!!.addComponent(holdingPanel).inTL(0f, 0f)
-
-        val panel: CustomPanelAPI = holdingPanel!!
+    fun layoutPanel(panel: CustomPanelAPI, width: Float = lastWidth, height: Float = lastHeight) {
         val bountyList = BountyListPanelPlugin(panel)
         bountyList.panelWidth = 300f
         bountyList.panelHeight = height - 8f
@@ -138,7 +117,13 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
         val textPanelHeight = height - 8f
         var textPanel = panel.createCustomPanel(textPanelWidth, textPanelHeight, null)
         var descriptionTooltip = textPanel.createUIElement(350f, 150f, true)
-        MagicTxt.addPara(descriptionTooltip, MagicTxt.getString("mb_intelTutorial"), 10f, Misc.getTextColor(), Misc.getHighlightColor())
+        MagicTxt.addPara(
+            descriptionTooltip,
+            MagicTxt.getString("mb_intelTutorial"),
+            10f,
+            Misc.getTextColor(),
+            Misc.getHighlightColor()
+        )
 
         textPanel.addUIElement(descriptionTooltip).inMid()
         panel.addComponent(textPanel).rightOfTop(bountyListPanel, 4f)
@@ -155,7 +140,7 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
             panel.addComponent(textPanel).rightOfTop(bountyListPanel, 4f)
         }
 
-        desiredItem?.let { desiredItem ->
+        selectedItem?.let { desiredItem ->
             //find matching item in available bounties and pick it
             availableBounties
                 .firstOrNull { desiredItem.getBountyId() == it.getBountyId() }
@@ -165,11 +150,11 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
         }
     }
 
-    override fun createLargeDescription(panel: CustomPanelAPI, width: Float, height: Float) {
-        parentPanel = panel
+    override fun createLargeDescriptionImpl(panel: CustomPanelAPI, width: Float, height: Float) {
+        super.createLargeDescriptionImpl(panel, width, height)
         lastWidth = width
         lastHeight = height
-        layoutPanel(width, height)
+        layoutPanel(panel, width, height)
     }
 
     override fun getSortString(): String {
@@ -191,9 +176,10 @@ class BountyBoardIntelPlugin : BaseIntelPlugin() {
         }
 
         fun refreshPanel(desiredItem: BountyInfo) {
-            (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).layoutPanel(
-                desiredItem = desiredItem
-            )
+            (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).apply {
+                this.selectedItem = desiredItem
+                refreshPanel()
+            }
         }
     }
 }
