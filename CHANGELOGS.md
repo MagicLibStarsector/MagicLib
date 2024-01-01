@@ -1,3 +1,11 @@
+Version 1.3.6
+
+**MagicBounty**
+- Fixed rare crash if bounty was null.
+
+**MagicAchievements**
+- Fixed Linux-only crash when viewing intel.
+
 Version 1.3.5
 
 **MagicPaintjobs**
