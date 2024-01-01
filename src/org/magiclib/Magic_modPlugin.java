@@ -151,6 +151,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     @Override
     public void beforeGameSave() {
         super.beforeGameSave();
+        MagicBountyCoordinator.beforeGameSave();
         MagicAchievementManager.getInstance().beforeGameSave();
         MagicPaintjobManager.beforeGameSave();
     }
@@ -158,6 +159,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     @Override
     public void afterGameSave() {
         super.afterGameSave();
+        MagicBountyCoordinator.afterGameSave();
         MagicAchievementManager.getInstance().afterGameSave();
         MagicPaintjobManager.afterGameSave();
     }

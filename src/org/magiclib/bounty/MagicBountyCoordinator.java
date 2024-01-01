@@ -47,15 +47,24 @@ public final class MagicBountyCoordinator {
         return instance;
     }
 
+    public static void beforeGameSave() {
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+        while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
+            intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
+    }
+
+    public static void afterGameSave() {
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+        intelManager.addIntel(new BountyBoardIntelPlugin(), true);
+    }
+
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
         MagicBountyLoader.validateAndCullLoadedBounties();
 
-
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
             intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
-
         intelManager.addIntel(new BountyBoardIntelPlugin(), true);
 
         if (Global.getSettings().getModManager().isModEnabled("lunalib")) {

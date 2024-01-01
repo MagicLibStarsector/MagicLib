@@ -20,17 +20,20 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
         val targetInfoTooltip = panel.createUIElement(width, height, true)
         val childPanelWidth = width - 16f
 
-        val portrait = targetInfoTooltip.beginImageWithText(activeBounty!!.fleet.commander.portraitSprite, 64f)
-        var displayName = activeBounty!!.fleet.commander.nameString
-        if (bountySpec.target_first_name != null || bountySpec.target_last_name != null) {
-            displayName = "${bountySpec.target_first_name} ${bountySpec.target_last_name}"
-            if (bountySpec.target_first_name == null || bountySpec.target_first_name.isEmpty())
-                displayName = bountySpec.target_last_name
-            else if (bountySpec.target_last_name == null || bountySpec.target_last_name.isEmpty())
-                displayName = bountySpec.target_first_name
+        val activeBountyLocal = activeBounty ?: return targetInfoTooltip
+        val portrait = targetInfoTooltip.beginImageWithText(activeBountyLocal.fleet.commander.portraitSprite, 64f)
+        var displayName = activeBountyLocal.fleet.commander.nameString
+        val targetFirstName = activeBountyLocal.captain.name.first
+        val targetLastName = activeBountyLocal.captain.name.last
+        if (targetFirstName != null || targetLastName != null) {
+            displayName = "$targetFirstName $targetLastName"
+            if (targetFirstName == null || targetFirstName.isEmpty())
+                displayName = targetLastName
+            else if (targetLastName == null || targetLastName.isEmpty())
+                displayName = targetFirstName
         }
-        portrait.addPara(displayName, Global.getSettings().getFactionSpec(bountySpec.fleet_faction).baseUIColor, 0f)
-        portrait.addPara(activeBounty!!.fleet.commander.rank.ucFirst(), 2f)
+        portrait.addPara(displayName, activeBountyLocal.targetFactionTextColor, 0f)
+        portrait.addPara(activeBountyLocal.fleet.commander.rank.ucFirst(), 2f)
 
         targetInfoTooltip.addImageWithText(0f)
 
@@ -57,7 +60,7 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
             targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 3f, Color.RED).position.inTMid(2f)
         }
 
-        val ships = activeBounty!!.fleet.fleetData.membersInPriorityOrder
+        val ships = activeBountyLocal.fleet.fleetData.membersInPriorityOrder
         val iconSize = 64f
         val columns = floor(childPanelWidth / iconSize).toInt()
         val rows = ceil(ships.size / columns.toDouble()).toInt()
@@ -65,7 +68,7 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
         targetInfoTooltip.addShipList(columns, rows, iconSize, Color.white, ships, 3f)
 
         targetInfoTooltip.addPara(MagicTxt.getString("mb_hvb_skillsHeader"), 8f)
-        targetInfoTooltip.addSkillPanel(activeBounty!!.captain, 3f)
+        targetInfoTooltip.addSkillPanel(activeBountyLocal.captain, 3f)
 
         panel.addUIElement(targetInfoTooltip).inTL(0f, 0f)
 

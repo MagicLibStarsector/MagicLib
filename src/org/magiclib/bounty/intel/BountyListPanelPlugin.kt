@@ -41,7 +41,9 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
     }
 
     override fun shouldMakePanelForItem(item: BountyInfo): Boolean {
-        return item.shouldAlwaysShow() || item.shouldShow()
+        // Check `shouldShow` first because it doesn't ONLY check that,
+        // it also creates the ActiveBounty if it doesn't exist and should be shown.
+        return item.shouldShow() || item.shouldAlwaysShow()
     }
 
     override fun createPanelForItem(tooltip: TooltipMakerAPI, item: BountyInfo): ListItemUIPanelPlugin<BountyInfo> {
@@ -89,12 +91,14 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_BLEND)
 
-        GL11.glColor4f(c.red / 255f,
+        GL11.glColor4f(
+            c.red / 255f,
             c.green / 255f,
             c.blue / 255f,
-            c.alpha / 255f * (alphaMult * 1f))
+            c.alpha / 255f * (alphaMult * 1f)
+        )
 
-        GL11.glRectf(x, y , x + width, y + height)
+        GL11.glRectf(x, y, x + width, y + height)
 
         GL11.glPopMatrix()
     }
@@ -114,10 +118,12 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_BLEND)
 
-        GL11.glColor4f(c.red / 255f,
+        GL11.glColor4f(
+            c.red / 255f,
             c.green / 255f,
             c.blue / 255f,
-            c.alpha / 255f * (alphaMult * 1f))
+            c.alpha / 255f * (alphaMult * 1f)
+        )
 
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glBegin(GL11.GL_LINE_STRIP)
@@ -132,7 +138,8 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         GL11.glPopMatrix()
     }
 
-    inner class BountyItemPanelPlugin(item: BountyInfo, private val width: Float, private val height: Float) : ListItemUIPanelPlugin<BountyInfo>(item) {
+    inner class BountyItemPanelPlugin(item: BountyInfo, private val width: Float, private val height: Float) :
+        ListItemUIPanelPlugin<BountyInfo>(item) {
         private var wasHovered: Boolean = false
         private var wasSelected: Boolean = false
         var baseBgColor: Color = Color(255, 255, 255, 0)
@@ -197,12 +204,14 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
 
             GL11.glDisable(GL11.GL_BLEND)
 
-            GL11.glColor4f(c.red / 255f,
+            GL11.glColor4f(
+                c.red / 255f,
                 c.green / 255f,
                 c.blue / 255f,
-                c.alpha / 255f * (alphaMult * 1f))
+                c.alpha / 255f * (alphaMult * 1f)
+            )
 
-            GL11.glRectf(x, y , x + width, y + height)
+            GL11.glRectf(x, y, x + width, y + height)
 
             //GL11.glEnd()
             GL11.glPopMatrix()

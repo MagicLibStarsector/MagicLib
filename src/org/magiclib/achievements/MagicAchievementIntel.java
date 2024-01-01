@@ -123,28 +123,27 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
         );
 
         CustomPanelAPI headerSubPanel = panel.createCustomPanel(width, headerTextHeight, null);
-        TooltipMakerAPI headerHolder = headerSubPanel.createUIElement(width, headerTextHeight, false);
-        TooltipMakerAPI label = headerHolder.beginImageWithText(defaultImage, imageHeight);
-        label.setTitleOrbitronVeryLarge();
-        label.addTitle(headerText, Misc.getBasePlayerColor());
-        headerHolder.addImageWithText(opad);
-        // TODO: warning, uses obfuscated code
-        if (headerHolder.getPrev() instanceof com.fs.starfarer.ui.interfacenew) {
-            ((com.fs.starfarer.ui.interfacenew) headerHolder.getPrev())
-                    .getChildrenCopy().get(0).getPosition().setYAlignOffset(-8);
-        }
+        TooltipMakerAPI imagePanel = headerSubPanel.createUIElement(imageHeight, imageHeight, false);
+        imagePanel.addImage(defaultImage, imageHeight, imageHeight, 3);
+        headerSubPanel.addUIElement(imagePanel).inTL(headerStartX, 0);
+
+        TooltipMakerAPI headerTextAndProgressBar = headerSubPanel.createUIElement(width, headerTextHeight, false);
+        headerTextAndProgressBar.setTitleOrbitronVeryLarge();
+        headerTextAndProgressBar.addTitle(headerText, Misc.getBasePlayerColor());
+
         new ProgressBarInternal(
                 unlockedAchievements.size(),
                 0,
                 listedAchievements,
                 Misc.getTextColor(),
-                headerHolder,
+                headerTextAndProgressBar,
                 448,
                 progressBarHeight,
                 false);
-        headerHolder.getPrev().getPosition().setXAlignOffset(imageHeight + 22);
-        headerHolder.getPrev().getPosition().setYAlignOffset(5);
-        headerSubPanel.addUIElement(headerHolder).inTL(headerStartX, 0);
+        headerTextAndProgressBar.getPrev().getPosition().setXAlignOffset(7).setYAlignOffset(-5);
+        headerSubPanel.addUIElement(headerTextAndProgressBar)
+                .rightOfTop(imagePanel, 10)
+                .setYAlignOffset(-4);
         headerComponent.addCustom(headerSubPanel, 0);
 
         headerComponent.addSpacer(23 + progressBarHeight);
