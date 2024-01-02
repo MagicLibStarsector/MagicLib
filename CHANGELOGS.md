@@ -1,3 +1,12 @@
+Version 1.3.7
+
+**MagicBounty**
+- Intel fixes.
+  - May now mark unimportant (reported by MuleDriver).
+  - No longer always new (reported by MuleDriver).
+  - Shouldn't show up if there are no bounties loaded (reported by MuleDriver).
+  - Potentially fixes issues if MagicBounty is disabled.
+
 Version 1.3.6
 
 **MagicBounty**

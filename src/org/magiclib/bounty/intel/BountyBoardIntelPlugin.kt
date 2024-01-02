@@ -40,7 +40,6 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
     override fun hasLargeDescription(): Boolean = true
     override fun hasSmallDescription(): Boolean = false
-    override fun isImportant(): Boolean = true
 
     override fun getName(): String {
         if (tempBountyInfo != null) {

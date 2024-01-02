@@ -326,7 +326,8 @@ public class MagicBountyLoader {
         BountyBoardIntelPlugin.Companion.getPROVIDERS().clear();
         try {
             for (String className : MagicSettings.getList(MagicVariables.MAGICLIB_ID, "bountyProviders")) {
-                BountyBoardIntelPlugin.Companion.addProvider((BountyBoardProvider) Global.getSettings().getScriptClassLoader().loadClass(className).newInstance());
+                BountyBoardIntelPlugin.Companion.addProvider((BountyBoardProvider)
+                        Global.getSettings().getScriptClassLoader().loadClass(className).newInstance());
             }
         } catch (Throwable ex) {
             throw new RuntimeException(ex);
