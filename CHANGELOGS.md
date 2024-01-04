@@ -1,6 +1,7 @@
 Version 1.3.7
 
 **MagicBounty**
+- May no longer re-Accept already-Completed bounties. Sorry.
 - Intel fixes.
   - May now mark unimportant (reported by MuleDriver).
   - No longer always new (reported by MuleDriver).
