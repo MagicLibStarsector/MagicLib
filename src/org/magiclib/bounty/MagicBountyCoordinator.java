@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.magiclib.LunaWrapper;
 import org.magiclib.LunaWrapperSettingsListener;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
+import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicTxt;
@@ -41,6 +42,7 @@ public final class MagicBountyCoordinator {
     private static final long MILLIS_PER_DAY = 86400000L;
     private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
     private static Boolean DEADLINES_ENABLED = false;
+    private static final String isIntelImportantMemKey = "$magiclib_isBountyIntelImportant";
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -48,24 +50,21 @@ public final class MagicBountyCoordinator {
     }
 
     public static void beforeGameSave() {
-        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
-        while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
-            intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
+        // Remember whether the intel is important.
+        if (getIntel() != null)
+            Global.getSector().getMemoryWithoutUpdate().set(isIntelImportantMemKey, getIntel().isImportant());
+        removeIntel();
     }
 
     public static void afterGameSave() {
-        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
-        intelManager.addIntel(new BountyBoardIntelPlugin(), true);
+        initIntel();
     }
 
     public static void onGameLoad() {
         instance = new MagicBountyCoordinator();
         MagicBountyLoader.validateAndCullLoadedBounties();
 
-        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
-        while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
-            intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
-        intelManager.addIntel(new BountyBoardIntelPlugin(), true);
+        initIntel();
 
         if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
             LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
@@ -79,6 +78,42 @@ public final class MagicBountyCoordinator {
                 }
             });
         }
+    }
+
+    @Nullable
+    public static BountyBoardIntelPlugin getIntel() {
+        if (Global.getSector().getIntelManager().hasIntelOfClass(BountyBoardIntelPlugin.class)) {
+            return (BountyBoardIntelPlugin) Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class);
+        }
+        return null;
+    }
+
+    private static void removeIntel() {
+        if (Global.getSector() == null) return;
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+        while (intelManager.hasIntelOfClass(BountyBoardIntelPlugin.class))
+            intelManager.removeIntel(Global.getSector().getIntelManager().getFirstIntel(BountyBoardIntelPlugin.class));
+    }
+
+    private static void initIntel() {
+//        if (!isEnabled) return
+        if (Global.getSector() == null) return;
+        removeIntel();
+
+        // Don't show if there aren't any.
+        boolean hasBounty = false;
+        for (BountyBoardProvider provider : BountyBoardIntelPlugin.Companion.getPROVIDERS()) {
+            if (!provider.getBounties().isEmpty()) {
+                hasBounty = true;
+                break;
+            }
+        }
+        if (!hasBounty) return;
+
+        BountyBoardIntelPlugin intel = new BountyBoardIntelPlugin();
+        Global.getSector().getIntelManager().addIntel(intel, true);
+        intel.setImportant(Global.getSector().getMemoryWithoutUpdate().getBoolean(isIntelImportantMemKey));
+        intel.setNew(false);
     }
 
     @Nullable

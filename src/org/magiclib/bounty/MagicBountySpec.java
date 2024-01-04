@@ -81,7 +81,7 @@ public class MagicBountySpec {
     /**
      * Full text of the bounty offer. The description will handle some text variables such as "$he_or_she". See documentation for more details
      */
-    public String job_description;
+    @Nullable public String job_description;
     /**
      * Reply of the enemy to your hail, default to "The other $shipOrFleet does not answer to you hails."
      */

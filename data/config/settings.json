@@ -2,7 +2,6 @@
   "plugins": {
     "ML_fakeBeamPlugin": "org.magiclib.plugins.MagicFakeBeamPlugin",
     "ML_spriteRenderManager": "org.magiclib.plugins.MagicRenderPlugin",
-    "MagicCampaignTrailPlugin": "org.magiclib.plugins.MagicCampaignTrailPlugin",
     "MagicTrailPlugin": "org.magiclib.plugins.MagicTrailPlugin",
     "MagicAutoTrails": "org.magiclib.plugins.MagicAutoTrails",
     "MagicAchievementCombatScript": "org.magiclib.achievements.MagicAchievementCombatScript",

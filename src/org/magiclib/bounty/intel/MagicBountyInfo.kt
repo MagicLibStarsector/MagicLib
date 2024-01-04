@@ -112,6 +112,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             }
         }
 
+        if (bountyKey in MagicBountyCoordinator.getInstance().completedBounties) {
+            return false
+        }
+
         var shouldShow = true
         if (bountySpec.trigger_min_days_elapsed > 0 && bountySpec.trigger_min_days_elapsed > MagicMisc.getElapsedDaysSinceGameStart()) {
             shouldShow = false
@@ -331,16 +335,16 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             textTooltip.addSpacer(12f)
         }
 
-        bountySpec.job_description.split("\n")
-            .map {
+        bountySpec.job_description?.split("\n")
+            ?.map {
                 MagicTxt.MagicDisplayableText(MagicBountyUtilsInternal.replaceStringVariables(activeBounty, it))
             }
-            .forEach { bountyText ->
+            ?.forEach { bountyText ->
                 textTooltip.addPara(bountyText.format, 3f, Misc.getHighlightColor(), *bountyText.highlights)
             }
         textTooltip.addSpacer(10f)
 
-        when (activeBounty?.getSpec()?.job_type) {
+        when (activeBounty?.spec?.job_type) {
             JobType.Assassination -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
                 textTooltip.addPara(
                     MagicTxt.getString("mb_intelType"),

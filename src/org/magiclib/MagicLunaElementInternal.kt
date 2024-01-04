@@ -69,7 +69,19 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
     var enableTransparency = false
     var borderAlpha = 1f
     var backgroundAlpha = 1f
+        set(value) {
+            field = value
+            if (value < 1f) {
+                enableTransparency = true
+            }
+        }
     var foregroundAlpha = 1f
+        set(value) {
+            field = value
+            if (value < 1f) {
+                enableTransparency = true
+            }
+        }
 
     var selectionGroup = ""
 
@@ -90,11 +102,12 @@ internal open class MagicLunaElementInternal : CustomUIPanelPlugin {
     private var onHoverEnterFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
     private var onHoverExitFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
 
+    @JvmOverloads
     fun addTo(
         panelAPI: CustomPanelAPI,
         width: Float,
         height: Float,
-        position: (PositionAPI) -> Unit
+        position: (PositionAPI) -> Unit = { it.inTL(0f, 0f) }
     ): MagicLunaElementInternal {
         this.parentPanel = panelAPI
         val tooltip = panelAPI.createUIElement(width, height, false)

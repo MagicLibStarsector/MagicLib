@@ -158,18 +158,18 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * @param offsetVelocity The offset velocity of the trail; this is an additional velocity that is
      *                       unaffected by rotation and facing, and will never change over the trail's lifetime
      */
-    public static void AddTrailMemberSimple(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
+    public static void addTrailMemberSimple(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
                                             float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
         //Runs the same function, but only on the specific script instead of the static interface
-        for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
+        for (EveryFrameScript everyFrameScript : Global.getSector().getTransientScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
-                ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberSimpleInternal(linkedEntity, ID, sprite, position, speed, angle,
+                ((MagicCampaignTrailPlugin) everyFrameScript).addTrailMemberSimpleInternal(linkedEntity, ID, sprite, position, speed, angle,
                         startSize, endSize, color, opacity, duration, additive, offsetVelocity);
             }
         }
     }
 
-    private void AddTrailMemberSimpleInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
+    private void addTrailMemberSimpleInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
                                               float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
         //Finds the correct maps, and ensures they are actually instantiated [and adds our ID to the cutting map]
         int texID = sprite.getTextureId();
@@ -274,14 +274,14 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * @param locationAPI          Which locationAPI this trail is in; should ideally be in the same as the location the
      *                             linkedEntity is in.
      */
-    public static void AddTrailMemberAdvanced(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+    public static void addTrailMemberAdvanced(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                               float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                               float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
                                               Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Runs the same function, but only on the specific script instead of the static interface
-        for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
+        for (EveryFrameScript everyFrameScript : Global.getSector().getTransientScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
-                ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAdvancedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
+                ((MagicCampaignTrailPlugin) everyFrameScript).addTrailMemberAdvancedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
                         startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
                         inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
                         offsetVelocity, locationAPICulling, locationAPI);
@@ -289,7 +289,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         }
     }
 
-    private void AddTrailMemberAdvancedInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+    private void addTrailMemberAdvancedInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                 float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                 float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
                                                 Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
@@ -391,14 +391,14 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      * @param locationAPI          Which locationAPI this trail is in; should ideally be in the same as the location the
      *                             linkedEntity is in.
      */
-    public static void AddTrailMemberAnimated(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+    public static void addTrailMemberAnimated(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                               float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                               float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
                                               Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
         //Runs the same function, but only on the specific script instead of the static interface
-        for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
+        for (EveryFrameScript everyFrameScript : Global.getSector().getTransientScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
-                ((MagicCampaignTrailPlugin) everyFrameScript).AddTrailMemberAnimatedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
+                ((MagicCampaignTrailPlugin) everyFrameScript).addTrailMemberAnimatedInternal(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
                         startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
                         inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
                         offsetVelocity, locationAPICulling, locationAPI);
@@ -407,7 +407,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         }
     }
 
-    private void AddTrailMemberAnimatedInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+    private void addTrailMemberAnimatedInternal(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                                 float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                                 float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
                                                 Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
@@ -476,7 +476,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
      */
     public static void cutTrailsOnEntity(SectorEntityToken entity) {
         //Runs the same function, but only on the specific script instead of the static interface
-        for (EveryFrameScript everyFrameScript : Global.getSector().getScripts()) {
+        for (EveryFrameScript everyFrameScript : Global.getSector().getTransientScripts()) {
             if (everyFrameScript instanceof MagicCampaignTrailPlugin) {
                 ((MagicCampaignTrailPlugin) everyFrameScript).cutTrailsOnEntityInternal(entity);
                 break;
@@ -507,6 +507,38 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
                 }
             }
         }
+    }
+
+    /**
+     * @deprecated Use {@link #addTrailMemberSimple(SectorEntityToken, float, SpriteAPI, Vector2f, float, float, float, float, Color, float, float, boolean, Vector2f)} instead.
+     */
+    public static void AddTrailMemberSimple(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
+                                            float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
+        addTrailMemberSimple(linkedEntity, ID, sprite, position, speed, angle, startSize, endSize, color, opacity, duration, additive, offsetVelocity);
+    }
+
+    /**
+     * @deprecated Use {@link addTrailMemberAnimated(SectorEntityToken, float, SpriteAPI, Vector2f, float, float, float, float, float, float, float, Color, Color, float, float, float, float, int, int, float, float, Vector2f, boolean, LocationAPI)} instead.
+     */
+    public static void AddTrailMemberAnimated(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+                                              float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
+                                              float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
+                                              Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
+        addTrailMemberAnimated(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle, startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed, offsetVelocity, locationAPICulling, locationAPI);
+    }
+
+    /**
+     * @deprecated Use {@link addTrailMemberAdvanced(SectorEntityToken, float, SpriteAPI, Vector2f, float, float, float, float, float, float, float, Color, Color, float, float, float, float, int, int, float, float, Vector2f, boolean, LocationAPI)} instead.
+     */
+    public static void AddTrailMemberAdvanced(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
+                                              float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
+                                              float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
+                                              Vector2f offsetVelocity, boolean locationAPICulling, LocationAPI locationAPI) {
+        addTrailMemberAdvanced(linkedEntity, ID, sprite, position, startSpeed, endSpeed, angle,
+                startAngularVelocity, endAngularVelocity, startSize, endSize, startColor, endColor, opacity,
+                inDuration, mainDuration, outDuration, blendModeSRC, blendModeDEST, textureLoopLength, textureScrollSpeed,
+                offsetVelocity, locationAPICulling, locationAPI);
     }
 
     // ---------------------------------------- UTILITY CLASS DECLARATIONS --------------------------------------------
