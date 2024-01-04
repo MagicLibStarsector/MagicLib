@@ -7,6 +7,7 @@ import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.magiclib.MagicLunaElementInternal;
 import org.magiclib.util.MagicTxt;
 
 import java.awt.*;
@@ -211,16 +212,20 @@ public class MagicAchievementIntel extends BaseIntelPlugin {
                 image.addImage(defaultImage, imageHeight, imageHeight, 3);
             }
 
+            row.addUIElement(image).inTL(0, 0);
+
             if (!achievement.isComplete()) {
-                // TODO: warning, uses obfuscated code
-                if (image.getPrev() instanceof com.fs.starfarer.ui.ooO0) {
-                    ((com.fs.starfarer.ui.ooO0) image.getPrev())
-                            .getSprite()
-                            .setColor(Color.gray);
-                }
+                // Add a black overlay to "dim" the icon.
+                // Would be better if we could just set the alpha of the image, but that doesn't seem to be possible.
+                MagicLunaElementInternal imageOverlay = new MagicLunaElementInternal();
+                imageOverlay.setRenderBackground(true);
+                imageOverlay.setRenderBorder(false);
+                imageOverlay.setEnableTransparency(true);
+                imageOverlay.setBackgroundAlpha(0.6f);
+                imageOverlay.setBackgroundColor(Color.BLACK);
+                imageOverlay.addTo(row, imageHeight, entryHeight);
             }
 
-            row.addUIElement(image).inTL(0, 0);
 
             // Particle effect, if complete and not common.
             if (achievement.isComplete() && !achievement.getRarity().equals(MagicAchievementRarity.Common)) {

@@ -69,8 +69,8 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
         //Runs once on each projectile that matches one of the IDs specified in our maps
         for (DamagingProjectileAPI proj : engine.getProjectiles()) {
 
-            //Ignore already-collided projectiles, and projectiles that don't match our IDs
-            if (proj.getProjectileSpecId() == null || proj.didDamage()) {
+            //Ignore projectiles that don't match our IDs (Wisp: that's the original comment, but I don't trust it).
+            if (proj.getProjectileSpecId() == null) {
                 continue;
             }
 

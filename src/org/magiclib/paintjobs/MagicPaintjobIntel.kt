@@ -243,8 +243,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             else {
                 val hoverElement = addHoverHighlight(row, cellWidth, cellHeight, xPosOfCellOnRow, yPosOfCellOnRow)
 
-                val shipSelectionViewWidth = cellWidth
-                val shipSelectionViewHeight = cellHeight
                 val shipSelectionCellsPerRow = 2
 
                 // Restore UI state if refreshing
@@ -252,11 +250,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     if (pjBeingViewed != null && pjBeingViewed!!.id == pj.id) {
                         displaySelectShipPopup(
                             placePopupsOnThisPanel,
-                            shipSelectionViewWidth,
+                            cellWidth,
+                            cellHeight,
                             shipsThatPjMayApplyTo,
                             shipSelectionCellsPerRow,
                             opad,
-                            shipSelectionViewHeight,
                             pad,
                             pj,
                             padding,
@@ -272,11 +270,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     if (shipsThatPjMayApplyTo.none()) return@onClick
                     displaySelectShipPopup(
                         panel = placePopupsOnThisPanel,
-                        shipSelectionViewWidth = shipSelectionViewWidth,
+                        cellWidth = cellWidth,
+                        cellHeight = cellHeight,
                         shipsThatPjMayApplyTo = shipsThatPjMayApplyTo,
                         shipSelectionCellsPerRow = shipSelectionCellsPerRow,
                         opad = opad,
-                        shipSelectionViewHeight = shipSelectionViewHeight,
                         pad = pad,
                         pj = pj,
                         padding = padding,
@@ -515,11 +513,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
     private fun displaySelectShipPopup(
         panel: CustomPanelAPI,
-        shipSelectionViewWidth: Float,
+        cellWidth: Float,
+        cellHeight: Float,
         shipsThatPjMayApplyTo: List<FleetMemberAPI>,
         shipSelectionCellsPerRow: Int,
         opad: Float,
-        shipSelectionViewHeight: Float,
         pad: Float,
         pj: MagicPaintjobSpec,
         padding: Float,
@@ -528,13 +526,14 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         yPos: Float
     ) {
         pjBeingViewed = pj
-        val popupWidth = (shipSelectionViewWidth * shipsThatPjMayApplyTo.count()
-            .coerceAtMost(shipSelectionCellsPerRow)
-                + opad * 2)
-        val popupHeight = (shipSelectionViewHeight * (shipsThatPjMayApplyTo.count() / shipSelectionCellsPerRow)
+        val actualShipsPerRow = shipsThatPjMayApplyTo.count().coerceAtMost(shipSelectionCellsPerRow)
+        val popupWidth = (cellWidth * actualShipsPerRow
+                + padding * 3
+                + padding * actualShipsPerRow)
+        val popupHeight = (cellHeight * (shipsThatPjMayApplyTo.count() / shipSelectionCellsPerRow)
             .coerceAtLeast(1)
-                + opad * 2 // title
-                + opad * 4)
+                + padding * 2 // title
+                + padding * 4)
 
         val paintjobApplicationDialog = MagicLunaElementInternal()
             .apply {
@@ -569,39 +568,35 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             .position.setYAlignOffset(-pad)
 
         // Display ships in fleet that this paintjob may apply to (and whether it's applied).
-        shipsThatPjMayApplyTo.forEach { fleetShip ->
-            val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(fleetShip)?.id == pj.id
-            val spriteName = fleetShip.spriteOverride ?: fleetShip.hullSpec.spriteName
+        val grid = createGrid(
+            rootPanel = paintjobApplicationDialog.elementPanel, gridWidth = popupWidth, gridHeight = popupHeight,
+            cellHeight = cellHeight, cellWidth = cellWidth, padding = padding, items = shipsThatPjMayApplyTo
+        ) { cellTooltip, row, fleetShip, _, xPosOnRow, yPosOnRow, yPosOfRowOnGrid ->
+            val currentShipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(fleetShip)
+            val isWearingPj = currentShipPaintjob?.id == pj.id
+            val spriteName = currentShipPaintjob?.spriteId ?: fleetShip.hullSpec.spriteName
 
-            val shipInFleetPanel =
-                Global.getSettings().createCustom(shipSelectionViewWidth, shipSelectionViewHeight, null)
-            val shipInFleetTooltip = shipInFleetPanel.createUIElement(
-                shipSelectionViewWidth + padding,
-                shipSelectionViewHeight,
-                false
-            )
-            shipInFleetPanel.addUIElement(shipInFleetTooltip).inTL(opad, 0f)
-            shipInFleetTooltip.addPara(fleetShip.shipName, Misc.getHighlightColor(), opad)
-            shipInFleetTooltip.addImage(
+            cellTooltip.addPara(fleetShip.shipName, Misc.getHighlightColor(), opad).setAlignment(Alignment.MID)
+            val title = cellTooltip.prev
+            cellTooltip.addImage(
                 spriteName, imageSize, imageSize, opad
             )
-            if (isWearingPj) shipInFleetTooltip.addPara(
+            val image = cellTooltip.prev
+            image.position.belowMid(title, opad)
+            if (isWearingPj) cellTooltip.addPara(
                 MagicTxt.getString("ml_mp_applied"),
                 Misc.getPositiveHighlightColor(),
                 opad
-            )
-                .apply {
-                    setAlignment(Alignment.MID)
-                    position.setXAlignOffset(-(this.computeTextWidth(this.text) / 2) + 13)
-                }
-            else shipInFleetTooltip.addPara("", opad)
+            ).setAlignment(Alignment.MID)
+            else cellTooltip.addPara("", opad)
+            cellTooltip.prev.position.belowMid(image, opad)
 
             addHoverHighlight(
-                panel = shipInFleetPanel,
-                cellWidth = shipSelectionViewWidth,
-                cellHeight = shipSelectionViewHeight,
-                xPos = 0f,
-                yPos = 0f,
+                panel = row,
+                cellWidth = cellWidth,
+                cellHeight = cellHeight,
+                xPos = xPosOnRow,
+                yPos = yPosOnRow,
                 backgroundColor = if (isWearingPj) Misc.getPositiveHighlightColor() else Misc.getBasePlayerColor(),
                 baseAlpha = if (isWearingPj) .1f else 0f,
                 borderOnly = true
@@ -615,9 +610,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                         refreshPanel()
                     }
                 }
-
-            paintjobApplicationDialog.innerElement.addCustom(shipInFleetPanel, opad)
         }
+
+        paintjobApplicationDialog.elementPanel.addUIElement(grid).inTL(0f, 30f)
     }
 
     private fun displaySelectPaintjobPopup(

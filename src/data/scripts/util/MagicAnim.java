@@ -27,7 +27,7 @@ public class MagicAnim {
     }
 
     /**
-     * USE arbitrarySmooth() INSTEAD, will be removed with 0.95
+     * USE arbitrarySmooth() INSTEAD
      *
      * @deprecated use MagicAnim.arbitrarySmooth() instead
      */
@@ -66,7 +66,7 @@ public class MagicAnim {
     }
 
     /**
-     * USE offsetToRange() INSTEAD, will be removed with 0.95
+     * USE offsetToRange() INSTEAD
      *
      * @deprecated use MagicAnim.offsetToRange() instead
      */
@@ -94,7 +94,7 @@ public class MagicAnim {
     }
 
     /**
-     * USE normalizeRange() INSTEAD, will be removed with 0.95
+     * USE normalizeRange() INSTEAD
      *
      * @deprecated use normalizeRange() instead
      */
@@ -122,7 +122,7 @@ public class MagicAnim {
     }
 
     /**
-     * USE smoothNormalizeRange INSTEAD, will be removed with 0.95
+     * USE smoothNormalizeRange INSTEAD
      *
      * @deprecated use smoothNormalizeRange()
      */
@@ -173,7 +173,7 @@ public class MagicAnim {
     }
 
     /**
-     * USE smoothReturnNormalizeRange() INSTEAD, will be removed with 0.95
+     * USE smoothReturnNormalizeRange() INSTEAD
      *
      * @deprecated use smoothReturnNormalizeRange()
      */

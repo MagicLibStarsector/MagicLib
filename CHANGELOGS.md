@@ -7,6 +7,18 @@ Version 1.3.7
   - Shouldn't show up if there are no bounties loaded (reported by MuleDriver).
   - Potentially fixes issues if MagicBounty is disabled.
 
+**MagicAchievements**
+- Fixed another Linux-only crash when viewing intel (reported by Brainwright).
+
+**MagicPaintjobs**
+- Cleaned up "select ship" popup (centered text, fixed cell placement, shows current paintjob).
+
+**MagicCampaign**
+- Fixed MagicCampaignTrailPlugin not working (reported by Xaiier and maybe others, sorry).
+
+**MagicAutoTrails**
+- Trails no longer disappear after piercing (e.g. Plasma Cannon trail with Trailer Moments) (reported by Nia).
+
 Version 1.3.6
 
 **MagicBounty**
