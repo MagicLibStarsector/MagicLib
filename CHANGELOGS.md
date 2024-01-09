@@ -2,6 +2,7 @@ Version 1.3.8
 
 **MagicCampaign**
 - Fixed 5 year old crash: MagicCampaignTrailPlugin sometimes crashed with ConcurrentModificationException if player moved between hyperspace and regular space (reported by Xaiier).
+- Added `MagicCampaign.createDerelict` overload that lets you mark a derelict as unrecoverable.
 
 Version 1.3.7
 

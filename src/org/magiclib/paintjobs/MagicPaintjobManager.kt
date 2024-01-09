@@ -242,7 +242,7 @@ object MagicPaintjobManager {
             val unlockedPJsObj = runCatching {
                 val result = JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename))
                 if (result.length() > 0) result
-                else JSONObject()
+                else return // If there's no valid paintjob file, bail out.
             }.recover { JSONObject() }
                 .getOrThrow()
 
