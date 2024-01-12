@@ -151,7 +151,10 @@ public class MagicAchievementManager {
             logger.info("MagicLib achievements are disabled.");
             removeIntel();
             saveAchievements(true);
-            Global.getSector().removeTransientScriptsOfClass(MagicAchievementRunner.class);
+
+            if (isSaveLoaded) {
+                Global.getSector().removeTransientScriptsOfClass(MagicAchievementRunner.class);
+            }
 
             for (MagicAchievement magicAchievement : achievements.values()) {
                 magicAchievement.onDestroyed();
