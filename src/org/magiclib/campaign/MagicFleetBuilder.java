@@ -284,8 +284,25 @@ public class MagicFleetBuilder {
     }
 
     /**
-     * Returns the fleet params used to create the fleet.
-     * Some values will be overwritten when creating the fleet, if they differ from other values in the builder.
+     * The fleet params used to create the fleet and officers.
+     * Some values will be overwritten by other values passed into {@link MagicFleetBuilder}.
+     * <p>
+     * Values that will be ignored/overwritten:
+     * <pre>
+     * - combatPts
+     * - factionId
+     * - fleetType
+     * - freighterPts
+     * - ignoreMarketFleetSizeMult
+     * - linerPts
+     * - maxNumShips
+     * - modeOverride
+     * - quality
+     * - qualityOverride
+     * - tankerPts
+     * - transportPts
+     * - utilityPts
+     * </pre>
      */
     public FleetParamsV3 getFleetParams() {
         return fleetParams;

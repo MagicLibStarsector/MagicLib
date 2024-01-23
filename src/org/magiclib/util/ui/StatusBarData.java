@@ -62,6 +62,7 @@ public class StatusBarData {
 
     /**
      * Draws the status bar to the screen.
+     *
      * @param offset offset for position, only used if overridePos class variable is null
      */
     public void drawToScreen(Vector2f offset) {
@@ -69,7 +70,7 @@ public class StatusBarData {
             return;
         }
 
-        if (Global.getCombatEngine().getCombatUI() == null || Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
+        if (Global.getCombatEngine().getCombatUI() == null || !Global.getCombatEngine().isUIShowingHUD()) {
             return;
         }
 
