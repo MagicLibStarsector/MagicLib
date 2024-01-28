@@ -32,7 +32,7 @@ class LocationFilter : ListFilter<BountyInfo, LocationAPI> {
 
     override fun matches(filterableParam: FilterableParam<BountyInfo, LocationAPI>): Boolean {
         if (rangeFilterActive) {
-            val bountyLoc = filterableParam.getData()!!.location
+            val bountyLoc = filterableParam.getData()?.location ?: return false
             if (fuelRangeOnly) {
                 hyperspaceRange = (0f..getFuelLY())
                 sliderPlugin?.value = hyperspaceRange.endInclusive

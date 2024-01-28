@@ -11,6 +11,9 @@ Version 1.3.8
 - Made it clearer when a crash is from using devmode.
 - Fixed achievement `advance` methods running when achievements are disabled.
 
+**MagicBounty**
+- Fixed occasional crash when filtering a bounty (reported by laf223).
+
 Version 1.3.7
 
 **MagicBounty**
