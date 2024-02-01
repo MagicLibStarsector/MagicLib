@@ -1,9 +1,11 @@
 package org.magiclib;
 
 import com.fs.starfarer.api.BaseModPlugin;
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
+import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.achievements.TestingAchievementSpec;
 import org.magiclib.bounty.*;
@@ -14,6 +16,8 @@ import org.magiclib.plugins.MagicCampaignTrailPlugin;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
+
+import java.awt.*;
 
 /**
  * Master ModPlugin for MagicLib. Handles all the loading of data and scripts.
@@ -138,6 +142,7 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         if (isMagicLibTestMode()) {
             MagicAchievementManager.getInstance().addAchievementSpecs(new TestingAchievementSpec());
+//            testMagicCampaignTrailPlugin();
         }
 
         MagicAchievementManager.getInstance().onGameLoad();
@@ -199,6 +204,29 @@ public class Magic_modPlugin extends BaseModPlugin {
         return Global.getSector() != null
                 && Global.getSector().getPlayerPerson().getNameString()
                 .equalsIgnoreCase("ML_Test");
+    }
+
+    private static void testMagicCampaignTrailPlugin() {
+        final float trailId = MagicCampaignTrailPlugin.getUniqueID();
+        Global.getSector().addTransientScript(new EveryFrameScript() {
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+
+            @Override
+            public boolean runWhilePaused() {
+                return false;
+            }
+
+            @Override
+            public void advance(float amount) {
+                MagicCampaignTrailPlugin.addTrailMemberSimple(Global.getSector().getPlayerFleet(), trailId, Global.getSettings().getSprite("graphics/portraits/godiva.jpg"),
+                        Global.getSector().getPlayerFleet().getLocation(),
+                        1f, 0f, 500f, 550f, Color.ORANGE,
+                        1f, 6f, true, new Vector2f());
+            }
+        });
     }
 
     //    //debugging magic bounties

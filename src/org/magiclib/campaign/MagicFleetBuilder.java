@@ -75,6 +75,15 @@ public class MagicFleetBuilder {
     private boolean isImportant = false;
     private boolean transponderOn = false;
     private @Nullable String variantsPath;
+    private final FleetParamsV3 fleetParams = new FleetParamsV3(
+            null,
+            new Vector2f(),
+            fleetFaction,
+            qualityOverride,
+            fleetType,
+            minFP,
+            0f, 0f, 0f, 0f, 0f, 0f);
+
 
     /**
      * Creates a fleet with a defined flagship and optional escort.
@@ -105,7 +114,8 @@ public class MagicFleetBuilder {
                 assignmentTarget,
                 isImportant,
                 transponderOn,
-                variantsPath);
+                variantsPath,
+                fleetParams);
     }
 
     /**
@@ -273,6 +283,31 @@ public class MagicFleetBuilder {
         return this;
     }
 
+    /**
+     * The fleet params used to create the fleet and officers.
+     * Some values will be overwritten by other values passed into {@link MagicFleetBuilder}.
+     * <p>
+     * Values that will be ignored/overwritten:
+     * <pre>
+     * - combatPts
+     * - factionId
+     * - fleetType
+     * - freighterPts
+     * - ignoreMarketFleetSizeMult
+     * - linerPts
+     * - maxNumShips
+     * - modeOverride
+     * - quality
+     * - qualityOverride
+     * - tankerPts
+     * - transportPts
+     * - utilityPts
+     * </pre>
+     */
+    public FleetParamsV3 getFleetParams() {
+        return fleetParams;
+    }
+
 
     /**
      * Creates a fleet with a defined flagship and optional escort
@@ -310,7 +345,8 @@ public class MagicFleetBuilder {
             @Nullable SectorEntityToken assignmentTarget,
             boolean isImportant,
             boolean transponderOn,
-            @Nullable String variantsPath
+            @Nullable String variantsPath,
+            @NotNull FleetParamsV3 fleetParams
     ) {
         // Clean up previous generation
         MagicVariables.presetShipIdsOfLastCreatedFleet.clear();
@@ -412,7 +448,7 @@ public class MagicFleetBuilder {
             }
 
             if (minFP > coreFP) {
-                CampaignFleetAPI reinforcements = generateRandomFleet(extraShipsFaction, quality, type, (minFP - coreFP), 0.2f);
+                CampaignFleetAPI reinforcements = generateRandomFleet(fleetParams, extraShipsFaction, quality, type, (minFP - coreFP), 0.2f);
                 if (reinforcements != null) {
                     //KEEP THOSE DMODS!
                     if (reinforcements.getInflater() != null) {
@@ -471,15 +507,11 @@ public class MagicFleetBuilder {
         newFleet.getFleetData().setFlagship(flagship);
 
         // ADDING OFFICERS
-        FleetParamsV3 fleetParams = new FleetParamsV3(
-                null,
-                new Vector2f(),
-                fleetFaction,
-                quality,
-                type,
-                newFleet.getFleetPoints(),
-                0f, 0f, 0f, 0f, 0f, 0f
-        );
+        fleetParams.factionId = fleetFaction;
+        fleetParams.quality = quality;
+        fleetParams.fleetType = type;
+        fleetParams.combatPts = newFleet.getFleetPoints();
+
         FleetFactoryV3.addCommanderAndOfficersV2(newFleet, fleetParams, new Random());
 
         // Ensure the flagship is properly set AGAIN!
@@ -623,11 +655,12 @@ public class MagicFleetBuilder {
             @Nullable FleetAssignment assignment,
             @Nullable SectorEntityToken assignmentTarget,
             boolean isImportant,
-            boolean transponderOn
+            boolean transponderOn,
+            @NotNull FleetParamsV3 fleetParams
     ) {
         return createFleet(fleetName, fleetFaction, fleetType, flagshipName, flagshipVariant, false, false,
                 captain, supportFleet, true, minFP, reinforcementFaction, qualityOverride,
-                spawnLocation, assignment, assignmentTarget, isImportant, transponderOn, null);
+                spawnLocation, assignment, assignmentTarget, isImportant, transponderOn, null, fleetParams);
     }
 
     private static FleetMemberAPI generateShip(@Nullable String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
@@ -666,35 +699,31 @@ public class MagicFleetBuilder {
         return fleetMemberList;
     }
 
-    private static CampaignFleetAPI generateRandomFleet(String factionId, float qualityOverride, String fleetType, float fleetPoints, float freightersAndTankersFraction) {
+    private static CampaignFleetAPI generateRandomFleet(FleetParamsV3 fleetParams, String factionId, float qualityOverride, String fleetType, float fleetPoints, float freightersAndTankersFraction) {
 
-        FleetParamsV3 params = new FleetParamsV3(
-                null,
-                //fakeMarket(factionId, qualityOverride), //Fake market are actually not needed, one will be created by the FleetFactory
-                new Vector2f(),
-                factionId,
-                qualityOverride, //this is supposed to override the default fleet quality without market of 0.5
-                fleetType,
-                fleetPoints * (1 - freightersAndTankersFraction),
-                fleetPoints * (freightersAndTankersFraction / 3),
-                fleetPoints * (freightersAndTankersFraction / 3),
-                fleetPoints * (freightersAndTankersFraction / 3),
-                0f, 0f,
-                0 //DO NOT SET A QUALITY MOD, it is added to the market quality
-        );
+        fleetParams.factionId = factionId;
+        fleetParams.qualityOverride = qualityOverride;  //this is supposed to override the default fleet quality without market of 0.5
+        fleetParams.fleetType = fleetType;
+        fleetParams.combatPts = fleetPoints * (1 - freightersAndTankersFraction);
+        fleetParams.freighterPts = fleetPoints * (freightersAndTankersFraction / 3);
+        fleetParams.tankerPts = fleetPoints * (freightersAndTankersFraction / 3);
+        fleetParams.transportPts = fleetPoints * (freightersAndTankersFraction / 3);
+        fleetParams.linerPts = 0f;
+        fleetParams.utilityPts = 0f;
 
-        params.ignoreMarketFleetSizeMult = true;
-        params.maxNumShips = 50;
-        params.modeOverride = FactionAPI.ShipPickMode.PRIORITY_THEN_ALL;
+
+        fleetParams.ignoreMarketFleetSizeMult = true;
+        fleetParams.maxNumShips = 50;
+        fleetParams.modeOverride = FactionAPI.ShipPickMode.PRIORITY_THEN_ALL;
 
         //add S mods?
         if (qualityOverride > 1) {
-            params.averageSMods = Math.round(qualityOverride - 1);
+            fleetParams.averageSMods = Math.round(qualityOverride - 1);
         } else {
-            params.averageSMods = 0;
+            fleetParams.averageSMods = 0;
         }
 
-        CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(params);
+        CampaignFleetAPI tempFleet = FleetFactoryV3.createFleet(fleetParams);
         if (tempFleet == null) {
             log.warn("Failed to create procedural Support-Fleet");
             return null;

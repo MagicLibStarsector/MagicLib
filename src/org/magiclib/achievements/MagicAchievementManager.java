@@ -151,7 +151,10 @@ public class MagicAchievementManager {
             logger.info("MagicLib achievements are disabled.");
             removeIntel();
             saveAchievements(true);
-            Global.getSector().removeTransientScriptsOfClass(MagicAchievementRunner.class);
+
+            if (isSaveLoaded) {
+                Global.getSector().removeTransientScriptsOfClass(MagicAchievementRunner.class);
+            }
 
             for (MagicAchievement magicAchievement : achievements.values()) {
                 magicAchievement.onDestroyed();
@@ -538,6 +541,8 @@ public class MagicAchievementManager {
      * Only called in campaign, not in title, which means the sector is always non-null.
      */
     void advance(float amount) {
+        if (!areAchievementsEnabled()) return;
+
         // Call the advance method on all achievements.
         for (MagicAchievement achievement : achievements.values()) {
             if (achievementScriptsWithRunError.contains(achievement.getSpecId())) {
@@ -557,7 +562,7 @@ public class MagicAchievementManager {
 
                 // If dev mode, crash.
                 if (Global.getSettings().isDevMode()) {
-                    throw e;
+                    throw new RuntimeException("DevMode is on. Crashing instead of handling error.", e);
                 }
             }
         }
@@ -609,6 +614,7 @@ public class MagicAchievementManager {
     void advanceInCombat(float amount, List<InputEventAPI> events) {
         if (Global.getCurrentState() != GameState.COMBAT)
             return;
+        if (!areAchievementsEnabled()) return;
         CombatEngineAPI combatEngine = Global.getCombatEngine();
         if (combatEngine == null)
             return;

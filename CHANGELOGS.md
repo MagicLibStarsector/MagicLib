@@ -1,3 +1,19 @@
+Version 1.3.8
+
+**MagicCampaign**
+- Fixed 5 year old crash: MagicCampaignTrailPlugin sometimes crashed with ConcurrentModificationException if player moved between hyperspace and regular space (reported by Xaiier).
+- Added `MagicCampaign.createDerelict` overload that lets you mark a derelict as unrecoverable.
+
+**MagicUI**
+- Fade interpolation fix by Starficz.
+
+**MagicAchievements**
+- Made it clearer when a crash is from using devmode.
+- Fixed achievement `advance` methods running when achievements are disabled.
+
+**MagicBounty**
+- Fixed occasional crash when filtering a bounty (reported by laf223).
+
 Version 1.3.7
 
 **MagicBounty**

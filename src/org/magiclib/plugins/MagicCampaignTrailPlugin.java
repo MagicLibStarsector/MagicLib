@@ -65,7 +65,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Ticks the main map
         for (Integer texID : mainMap.keySet()) {
-            for (Float ID : mainMap.get(texID).keySet()) {
+            for (Float ID : new ArrayList<>(mainMap.get(texID).keySet())) {
                 //If the tracker we just found is in the wrong LocationAPI, we either delete it or don't tick it, depending on its setting
                 if (mainMap.get(texID).get(ID).locationAPI != Global.getSector().getPlayerFleet().getContainingLocation()) {
                     if (mainMap.get(texID).get(ID).locationAPICulling) {
@@ -101,7 +101,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
 
         //Iterates through all normal trails, and render them one at a time
         for (Integer texID : mainMap.keySet()) {
-            for (Float ID : mainMap.get(texID).keySet()) {
+            for (Float ID : new ArrayList<>(mainMap.get(texID).keySet())) {
                 //Only render if the tracker is in our current render layer and in our current render location
                 if (mainMap.get(texID).get(ID).renderLayer == currentRenderLayer && mainMap.get(texID).get(ID).locationAPI == Global.getSector().getPlayerFleet().getContainingLocation()) {
                     mainMap.get(texID).get(ID).renderTrail(texID);

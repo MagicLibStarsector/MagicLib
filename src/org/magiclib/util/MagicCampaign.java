@@ -385,6 +385,41 @@ public class MagicCampaign {
      * @param orbitStartAngle Orbit starting angle
      * @param orbitRadius     Orbit radius
      * @param orbitDays       Orbit period
+     * @param isRecoverable   Whether the derelict can be recovered by the player
+     * @since 1.3.8
+     */
+    public static SectorEntityToken createDerelict(
+            String variantId,
+            ShipRecoverySpecial.ShipCondition condition,
+            boolean discoverable,
+            Integer discoveryXp,
+            boolean recoverable,
+            SectorEntityToken orbitCenter,
+            float orbitStartAngle,
+            float orbitRadius,
+            float orbitDays,
+            boolean isRecoverable
+    ) {
+        SectorEntityToken derelict = createDerelict(variantId, condition, discoverable, discoveryXp, recoverable, orbitCenter, orbitStartAngle, orbitRadius, orbitDays);
+        if (!isRecoverable) {
+            derelict.addTag(Tags.UNRECOVERABLE);
+        }
+        return derelict;
+    }
+
+    /**
+     * Creates a derelict ship at the desired emplacement.
+     *
+     * @param variantId       Spawned ship variant
+     * @param condition       Condition of the derelict. Better conditions means fewer D-mods but also more weapons from the variant
+     * @param discoverable    Awards XP when found
+     * @param discoveryXp     XP awarded when found (<0 to use the default)
+     * @param recoverable     Can be salvaged as long as the hull it's possible for the player to salvage this hull
+     *                        (eg Automated ships still require the skill).
+     * @param orbitCenter     Entity orbited
+     * @param orbitStartAngle Orbit starting angle
+     * @param orbitRadius     Orbit radius
+     * @param orbitDays       Orbit period
      * @return
      */
     public static SectorEntityToken createDerelict(
