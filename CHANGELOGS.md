@@ -1,3 +1,8 @@
+Version 1.3.9
+
+- Quick 0.97a update (mod_info.json change)
+- Changed a few instances of logging to "warn" instead of "error" in order to be less alarming.
+
 Version 1.3.8
 
 **MagicCampaign**

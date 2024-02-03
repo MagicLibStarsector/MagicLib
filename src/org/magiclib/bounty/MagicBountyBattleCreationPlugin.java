@@ -46,7 +46,7 @@ class MagicBountyBattleCreationPlugin extends BattleCreationPluginImpl {
                         try {
                             Global.getSoundPlayer().playCustomMusic(1, 1, musicSetId, true);
                         } catch (Exception e) {
-                            Global.getLogger(this.getClass()).error("Failed to play music set " + musicSetId, e);
+                            Global.getLogger(this.getClass()).warn("Failed to play music set " + musicSetId, e);
                         }
 
                         played = true;

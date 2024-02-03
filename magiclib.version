@@ -2,12 +2,12 @@
   "masterVersionFile": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/magiclib.version",
   "modName": "MagicLib",
   "modThreadId": "25868",
-  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.3.8/MagicLib.zip",
+  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.3.9/MagicLib.zip",
   "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/CHANGELOGS.md",
   "modVersion":
     {
       "major": "1",
       "minor": "3",
-      "patch": "8"
+      "patch": "9"
     }
 }

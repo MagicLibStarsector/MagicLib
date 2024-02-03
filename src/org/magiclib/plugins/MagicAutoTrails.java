@@ -237,7 +237,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
 
         for (String path : trailFiles) {
 
-            if (MagicVariables.verbose) LOG.error("Merging trails from " + path);
+            if (MagicVariables.verbose) LOG.warn("Merging trails from " + path);
 
             //merge all the trail
             JSONArray trailData = new JSONArray();
@@ -247,7 +247,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                 if (path.equals("data/trails/trail_data.csv")) {
                     LOG.info("Deprecated 'data/trails/trail_data.csv' not found, skipping.");
                 } else {
-                    LOG.error("unable to read " + path, ex);
+                    LOG.warn("unable to read " + path, ex);
                 }
             }
 
@@ -271,14 +271,14 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                             layer = CombatEngineLayers.ABOVE_SHIPS_LAYER;
                         }
                     } catch (JSONException ex) {
-//                            LOG.error("missing layer override for " + thisProj);
+//                            LOG.warn("missing layer override for " + thisProj);
                     }
 
                     float frameOffsetMult = 1f;
                     try {
                         frameOffsetMult = (float) row.getDouble("frameOffsetMult");
                     } catch (JSONException ex) {
-//                            LOG.error("missing frame offset mult override for " + thisProj);
+//                            LOG.warn("missing frame offset mult override for " + thisProj);
                     }
 
                     float textureOffset = 0;
@@ -287,7 +287,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                             textureOffset = -1;
                         }
                     } catch (JSONException ignored) {
-//                            LOG.error("missing random texture offset boolean for " + thisProj);
+//                            LOG.warn("missing random texture offset boolean for " + thisProj);
                     }
 
                     //check if there are any trail already assigned to that projectile
@@ -365,7 +365,7 @@ public class MagicAutoTrails extends BaseEveryFrameCombatPlugin {
                         );
                     }
                 } catch (JSONException ex) {
-                    if (MagicVariables.verbose) LOG.error("Invalid line, skipping");
+                    if (MagicVariables.verbose) LOG.warn("Invalid line, skipping");
                 }
             }
 

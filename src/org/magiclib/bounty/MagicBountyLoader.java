@@ -580,10 +580,10 @@ public class MagicBountyLoader {
                     }
                 }
             } else {
-                LOG.error("MagicBountyData is unable to find " + BOUNTY_BOARD + " within " + MagicVariables.MAGICLIB_ID + " in modSettings.json");
+                LOG.warn("MagicBountyData is unable to find " + BOUNTY_BOARD + " within " + MagicVariables.MAGICLIB_ID + " in modSettings.json");
             }
         } catch (JSONException ex) {
-            LOG.error("MagicBountyData is unable to read the content of " + MagicVariables.MAGICLIB_ID + " in modSettings.json", ex);
+            LOG.warn("MagicBountyData is unable to read the content of " + MagicVariables.MAGICLIB_ID + " in modSettings.json", ex);
         }
 
         List<String> bountiesAvailable = new ArrayList<>();

@@ -235,9 +235,9 @@ public class Magic_modPlugin extends BaseModPlugin {
 //    @Override
 //    public void onNewGameAfterEconomyLoad() {
 //        for(String b : MagicBountyData.BOUNTIES.keySet()){
-//            LOG.error(" ");
-//            LOG.error("Testing the "+b+" bounty");
-//            LOG.error(" ");
+//            LOG.warn(" ");
+//            LOG.warn("Testing the "+b+" bounty");
+//            LOG.warn(" ");
 //            
 //            bountyData data = MagicBountyData.getBountyData(b);
 //            for(int i=0; i<10; i++){
@@ -251,9 +251,9 @@ public class Magic_modPlugin extends BaseModPlugin {
 //                        data.location_prioritizeUnexplored,
 //                        true);
 //                if(location!=null){
-//                    LOG.error(location.getName()+ " is suitable in "+ location.getStarSystem().getName() +" at a distance of "+(int)location.getStarSystem().getLocation().length());
+//                    LOG.warn(location.getName()+ " is suitable in "+ location.getStarSystem().getName() +" at a distance of "+(int)location.getStarSystem().getLocation().length());
 //                } else {
-//                    LOG.error("CANNOT FIND SUITABLE LOCATION");
+//                    LOG.warn("CANNOT FIND SUITABLE LOCATION");
 //                }
 //            }
 //        }

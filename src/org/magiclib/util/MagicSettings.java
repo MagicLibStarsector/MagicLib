@@ -51,7 +51,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -86,7 +86,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -121,7 +121,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -156,7 +156,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -192,7 +192,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -228,7 +228,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -269,7 +269,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -311,7 +311,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -353,7 +353,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");
@@ -395,7 +395,7 @@ public class MagicSettings {
                     LOG.warn("unable to find " + id + " within " + modId + " in modSettings.json");
                 }
             } catch (JSONException ex) {
-                LOG.error("unable to read content of " + modId + " in modSettings.json", ex);
+                LOG.warn("unable to read content of " + modId + " in modSettings.json", ex);
             }
         } else {
             LOG.warn("unable to find " + modId + " in modSettings.json");

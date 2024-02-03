@@ -22,7 +22,7 @@ public class MagicIndustryItemWrangler extends BaseCampaignEventListener {
         Map<String, Float> items = MagicSettings.getFloatMap(MagicVariables.MAGICLIB_ID, "itemPriorities");
 
         if (items == null || items.isEmpty()) {
-            Global.getLogger(MagicIndustryItemWrangler.class).error("Error loading items priorities. ItemInstallationWrangler will not function.");
+            Global.getLogger(MagicIndustryItemWrangler.class).warn("Error loading items priorities. ItemInstallationWrangler will not function.");
             return;
         }
 
