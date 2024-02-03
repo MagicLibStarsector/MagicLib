@@ -74,6 +74,7 @@ object MagicPaintjobManager {
                     if (isEnabled != lunaIsEnabled) {
                         isEnabled = lunaIsEnabled
                         if (isEnabled) {
+                            onGameLoad()
                             initIntel()
                         } else {
                             removeIntel()
@@ -233,11 +234,13 @@ object MagicPaintjobManager {
             val indentation = 3
             Global.getSettings().writeTextFileToCommon(commonFilename, unlockedPJsObj.toString(indentation))
         }
-            .onFailure { logger.error("Failed to save unlocked paintjobs.", it) }
+            .onFailure { logger.warn("Failed to save unlocked paintjobs.", it) }
     }
 
     @JvmStatic
     fun loadUnlockedPaintjobs() {
+        if (!isEnabled) return
+
         runCatching {
             val unlockedPJsObj = runCatching {
                 val result = JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename))
@@ -250,7 +253,7 @@ object MagicPaintjobManager {
 
             markAsAlreadyNotifiedPlayerOfNewUnlock(unlockedPaintjobsInner)
         }
-            .onFailure { logger.error("Failed to load unlocked paintjobs.", it) }
+            .onFailure { logger.warn("Failed to load unlocked paintjobs.", it) }
     }
 
     private fun markAsAlreadyNotifiedPlayerOfNewUnlock(paintjobs: Set<String>) {
@@ -267,14 +270,14 @@ object MagicPaintjobManager {
     @JvmStatic
     fun addPaintJob(paintjob: MagicPaintjobSpec) {
         if (paintjob.hullIds.none { runCatching { Global.getSettings().getHullSpec(it) }.getOrNull() != null }) {
-            logger.error("Did not add paintjob ${paintjob.id}. Hull with ids ${paintjob.hullIds} does not exist.")
+            logger.warn("Did not add paintjob ${paintjob.id}. Hull with ids ${paintjob.hullIds} does not exist.")
             return
         }
 
         if (Global.getSettings().getSprite(paintjob.spriteId) == null) {
             // Don't preload the sprite, if feature is disabled it will never be used.
             // Global.getSettings().loadTexture(paintjob.spriteId)
-            logger.error("Did not add paintjob ${paintjob.id}. Sprite with id ${paintjob.spriteId} does not exist.")
+            logger.warn("Did not add paintjob ${paintjob.id}. Sprite with id ${paintjob.spriteId} does not exist.")
             return
         }
 

@@ -181,7 +181,7 @@ public final class MagicBountyCoordinator {
                 try {
                     iterator.remove();
                 } catch (Exception e) {
-                    LOG.error("Error removing bounty " + entry.getKey(), e);
+                    LOG.warn("Error removing bounty " + entry.getKey(), e);
                 }
             } else if (entry.getValue().getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
                     && entry.getValue().getIntel() == null) {

@@ -361,7 +361,7 @@ public class MagicBountyHVB {
                 }
             }
         } catch (IOException | JSONException exception) {
-            LOG.error("MagicLib - Failed to load HighValueBountyData! - ", exception);
+            LOG.warn("MagicLib - Failed to load HighValueBountyData! - ", exception);
         }
     }
 
