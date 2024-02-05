@@ -3,9 +3,12 @@ package org.magiclib.bounty.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.MapParams
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
+import org.magiclib.bounty.MagicBountyLoader
 import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.kotlin.ucFirst
 import org.magiclib.util.MagicTxt
@@ -50,12 +53,26 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
 
             val map = targetInfoTooltip.createSectorMap(childPanelWidth, 200f, params, null)
             targetInfoTooltip.addCustom(map, 4f)
-            targetInfoTooltip.addPara(
-                MagicTxt.getString("mb_descLocation").format(location.name),
-                3f,
-                location.lightColor,
-                location.name
-            )
+
+            if (bountySpec.job_show_distance != MagicBountyLoader.ShowDistance.None) {
+                when (bountySpec.job_show_distance) {
+                    MagicBountyLoader.ShowDistance.Exact -> targetInfoTooltip.addPara(createLocationPreciseText(activeBounty!!),
+                        10f,
+                        location.lightColor,
+                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType)
+                    MagicBountyLoader.ShowDistance.System -> targetInfoTooltip.addPara(
+                        MagicTxt.getString("mb_distance_system"),
+                        10f,
+                        arrayOf(Misc.getTextColor(), location.lightColor),
+                        MagicTxt.getString("mb_distance_they"),
+                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType
+                    )
+                    else -> targetInfoTooltip.addPara(createLocationEstimateText(activeBounty!!),
+                        10f,
+                        location.lightColor,
+                        BreadcrumbSpecial.getLocationDescription(activeBounty!!.fleetSpawnLocation, false))
+                }
+            }
         } else {
             targetInfoTooltip.setButtonFontOrbitron20Bold()
             targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 3f, Color.RED).position.inTMid(2f)

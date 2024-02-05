@@ -277,7 +277,7 @@ public class MagicBountyUtilsInternal {
         return replaced;
     }
 
-    static String createLocationEstimateText(final ActiveBounty bounty) {
+    public static String createLocationEstimateText(final ActiveBounty bounty) {
 //        SectorEntityToken hideoutLocation = bounty.getFleetSpawnLocation();
 //        SectorEntityToken fake = hideoutLocation.getContainingLocation().createToken(0, 0);
 //        fake.setOrbit(Global.getFactory().createCircularOrbit(hideoutLocation, 0, 1000, 100));
@@ -294,7 +294,7 @@ public class MagicBountyUtilsInternal {
         return loc;
     }
 
-    static String getPronoun(@NotNull PersonAPI personAPI) {
+    public static String getPronoun(@NotNull PersonAPI personAPI) {
         switch (personAPI.getGender()) {
             case FEMALE:
                 return MagicTxt.getString("mb_distance_she");

@@ -3,26 +3,24 @@ package org.magiclib.bounty.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.StarSystemAPI
-import com.fs.starfarer.api.campaign.TextPanelAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.LabelAPI
 import com.fs.starfarer.api.ui.MapParams
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.bounty.*
-import org.magiclib.bounty.MagicBountyLoader.JobType
-import org.magiclib.bounty.MagicBountyLoader.ShowFleet
+import org.magiclib.bounty.MagicBountyLoader.*
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
 open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpec) : BountyInfo {
@@ -505,12 +503,25 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             val map = targetInfoTooltip.createSectorMap(childPanelWidth, 200f, params, null)
             targetInfoTooltip.addCustom(map, 2f)
 
-            targetInfoTooltip.addPara(
-                MagicTxt.getString("mb_descLocation").format(location.name),
-                3f,
-                location.lightColor,
-                location.name
-            )
+            if (bountySpec.job_show_distance != ShowDistance.None) {
+                when (bountySpec.job_show_distance) {
+                    ShowDistance.Exact -> targetInfoTooltip.addPara(createLocationPreciseText(activeBounty!!),
+                        10f,
+                        location.lightColor,
+                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType)
+                    ShowDistance.System -> targetInfoTooltip.addPara(
+                        MagicTxt.getString("mb_distance_system"),
+                        10f,
+                        arrayOf(Misc.getTextColor(), location.lightColor),
+                        MagicTxt.getString("mb_distance_they"),
+                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType
+                    )
+                    else -> targetInfoTooltip.addPara(createLocationEstimateText(activeBounty!!),
+                        10f,
+                        location.lightColor,
+                        BreadcrumbSpecial.getLocationDescription(activeBounty!!.fleetSpawnLocation, false))
+                }
+            }
         } else {
             targetInfoTooltip.setButtonFontOrbitron20Bold()
             targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 3f, Color.RED).position.inTMid(2f)
@@ -561,7 +572,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val preset = mutableListOf<FleetMemberAPI>()
         if (activeBounty.spec.fleet_preset_ships != null && activeBounty.spec.fleet_preset_ships.isNotEmpty()) {
             val specPresetShips = activeBounty.spec.fleet_preset_ships!!
-            ships.filter { specPresetShips.contains(it.id) }.forEach { preset.add(it) }
+            preset.addAll(flagship)
+            ships.filter { specPresetShips.contains(it.variant.hullVariantId) }.forEach { preset.add(it) }
         }
 
         val factionBaseUIColor = activeBounty.targetFaction?.baseUIColor ?: Global.getSector().getFaction(
