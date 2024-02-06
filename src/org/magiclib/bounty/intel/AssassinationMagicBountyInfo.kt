@@ -13,8 +13,6 @@ import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.kotlin.ucFirst
 import org.magiclib.util.MagicTxt
 import java.awt.Color
-import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
 class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpec) :
@@ -56,10 +54,13 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
 
             if (bountySpec.job_show_distance != MagicBountyLoader.ShowDistance.None) {
                 when (bountySpec.job_show_distance) {
-                    MagicBountyLoader.ShowDistance.Exact -> targetInfoTooltip.addPara(createLocationPreciseText(activeBounty!!),
+                    MagicBountyLoader.ShowDistance.Exact -> targetInfoTooltip.addPara(
+                        createLocationPreciseText(activeBounty!!),
                         10f,
                         location.lightColor,
-                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType)
+                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType
+                    )
+
                     MagicBountyLoader.ShowDistance.System -> targetInfoTooltip.addPara(
                         MagicTxt.getString("mb_distance_system"),
                         10f,
@@ -67,10 +68,13 @@ class AssassinationMagicBountyInfo(bountyKey: String, bountySpec: MagicBountySpe
                         MagicTxt.getString("mb_distance_they"),
                         activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType
                     )
-                    else -> targetInfoTooltip.addPara(createLocationEstimateText(activeBounty!!),
+
+                    else -> targetInfoTooltip.addPara(
+                        createLocationEstimateText(activeBounty!!),
                         10f,
                         location.lightColor,
-                        BreadcrumbSpecial.getLocationDescription(activeBounty!!.fleetSpawnLocation, false))
+                        BreadcrumbSpecial.getLocationDescription(activeBounty!!.fleetSpawnLocation, false)
+                    )
                 }
             }
         } else {
