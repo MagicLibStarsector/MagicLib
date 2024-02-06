@@ -1,3 +1,9 @@
+Version 1.3.10
+
+**MagicAchievements**
+
+- Added `completeAchievement` methods to `MagicAchievementManager` (before, you needed an instance of `MagicAchievement` to complete one).
+
 Version 1.3.9
 
 - Quick 0.97a update (mod_info.json change)
