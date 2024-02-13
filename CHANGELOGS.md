@@ -1,7 +1,7 @@
 Version 1.3.10
 
 **MagicBounty**
-- Fixes Bounty Board to respect `mb_distance` flags.
+- Fixes Bounty Board to respect `mb_distance` flags (contributed by President Matt Damon).
 
 **MagicAchievements**
 - Added `completeAchievement` methods to `MagicAchievementManager` (before, you needed an instance of `MagicAchievement` to complete one).
@@ -23,7 +23,7 @@ Version 1.3.8
 - Added `MagicCampaign.createDerelict` overload that lets you mark a derelict as unrecoverable.
 
 **MagicUI**
-- Fade interpolation fix by Starficz.
+- Fade interpolation fix (contributed by Starficz).
 
 **MagicAchievements**
 - Made it clearer when a crash is from using devmode.
