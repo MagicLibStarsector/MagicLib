@@ -1,8 +1,12 @@
 Version 1.3.10
 
 **MagicAchievements**
-
 - Added `completeAchievement` methods to `MagicAchievementManager` (before, you needed an instance of `MagicAchievement` to complete one).
+
+**MagicPaintjobs**
+- Fixed automatically unlocked paintjobs not being automatically unlocked (reported by galaga_galaxian).
+- No longer loads paintjobs for ships that don't exist (e.g. from a mod that's not installed).
+- Cleaned up some logging that reported an error on first run and added pj ids to pjs that fail to load.
 
 Version 1.3.9
 
