@@ -179,6 +179,23 @@ public class MagicAchievementManager {
         intel.setNew(false);
     }
 
+    public void completeAchievement(@NotNull String specId) {
+        MagicAchievement achievement = getAchievement(specId);
+
+        if (achievement != null) {
+            achievement.completeAchievement();
+            achievement.saveChanges();
+        }
+    }
+
+    public void completeAchievement(@NotNull Class<? extends MagicAchievement> achievementClass) {
+        for (MagicAchievement achievement : achievements.values()) {
+            if (achievement.getClass().equals(achievementClass)) {
+                completeAchievement(achievement.getSpecId());
+            }
+        }
+    }
+
     @Nullable
     public MagicAchievementIntel getIntel() {
         try {

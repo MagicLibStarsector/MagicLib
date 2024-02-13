@@ -151,8 +151,8 @@ public final class MagicBountyCoordinator {
             activeBountiesByKey = (Map<String, ActiveBounty>) Global.getSector().getMemoryWithoutUpdate().get(BOUNTIES_MEMORY_KEY);
 
             if (activeBountiesByKey == null) {
-                Global.getSector().getMemoryWithoutUpdate().set(BOUNTIES_MEMORY_KEY, new HashMap<>());
-                activeBountiesByKey = (Map<String, ActiveBounty>) Global.getSector().getMemory().get(BOUNTIES_MEMORY_KEY);
+                activeBountiesByKey = new HashMap<>();
+                Global.getSector().getMemoryWithoutUpdate().set(BOUNTIES_MEMORY_KEY, activeBountiesByKey);
             }
         }
 

@@ -1,3 +1,16 @@
+Version 1.3.10
+
+**MagicBounty**
+- Fixes Bounty Board to respect `mb_distance` flags (contributed by President Matt Damon).
+
+**MagicAchievements**
+- Added `completeAchievement` methods to `MagicAchievementManager` (before, you needed an instance of `MagicAchievement` to complete one).
+
+**MagicPaintjobs**
+- Fixed automatically unlocked paintjobs not being automatically unlocked (reported by Galaga Galaxian).
+- No longer loads paintjobs for ships that don't exist (e.g. from a mod that's not installed).
+- Cleaned up some logging that reported an error on first run and added pj ids to pjs that fail to load.
+
 Version 1.3.9
 
 - Quick 0.97a update (mod_info.json change)
@@ -10,7 +23,7 @@ Version 1.3.8
 - Added `MagicCampaign.createDerelict` overload that lets you mark a derelict as unrecoverable.
 
 **MagicUI**
-- Fade interpolation fix by Starficz.
+- Fade interpolation fix (contributed by Starficz).
 
 **MagicAchievements**
 - Made it clearer when a crash is from using devmode.

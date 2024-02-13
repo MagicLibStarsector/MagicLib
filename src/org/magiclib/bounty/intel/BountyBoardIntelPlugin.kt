@@ -26,8 +26,6 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     private var interval: IntervalUtil = IntervalUtil(1f, 1f)
     @Transient
     private var tempBountyInfo: BountyInfo? = null
-    @Transient
-    private var selectedItem: BountyInfo? = null
 
     init {
         // Add this as a transient script if it's not already there.
@@ -130,6 +128,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         bountyList.addListener { bountyInfo ->
             panel.removeComponent(textPanel)
 
+            lastSelectedBountyId = bountyInfo.getBountyId()
             textPanel = panel.createCustomPanel(textPanelWidth, textPanelHeight, null)
             descriptionTooltip = textPanel.createUIElement(textPanelWidth, textPanelHeight, false)
 
@@ -139,10 +138,10 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             panel.addComponent(textPanel).rightOfTop(bountyListPanel, 4f)
         }
 
-        selectedItem?.let { desiredItem ->
+        lastSelectedBountyId?.let { desiredItem ->
             //find matching item in available bounties and pick it
             availableBounties
-                .firstOrNull { desiredItem.getBountyId() == it.getBountyId() }
+                .firstOrNull { desiredItem == it.getBountyId() }
                 ?.let {
                     bountyList.itemClicked(it)
                 }
@@ -167,6 +166,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     }
 
     companion object {
+        var lastSelectedBountyId: String? = null
         const val NOTIFIED_BOUNTY_KEY = "ml_notifiedBountyKeys"
         val PROVIDERS = mutableListOf<BountyBoardProvider>()
 
@@ -175,8 +175,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         }
 
         fun refreshPanel(desiredItem: BountyInfo) {
+            lastSelectedBountyId = desiredItem.getBountyId()
             (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).apply {
-                this.selectedItem = desiredItem
                 refreshPanel()
             }
         }
