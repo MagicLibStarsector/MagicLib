@@ -1,3 +1,8 @@
+Version 1.3.11
+
+**MagicPaintjobs**
+- Fixed paintjobs duplicating in the selector every save load (reported by Galaga Galaxian).
+
 Version 1.3.10
 
 **MagicBounty**
