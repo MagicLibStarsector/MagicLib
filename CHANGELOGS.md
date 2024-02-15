@@ -1,5 +1,8 @@
 Version 1.3.11
 
+**MagicBounty**
+- Fixed a crash when a bounty has no flagship (reported by Dostya).
+
 **MagicPaintjobs**
 - Fixed paintjobs duplicating in the selector every save load (reported by Galaga Galaxian).
 

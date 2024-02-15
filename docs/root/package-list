@@ -93,6 +93,8 @@ $dokka.location:org.magiclib.achievements/MagicAchievementManager/addAchievement
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/afterGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/after-game-save.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/areAchievementsEnabled/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/are-achievements-enabled.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/beforeGameSave/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/before-game-save.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/completeAchievement/#java.lang.Class<? extends MagicAchievement>/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/complete-achievement.html
+$dokka.location:org.magiclib.achievements/MagicAchievementManager/completeAchievement/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/complete-achievement.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/generateAchievementsFromSpec/#java.util.Map<java.lang.String,org.magiclib.achievements.MagicAchievementSpec>/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/generate-achievements-from-spec.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/getAchievement/#java.lang.String/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/get-achievement.html
 $dokka.location:org.magiclib.achievements/MagicAchievementManager/getIntel/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement-manager/get-intel.html
@@ -235,6 +237,7 @@ $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion///Poi
 $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/NOTIFIED_BOUNTY_KEY/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/-n-o-t-i-f-i-e-d_-b-o-u-n-t-y_-k-e-y.html
 $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/PROVIDERS/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/-p-r-o-v-i-d-e-r-s.html
 $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/addProvider/#org.magiclib.bounty.intel.BountyBoardProvider/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/add-provider.html
+$dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/lastSelectedBountyId/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/last-selected-bounty-id.html
 $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin.Companion/refreshPanel/#org.magiclib.bounty.intel.BountyInfo/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-companion/refresh-panel.html
 $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/index.html
 $dokka.location:org.magiclib.bounty.intel/BountyBoardIntelPlugin/BountyBoardIntelPlugin/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-intel-plugin/-bounty-board-intel-plugin.html
@@ -255,6 +258,8 @@ $dokka.location:org.magiclib.bounty.intel/BountyBoardProvider///PointingToDeclar
 $dokka.location:org.magiclib.bounty.intel/BountyBoardProvider/getBounties/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-board-provider/get-bounties.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo///PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/index.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/addNotificationBulletpoints/#[Error type: Unresolved type for TooltipMakerAPI]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/add-notification-bulletpoints.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/createLocationEstimateText/#[Error type: Unresolved type for ActiveBounty]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/create-location-estimate-text.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/createLocationPreciseText/#[Error type: Unresolved type for ActiveBounty]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/create-location-precise-text.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/decorateListItem/#org.magiclib.bounty.intel.BountyListPanelPlugin.BountyItemPanelPlugin#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/decorate-list-item.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyId/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-bounty-id.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyName/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-bounty-name.html
@@ -263,6 +268,7 @@ $dokka.location:org.magiclib.bounty.intel/BountyInfo/getBountyType/#/PointingToD
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/getFilterData/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-filter-data.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/getJobIcon/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-job-icon.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/getLocationIfBountyIsActive/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-location-if-bounty-is-active.html
+$dokka.location:org.magiclib.bounty.intel/BountyInfo/getPronoun/#[Error type: Unresolved type for PersonAPI]/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-pronoun.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/getSortIndex/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/get-sort-index.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/layoutPanel/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/layout-panel.html
 $dokka.location:org.magiclib.bounty.intel/BountyInfo/notifiedUserThatBountyIsAvailable/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-bounty-info/notified-user-that-bounty-is-available.html
@@ -315,6 +321,7 @@ $dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/panelThatCanBeRemoved/
 $dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/shouldAlwaysShow/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/should-always-show.html
 $dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/shouldShow/#/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/should-show.html
 $dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/showBountyText/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/show-bounty-text.html
+$dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/showFleet/#[Error type: Unresolved type for TooltipMakerAPI]#kotlin.Float#[Error type: Unresolved type for ActiveBounty]/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/show-fleet.html
 $dokka.location:org.magiclib.bounty.intel/MagicBountyInfo/showTargetInfo/#[Error type: Unresolved type for CustomPanelAPI]#kotlin.Float#kotlin.Float/PointingToDeclaration/root/org.magiclib.bounty.intel/-magic-bounty-info/show-target-info.html
 $dokka.location:org.magiclib.bounty.rulecmd////PointingToDeclaration/root/org.magiclib.bounty.rulecmd/index.html
 $dokka.location:org.magiclib.bounty.rulecmd/BountyScriptExample///PointingToDeclaration/root/org.magiclib.bounty.rulecmd/-bounty-script-example/index.html
@@ -703,7 +710,9 @@ $dokka.location:org.magiclib.bounty/MagicBountySpec/trigger_player_minLevel/#/Po
 $dokka.location:org.magiclib.bounty/MagicBountySpec/trigger_weight_mult/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-spec/trigger_weight_mult.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal///PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/index.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/MagicBountyUtilsInternal/#/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/-magic-bounty-utils-internal.html
+$dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/createLocationEstimateText/#ActiveBounty/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/create-location-estimate-text.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/createLocationPreciseText/#ActiveBounty/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/create-location-precise-text.html
+$dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/getPronoun/#PersonAPI/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/get-pronoun.html
 $dokka.location:org.magiclib.bounty/MagicBountyUtilsInternal/replaceStringVariables/#ActiveBounty#java.lang.String/PointingToDeclaration/root/org.magiclib.bounty/-magic-bounty-utils-internal/replace-string-variables.html
 $dokka.location:org.magiclib.campaign////PointingToDeclaration/root/org.magiclib.campaign/index.html
 $dokka.location:org.magiclib.campaign/MagicCaptainBuilder///PointingToDeclaration/root/org.magiclib.campaign/-magic-captain-builder/index.html
