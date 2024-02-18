@@ -45,7 +45,7 @@ public class MagicUI {
     private static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
     private static final Vector2f PERCENTBARPAD = new Vector2f(0, 14f);
 
-    private static final float UIscaling = Global.getSettings().getScreenScaleMult();
+    public static final float UIscaling = Global.getSettings().getScreenScaleMult();
 
 
     static {
@@ -62,6 +62,30 @@ public class MagicUI {
 
         } catch (FontException ex) {
         }
+    }
+/*
+    public static float getStatusTextWidth(String text) {
+        String oldText = TODRAW10.getText();
+        TODRAW10.setText(text);
+        float width = TODRAW10.getWidth();
+        TODRAW10.setText(oldText);
+        return width;
+    }
+
+    public static void setStatusTextAligned(LazyFont.TextAlignment alignment) {
+        TODRAW10.setAlignment(alignment);
+    }*/
+
+    public static float getTextWidth(String text) {
+        String oldText = TODRAW14.getText();
+        TODRAW14.setText(text);
+        float width = TODRAW14.getWidth();
+        TODRAW14.setText(oldText);
+        return width;
+    }
+
+    public static void setTextAligned(LazyFont.TextAlignment alignment) {
+        TODRAW14.setAlignment(alignment);
     }
 
     ///////////////////////////////////
@@ -610,15 +634,13 @@ public class MagicUI {
         addHUDStatusBar(ship, fill, innerColor, borderColor, secondfill, pos2);
         if (TODRAW10 != null) {
             if (bottext != null && !bottext.isEmpty()) {
-                TODRAW10.setText(bottext);
                 int pixelleft = (int) TODRAW10.getWidth();
                 pos2.translate(-pixelleft - 5f, 8f);
-                addHUDStatusText(ship, innerColor, pos2);
+                addStatusText(ship, bottext, innerColor, pos2);
             }
             if (toptext != null && !toptext.isEmpty()) {
                 pos2.translate(0, 8f);
-                TODRAW10.setText(toptext);
-                addHUDStatusText(ship, innerColor, pos2);
+                addStatusText(ship, toptext, innerColor, pos2);
             }
         }
     }
@@ -760,7 +782,7 @@ public class MagicUI {
         int hfboxWidth = (int) (boxWidth * hardfill);
         int fboxWidth = (int) (boxWidth * fill);
 
-        OpenGLBar(ship, alpha, borderCol, innerCol, fboxWidth, hfboxWidth, boxHeight, boxWidth, pixelHardfill, shadowLoc, boxLoc);
+        OpenGLBar(ship, alpha, borderCol, innerCol, fboxWidth, hfboxWidth, boxHeight, boxWidth, pixelHardfill, shadowLoc, boxLoc, true);
     }
 
     /**
@@ -909,18 +931,147 @@ public class MagicUI {
         int hfboxWidth = (int) (boxWidth * hardfill);
         int fboxWidth = (int) (boxWidth * fill);
 
-        OpenGLBar(ship, alpha, borderCol, innerCol, fboxWidth, hfboxWidth, boxHeight, boxWidth, pixelHardfill, shadowLoc, boxLoc);
+        OpenGLBar(ship, alpha, borderCol, innerCol, fboxWidth, hfboxWidth, boxHeight, boxWidth, pixelHardfill, shadowLoc, boxLoc, true);
 
+    }
+
+    /**
+     * Calculates a position above the selected weapon group in the HUD.
+     * @param ship ship
+     * @return position above the selected weapons in the HUD
+     */
+    public static Vector2f getHUDRightOffset(ShipAPI ship) {
+        WeaponGroupAPI selectedGroup = ship.getSelectedGroupAPI();
+
+        float weaponBarHeight = 0f;
+        if (selectedGroup != null && selectedGroup.getWeaponsCopy() != null)
+            weaponBarHeight = selectedGroup.getWeaponsCopy().size() * 12f;
+
+        Vector2f baseBarLoc = new Vector2f(529f, 40f + weaponBarHeight);
+        Vector2f shipOffset = getUIElementOffset(ship, ship.getVariant(), PERCENTBARVEC1, PERCENTBARVEC2);
+        Vector2f adjustedLoc = Vector2f.add(baseBarLoc, shipOffset, null);
+        return adjustedLoc;
+    }
+
+    /**
+     * Draws a UI bar. The HUD color changes to blue when the ship is dead.
+     *
+     * @param ship        Ship concerned (the element will only be drawn if that ship
+     *                    is the player ship)
+     * @param fill        Filling level
+     * @param innerColor  Color of the bar. If null, use the vanilla HUD color.
+     * @param borderColor Color of the border. If null, use the vanilla HUD
+     *                    color.
+     * @param secondFill  Like the hard flux of the flux bar. 0 per default.
+     * @param screenPos   The position on the Screen.
+     */
+    public static void addBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondFill, Vector2f screenPos) {
+        addBar(ship, fill, innerColor, borderColor, secondFill, screenPos, 6 * UIscaling, 59 * UIscaling, true);
+    }
+
+    /**
+     * Draws a UI bar. The HUD color changes to blue when the ship is dead.
+     *
+     * @param ship        Ship concerned (the element will only be drawn if that ship
+     *                    is the player ship)
+     * @param fill        Filling level
+     * @param innerColor  Color of the bar. If null, use the vanilla HUD color.
+     * @param borderColor Color of the border. If null, use the vanilla HUD
+     *                    color.
+     * @param secondFill  Like the hardflux of the fluxbar. 0 per default.
+     * @param screenPos   The position on the Screen.
+     * @param boxHeight   Height of the drawn box.
+     * @param boxWidth    Width of the drawn box.
+     * @param drawBorders whether to draw the borders of the bar. default is false.
+     */
+    public static void addBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondFill, Vector2f screenPos, float boxHeight, float boxWidth, boolean drawBorders) {
+        final Vector2f boxLoc = new Vector2f(screenPos);
+        final Vector2f shadowLoc = new Vector2f(boxLoc.getX() + 1f, boxLoc.getY() - 1f);
+        boxLoc.scale(UIscaling);
+        shadowLoc.scale(UIscaling);
+
+        // Used to properly interpolate between colors
+        float alpha = 1f;
+
+        Color innerCol = innerColor == null ? GREENCOLOR : innerColor;
+        Color borderCol = borderColor == null ? GREENCOLOR : borderColor;
+        if (!ship.isAlive()) {
+            innerCol = BLUCOLOR;
+            borderCol = BLUCOLOR;
+        }
+        int pixelHardfill = 0;
+        float hardfill = secondFill < 0 ? 0 : secondFill;
+        hardfill = hardfill > 1 ? 1 : hardfill;
+        if (hardfill >= fill) {
+            hardfill = fill;
+        }
+        pixelHardfill = (int) (boxWidth * hardfill);
+        pixelHardfill = pixelHardfill <= 3 ? -pixelHardfill : -3;
+
+        int hfboxWidth = (int) (boxWidth * hardfill);
+        int fboxWidth = (int) (boxWidth * fill);
+
+        OpenGLBar(ship, alpha, borderCol, innerCol, fboxWidth, hfboxWidth, boxHeight, boxWidth, pixelHardfill, shadowLoc, boxLoc, drawBorders);
+    }
+
+    /**
+     * Draw text with the font Victor14 where you want on the screen.
+     *
+     * @param ship      The player ship.
+     * @param text      Text to display.
+     * @param textColor The color of the text
+     * @param screenPos The position on the Screen.
+     * @param openGLStack whether to open an OpenGL11 stack for the text
+     */
+    public static void addText(ShipAPI ship, String text, Color textColor, Vector2f screenPos, boolean openGLStack) {
+        Color borderCol = textColor == null ? GREENCOLOR : textColor;
+        if (!ship.isAlive()) {
+            borderCol = BLUCOLOR;
+        }
+
+        float alpha = getUIAlpha();
+
+        Color shadowcolor = new Color(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
+                1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
+        Color color = new Color(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f,
+                alpha * (borderCol.getAlpha() / 255f)
+                        * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
+
+        final Vector2f boxLoc = new Vector2f(screenPos);
+        final Vector2f shadowLoc = new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f);
+
+        if (UIscaling != 1) {
+            boxLoc.scale(UIscaling);
+            shadowLoc.scale(UIscaling);
+            TODRAW14.setFontSize(14 * UIscaling);
+        }
+
+        if (openGLStack) {
+            openGL11ForText();
+        }
+
+        TODRAW14.setMaxWidth(4600 * UIscaling);
+        TODRAW14.setMaxHeight(14 * UIscaling);
+        TODRAW14.setText(text);
+        TODRAW14.setColor(shadowcolor);
+        TODRAW14.draw(shadowLoc);
+        TODRAW14.setColor(color);
+        TODRAW14.draw(boxLoc);
+
+        if (openGLStack) {
+            closeGL11ForText();
+        }
     }
 
     /**
      * Draw text with the font victor10 where you want on the screen.
      *
      * @param ship      The player ship.
+     * @param text      Text to display.
      * @param textColor The color of the text
      * @param screenPos The position on the Screen.
      */
-    private static void addHUDStatusText(ShipAPI ship, Color textColor, Vector2f screenPos) {
+    public static void addStatusText(ShipAPI ship, String text, Color textColor, Vector2f screenPos) {
         Color borderCol = textColor == null ? GREENCOLOR : textColor;
         if (!ship.isAlive()) {
             borderCol = BLUCOLOR;
@@ -944,10 +1095,8 @@ public class MagicUI {
             TODRAW10.setFontSize(10 * UIscaling);
         }
 
-        // Global.getCombatEngine().getViewport().
         openGL11ForText();
-        // TODRAW10.setText(text);
-        // TODRAW10.setMaxHeight(26);
+        TODRAW10.setText(text);
         TODRAW10.setColor(shadowcolor);
         TODRAW10.draw(shadowLoc);
         TODRAW10.setColor(color);
@@ -955,7 +1104,7 @@ public class MagicUI {
         closeGL11ForText();
     }
 
-    private static void OpenGLBar(ShipAPI ship, float alpha, Color borderCol, Color innerCol, int fboxWidth, int hfboxWidth, float boxHeight, float boxWidth, int pixelHardfill, Vector2f shadowLoc, Vector2f boxLoc) {
+    private static void OpenGLBar(ShipAPI ship, float alpha, Color borderCol, Color innerCol, int fboxWidth, int hfboxWidth, float boxHeight, float boxWidth, int pixelHardfill, Vector2f shadowLoc, Vector2f boxLoc, boolean drawBorders) {
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
 
@@ -988,37 +1137,40 @@ public class MagicUI {
             }
         }
 
-        // Render the drop shadow of border.
-        GL11.glBegin(GL11.GL_LINES);
-        GL11.glColor4f(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
-                1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
-        GL11.glVertex2f(shadowLoc.x + hfboxWidth + pixelHardfill, shadowLoc.y - 1);
-        GL11.glVertex2f(shadowLoc.x + 3 + hfboxWidth + pixelHardfill, shadowLoc.y - 1);
-        GL11.glVertex2f(shadowLoc.x + hfboxWidth + pixelHardfill, shadowLoc.y + boxHeight);
-        GL11.glVertex2f(shadowLoc.x + 3 + hfboxWidth + pixelHardfill, shadowLoc.y + boxHeight);
-        GL11.glVertex2f(shadowLoc.x + boxWidth, shadowLoc.y);
-        GL11.glVertex2f(shadowLoc.x + boxWidth, shadowLoc.y + boxHeight);
 
-        // Render the border transparency fix
-        GL11.glColor4f(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
-                1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
-        GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y - 1);
-        GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y - 1);
-        GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
-        GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
-        GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y);
-        GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y + boxHeight);
+        if (drawBorders) {
+            // Render the drop shadow of border.
+            GL11.glBegin(GL11.GL_LINES);
+            GL11.glColor4f(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
+                    1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
+            GL11.glVertex2f(shadowLoc.x + hfboxWidth + pixelHardfill, shadowLoc.y - 1);
+            GL11.glVertex2f(shadowLoc.x + 3 + hfboxWidth + pixelHardfill, shadowLoc.y - 1);
+            GL11.glVertex2f(shadowLoc.x + hfboxWidth + pixelHardfill, shadowLoc.y + boxHeight);
+            GL11.glVertex2f(shadowLoc.x + 3 + hfboxWidth + pixelHardfill, shadowLoc.y + boxHeight);
+            GL11.glVertex2f(shadowLoc.x + boxWidth, shadowLoc.y);
+            GL11.glVertex2f(shadowLoc.x + boxWidth, shadowLoc.y + boxHeight);
 
-        // Render the border
-        GL11.glColor4f(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f,
-                alpha * (1 - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
-        GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y - 1);
-        GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y - 1);
-        GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
-        GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
-        GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y);
-        GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y + boxHeight);
-        GL11.glEnd();
+            // Render the border transparency fix
+            GL11.glColor4f(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
+                    1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
+            GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y - 1);
+            GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y - 1);
+            GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
+            GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
+            GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y);
+            GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y + boxHeight);
+
+            // Render the border
+            GL11.glColor4f(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f,
+                    alpha * (1 - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
+            GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y - 1);
+            GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y - 1);
+            GL11.glVertex2f(boxLoc.x + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
+            GL11.glVertex2f(boxLoc.x + 3 + hfboxWidth + pixelHardfill, boxLoc.y + boxHeight);
+            GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y);
+            GL11.glVertex2f(boxLoc.x + boxWidth, boxLoc.y + boxHeight);
+            GL11.glEnd();
+        }
 
         // Render the fill element
         if (ship.isAlive()) {
