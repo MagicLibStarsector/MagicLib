@@ -301,21 +301,21 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
         )
 
         if ((hasSeparateDroneCharges() && getMaxDroneCharges() > 0) || (!usesChargesOnActivate() && maxCharges > 0)) {
-            val droneBarPadding = 1 * MagicUI.UIscaling
+            val droneBarPadding = 1 * MagicUI.UI_SCALING
             val droneBarWidth =
-                ((59 * MagicUI.UIscaling - droneBarPadding * (getMaxDroneCharges() - 1)) / getMaxDroneCharges()).coerceAtLeast(
+                ((59 * MagicUI.UI_SCALING - droneBarPadding * (getMaxDroneCharges() - 1)) / getMaxDroneCharges()).coerceAtLeast(
                     1f
                 )
 
             val max = (droneCharges + 1).coerceAtMost(getMaxDroneCharges())
             for (i in 0 until max) {
                 val droneBarPos =
-                    Vector2f.add(barLoc, Vector2f(12f + droneBarWidth * i + droneBarPadding * i, -2 * MagicUI.UIscaling), null)
+                    Vector2f.add(barLoc, Vector2f(12f + droneBarWidth * i + droneBarPadding * i, -2 * MagicUI.UI_SCALING), null)
                 val droneBarFill =
                     if (droneCharges < getMaxDroneCharges() && i == max - 1) droneCreationInterval.elapsed / droneCreationInterval.intervalDuration else 1f
                 MagicUI.addBar(
                     ship,
-                    droneBarFill, hudColor, hudColor, 0f, droneBarPos, 2 * MagicUI.UIscaling, droneBarWidth, false
+                    droneBarFill, hudColor, hudColor, 0f, droneBarPos, 2 * MagicUI.UI_SCALING, droneBarWidth, false
                 )
             }
         }

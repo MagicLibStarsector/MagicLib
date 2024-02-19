@@ -253,8 +253,8 @@ public abstract class CombatActivator {
         }
 
         if (getKeyIndex() >= 0) {
-            if (ActivatorManager.INSTANCE.getKeyList().size() > getKeyIndex()) {
-                return Keyboard.isKeyDown(ActivatorManager.INSTANCE.getKeyList().get(getKeyIndex()));
+            if (ActivatorManager.INSTANCE.getHotkeyList().size() > getKeyIndex()) {
+                return Keyboard.isKeyDown(ActivatorManager.INSTANCE.getHotkeyList().get(getKeyIndex()));
             }
             return false;
         }
@@ -614,8 +614,8 @@ public abstract class CombatActivator {
         }
 
         int keycode = -1;
-        if (canAssignKey() && getKeyIndex() >= 0 && ActivatorManager.INSTANCE.getKeyList().size() > getKeyIndex()) {
-            keycode = ActivatorManager.INSTANCE.getKeyList().get(getKeyIndex());
+        if (canAssignKey() && getKeyIndex() >= 0 && ActivatorManager.INSTANCE.getHotkeyList().size() > getKeyIndex()) {
+            keycode = ActivatorManager.INSTANCE.getHotkeyList().get(getKeyIndex());
         }
 
         switch (keycode) {

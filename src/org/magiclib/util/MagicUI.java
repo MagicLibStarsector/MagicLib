@@ -45,7 +45,7 @@ public class MagicUI {
     private static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
     private static final Vector2f PERCENTBARPAD = new Vector2f(0, 14f);
 
-    public static final float UIscaling = Global.getSettings().getScreenScaleMult();
+    public static final float UI_SCALING = Global.getSettings().getScreenScaleMult();
 
 
     static {
@@ -158,16 +158,16 @@ public class MagicUI {
 
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), boxLoc, null);
 
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
+        if (UI_SCALING != 1) {
+            boxLoc.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
         }
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
 
-        final float boxWidth = 27f * UIscaling;
-        final float boxHeight = 7f * UIscaling;
+        final float boxWidth = 27f * UI_SCALING;
+        final float boxHeight = 7f * UI_SCALING;
 
         // Used to properly interpolate between colors
         final CombatEngineAPI engine = Global.getCombatEngine();
@@ -321,14 +321,14 @@ public class MagicUI {
 
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), boxLoc, null);
 
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
+        if (UI_SCALING != 1) {
+            boxLoc.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
         }
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
-        final float boxSide = 7f * UIscaling;
+        final float boxSide = 7f * UI_SCALING;
 
         // Used to properly interpolate between colors
         final CombatEngineAPI engine = Global.getCombatEngine();
@@ -755,12 +755,12 @@ public class MagicUI {
      */
     public static void addInterfaceStatusBar(ShipAPI ship, Vector2f boxLoc, float fill, Color innerColor, Color borderColor, float secondfill) {
 
-        final float boxWidth = 79 * UIscaling;
-        final float boxHeight = 7 * UIscaling;
+        final float boxWidth = 79 * UI_SCALING;
+        final float boxHeight = 7 * UI_SCALING;
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), boxLoc, null);
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
+        if (UI_SCALING != 1) {
+            boxLoc.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
         }
 
         float alpha = getUIAlpha();
@@ -815,16 +815,16 @@ public class MagicUI {
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1),
                 textLoc, null);
 
-        if (UIscaling != 1) {
-            textLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
-            TODRAW14.setFontSize(14 * UIscaling);
+        if (UI_SCALING != 1) {
+            textLoc.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
+            TODRAW14.setFontSize(14 * UI_SCALING);
         }
 
         openGL11ForText();
         TODRAW14.setText(text);
-        TODRAW14.setMaxWidth(46 * UIscaling);
-        TODRAW14.setMaxHeight(14 * UIscaling);
+        TODRAW14.setMaxWidth(46 * UI_SCALING);
+        TODRAW14.setMaxHeight(14 * UI_SCALING);
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
         TODRAW14.setColor(color);
@@ -869,10 +869,10 @@ public class MagicUI {
 
 
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(1, -1), numberPos, null);
-        if (UIscaling != 1) {
-            numberPos.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
-            TODRAW14.setFontSize(14 * UIscaling);
+        if (UI_SCALING != 1) {
+            numberPos.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
+            TODRAW14.setFontSize(14 * UI_SCALING);
         }
 
         openGL11ForText();
@@ -902,14 +902,14 @@ public class MagicUI {
      */
     private static void addHUDStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill, Vector2f screenPos) {
 
-        final float boxWidth = 59 * UIscaling;
-        final float boxHeight = 5 * UIscaling;
+        final float boxWidth = 59 * UI_SCALING;
+        final float boxHeight = 5 * UI_SCALING;
 
         final Vector2f element = getHUDOffset(ship);
         final Vector2f boxLoc = Vector2f.add(new Vector2f(screenPos.getX(), screenPos.getY()), element, null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f), element, null);
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        boxLoc.scale(UI_SCALING);
+        shadowLoc.scale(UI_SCALING);
 
         float alpha = getUIAlpha();
 
@@ -966,7 +966,7 @@ public class MagicUI {
      * @param screenPos   The position on the Screen.
      */
     public static void addBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondFill, Vector2f screenPos) {
-        addBar(ship, fill, innerColor, borderColor, secondFill, screenPos, 6 * UIscaling, 59 * UIscaling, true);
+        addBar(ship, fill, innerColor, borderColor, secondFill, screenPos, 6 * UI_SCALING, 59 * UI_SCALING, true);
     }
 
     /**
@@ -987,8 +987,8 @@ public class MagicUI {
     public static void addBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondFill, Vector2f screenPos, float boxHeight, float boxWidth, boolean drawBorders) {
         final Vector2f boxLoc = new Vector2f(screenPos);
         final Vector2f shadowLoc = new Vector2f(boxLoc.getX() + 1f, boxLoc.getY() - 1f);
-        boxLoc.scale(UIscaling);
-        shadowLoc.scale(UIscaling);
+        boxLoc.scale(UI_SCALING);
+        shadowLoc.scale(UI_SCALING);
 
         // Used to properly interpolate between colors
         float alpha = 1f;
@@ -1040,18 +1040,18 @@ public class MagicUI {
         final Vector2f boxLoc = new Vector2f(screenPos);
         final Vector2f shadowLoc = new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f);
 
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
-            TODRAW14.setFontSize(14 * UIscaling);
+        if (UI_SCALING != 1) {
+            boxLoc.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
+            TODRAW14.setFontSize(14 * UI_SCALING);
         }
 
         if (openGLStack) {
             openGL11ForText();
         }
 
-        TODRAW14.setMaxWidth(4600 * UIscaling);
-        TODRAW14.setMaxHeight(14 * UIscaling);
+        TODRAW14.setMaxWidth(4600 * UI_SCALING);
+        TODRAW14.setMaxHeight(14 * UI_SCALING);
         TODRAW14.setText(text);
         TODRAW14.setColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
@@ -1089,10 +1089,10 @@ public class MagicUI {
                 getHUDOffset(ship), null);
         final Vector2f shadowLoc = Vector2f.add(new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f),
                 getHUDOffset(ship), null);
-        if (UIscaling != 1) {
-            boxLoc.scale(UIscaling);
-            shadowLoc.scale(UIscaling);
-            TODRAW10.setFontSize(10 * UIscaling);
+        if (UI_SCALING != 1) {
+            boxLoc.scale(UI_SCALING);
+            shadowLoc.scale(UI_SCALING);
+            TODRAW10.setFontSize(10 * UI_SCALING);
         }
 
         openGL11ForText();

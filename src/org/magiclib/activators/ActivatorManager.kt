@@ -10,27 +10,36 @@ import org.lwjgl.util.vector.Vector2f
 import org.magiclib.util.MagicUI
 
 object ActivatorManager {
-    var keyList: List<Int> = mutableListOf()
+    var hotkeyList: List<Int> = mutableListOf()
 
+    /**
+     * Call in your [onApplicationLoad] to initialize hotkeys and settings.
+     */
     @JvmStatic
     fun initialize() {
         reloadKeys()
         LunaSettings.addSettingsListener(LunaKeybindSettingsListener())
     }
 
+    /**
+     * Add an activator to a ship.
+     * @param ship The ship to add the activator to.
+     * @param activator The activator to add.
+     */
     @JvmStatic
     fun addActivator(ship: ShipAPI, activator: CombatActivator) {
-        var activatorData: MutableMap<Class<out CombatActivator>, CombatActivator>? = getActivatorMap(ship)
-        if (activatorData == null) {
-            activatorData = LinkedHashMap()
-            ship.setCustomData("combatActivators", activatorData)
+        var shipActivatorData = getActivatorMapForShip(ship)
+
+        if (shipActivatorData == null) {
+            shipActivatorData = LinkedHashMap()
+            ship.setCustomData("combatActivators", shipActivatorData)
         }
 
-        activatorData.let { activators ->
+        shipActivatorData.let { activators ->
             if (!activators.containsKey(activator.javaClass)) {
                 activators[activator.javaClass] = activator
 
-                if (!activator.canAssignKey() || activators.size > keyList.size) {
+                if (!activator.canAssignKey() || activators.size > hotkeyList.size) {
                     activator.key = CombatActivator.BLANK_KEY
                 } else {
                     activator.keyIndex = activators
@@ -43,18 +52,52 @@ object ActivatorManager {
         }
     }
 
+    /**
+     * Remove an activator from a ship.
+     */
     @JvmStatic
     fun removeActivator(ship: ShipAPI, activatorClass: Class<out CombatActivator>) {
-        val activatorData: MutableMap<Class<out CombatActivator>, CombatActivator> = getActivatorMap(ship) ?: return
-        activatorData.remove(activatorClass)
+        getActivatorMapForShip(ship)?.remove(activatorClass)
     }
 
+    /**
+     * Gets a shallow copy of the list of activators for a ship.
+     */
+    @JvmStatic
+    fun getActivatorsForShipCopy(ship: ShipAPI): List<CombatActivator>? {
+        val map = getActivatorMapForShip(ship) ?: return null
+        return ArrayList(map.values)
+    }
+
+    /**
+     * Gets a map of activators for a ship, where the key is the activator's class.
+     */
+    @JvmStatic
+    fun getActivatorMapForShip(ship: ShipAPI): MutableMap<Class<out CombatActivator>, CombatActivator>? {
+        return ship.customData["combatActivators"] as? MutableMap<Class<out CombatActivator>, CombatActivator>?
+            ?: return null
+    }
+
+    fun reloadKeys() {
+        hotkeyList = mutableListOf(
+            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind1")!!,
+            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind2")!!,
+            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind3")!!,
+            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind4")!!,
+            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind5")!!,
+        )
+            .filter { it != 0 }
+    }
+
+    /**
+     * Called automatically during combat by [ActivatorCombatPlugin].
+     */
     @JvmStatic
     fun advanceActivators(amount: Float) {
-        val ships: List<ShipAPI> = Global.getCombatEngine().ships
-        for (ship in ships) {
-            getActivators(ship)?.forEach {
-                if (!Global.getCombatEngine().isPaused) {
+        val combatEngine = Global.getCombatEngine() ?: return
+        for (ship in combatEngine.ships) {
+            getActivatorsForShipCopy(ship)?.forEach {
+                if (!combatEngine.isPaused) {
                     it.advanceInternal(amount * ship.mutableStats.timeMult.modifiedValue)
                 }
 
@@ -63,14 +106,19 @@ object ActivatorManager {
         }
     }
 
+    /**
+     * Called automatically during combat by [ActivatorCombatPlugin].
+     */
     @JvmStatic
     fun drawActivatorsUI(viewport: ViewportAPI) {
-        if (Global.getCombatEngine().combatUI == null || Global.getCombatEngine().combatUI.isShowingCommandUI || Global.getCombatEngine().combatUI.isShowingDeploymentDialog || !Global.getCombatEngine().isUIShowingHUD) {
+        val combatEngine = Global.getCombatEngine() ?: return
+
+        if (combatEngine.combatUI == null || combatEngine.combatUI.isShowingCommandUI || combatEngine.combatUI.isShowingDeploymentDialog || !combatEngine.isUIShowingHUD) {
             return
         }
 
-        Global.getCombatEngine().playerShip?.let { ship ->
-            getActivators(ship)?.let {
+        combatEngine.playerShip?.let { ship ->
+            getActivatorsForShipCopy(ship)?.let {
                 var lastVec = MagicUI.getHUDRightOffset(ship)
                 for (activator in it) {
                     activator.drawHUDBar(viewport, lastVec)
@@ -80,39 +128,16 @@ object ActivatorManager {
         }
     }
 
+    /**
+     * Called automatically during combat by [ActivatorCombatPlugin].
+     */
     @JvmStatic
     fun drawActivatorsWorld(viewport: ViewportAPI) {
-        val ships: List<ShipAPI> = Global.getCombatEngine().ships
-        for (ship in ships) {
-            getActivators(ship)?.forEach {
+        for (ship in Global.getCombatEngine()?.ships.orEmpty()) {
+            getActivatorsForShipCopy(ship)?.forEach {
                 it.renderWorld(viewport)
             }
         }
-    }
-
-    @JvmStatic
-    fun getActivators(ship: ShipAPI): List<CombatActivator>? {
-        val map = getActivatorMap(ship)
-        if (map != null) {
-            return ArrayList(map.values)
-        }
-        return null
-    }
-
-    @JvmStatic
-    fun getActivatorMap(ship: ShipAPI): MutableMap<Class<out CombatActivator>, CombatActivator>? {
-        return ship.customData["combatActivators"] as MutableMap<Class<out CombatActivator>, CombatActivator>?
-            ?: return null
-    }
-
-    fun reloadKeys() {
-        keyList = mutableListOf(
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind1")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind2")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind3")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind4")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind5")!!,
-        ).filter { it != 0 }
     }
 }
 
