@@ -88,57 +88,6 @@ object ActivatorManager {
         )
             .filter { it != 0 }
     }
-
-    /**
-     * Called automatically during combat by [ActivatorCombatPlugin].
-     */
-    @JvmStatic
-    fun advanceActivators(amount: Float) {
-        val combatEngine = Global.getCombatEngine() ?: return
-        for (ship in combatEngine.ships) {
-            getActivatorsForShipCopy(ship)?.forEach {
-                if (!combatEngine.isPaused) {
-                    it.advanceInternal(amount * ship.mutableStats.timeMult.modifiedValue)
-                }
-
-                it.advanceEveryFrame()
-            }
-        }
-    }
-
-    /**
-     * Called automatically during combat by [ActivatorCombatPlugin].
-     */
-    @JvmStatic
-    fun drawActivatorsUI(viewport: ViewportAPI) {
-        val combatEngine = Global.getCombatEngine() ?: return
-
-        if (combatEngine.combatUI == null || combatEngine.combatUI.isShowingCommandUI || combatEngine.combatUI.isShowingDeploymentDialog || !combatEngine.isUIShowingHUD) {
-            return
-        }
-
-        combatEngine.playerShip?.let { ship ->
-            getActivatorsForShipCopy(ship)?.let {
-                var lastVec = MagicUI.getHUDRightOffset(ship)
-                for (activator in it) {
-                    activator.drawHUDBar(viewport, lastVec)
-                    lastVec = Vector2f.add(lastVec, Vector2f(0f, 22f), null)
-                }
-            }
-        }
-    }
-
-    /**
-     * Called automatically during combat by [ActivatorCombatPlugin].
-     */
-    @JvmStatic
-    fun drawActivatorsWorld(viewport: ViewportAPI) {
-        for (ship in Global.getCombatEngine()?.ships.orEmpty()) {
-            getActivatorsForShipCopy(ship)?.forEach {
-                it.renderWorld(viewport)
-            }
-        }
-    }
 }
 
 class LunaKeybindSettingsListener : LunaSettingsListener {
