@@ -1,6 +1,5 @@
 package org.magiclib.activators.drones
 
-import org.magiclib.activators.advanceAndCheckElapsed
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.DamageType
 import com.fs.starfarer.api.combat.ShipAPI
@@ -14,6 +13,7 @@ import org.lazywizard.lazylib.combat.CombatUtils
 import org.lazywizard.lazylib.ui.LazyFont
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.activators.CombatActivator
+import org.magiclib.activators.advanceAndCheckElapsed
 import org.magiclib.util.MagicUI
 
 abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
@@ -22,8 +22,7 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
     var droneCreationInterval: IntervalUtil = IntervalUtil(0f, 0f)
     var droneCharges: Int = 0
     val droneDeployInterval: IntervalUtil = IntervalUtil(0f, 0f)
-
-    var dronesToSpawn: Int = 0
+    private var dronesToSpawn: Int = 0
 
     override fun init() {
         super.init()
@@ -38,6 +37,21 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
         }
 
         dronesToSpawn = getMaxDeployedDrones()
+    }
+
+    /**
+     * Count of drones waiting to be force-spawned.
+     */
+    fun getDronesToSpawn(): Int {
+        return dronesToSpawn
+    }
+
+    /**
+     * Set count of drones waiting to be spawned with no flux or charge cost.
+     * @param drones number of drones
+     */
+    fun setDronesToSpawn(drones: Int) {
+        dronesToSpawn = drones
     }
 
     /**
@@ -103,6 +117,30 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
     }
 
     /**
+     * Flux cost on drone deployment.
+     * @return flat amount of flux
+     */
+    open fun getFluxCostFlatOnDroneDeployment(): Float {
+        return 0f
+    }
+
+    /**
+     * Flux cost on drone deployment as percent of base flux capacity of the ship.
+     * @return percent of base flux
+     */
+    open fun getFluxCostPercentOnDroneDeployment(): Float {
+        return 0f
+    }
+
+    /**
+     * Set flux cost on drone deployment to be hard flux.
+     * @return is hard flux?
+     */
+    open fun isHardFluxForDroneDeployment(): Boolean {
+        return false
+    }
+
+    /**
      * Drones will still advance while the ship is dead no matter what.
      */
     override fun getAdvancesWhileDead(): Boolean {
@@ -113,6 +151,7 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
 
     open fun spawnDrone(): ShipAPI {
         Global.getCombatEngine().getFleetManager(ship.owner).isSuppressDeploymentMessages = true
+
         val fleetSide = FleetSide.values()[ship.owner]
         val fighter = CombatUtils.spawnShipOrWingDirectly(
             getDroneVariant(),
@@ -175,7 +214,7 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
             droneDeployInterval.advance(amount)
         }
 
-        activeWings = activeWings.filter { it.key.isAlive && !it.key.isHulk }.toMutableMap()
+        activeWings = activeWings.filterKeys { it.isAlive && !it.isHulk }.toMutableMap()
 
         if (alive || (!dronesExplodeWhenShipDies() && dronesDeployWhenShipIsDead())) {
             if (activeWings.size < getMaxDeployedDrones()) {
@@ -198,12 +237,22 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
 
                         if (dronesToSpawn > 0) {
                             dronesToSpawn--
-                        } else if ((hasSeparateDroneCharges() && getMaxDroneCharges() == 0) || maxCharges == 0) {
-                            droneCreationInterval.advance(0f) //reset interval
-                        } else if (hasSeparateDroneCharges()) {
-                            droneCharges--
                         } else {
-                            charges--
+                            if (getFluxCostFlatOnDroneDeployment() > 0f) {
+                                ship.fluxTracker.increaseFlux(getFluxCostFlatOnDroneDeployment(), isHardFluxForDroneDeployment())
+                            }
+
+                            if (getFluxCostPercentOnDroneDeployment() > 0f) {
+                                ship.fluxTracker.increaseFlux(getFluxCostPercentOnDroneDeployment() * ship.hullSpec.fluxCapacity, isHardFluxForDroneDeployment())
+                            }
+
+                            if ((hasSeparateDroneCharges() && getMaxDroneCharges() == 0) || maxCharges == 0) {
+                                droneCreationInterval.advance(0f) //reset interval
+                            } else if (hasSeparateDroneCharges()) {
+                                droneCharges--
+                            } else {
+                                charges--
+                            }
                         }
                     }
                 }
@@ -275,22 +324,32 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
     override fun drawHUDBar(viewport: ViewportAPI, barLoc: Vector2f) {
         var barLoc = barLoc
         MagicUI.setTextAligned(LazyFont.TextAlignment.LEFT)
-        val nameText: String = if (canAssignKey() || key != BLANK_KEY) {
-            val keyText = keyText
+
+        val nameText: String
+        val keyText = keyText
+        nameText = if (keyText.isNotEmpty()) {
             String.format("%s (%s)", displayText, keyText)
         } else {
             String.format("%s", displayText)
         }
+
         val nameWidth = MagicUI.getTextWidth(nameText)
         MagicUI.addText(ship, nameText, hudColor, Vector2f.add(barLoc, Vector2f(0f, 10f), null), false)
-        barLoc = Vector2f.add(barLoc, Vector2f(nameWidth + nameTextPadding + 2f, 0f), null)
-        MagicUI.setTextAligned(LazyFont.TextAlignment.RIGHT)
-        MagicUI.addText(ship, ammoText, hudColor, Vector2f.add(barLoc, Vector2f(0f, 10f), null), false)
-        MagicUI.setTextAligned(LazyFont.TextAlignment.LEFT)
 
-        if (stateText !=  null && stateText.isNotEmpty()) {
+        barLoc = Vector2f.add(barLoc, Vector2f(nameWidth + nameTextPadding + 2f, 0f), null)
+
+        val ammoWidth = MagicUI.getTextWidth(ammoText)
+        MagicUI.addText(
+            ship,
+            ammoText, hudColor, Vector2f.add(barLoc, Vector2f(0f, 10f), null), false
+        )
+
+        barLoc = Vector2f.add(barLoc, Vector2f(ammoWidth - 2f, 0f), null)
+
+        val stateText = stateText
+        if (!stateText.isEmpty()) {
             MagicUI.addText(
-                ship, stateText,
+                ship, getStateText(),
                 hudColor, Vector2f.add(barLoc, Vector2f((12 + 4 + 59).toFloat(), 10f), null), false
             )
         }

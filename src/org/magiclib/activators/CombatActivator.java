@@ -43,6 +43,17 @@ public abstract class CombatActivator {
     }
 
     /**
+     * How "important" this system is. Systems with a higher order value get placed first when assigning keys, meaning
+     * the highest order activator will get assigned the first key index. If two activators have the same order, then
+     * it will be picked based on alphabetical order of {@link CombatActivator#getDisplayText()}.
+     * Only important if {@link CombatActivator#canAssignKey()} returns true, and should always return the same value.
+     * @return order of the activator
+     */
+    public int getOrder() {
+        return 0;
+    }
+
+    /**
      * Called after key is set and activator is added to ship. Sets up intervals and duration values. Always call super.
      */
     protected void init() {
@@ -61,17 +72,15 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Whether to assign a key to this activator.
-     *
-     * @return
+     * @return Whether to assign a key to this activator.
      */
     public boolean canAssignKey() {
         return true;
     }
 
     /**
-     * How long the activator is in State.IN for. To modify after adding the subsystem to the ship, use
-     * setInDuration().
+     * How long the activator is in State.IN for.
+     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setInDuration(float, boolean)}
      *
      * @return
      */
@@ -82,14 +91,15 @@ public abstract class CombatActivator {
     /**
      * How long the activator is active for.
      * For toggle activators, this is the minimum duration that the activator must be active for before it can be turned off.
-     *
+     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setActiveDuration(float, boolean)}
+     * 
      * @return
      */
     public abstract float getBaseActiveDuration();
 
     /**
-     * How long the activator is in State.OUT for. To modify after adding the subsystem to the ship, use
-     * setOutDuration().
+     * How long the activator is in State.OUT for.
+     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setOutDuration(float, boolean)}
      *
      * @return
      */
@@ -98,12 +108,60 @@ public abstract class CombatActivator {
     }
 
     /**
-     * How long the activator is in State.COOLDOWN for. To modify after adding the subsystem to the ship, use
-     * setCooldownDuration().
+     * How long the activator is in State.COOLDOWN for.
+     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setCooldownDuration(float, boolean)}
      *
      * @return
      */
     public abstract float getBaseCooldownDuration();
+
+    /**
+     * Flux cost on activation.
+     * @return flat amount of flux
+     */
+    public float getFluxCostFlatOnActivation() {
+        return 0f;
+    }
+
+    /**
+     * Flux cost on activation as percent of base flux capacity of the ship.
+     * @return percent of base flux
+     */
+    public float getFluxCostPercentOnActivation() {
+        return 0f;
+    }
+
+    /**
+     * Set flux cost on activation to be hard flux.
+     * @return is hard flux?
+     */
+    public boolean isHardFluxForActivation() {
+        return false;
+    }
+
+    /**
+     * Flux cost while active. This method should return a per-second value, but will be split across all frames.
+     * @return flat amount of flux per second
+     */
+    public float getFluxCostFlatPerSecondWhileActive() {
+        return 0f;
+    }
+
+    /**
+     * Flux cost on activation as percent of base flux capacity of the ship. This method should return a per-second value, but will be split across all frames.
+     * @return percent of base flux per second
+     */
+    public float getFluxCostPercentPerSecondWhileActive() {
+        return 0f;
+    }
+
+    /**
+     * Set flux cost while active to be hard flux.
+     * @return is hard flux?
+     */
+    public boolean isHardFluxPerSecondWhileActive() {
+        return false;
+    }
 
     /**
      * Returns ratio of how "complete" the state is.
@@ -117,6 +175,14 @@ public abstract class CombatActivator {
         return Math.max(Math.min(stateInterval.getElapsed() / stateInterval.getIntervalDuration(), 1f), 0f);
     }
 
+    /**
+     * Calculates how "effective" the system is based on its state and the time remaining in that state.
+     * If IN, then calculation is {@link CombatActivator#getStateCompleteRatio()}
+     * If ACTIVE, then 1f is returned.
+     * If OUT, then calculation is 1 - {@link CombatActivator#getStateCompleteRatio()}
+     * Otherwise, returns 0f.
+     * @return effectLevel
+     */
     public float getEffectLevel() {
         if (state == State.IN) {
             return getStateCompleteRatio();
@@ -145,6 +211,12 @@ public abstract class CombatActivator {
         return 0;
     }
 
+    /**
+     * How long the subsystem takes to gain a charge.
+     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setChargeGenerationDuration(float, boolean)}
+     *
+     * @return
+     */
     public float getBaseChargeRechargeDuration() {
         return 0f;
     }
@@ -176,6 +248,8 @@ public abstract class CombatActivator {
      * Returns whether the activator can be activated. For toggle activators, also returns whether the activator can be
      * deactivated.
      * Should check for internal parameters, like if state == READY or if the activator has charges.
+     * This method also checks for flux cost of activating the subsystem.
+     * If overridden, you probably want to call super.
      *
      * @return
      */
@@ -183,6 +257,18 @@ public abstract class CombatActivator {
         if (!isToggle() || state == State.READY) {
             if (usesChargesOnActivate() && hasCharges() && charges <= 0) {
                 return false;
+            }
+
+            if (getFluxCostFlatOnActivation() > 0f) {
+                if (ship.getFluxTracker().getCurrFlux() + getFluxCostFlatOnActivation() >= ship.getFluxTracker().getMaxFlux()) {
+                    return false;
+                }
+            }
+
+            if (getFluxCostPercentOnActivation() > 0f) {
+                if (ship.getFluxTracker().getCurrFlux() + getFluxCostPercentOnActivation() * ship.getHullSpec().getFluxCapacity() >= ship.getFluxTracker().getMaxFlux()) {
+                    return false;
+                }
             }
         }
 
@@ -200,9 +286,9 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Runs when the key is pressed to activate the activator.
-     * For toggle activators, also runs when the key is pressed to deactivate the activator. Check if state == State.ACTIVE to
-     * check for this case.
+     * Runs when the key is pressed to activate the activator, or the AI activates it.
+     * For toggle activators, also runs when the key is pressed to deactivate the activator.
+     * If state == State.ACTIVE, then the toggled activator was just deactivated.
      */
     public void onActivate() {
 
@@ -216,12 +302,16 @@ public abstract class CombatActivator {
     }
 
     /**
-     * When ship dies while system is active (IN, ACTIVE, OUT states)
+     * Called when the ship dies while system is active (IN, ACTIVE, OUT states)
      */
     public void onShipDeath() {
         onFinished();
     }
 
+    /**
+     * Called when the state is switched to something else.
+     * @param oldState the old state of the subsystem
+     */
     public void onStateSwitched(State oldState) {
 
     }
@@ -229,7 +319,7 @@ public abstract class CombatActivator {
     /**
      * Runs every frame while the game is not paused.
      *
-     * @param amount
+     * @param amount time elapsed in last frame
      */
     public void advance(float amount) {
 
@@ -245,28 +335,20 @@ public abstract class CombatActivator {
     /**
      * Player ship only.
      *
-     * @return
+     * @return whether the subsystem's assigned key is pressed
      */
     public boolean isKeyDown() {
-        if (!canAssignKey()) {
-            return false;
+        if (getAssignedKey() >= 0) {
+            return Keyboard.isKeyDown(getAssignedKey());
         }
 
-        if (getKeyIndex() >= 0) {
-            if (ActivatorManager.INSTANCE.getHotkeyList().size() > getKeyIndex()) {
-                return Keyboard.isKeyDown(ActivatorManager.INSTANCE.getHotkeyList().get(getKeyIndex()));
-            }
-            return false;
-        }
-        if (getKey().equals("LALT")) {
-            return Keyboard.isKeyDown(Keyboard.KEY_LMENU);
-        }
-        if (getKey().equals("RALT")) {
-            return Keyboard.isKeyDown(Keyboard.KEY_RMENU);
-        }
-        return Keyboard.isKeyDown(Keyboard.getKeyIndex(getKey()));
+        return false;
     }
 
+    /**
+     * Handles activation of the subsystem, including setting the state, increasing flux, and taking charges.
+     * Override {@link CombatActivator#onActivate()} unless you have a good idea what you're doing here.
+     */
     public void activate() {
         onActivate();
 
@@ -278,9 +360,23 @@ public abstract class CombatActivator {
             if (hasCharges() && usesChargesOnActivate()) {
                 charges--;
             }
+
+            if (getFluxCostFlatOnActivation() > 0f) {
+                ship.getFluxTracker().increaseFlux(getFluxCostFlatOnActivation(), isHardFluxForActivation());
+            }
+
+            if (getFluxCostPercentOnActivation() > 0f) {
+                ship.getFluxTracker().increaseFlux(getFluxCostPercentOnActivation() * ship.getHullSpec().getFluxCapacity(), isHardFluxForActivation());
+            }
         }
     }
 
+    /**
+     * Called to set the state of the system. This changes the stateInterval and resets it, and also calls
+     * {@link CombatActivator#onStateSwitched(State)}, which you should override unless you have a good idea what
+     * you're doing.
+     * @param newState
+     */
     public void setState(State newState) {
         if (newState == State.IN) {
             state = State.IN;
@@ -300,6 +396,13 @@ public abstract class CombatActivator {
         onStateSwitched(newState);
     }
 
+    /**
+     * Called every frame that the combat engine is not paused. Handles all internal functions of the subsystem,
+     * like activating it, adding charges, handling the state interval, and all other things the subsystem needs to do
+     * frame-by-frame during active combat. Override {@link CombatActivator#advance(float)} unless you call super or
+     * know exactly what you're doing.
+     * @param amount frame time
+     */
     public void advanceInternal(float amount) {
         boolean alive = ship.isAlive() && !ship.isHulk() && ship.getOwner() != 100;
         if (!alive) {
@@ -326,9 +429,9 @@ public abstract class CombatActivator {
             }
         }
 
-        State initialState = state;
         boolean shouldActivate = false;
-        if (Global.getCombatEngine().getPlayerShip() == ship && ship.getAI() == null) {
+        //Global.getCombatEngine().isUIAutopilotOn() is backwards! returns true when player is piloting.
+        if (Global.getCombatEngine().getPlayerShip() == ship && Global.getCombatEngine().isUIAutopilotOn()) {
             if (isKeyDown()) {
                 shouldActivate = true;
             }
@@ -342,6 +445,17 @@ public abstract class CombatActivator {
 
             if (internalActivate && shipActivate) {
                 activate();
+            }
+        }
+
+        //Charge flux.
+        if (isOn()) {
+            if (getFluxCostFlatPerSecondWhileActive() > 0f) {
+                ship.getFluxTracker().increaseFlux(getFluxCostFlatPerSecondWhileActive() * amount, isHardFluxPerSecondWhileActive());
+            }
+
+            if (getFluxCostPercentPerSecondWhileActive() > 0f) {
+                ship.getFluxTracker().increaseFlux(getFluxCostPercentPerSecondWhileActive() * ship.getHullSpec().getFluxCapacity() * amount, isHardFluxPerSecondWhileActive());
             }
         }
 
@@ -374,6 +488,29 @@ public abstract class CombatActivator {
         this.key = key;
     }
 
+    /**
+     * If {@link CombatActivator#getKey()} returns a non-null non-empty string, retrieves the index for its value from {@link Keyboard#getKeyIndex(String)}
+     * Otherwise uses {@link CombatActivator#getKeyIndex()} to retrieve the key from the {@link ActivatorManager#getKeyForIndex(int)} method
+     * @return keycode
+     */
+    public final int getAssignedKey() {
+        if (!Objects.equals(getKey(), BLANK_KEY)) {
+            if (getKey().equals("LALT") || getKey().equals("L-ALT") || getKey().equals("L-MENU") || getKey().equals("LMENU")) {
+                return Keyboard.KEY_LMENU;
+            }
+            if (getKey().equals("RALT") || getKey().equals("R-ALT") || getKey().equals("R-MENU") || getKey().equals("RMENU")) {
+                return Keyboard.KEY_RMENU;
+            }
+            return Keyboard.getKeyIndex(getKey());
+        }
+
+        return ActivatorManager.getKeyForIndex(getKeyIndex());
+    }
+
+    /**
+     * The automatically-assigned key index when a subsystem is added to a ship.
+     * @return key index for the {@link ActivatorManager#getKeyForIndex(int)} method
+     */
     public int getKeyIndex() {
         return keyIndex;
     }
@@ -409,7 +546,7 @@ public abstract class CombatActivator {
      * Sets the in duration. If the state is currently IN, then the stateInterval will be affected according
      * to the preserve parameter.
      *
-     * @param inDuration
+     * @param inDuration duration to set
      * @param preserve   If true, time elapsed in current interval will be preserved.
      *                   Otherwise stateInterval will be reset to 0 elapsed time, as if the interval is reset.
      */
@@ -435,7 +572,7 @@ public abstract class CombatActivator {
      * Sets the active duration. If the state is currently ACTIVE, then the stateInterval will be affected according
      * to the preserve parameter.
      *
-     * @param activeDuration
+     * @param activeDuration duration to set
      * @param preserve       If true, time elapsed in current interval will be preserved.
      *                       Otherwise stateInterval will be reset to 0 elapsed time, as if the interval is reset.
      */
@@ -461,7 +598,7 @@ public abstract class CombatActivator {
      * Sets the out duration. If the state is currently OUT, then the stateInterval will be affected according
      * to the preserve parameter.
      *
-     * @param outDuration
+     * @param outDuration duration to set
      * @param preserve    If true, time elapsed in current interval will be preserved.
      *                    Otherwise stateInterval will be reset to 0 elapsed time, as if the interval is reset.
      */
@@ -487,7 +624,7 @@ public abstract class CombatActivator {
      * Sets the cooldown duration. If the state is currently COOLDOWN, then the stateInterval will be affected according
      * to the preserve parameter.
      *
-     * @param cooldownDuration
+     * @param cooldownDuration duration to set
      * @param preserve         If true, time elapsed in current interval will be preserved.
      *                         Otherwise stateInterval will be reset to 0 elapsed time, as if the interval is reset.
      */
@@ -503,18 +640,14 @@ public abstract class CombatActivator {
     }
 
     /**
-     * If state is IN, ACTIVE, or OUT.
-     *
-     * @return
+     * @return If state is IN, ACTIVE, or OUT.
      */
     public boolean isOn() {
         return state == State.IN || state == State.ACTIVE || state == State.OUT;
     }
 
     /**
-     * If state is READY or COOLDOWN.
-     *
-     * @return
+     * @return If state is READY or COOLDOWN.
      */
     public boolean isOff() {
         return state == State.READY || state == State.COOLDOWN;
@@ -530,7 +663,7 @@ public abstract class CombatActivator {
     /**
      * Sets the charge interval duration.
      *
-     * @param chargeGenerationDuration
+     * @param chargeGenerationDuration duration to set
      * @param preserve                 If true, time elapsed in current interval will be preserved.
      *                                 Otherwise chargeInterval will be reset to 0 elapsed time, as if the interval is reset.
      */
@@ -547,16 +680,17 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Your activator name. This is appended to the key used to activate the activator.
+     * This is appended to the key used to activate the activator.
+     * Also used for assigning key indices if Order of two activators matches.
      *
-     * @return
+     * @return Your activator name.
      */
     public abstract String getDisplayText();
 
     /**
-     * This prints to the left of the status bar.
+     * This prints to the left of the status bar, after the name of the subsystem.
      *
-     * @return
+     * @return Ammo text to display.
      */
     public String getAmmoText() {
         String chargeText = "-";
@@ -566,6 +700,9 @@ public abstract class CombatActivator {
         return chargeText;
     }
 
+    /**
+     * @return Padding to put after name and before ammo.
+     */
     public float getNameTextPadding() {
         return 6f;
     }
@@ -573,12 +710,16 @@ public abstract class CombatActivator {
     /**
      * Prints to the right of the status bar.
      *
-     * @return
+     * @return state text to display
      */
     public String getStateText() {
         return this.state.getText();
     }
 
+    /**
+     * How full the status bar will appear.
+     * @return a float between 0 and 1
+     */
     public float getBarFill() {
         float fill = 0f;
         if (state == State.IN) {
@@ -604,19 +745,21 @@ public abstract class CombatActivator {
         return Math.max(Math.min(fill, 1f), 0f);
     }
 
+    /**
+     * The color to display all the info about the system in
+     * @return a color
+     */
     public Color getHUDColor() {
         return MagicUI.GREENCOLOR;
     }
 
+    /**
+     * The displayed key text to activate the system. Only displayed if the system has an actual key to display.
+     * Uses {@link CombatActivator#getAssignedKey()} to find the key responsible for activating the system.
+     * @return displayed key
+     */
     public String getKeyText() {
-        if (!Objects.equals(key, BLANK_KEY)) {
-            return key;
-        }
-
-        int keycode = -1;
-        if (canAssignKey() && getKeyIndex() >= 0 && ActivatorManager.INSTANCE.getHotkeyList().size() > getKeyIndex()) {
-            keycode = ActivatorManager.INSTANCE.getHotkeyList().get(getKeyIndex());
-        }
+        int keycode = getAssignedKey();
 
         switch (keycode) {
             case -1:
@@ -644,12 +787,17 @@ public abstract class CombatActivator {
         }
     }
 
+    /**
+     * Draws the subsystem info on the HUD.
+     * @param viewport viewport to draw to
+     * @param barLoc location to draw
+     */
     public void drawHUDBar(ViewportAPI viewport, Vector2f barLoc) {
         MagicUI.setTextAligned(LazyFont.TextAlignment.LEFT);
 
         String nameText;
-        if (canAssignKey()) {
-            String keyText = getKeyText();
+        String keyText = getKeyText();
+        if (!keyText.isEmpty()) {
             nameText = String.format("%s (%s)", getDisplayText(), keyText);
         } else {
             nameText = String.format("%s", getDisplayText());
@@ -659,7 +807,6 @@ public abstract class CombatActivator {
         MagicUI.addText(ship, nameText, getHUDColor(), Vector2f.add(barLoc, new Vector2f(0, 10), null), false);
 
         barLoc = Vector2f.add(barLoc, new Vector2f(nameWidth + getNameTextPadding() + 2f, 0f), null);
-
 
         float ammoWidth = MagicUI.getTextWidth(getAmmoText());
         MagicUI.addText(ship, getAmmoText(), getHUDColor(), Vector2f.add(barLoc, new Vector2f(0, 10), null), false);
@@ -673,6 +820,10 @@ public abstract class CombatActivator {
         MagicUI.addBar(ship, getBarFill(), getHUDColor(), getHUDColor(), 0f, Vector2f.add(barLoc, new Vector2f(12, 0), null));
     }
 
+    /**
+     * Renders onto the world viewport.
+     * @param viewport the world viewport
+     */
     public void renderWorld(ViewportAPI viewport) {
 
     }
@@ -690,6 +841,10 @@ public abstract class CombatActivator {
             text = Global.getSettings().getString("ActivatorStates", this.name());
         }
 
+        /**
+         * Display text for the system state.
+         * @return display text
+         */
         public String getText() {
             return text;
         }

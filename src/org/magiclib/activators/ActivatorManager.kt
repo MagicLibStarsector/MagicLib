@@ -2,14 +2,17 @@ package org.magiclib.activators
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
-import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
-import org.lwjgl.util.vector.Vector2f
-import org.magiclib.util.MagicUI
+import org.apache.log4j.Logger
+import org.lazywizard.lazylib.ext.logging.i
+import org.lwjgl.input.Keyboard
+import org.magiclib.util.MagicSettings
 
 object ActivatorManager {
+    val log: Logger = Global.getLogger(ActivatorManager::class.java)
+    val lunaLibEnabled = Global.getSettings().modManager.isModEnabled("lunalib")
     var hotkeyList: List<Int> = mutableListOf()
 
     /**
@@ -18,7 +21,10 @@ object ActivatorManager {
     @JvmStatic
     fun initialize() {
         reloadKeys()
-        LunaSettings.addSettingsListener(LunaKeybindSettingsListener())
+
+        if (lunaLibEnabled) {
+            LunaSettings.addSettingsListener(LunaKeybindSettingsListener())
+        }
     }
 
     /**
@@ -39,12 +45,8 @@ object ActivatorManager {
             if (!activators.containsKey(activator.javaClass)) {
                 activators[activator.javaClass] = activator
 
-                if (!activator.canAssignKey() || activators.size > hotkeyList.size) {
-                    activator.key = CombatActivator.BLANK_KEY
-                } else {
-                    activator.keyIndex = activators
-                        .filterValues { it.canAssignKey() }
-                        .count()
+                if (activator.canAssignKey()) {
+                    reassignKeys(ship)
                 }
 
                 activator.init()
@@ -73,20 +75,64 @@ object ActivatorManager {
      * Gets a map of activators for a ship, where the key is the activator's class.
      */
     @JvmStatic
-    fun getActivatorMapForShip(ship: ShipAPI): MutableMap<Class<out CombatActivator>, CombatActivator>? {
+    private fun getActivatorMapForShip(ship: ShipAPI): MutableMap<Class<out CombatActivator>, CombatActivator>? {
         return ship.customData["combatActivators"] as? MutableMap<Class<out CombatActivator>, CombatActivator>?
             ?: return null
     }
 
+    @JvmStatic
+    fun getKeyForIndex(index: Int): Int {
+        if (index < 0 || index >= hotkeyList.size) return -1
+        return hotkeyList[index]
+    }
+
+    @JvmStatic
+    fun reassignKeys(ship: ShipAPI) {
+        val shipActivatorData = getActivatorMapForShip(ship) ?: return
+        var skippedIndexes = 0
+
+        shipActivatorData.values
+            .filter { it.canAssignKey() }
+            .filter { it.key == CombatActivator.BLANK_KEY } //do not mess with keys assigned by the activator
+            .sortedWith { a, b ->
+                if (a.order == b.order) {
+                    a.displayText.compareTo(b.displayText) //sort by alphabet
+                } else {
+                    b.order.compareTo(a.order)  //sort by descending order
+                }
+            }
+            .forEachIndexed { index, combatActivator ->
+                var actualIndex = index + skippedIndexes
+                //skip over keys used by activators with static keys
+                while (actualIndex < hotkeyList.size && shipActivatorData.values.any { Keyboard.getKeyIndex(it.key) == hotkeyList[actualIndex] })
+                    actualIndex = index + (++skippedIndexes)
+
+                if (actualIndex >= hotkeyList.size) {
+                    combatActivator.key = CombatActivator.BLANK_KEY
+                    combatActivator.keyIndex = -1
+                } else {
+                    combatActivator.keyIndex = actualIndex
+                }
+            }
+    }
+
     fun reloadKeys() {
-        hotkeyList = mutableListOf(
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind1")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind2")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind3")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind4")!!,
-            LunaSettings.getInt("combatactivators", "combatActivators_KeyBind5")!!,
-        )
-            .filter { it != 0 }
+        if (lunaLibEnabled) {
+            hotkeyList = mutableListOf(
+                LunaSettings.getInt("combatactivators", "combatActivators_KeyBind1")!!,
+                LunaSettings.getInt("combatactivators", "combatActivators_KeyBind2")!!,
+                LunaSettings.getInt("combatactivators", "combatActivators_KeyBind3")!!,
+                LunaSettings.getInt("combatactivators", "combatActivators_KeyBind4")!!,
+                LunaSettings.getInt("combatactivators", "combatActivators_KeyBind5")!!,
+            )
+                .filter { it != 0 }
+        } else {
+            hotkeyList = MagicSettings.getList("MagicLib", "subsystemKeys")
+                .map { Keyboard.getKeyIndex(it) }
+                .filter { it != 0 }
+        }
+
+        log.i({ "Loaded hotkey list ${hotkeyList.joinToString{ "," }}" })
     }
 }
 
