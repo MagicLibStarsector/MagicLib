@@ -58,7 +58,7 @@ object ActivatorManager {
      * Remove an activator from a ship.
      */
     @JvmStatic
-    fun removeActivator(ship: ShipAPI, activatorClass: Class<out CombatActivator>) {
+    fun removeActivatorFromShip(ship: ShipAPI, activatorClass: Class<out CombatActivator>) {
         getActivatorMapForShip(ship)?.remove(activatorClass)
     }
 
@@ -74,7 +74,6 @@ object ActivatorManager {
     /**
      * Gets a map of activators for a ship, where the key is the activator's class.
      */
-    @JvmStatic
     private fun getActivatorMapForShip(ship: ShipAPI): MutableMap<Class<out CombatActivator>, CombatActivator>? {
         return ship.customData["combatActivators"] as? MutableMap<Class<out CombatActivator>, CombatActivator>?
             ?: return null
@@ -132,7 +131,7 @@ object ActivatorManager {
                 .filter { it != 0 }
         }
 
-        log.i({ "Loaded hotkey list ${hotkeyList.joinToString{ "," }}" })
+        log.i({ "Loaded hotkey list ${hotkeyList.joinToString { "," }}" })
     }
 }
 
