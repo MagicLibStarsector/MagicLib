@@ -1,4 +1,4 @@
-package org.magiclib.activators.drones
+package org.magiclib.subsystems.drones
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.DamageType
@@ -12,11 +12,11 @@ import com.fs.starfarer.api.util.Misc
 import org.lazywizard.lazylib.combat.CombatUtils
 import org.lazywizard.lazylib.ui.LazyFont
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.activators.CombatActivator
-import org.magiclib.activators.advanceAndCheckElapsed
+import org.magiclib.subsystems.MagicSubsystem
+import org.magiclib.subsystems.advanceAndCheckElapsed
 import org.magiclib.util.MagicUI
 
-abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
+abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     var activeWings: MutableMap<ShipAPI, PIDController> = LinkedHashMap()
     var formation: DroneFormation = SpinningCircleFormation()
     var droneCreationInterval: IntervalUtil = IntervalUtil(0f, 0f)
@@ -321,7 +321,12 @@ abstract class DroneActivator(ship: ShipAPI) : CombatActivator(ship) {
         return super.getBarFill()
     }
 
-    override fun drawHUDBar(viewport: ViewportAPI, barLoc: Vector2f) {
+    override fun drawHUDBar(
+        viewport: ViewportAPI,
+        rootLoc: Vector2f,
+        barLoc: Vector2f,
+        displayAdditionalInfo: Boolean
+    ) {
         var barLoc = barLoc
         MagicUI.setTextAligned(LazyFont.TextAlignment.LEFT)
 

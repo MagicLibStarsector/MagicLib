@@ -1,4 +1,4 @@
-package org.magiclib.activators.drones
+package org.magiclib.subsystems.drones
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI

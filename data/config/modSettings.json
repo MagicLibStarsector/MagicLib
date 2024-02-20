@@ -109,6 +109,7 @@
 			"org.magiclib.bounty.intel.MagicBountyBoardProvider"
 		],
 
+		"subsystemInfoKey": "I",
 		"subsystemKeys": [
 			"T",
 			"G",

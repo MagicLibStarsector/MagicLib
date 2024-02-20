@@ -1,11 +1,11 @@
-package org.magiclib.activators;
+package org.magiclib.subsystems;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ShipSystemSpecAPI;
 import com.fs.starfarer.api.plugins.ShipSystemStatsScript;
 
-public abstract class ShipSystemActivator extends CombatActivator {
+public abstract class ShipSystemActivator extends MagicSubsystem {
     private ShipSystemSpecAPI systemSpec = Global.getSettings().getShipSystemSpec(getShipSystemId());
     private ShipSystemStatsScript system = systemSpec.getStatsScript();
 

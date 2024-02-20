@@ -1,14 +1,14 @@
-package org.magiclib.activators.examples;
+package org.magiclib.subsystems.examples;
 
-import org.magiclib.activators.drones.DroneActivator;
-import org.magiclib.activators.drones.SpinningCircleFormation;
+import org.magiclib.subsystems.drones.MagicDroneSubsystem;
+import org.magiclib.subsystems.drones.SpinningCircleFormation;
 import com.fs.starfarer.api.combat.ShipAPI;
 
 /**
  * Spawns two PD drones. The drones are on a separate charge interval than the activator itself. Activation speeds
  * up the formation's spin speed for a short time, and has two charges.
  */
-public class SeparateChargePDDroneActivator extends DroneActivator {
+public class SeparateChargePDDroneActivator extends MagicDroneSubsystem {
     public SeparateChargePDDroneActivator(ShipAPI ship) {
         super(ship);
     }

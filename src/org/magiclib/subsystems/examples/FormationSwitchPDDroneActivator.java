@@ -1,14 +1,14 @@
-package org.magiclib.activators.examples;
+package org.magiclib.subsystems.examples;
 
-import org.magiclib.activators.drones.DroneActivator;
-import org.magiclib.activators.drones.HoveringFormation;
-import org.magiclib.activators.drones.SpinningCircleFormation;
+import org.magiclib.subsystems.drones.MagicDroneSubsystem;
+import org.magiclib.subsystems.drones.HoveringFormation;
+import org.magiclib.subsystems.drones.SpinningCircleFormation;
 import com.fs.starfarer.api.combat.ShipAPI;
 
 /**
  * Spawns four PD drones. The formation can be switched by key.
  */
-public class FormationSwitchPDDroneActivator extends DroneActivator {
+public class FormationSwitchPDDroneActivator extends MagicDroneSubsystem {
     public FormationSwitchPDDroneActivator(ShipAPI ship) {
         super(ship);
     }

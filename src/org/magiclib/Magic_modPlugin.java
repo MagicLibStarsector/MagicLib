@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.XStream;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.achievements.TestingAchievementSpec;
-import org.magiclib.activators.ActivatorManager;
+import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
 import org.magiclib.paintjobs.MagicPaintjobManager;
@@ -74,7 +74,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicAchievementManager.getInstance();
         MagicAchievementManager.getInstance().onApplicationLoad();
 
-        ActivatorManager.initialize();
+        MagicSubsystemsManager.initialize();
     }
 
     @Override

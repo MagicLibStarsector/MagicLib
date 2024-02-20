@@ -1,10 +1,10 @@
-package org.magiclib.activators.examples;
+package org.magiclib.subsystems.examples;
 
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.util.Misc;
-import org.magiclib.activators.CombatActivator;
+import org.magiclib.subsystems.MagicSubsystem;
 
-public class AmmoFeedersActivator extends CombatActivator {
+public class AmmoFeedersActivator extends MagicSubsystem {
     public AmmoFeedersActivator(ShipAPI ship) {
         super(ship);
     }

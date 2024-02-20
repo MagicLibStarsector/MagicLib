@@ -304,5 +304,17 @@
     "ml_mp_permanentTooltipRefit":"This paintjob is permanent and cannot be changed.",
     "ml_mp_shiny":"This is a rare paintjob.",
     "ml_mp_appliedRefit":"Applied: %s",
+
+    "subsystemTitleText": "SUBSYSTEMS",
+    "subsystemInfoText": "PRESS %s FOR INFO",
+    "subsystemHotkeyText": "HOTKEY: %s",
+    "subsystemHotkeyAutomaticText": "AUTOMATIC",
+    "subsystemBriefText": "BRIEF: %s",
+    "subsystemChargesText": "CHARGES: %s",
+    "subsystemState_Ready": "READY",
+    "subsystemState_In": "ACTIVE",
+    "subsystemState_Active": "ACTIVE",
+    "subsystemState_Out": "ACTIVE",
+    "subsystemState_Cooldown": ""
   }
 }

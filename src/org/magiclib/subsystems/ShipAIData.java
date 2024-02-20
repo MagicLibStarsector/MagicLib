@@ -1,4 +1,4 @@
-package org.magiclib.activators;
+package org.magiclib.subsystems;
 
 import com.fs.starfarer.api.combat.CombatEntityAPI;
 import com.fs.starfarer.api.combat.ShipAPI;

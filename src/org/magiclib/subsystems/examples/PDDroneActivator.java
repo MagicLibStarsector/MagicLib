@@ -1,12 +1,12 @@
-package org.magiclib.activators.examples;
+package org.magiclib.subsystems.examples;
 
-import org.magiclib.activators.drones.DroneActivator;
+import org.magiclib.subsystems.drones.MagicDroneSubsystem;
 import com.fs.starfarer.api.combat.ShipAPI;
 
 /**
  * Spawns a PD drone. Has no usable key and doesn't take a key index.
  */
-public class PDDroneActivator extends DroneActivator {
+public class PDDroneActivator extends MagicDroneSubsystem {
     public PDDroneActivator(ShipAPI ship) {
         super(ship);
     }

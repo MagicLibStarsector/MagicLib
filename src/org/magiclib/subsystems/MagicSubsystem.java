@@ -1,20 +1,29 @@
-package org.magiclib.activators;
+package org.magiclib.subsystems;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
-import org.lazywizard.lazylib.ui.LazyFont;
+import com.fs.starfarer.api.util.Misc;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
+import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicUI;
 
 import java.awt.*;
 import java.util.Objects;
 
-public abstract class CombatActivator {
+public abstract class MagicSubsystem {
     public static String BLANK_KEY = "N/A";
+
+    protected static int ORDER_MOD_MODULAR = 4;
+    protected static int ORDER_MOD_UNIQUE = 5;
+    protected static int ORDER_FACTION_MODULAR = 6;
+    protected static int ORDER_FACTION_UNIQUE = 7;
+    protected static int ORDER_SHIP_MODULAR = 8;
+    protected static int ORDER_SHIP_UNIQUE = 9;
+
     protected String key = BLANK_KEY;
     protected int keyIndex = -1;
     protected boolean inited = false;
@@ -36,7 +45,7 @@ public abstract class CombatActivator {
     private float cooldownDuration = -1f;
     private float chargeGenerationDuration = -1f;
 
-    public CombatActivator(ShipAPI ship) {
+    public MagicSubsystem(ShipAPI ship) {
         this.ship = ship;
         this.stats = ship.getMutableStats();
         this.aiData = new ShipAIData(ship);
@@ -44,17 +53,19 @@ public abstract class CombatActivator {
 
     /**
      * How "important" this system is. Systems with a higher order value get placed first when assigning keys, meaning
-     * the highest order activator will get assigned the first key index. If two activators have the same order, then
-     * it will be picked based on alphabetical order of {@link CombatActivator#getDisplayText()}.
-     * Only important if {@link CombatActivator#canAssignKey()} returns true, and should always return the same value.
-     * @return order of the activator
+     * the highest order subsystem will get assigned the first key index. If two subsystems have the same order, then
+     * it will be picked based on alphabetical order of {@link MagicSubsystem#getDisplayText()}.
+     * This also affects rendering order.
+     * There are some static ints in this class for orders that are common. See {@link MagicSubsystem#ORDER_SHIP_UNIQUE}
+     * and others.
+     * @return order of the subsystem
      */
     public int getOrder() {
         return 0;
     }
 
     /**
-     * Called after key is set and activator is added to ship. Sets up intervals and duration values. Always call super.
+     * Called after key is set and subsystem is added to ship. Sets up intervals and duration values. Always call super.
      */
     protected void init() {
         if (inited) return;
@@ -72,15 +83,15 @@ public abstract class CombatActivator {
     }
 
     /**
-     * @return Whether to assign a key to this activator.
+     * @return Whether to assign a key to this subsystem.
      */
     public boolean canAssignKey() {
         return true;
     }
 
     /**
-     * How long the activator is in State.IN for.
-     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setInDuration(float, boolean)}
+     * How long the subsystem is in State.IN for.
+     * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setInDuration(float, boolean)}
      *
      * @return
      */
@@ -89,17 +100,17 @@ public abstract class CombatActivator {
     }
 
     /**
-     * How long the activator is active for.
-     * For toggle activators, this is the minimum duration that the activator must be active for before it can be turned off.
-     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setActiveDuration(float, boolean)}
+     * How long the subsystem is active for.
+     * For toggle subsystems, this is the minimum duration that the subsystem must be active for before it can be turned off.
+     * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setActiveDuration(float, boolean)}
      * 
      * @return
      */
     public abstract float getBaseActiveDuration();
 
     /**
-     * How long the activator is in State.OUT for.
-     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setOutDuration(float, boolean)}
+     * How long the subsystem is in State.OUT for.
+     * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setOutDuration(float, boolean)}
      *
      * @return
      */
@@ -108,8 +119,8 @@ public abstract class CombatActivator {
     }
 
     /**
-     * How long the activator is in State.COOLDOWN for.
-     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setCooldownDuration(float, boolean)}
+     * How long the subsystem is in State.COOLDOWN for.
+     * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setCooldownDuration(float, boolean)}
      *
      * @return
      */
@@ -177,9 +188,9 @@ public abstract class CombatActivator {
 
     /**
      * Calculates how "effective" the system is based on its state and the time remaining in that state.
-     * If IN, then calculation is {@link CombatActivator#getStateCompleteRatio()}
+     * If IN, then calculation is {@link MagicSubsystem#getStateCompleteRatio()}
      * If ACTIVE, then 1f is returned.
-     * If OUT, then calculation is 1 - {@link CombatActivator#getStateCompleteRatio()}
+     * If OUT, then calculation is 1 - {@link MagicSubsystem#getStateCompleteRatio()}
      * Otherwise, returns 0f.
      * @return effectLevel
      */
@@ -213,7 +224,7 @@ public abstract class CombatActivator {
 
     /**
      * How long the subsystem takes to gain a charge.
-     * To modify after adding the subsystem to the ship, use {@link CombatActivator#setChargeGenerationDuration(float, boolean)}
+     * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setChargeGenerationDuration(float, boolean)}
      *
      * @return
      */
@@ -234,7 +245,7 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Returns whether the activator can be activated. For toggle activators, also returns whether the activator can be
+     * Returns whether the subsystem can be activated. For toggle subsystems, also returns whether the subsystem can be
      * deactivated.
      * Should check for parameters related to the ship, like if flux is less than a certain amount.
      *
@@ -245,9 +256,9 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Returns whether the activator can be activated. For toggle activators, also returns whether the activator can be
+     * Returns whether the subsystem can be activated. For toggle subsystems, also returns whether the subsystem can be
      * deactivated.
-     * Should check for internal parameters, like if state == READY or if the activator has charges.
+     * Should check for internal parameters, like if state == READY or if the subsystem has charges.
      * This method also checks for flux cost of activating the subsystem.
      * If overridden, you probably want to call super.
      *
@@ -286,9 +297,9 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Runs when the key is pressed to activate the activator, or the AI activates it.
-     * For toggle activators, also runs when the key is pressed to deactivate the activator.
-     * If state == State.ACTIVE, then the toggled activator was just deactivated.
+     * Runs when the key is pressed to activate the subsystem, or the AI activates it.
+     * For toggle subsystems, also runs when the key is pressed to deactivate the subsystem.
+     * If state == State.ACTIVE, then the toggled subsystem was just deactivated.
      */
     public void onActivate() {
 
@@ -347,7 +358,7 @@ public abstract class CombatActivator {
 
     /**
      * Handles activation of the subsystem, including setting the state, increasing flux, and taking charges.
-     * Override {@link CombatActivator#onActivate()} unless you have a good idea what you're doing here.
+     * Override {@link MagicSubsystem#onActivate()} unless you have a good idea what you're doing here.
      */
     public void activate() {
         onActivate();
@@ -373,7 +384,7 @@ public abstract class CombatActivator {
 
     /**
      * Called to set the state of the system. This changes the stateInterval and resets it, and also calls
-     * {@link CombatActivator#onStateSwitched(State)}, which you should override unless you have a good idea what
+     * {@link MagicSubsystem#onStateSwitched(State)}, which you should override unless you have a good idea what
      * you're doing.
      * @param newState
      */
@@ -399,7 +410,7 @@ public abstract class CombatActivator {
     /**
      * Called every frame that the combat engine is not paused. Handles all internal functions of the subsystem,
      * like activating it, adding charges, handling the state interval, and all other things the subsystem needs to do
-     * frame-by-frame during active combat. Override {@link CombatActivator#advance(float)} unless you call super or
+     * frame-by-frame during active combat. Override {@link MagicSubsystem#advance(float)} unless you call super or
      * know exactly what you're doing.
      * @param amount frame time
      */
@@ -489,8 +500,8 @@ public abstract class CombatActivator {
     }
 
     /**
-     * If {@link CombatActivator#getKey()} returns a non-null non-empty string, retrieves the index for its value from {@link Keyboard#getKeyIndex(String)}
-     * Otherwise uses {@link CombatActivator#getKeyIndex()} to retrieve the key from the {@link ActivatorManager#getKeyForIndex(int)} method
+     * If {@link MagicSubsystem#getKey()} returns a non-null non-empty string, retrieves the index for its value from {@link Keyboard#getKeyIndex(String)}
+     * Otherwise uses {@link MagicSubsystem#getKeyIndex()} to retrieve the key from the {@link MagicSubsystemsManager#getKeyForIndex(int)} method
      * @return keycode
      */
     public final int getAssignedKey() {
@@ -504,12 +515,12 @@ public abstract class CombatActivator {
             return Keyboard.getKeyIndex(getKey());
         }
 
-        return ActivatorManager.getKeyForIndex(getKeyIndex());
+        return MagicSubsystemsManager.getKeyForIndex(getKeyIndex());
     }
 
     /**
      * The automatically-assigned key index when a subsystem is added to a ship.
-     * @return key index for the {@link ActivatorManager#getKeyForIndex(int)} method
+     * @return key index for the {@link MagicSubsystemsManager#getKeyForIndex(int)} method
      */
     public int getKeyIndex() {
         return keyIndex;
@@ -680,12 +691,29 @@ public abstract class CombatActivator {
     }
 
     /**
-     * This is appended to the key used to activate the activator.
-     * Also used for assigning key indices if Order of two activators matches.
+     * This is appended to the key used to activate the subsystem.
+     * Also used for assigning key indices if Order of two subsystems matches.
      *
-     * @return Your activator name.
+     * @return Your subsystem name.
      */
     public abstract String getDisplayText();
+
+    /**
+     * A short description of what your subsystem does. Only shows while INFO is toggled.
+     * @return summary
+     */
+    public String getBriefText() {
+        return null;
+    }
+
+
+    /**
+     * Some extra info that displays to the right of the status bar. Always visible if not null/empty.
+     * @return extra info
+     */
+    public String getExtraInfoText() {
+        return null;
+    }
 
     /**
      * This prints to the left of the status bar, after the name of the subsystem.
@@ -755,7 +783,7 @@ public abstract class CombatActivator {
 
     /**
      * The displayed key text to activate the system. Only displayed if the system has an actual key to display.
-     * Uses {@link CombatActivator#getAssignedKey()} to find the key responsible for activating the system.
+     * Uses {@link MagicSubsystem#getAssignedKey()} to find the key responsible for activating the system.
      * @return displayed key
      */
     public String getKeyText() {
@@ -788,36 +816,64 @@ public abstract class CombatActivator {
     }
 
     /**
-     * Draws the subsystem info on the HUD.
-     * @param viewport viewport to draw to
-     * @param barLoc location to draw
+     * Number of "bar heights" that the subsystem needs.
+     * By default, 1. For systems with charges, 2.
+     * @return bar count
      */
-    public void drawHUDBar(ViewportAPI viewport, Vector2f barLoc) {
-        MagicUI.setTextAligned(LazyFont.TextAlignment.LEFT);
-
-        String nameText;
-        String keyText = getKeyText();
-        if (!keyText.isEmpty()) {
-            nameText = String.format("%s (%s)", getDisplayText(), keyText);
-        } else {
-            nameText = String.format("%s", getDisplayText());
+    public int getNumHUDBars() {
+        if (hasCharges()) {
+            return 2;
         }
+        return 1;
+    }
 
-        float nameWidth = MagicUI.getTextWidth(nameText);
-        MagicUI.addText(ship, nameText, getHUDColor(), Vector2f.add(barLoc, new Vector2f(0, 10), null), false);
+    public Vector2f getBarLocationForBarNum(Vector2f baseBarLoc, int barNum) {
+        return Vector2f.add(baseBarLoc, new Vector2f(0f, -CombatUI.BAR_HEIGHT * barNum),  null);
+    }
 
-        barLoc = Vector2f.add(barLoc, new Vector2f(nameWidth + getNameTextPadding() + 2f, 0f), null);
+    /**
+     * Draws the subsystem info on the HUD.
+     *
+     * @param viewport              viewport to draw to
+     * @param rootLoc               root location of subsystem info
+     * @param barLoc                location to draw (top left)
+     * @param displayAdditionalInfo display additional subsystem info (hotkey, brief)
+     */
+    public void drawHUDBar(ViewportAPI viewport, Vector2f rootLoc, Vector2f barLoc, boolean displayAdditionalInfo) {
+        String nameText = getDisplayText();
+        String keyText = getKeyText();
 
-        float ammoWidth = MagicUI.getTextWidth(getAmmoText());
-        MagicUI.addText(ship, getAmmoText(), getHUDColor(), Vector2f.add(barLoc, new Vector2f(0, 10), null), false);
-
-        barLoc = Vector2f.add(barLoc, new Vector2f(ammoWidth - 2f, 0f), null);
+        if (!displayAdditionalInfo && !keyText.equals(BLANK_KEY)) {
+            nameText = String.format("%s [%s]", nameText, keyText);
+        }
 
         String stateText = getStateText();
-        if (!stateText.isEmpty()) {
-            MagicUI.addText(ship, getStateText(), getHUDColor(), Vector2f.add(barLoc, new Vector2f(12 + 4 + 59, 10), null), false);
+        CombatUI.drawSubsystemStatus(
+                ship,
+                getBarFill(),
+                nameText,
+                getExtraInfoText(),
+                stateText,
+                keyText,
+                getBriefText(),
+                displayAdditionalInfo,
+                getNumHUDBars(),
+                barLoc,
+                rootLoc
+        );
+
+        if (hasCharges()) {
+            CombatUI.renderAuxiliaryStatusBar(
+                    ship,
+                    CombatUI.INFO_TEXT_PADDING,
+                    false, CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING,
+                    CombatUI.STATUS_BAR_WIDTH,
+                    chargeInterval.getElapsed() / chargeInterval.getIntervalDuration(),
+                    MagicTxt.getString("subsystemChargesText", String.valueOf(charges)),
+                    null,
+                    getBarLocationForBarNum(barLoc, 1)
+            );
         }
-        MagicUI.addBar(ship, getBarFill(), getHUDColor(), getHUDColor(), 0f, Vector2f.add(barLoc, new Vector2f(12, 0), null));
     }
 
     /**
@@ -838,11 +894,11 @@ public abstract class CombatActivator {
         private final String text;
 
         State() {
-            text = Global.getSettings().getString("ActivatorStates", this.name());
+            text = MagicTxt.getString("subsystemState_" + Misc.ucFirst(this.name().toLowerCase()));
         }
 
         /**
-         * Display text for the system state.
+         * Display text for the subsystem state.
          * @return display text
          */
         public String getText() {

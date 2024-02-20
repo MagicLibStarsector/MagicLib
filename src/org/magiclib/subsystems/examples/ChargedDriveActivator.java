@@ -1,26 +1,26 @@
-package org.magiclib.activators.examples;
+package org.magiclib.subsystems.examples;
 
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ShipCommand;
 import com.fs.starfarer.api.util.Misc;
 import org.lwjgl.util.vector.Vector2f;
-import org.magiclib.activators.CombatActivator;
+import org.magiclib.subsystems.MagicSubsystem;
 
 import java.awt.*;
 
-public class ToggledDriveActivator extends CombatActivator {
+public class ChargedDriveActivator extends MagicSubsystem {
     private static final float ESTIMATED_DRIVE_RANGE = 400f;
     private static final Color engineColor = new Color(0x00FF80);
 
     private float speedBoost = 0f;
 
-    public ToggledDriveActivator(ShipAPI ship) {
+    public ChargedDriveActivator(ShipAPI ship) {
         super(ship);
     }
 
     @Override
-    public boolean isToggle() {
-        return true;
+    public float getBaseInDuration() {
+        return 0.15f;
     }
 
     @Override
@@ -39,44 +39,39 @@ public class ToggledDriveActivator extends CombatActivator {
     }
 
     @Override
+    public int getMaxCharges() {
+        return 3;
+    }
+
+    @Override
+    public float getBaseChargeRechargeDuration() {
+        return 12f;
+    }
+
+    @Override
     public boolean shouldActivateAI(float amount) {
         ShipAPI target = ship.getShipTarget();
         if (target != null) {
             float score = 0f;
 
-            if (isActive()) {
-                score += ship.getFluxLevel() * 15f;
-
-                float engagementRange = aiData.getEngagementRange() + ESTIMATED_DRIVE_RANGE;
-                float dist = Misc.getDistance(ship.getLocation(), target.getLocation());
-                if (dist > engagementRange) {
-                    score -= 3f;
-                } else {
-                    score += 3f;
-                }
-
-                float avgRange = aiData.getAverageWeaponRange(false);
-                score += Math.min(avgRange / dist, 10f);
+            if (target.getFluxTracker().isOverloadedOrVenting()) {
+                score += 6f;
             } else {
-                if (target.getFluxTracker().isOverloadedOrVenting()) {
-                    score += 6f;
-                } else {
-                    score += target.getFluxLevel() * 6f;
-                }
-
-                score -= ship.getFluxLevel() * 12f;
-
-                float engagementRange = aiData.getEngagementRange() + ESTIMATED_DRIVE_RANGE;
-                float dist = Misc.getDistance(ship.getLocation(), target.getLocation());
-                if (dist > engagementRange) {
-                    score += 3f;
-                } else {
-                    score -= 3f;
-                }
-
-                float avgRange = aiData.getAverageWeaponRange(false);
-                score -= Math.min(avgRange / dist, 8f);
+                score += target.getFluxLevel() * 6f;
             }
+
+            score -= ship.getFluxLevel() * 12f;
+
+            float engagementRange = aiData.getEngagementRange() + ESTIMATED_DRIVE_RANGE;
+            float dist = Misc.getDistance(ship.getLocation(), target.getLocation());
+            if (dist > engagementRange) {
+                score -= 3f;
+            } else {
+                score += 3f;
+            }
+
+            float avgRange = aiData.getAverageWeaponRange(false);
+            score += Math.min(avgRange / dist, 8f);
 
             return score > 10f;
         }
@@ -95,13 +90,25 @@ public class ToggledDriveActivator extends CombatActivator {
             ship.getEngineController().fadeToOtherColor(this, engineColor, new Color(0, 0, 0, 0), getEffectLevel(), 0.67f);
             ship.getEngineController().extendFlame(this, 2f * getEffectLevel(), 0f * getEffectLevel(), 0f * getEffectLevel());
 
-            stats.getMaxSpeed().modifyPercent(getDisplayText(), speedBoost);
+            stats.getAcceleration().modifyFlat(getDisplayText(), 5000f);
+            stats.getDeceleration().modifyFlat(getDisplayText(), 5000f);
+            stats.getTurnAcceleration().modifyFlat(getDisplayText(), 5000f);
+            stats.getMaxTurnRate().modifyFlat(getDisplayText(), 15f);
+            stats.getMaxTurnRate().modifyPercent(getDisplayText(), 100f);
 
             ship.blockCommandForOneFrame(ShipCommand.DECELERATE);
             ship.blockCommandForOneFrame(ShipCommand.ACCELERATE_BACKWARDS);
             ship.blockCommandForOneFrame(ShipCommand.STRAFE_LEFT);
             ship.blockCommandForOneFrame(ShipCommand.STRAFE_RIGHT);
             ship.giveCommand(ShipCommand.ACCELERATE, new Vector2f(0f, 1f), -1);
+        }
+
+        if (state == State.ACTIVE) {
+            stats.getMaxSpeed().modifyPercent(getDisplayText(), speedBoost);
+
+            stats.getTurnAcceleration().modifyFlat(getDisplayText(), 200f);
+            stats.getMaxTurnRate().modifyFlat(getDisplayText(), 15f);
+            stats.getMaxTurnRate().modifyPercent(getDisplayText(), 100f);
         }
 
         if (state == State.OUT) {
@@ -113,10 +120,14 @@ public class ToggledDriveActivator extends CombatActivator {
     @Override
     public void onFinished() {
         stats.getMaxSpeed().unmodify(getDisplayText());
+        stats.getAcceleration().unmodify(getDisplayText());
+        stats.getDeceleration().unmodify(getDisplayText());
+        stats.getTurnAcceleration().unmodify(getDisplayText());
+        stats.getMaxTurnRate().unmodify(getDisplayText());
     }
 
     @Override
     public String getDisplayText() {
-        return "Cruise Drive";
+        return "Charged Drive";
     }
 }
