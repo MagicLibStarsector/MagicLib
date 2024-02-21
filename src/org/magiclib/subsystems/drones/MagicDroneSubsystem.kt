@@ -319,7 +319,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
 
 
         if (!usesChargesOnActivate() && !hasSeparateDroneCharges()) {
-            var fill = when (state) {
+            val fill = when (state!!) {
                 State.READY -> 0f
                 State.IN -> stateInterval.elapsed / (inDuration + activeDuration)
                 State.ACTIVE -> if (isToggle && activeElapsed) {

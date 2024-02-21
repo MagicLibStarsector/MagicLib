@@ -1,6 +1,7 @@
 package org.magiclib.subsystems.examples;
 
 import com.fs.starfarer.api.combat.ShipAPI;
+import org.jetbrains.annotations.NotNull;
 import org.magiclib.subsystems.drones.HoveringFormation;
 import org.magiclib.subsystems.drones.MagicDroneSubsystem;
 import org.magiclib.subsystems.drones.SpinningCircleFormation;
@@ -76,7 +77,7 @@ public class FormationSwitchPDDroneSubsystem extends MagicDroneSubsystem {
     }
 
     @Override
-    public String getDroneVariant() {
+    public @NotNull String getDroneVariant() {
         return "drone_pd_example";
     }
 

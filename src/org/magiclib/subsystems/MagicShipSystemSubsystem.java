@@ -91,8 +91,11 @@ public abstract class MagicShipSystemSubsystem extends MagicSubsystem {
         return null;
     }
 
-    @Override
-    public void advanceEveryFrame() {
+    public void advance(float amount, boolean isPaused) {
+        if (!isPaused && state != State.READY && state != State.COOLDOWN) {
+            system.apply(ship.getMutableStats(), systemSpec.getId(), translateState(getState()), getEffectLevel());
+        }
+
         if (ship == Global.getCombatEngine().getPlayerShip()) {
             int statusIndex = 0;
             ShipSystemStatsScript.StatusData statusData;
@@ -109,13 +112,6 @@ public abstract class MagicShipSystemSubsystem extends MagicSubsystem {
     public void onStateSwitched(State oldState) {
         if (state == State.COOLDOWN) {
             system.unapply(ship.getMutableStats(), systemSpec.getId());
-        }
-    }
-
-    @Override
-    public void advance(float amount) {
-        if (state != State.READY && state != State.COOLDOWN) {
-            system.apply(ship.getMutableStats(), systemSpec.getId(), translateState(getState()), getEffectLevel());
         }
     }
 }

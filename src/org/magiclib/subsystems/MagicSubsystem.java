@@ -388,14 +388,7 @@ public abstract class MagicSubsystem {
      *
      * @param amount time elapsed in last frame
      */
-    public void advance(float amount) {
-
-    }
-
-    /**
-     * Runs every frame, even while paused.
-     */
-    public void advanceEveryFrame() {
+    public void advance(float amount, boolean isPaused) {
 
     }
 
@@ -467,86 +460,90 @@ public abstract class MagicSubsystem {
     /**
      * Called every frame that the combat engine is not paused. Handles all internal functions of the subsystem,
      * like activating it, adding charges, handling the state interval, and all other things the subsystem needs to do
-     * frame-by-frame during active combat. Override {@link MagicSubsystem#advance(float)} unless you call super or
+     * frame-by-frame during active combat. Override {@link MagicSubsystem#advance(float, boolean)} unless you call super or
      * know exactly what you're doing.
      *
      * @param amount frame time
      */
     public void advanceInternal(float amount) {
-        boolean alive = ship.isAlive() && !ship.isHulk() && ship.getOwner() != 100;
-        if (!alive) {
-            if (!calledOnDeath) {
-                if (isOn()) {
-                    onShipDeath();
+        boolean isPaused = Global.getCombatEngine().isPaused();
+
+        if (!isPaused) {
+            boolean alive = ship.isAlive() && !ship.isHulk() && ship.getOwner() != 100;
+            if (!alive) {
+                if (!calledOnDeath) {
+                    if (isOn()) {
+                        onShipDeath();
+                    }
+                    calledOnDeath = true;
                 }
-                calledOnDeath = true;
             }
-        }
 
-        if (!getAdvancesWhileDead() && !alive) return;
+            if (!getAdvancesWhileDead() && !alive) return;
 
-        if (state != State.READY && !stateInterval.intervalElapsed()) {
-            stateInterval.advance(amount);
-        }
+            if (state != State.READY && !stateInterval.intervalElapsed()) {
+                stateInterval.advance(amount);
+            }
 
-        if (charges < getMaxCharges()) {
-            if (chargeInterval.intervalElapsed()) {
-                charges++;
-                chargeInterval.setInterval(getChargeGenerationDuration(), getChargeGenerationDuration());
+            if (charges < getMaxCharges()) {
+                if (chargeInterval.intervalElapsed()) {
+                    charges++;
+                    chargeInterval.setInterval(getChargeGenerationDuration(), getChargeGenerationDuration());
+                } else {
+                    chargeInterval.advance(amount);
+                }
+            }
+
+            boolean shouldActivate = false;
+            //Global.getCombatEngine().isUIAutopilotOn() is backwards! returns true when player is piloting.
+            if (Global.getCombatEngine().getPlayerShip() == ship && Global.getCombatEngine().isUIAutopilotOn()) {
+                if (isKeyDown()) {
+                    shouldActivate = true;
+                }
             } else {
-                chargeInterval.advance(amount);
-            }
-        }
-
-        boolean shouldActivate = false;
-        //Global.getCombatEngine().isUIAutopilotOn() is backwards! returns true when player is piloting.
-        if (Global.getCombatEngine().getPlayerShip() == ship && Global.getCombatEngine().isUIAutopilotOn()) {
-            if (isKeyDown()) {
-                shouldActivate = true;
-            }
-        } else {
-            shouldActivate = shouldActivateAI(amount);
-        }
-
-        if (shouldActivate && (canUseWhileOverloaded() || !ship.getFluxTracker().isOverloaded()) && (canUseWhileVenting() || !ship.getFluxTracker().isVenting())) {
-            boolean internalActivate = canActivateInternal();
-            boolean shipActivate = canActivate();
-
-            if (internalActivate && shipActivate) {
-                activate();
-            }
-        }
-
-        //Charge flux.
-        if (isOn()) {
-            if (getFluxCostFlatPerSecondWhileActive() > 0f) {
-                ship.getFluxTracker().increaseFlux(getFluxCostFlatPerSecondWhileActive() * amount, isHardFluxPerSecondWhileActive());
+                shouldActivate = shouldActivateAI(amount);
             }
 
-            if (getFluxCostPercentPerSecondWhileActive() > 0f) {
-                ship.getFluxTracker().increaseFlux(getFluxCostPercentPerSecondWhileActive() * ship.getHullSpec().getFluxCapacity() * amount, isHardFluxPerSecondWhileActive());
+            if (shouldActivate && (canUseWhileOverloaded() || !ship.getFluxTracker().isOverloaded()) && (canUseWhileVenting() || !ship.getFluxTracker().isVenting())) {
+                boolean internalActivate = canActivateInternal();
+                boolean shipActivate = canActivate();
+
+                if (internalActivate && shipActivate) {
+                    activate();
+                }
             }
-        }
 
-        if (stateInterval.intervalElapsed() || stateInterval.getIntervalDuration() == 0f) {
-            if (state == State.IN) {
-                setState(State.ACTIVE);
-            } else if (state == State.OUT) {
-                activeElapsed = false;
-                setState(State.COOLDOWN);
-                onFinished();
-            } else if (state == State.COOLDOWN) {
-                setState(State.READY);
-            } else if (state == State.ACTIVE) {
-                activeElapsed = true;
+            //Charge flux.
+            if (isOn()) {
+                if (getFluxCostFlatPerSecondWhileActive() > 0f) {
+                    ship.getFluxTracker().increaseFlux(getFluxCostFlatPerSecondWhileActive() * amount, isHardFluxPerSecondWhileActive());
+                }
 
-                if (!isToggle()) {
-                    setState(State.OUT);
+                if (getFluxCostPercentPerSecondWhileActive() > 0f) {
+                    ship.getFluxTracker().increaseFlux(getFluxCostPercentPerSecondWhileActive() * ship.getHullSpec().getFluxCapacity() * amount, isHardFluxPerSecondWhileActive());
+                }
+            }
+
+            if (stateInterval.intervalElapsed() || stateInterval.getIntervalDuration() == 0f) {
+                if (state == State.IN) {
+                    setState(State.ACTIVE);
+                } else if (state == State.OUT) {
+                    activeElapsed = false;
+                    setState(State.COOLDOWN);
+                    onFinished();
+                } else if (state == State.COOLDOWN) {
+                    setState(State.READY);
+                } else if (state == State.ACTIVE) {
+                    activeElapsed = true;
+
+                    if (!isToggle()) {
+                        setState(State.OUT);
+                    }
                 }
             }
         }
 
-        advance(amount);
+        advance(amount, isPaused);
     }
 
     public String getKey() {

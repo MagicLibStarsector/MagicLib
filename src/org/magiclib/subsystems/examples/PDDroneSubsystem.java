@@ -1,6 +1,7 @@
 package org.magiclib.subsystems.examples;
 
 import com.fs.starfarer.api.combat.ShipAPI;
+import org.jetbrains.annotations.NotNull;
 import org.magiclib.subsystems.drones.MagicDroneSubsystem;
 
 /**
@@ -77,7 +78,7 @@ public class PDDroneSubsystem extends MagicDroneSubsystem {
     }
 
     @Override
-    public String getDroneVariant() {
+    public @NotNull String getDroneVariant() {
         return "drone_pd_example";
     }
 }

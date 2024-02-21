@@ -49,8 +49,6 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
                 if (!combatEngine.isPaused) {
                     it.advanceInternal(amount * ship.mutableStats.timeMult.modifiedValue)
                 }
-
-                it.advanceEveryFrame()
             }
         }
     }

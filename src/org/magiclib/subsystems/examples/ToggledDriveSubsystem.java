@@ -90,7 +90,8 @@ public class ToggledDriveSubsystem extends MagicSubsystem {
     }
 
     @Override
-    public void advance(float amount) {
+    public void advance(float amount, boolean isPaused) {
+        if (isPaused) return;
         if (state == State.IN || state == State.ACTIVE || state == State.OUT) {
             ship.getEngineController().fadeToOtherColor(this, engineColor, new Color(0, 0, 0, 0), getEffectLevel(), 0.67f);
             ship.getEngineController().extendFlame(this, 2f * getEffectLevel(), 0f * getEffectLevel(), 0f * getEffectLevel());

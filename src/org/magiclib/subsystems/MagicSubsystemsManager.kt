@@ -167,3 +167,22 @@ fun IntervalUtil.advanceAndCheckElapsed(amount: Float): Boolean {
     this.advance(amount)
     return this.intervalElapsed()
 }
+
+/**
+ * Add a subsystem to a ship.
+ * @param subsystem The subsystem to add.
+ */
+fun ShipAPI.addSubsystem(subsystem: MagicSubsystem) =
+    MagicSubsystemsManager.addSubsystemToShip(this, subsystem)
+
+/**
+ * Remove a subsystem.
+ */
+fun ShipAPI.removeSubsystem(subsystemClass: Class<out MagicSubsystem>) =
+    MagicSubsystemsManager.removeSubsystemFromShip(this, subsystemClass)
+
+/**
+ * Gets a shallow copy of the list of subsystems.
+ */
+val ShipAPI.subsystemsCopy: List<MagicSubsystem>?
+    get() = MagicSubsystemsManager.getSubsystemsForShipCopy(this)

@@ -17,11 +17,11 @@ class SpinningCircleFormation : DroneFormation() {
         angle += currentRotation
 
         for ((drone, controller) in drones) {
-            var shipLoc = ship.location
-            var point = MathUtils.getPointOnCircumference(shipLoc, ship.collisionRadius * 1.5f, angle)
+            val shipLoc = ship.location
+            val point = MathUtils.getPointOnCircumference(shipLoc, ship.collisionRadius * 1.5f, angle)
             controller.move(point, drone)
 
-            var iter = Global.getCombatEngine().shipGrid.getCheckIterator(drone.location, 1000f, 1000f)
+            val iter = Global.getCombatEngine().shipGrid.getCheckIterator(drone.location, 1000f, 1000f)
 
             var target: ShipAPI? = null
             var distance = 100000f
@@ -32,7 +32,7 @@ class SpinningCircleFormation : DroneFormation() {
                             .getFleetManager(drone.owner).owner
                     ) continue
                     if (it.isHulk) continue
-                    var distanceBetween = MathUtils.getDistance(it, ship)
+                    val distanceBetween = MathUtils.getDistance(it, ship)
                     if (distance > distanceBetween) {
                         distance = distanceBetween
                         target = it
