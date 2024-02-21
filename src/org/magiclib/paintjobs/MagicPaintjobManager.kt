@@ -85,6 +85,7 @@ object MagicPaintjobManager {
             })
         }
 
+        paintjobsInner.clear()
         paintjobsInner.addAll(loadPaintjobs().values)
     }
 
@@ -157,21 +158,18 @@ object MagicPaintjobManager {
                         // Just a blank row, no need to warn.
 //                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
                         skip = true
-                    }
-                    if (hullIds.isEmpty()) {
+                    } else if (hullIds.isEmpty()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no hullIds, skipping.")
                         skip = true
-                    }
-                    if (name.isBlank()) {
+                    } else if (name.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no name, skipping.")
                         skip = true
-                    }
-                    if (spriteId.isBlank()) {
+                    } else if (spriteId.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
                         skip = true
-                    }
-                    if (hullIds.none {
-                            kotlin.runCatching { Global.getSettings().getHullSpec(it) }.getOrNull() != null
+                    } else if (hullIds.none {
+                            kotlin.runCatching { Global.getSettings().getHullSpec(it) }
+                                .getOrNull() != null
                         }) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no valid hullIds, skipping.")
                         skip = true
