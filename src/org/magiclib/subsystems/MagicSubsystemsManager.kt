@@ -40,7 +40,7 @@ object MagicSubsystemsManager {
      * @param subsystem The subsystem to add.
      */
     @JvmStatic
-    fun addSubsystem(ship: ShipAPI, subsystem: MagicSubsystem) {
+    fun addSubsystemToShip(ship: ShipAPI, subsystem: MagicSubsystem) {
         var shipSubsystemData = getSubsystemMapForShip(ship)
 
         if (shipSubsystemData == null) {
@@ -65,7 +65,7 @@ object MagicSubsystemsManager {
      * Remove a subsystem from a ship.
      */
     @JvmStatic
-    fun removeSubsystem(ship: ShipAPI, subsystemClass: Class<out MagicSubsystem>) {
+    fun removeSubsystemFromShip(ship: ShipAPI, subsystemClass: Class<out MagicSubsystem>) {
         getSubsystemMapForShip(ship)?.remove(subsystemClass)
     }
 
