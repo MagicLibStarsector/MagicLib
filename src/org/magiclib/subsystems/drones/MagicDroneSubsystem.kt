@@ -339,18 +339,8 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
         return super.getBarFill()
     }
 
-    open fun getDroneHUDBackground(): SpriteAPI {
-        return Global.getSettings().getSprite("systemMap", "icon_stable_location")
-    }
-
     open fun getDroneDimWrapper(): SpriteDimWrapper {
         return SpriteDimWrapper(Global.getSettings().getSprite("ui", "ship_arrow"))
-    }
-
-    open fun getDroneName(): String {
-        return Global.getSettings().getFighterWingSpec(getDroneVariant())?.wingName
-            ?: Global.getSettings().getVariant(getDroneVariant())?.displayName
-            ?: displayText
     }
 
     override fun getNumHUDBars(): Int {
@@ -418,7 +408,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
             aliveDrones = aliveDrones.plus(i < activeWings.size)
         }
 
-        Vector2f.add(chevronRowPos, Vector2f(0f, 6f * MagicUI.UI_SCALING - CombatUI.BAR_HEIGHT * 2f), chevronRowPos)
+        Vector2f.add(chevronRowPos, Vector2f(CombatUI.INFO_TEXT_PADDING, 6f * MagicUI.UI_SCALING - CombatUI.BAR_HEIGHT * 2f), chevronRowPos)
         val tileDim = Vector2f(CombatUI.BAR_HEIGHT, CombatUI.BAR_HEIGHT)
 
         CombatUI.dimRender(

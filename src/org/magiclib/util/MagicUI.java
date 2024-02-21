@@ -58,26 +58,17 @@ public class MagicUI {
         try {
             LazyFont fontdraw = LazyFont.loadFont("graphics/fonts/victor14.fnt");
             TODRAW14 = fontdraw.createText();
-            //TODRAW14.setFontSize(14 * UI_SCALING);
 
             fontdraw = LazyFont.loadFont("graphics/fonts/victor10.fnt");
             TODRAW10 = fontdraw.createText();
-            //TODRAW10.setFontSize(14 * UI_SCALING);
+
+            if (UI_SCALING != 1) {
+                TODRAW14.setFontSize(TODRAW14.getFontSize() * UI_SCALING);
+                TODRAW10.setFontSize(TODRAW10.getFontSize() * UI_SCALING);
+            }
         } catch (FontException ex) {
         }
     }
-/*
-    public static float getStatusTextWidth(String text) {
-        String oldText = TODRAW10.getText();
-        TODRAW10.setText(text);
-        float width = TODRAW10.getWidth();
-        TODRAW10.setText(oldText);
-        return width;
-    }
-
-    public static void setStatusTextAligned(LazyFont.TextAlignment alignment) {
-        TODRAW10.setAlignment(alignment);
-    }*/
 
     public static float getTextWidth(String text) {
         String oldText = TODRAW14.getText();
@@ -89,6 +80,67 @@ public class MagicUI {
 
     public static void setTextAligned(LazyFont.TextAlignment alignment) {
         TODRAW14.setAlignment(alignment);
+    }
+
+    /**
+     * Scales the vector by the UI_SCALING value. This modifies and returns the destination vector.
+     * If the destination vector is null, a new Vector is returned with the scaled source.
+     * The source vector is not modified unless it is also provided as the dest argument.
+     * @param source provided vector
+     * @param dest destination vector
+     * @return dest vector as a scaled copy of source
+     */
+    public static Vector2f scale(Vector2f source, Vector2f dest) {
+        if (dest == null) {
+            dest = new Vector2f();
+        }
+
+        dest.set(source.x * UI_SCALING, source.y * UI_SCALING);
+
+        return dest;
+    }
+
+    /**
+     * Scales the vector by the UI_SCALING value. This modifies and returns the provided vector.
+     * If UI_SCALING is not modified (1), then no change is made to the source vector.
+     * @param source provided vector
+     * @return provided vector scaled
+     */
+    public static Vector2f scale(Vector2f source) {
+        return scale(source, source);
+    }
+
+    /**
+     * Multiplies the float by the UI_SCALING value.
+     * @param source value
+     * @return scaled float
+     */
+    public static float scale(float source) {
+        return source * UI_SCALING;
+    }
+
+    /**
+     * Scales two parameters by UI_SCALING into a Vector2f.
+     * @param x x
+     * @param y y
+     * @return scaled vector
+     */
+    public static Vector2f scaledVector(float x, float y) {
+        return new Vector2f(x * UI_SCALING, y * UI_SCALING);
+    }
+
+    /**
+     * Copies a vector and scales it by UI_SCALING.
+     * @param vec vector
+     * @return scaled vector
+     */
+    public static Vector2f scaledCopy(Vector2f vec) {
+        return MagicUI.scale(new Vector2f(vec));
+    }
+
+    public static boolean shouldDrawHUD(ShipAPI ship) {
+        CombatEngineAPI engine = Global.getCombatEngine();
+        return engine.getCombatUI() != null && !engine.getCombatUI().isShowingCommandUI() && engine.isUIShowingHUD() && !engine.isUIShowingDialog() && ship.equals(engine.getPlayerShip());
     }
 
     ///////////////////////////////////
@@ -1021,25 +1073,22 @@ public class MagicUI {
     /**
      * Draw text with the font Victor14 where you want on the screen.
      *
-     * @param ship      The player ship.
+     * @param ship      The player ship. Only used to change UI text color if it is dead. Can be null.
      * @param text      Text to display.
-     * @param textColor The color of the text
+     * @param textColor The color of the text. Alpha will be used for both the black background and foreground color.
      * @param screenPos The position on the Screen. Should not be scaled to UI Scaling.
      * @param openGLStack whether to open an OpenGL11 stack for the text
      */
     public static void addText(ShipAPI ship, String text, Color textColor, Vector2f screenPos, boolean openGLStack) {
         Color borderCol = textColor == null ? GREENCOLOR : textColor;
-        if (!ship.isAlive()) {
+        if (ship != null && !ship.isAlive()) {
             borderCol = BLUCOLOR;
         }
 
-        float alpha = getUIAlpha();
+        float alpha = getUIAlpha() * (borderCol.getAlpha() / 255f) * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
 
-        Color shadowColor = new Color(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
-                1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
-        Color color = new Color(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f,
-                alpha * (borderCol.getAlpha() / 255f)
-                        * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()));
+        Color shadowColor = new Color(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f, alpha);
+        Color color = new Color(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f, alpha);
 
         final Vector2f boxLoc = new Vector2f(screenPos);
         final Vector2f shadowLoc = new Vector2f(screenPos.getX() + 1f, screenPos.getY() - 1f);
@@ -1056,9 +1105,51 @@ public class MagicUI {
         TODRAW14.setMaxWidth(4600 * UI_SCALING);
         TODRAW14.setMaxHeight(14 * UI_SCALING);
         TODRAW14.setText(text);
-        TODRAW14.setColor(shadowColor);
+        TODRAW14.setBaseColor(shadowColor);
         TODRAW14.draw(shadowLoc);
-        TODRAW14.setColor(color);
+        TODRAW14.setBaseColor(color);
+        TODRAW14.draw(boxLoc);
+
+        if (openGLStack) {
+            closeGL11ForText();
+        }
+    }
+
+
+    /**
+     * Draw text with the font Victor14 where you want on the screen. This method will not apply UI_SCALING and so
+     * assumes that the screenPos is already scaled.
+     *
+     * @param ship      The player ship. Only used to change UI text color if it is dead. Can be null.
+     * @param text      Text to display.
+     * @param textColor The color of the text. Alpha will be used for both the black background and foreground color.
+     * @param screenPos The position on the Screen. Should not be scaled to UI Scaling.
+     * @param openGLStack whether to open an OpenGL11 stack for the text
+     */
+    public static void addTextNonScaling(ShipAPI ship, String text, Color textColor, Vector2f screenPos, boolean openGLStack) {
+        Color borderCol = textColor == null ? GREENCOLOR : textColor;
+        if (ship != null && !ship.isAlive()) {
+            borderCol = BLUCOLOR;
+        }
+
+        float alpha = getUIAlpha() * (borderCol.getAlpha() / 255f) * (1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
+
+        Color shadowColor = new Color(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f, alpha);
+        Color color = new Color(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f, alpha);
+
+        final Vector2f boxLoc = new Vector2f(screenPos);
+        final Vector2f shadowLoc = new Vector2f(screenPos.getX() + MagicUI.UI_SCALING, screenPos.getY() - MagicUI.UI_SCALING);
+
+        if (openGLStack) {
+            openGL11ForText();
+        }
+
+        TODRAW14.setMaxWidth(4600 * UI_SCALING);
+        TODRAW14.setMaxHeight(14 * UI_SCALING);
+        TODRAW14.setText(text);
+        TODRAW14.setBaseColor(shadowColor);
+        TODRAW14.draw(shadowLoc);
+        TODRAW14.setBaseColor(color);
         TODRAW14.draw(boxLoc);
 
         if (openGLStack) {
@@ -1262,47 +1353,72 @@ public class MagicUI {
         return MathUtils.clamp(alpha, 0f, 1f);
     }
 
+    private static boolean VIEWPORT_OPENGL_CALLS = false;
+
     /**
-     * Taken from MagicLib when it was a private method
-     * GL11 to start, when you want render text of Lazyfont.
+     * Remember to UNSET THIS after your rendering.
+     * Use only if you're rendering from an advance method.
+     * @param set set it
+     */
+    public static void setViewportOpenGLCalls(boolean set) {
+        VIEWPORT_OPENGL_CALLS = set;
+    }
+
+    /**
+     * GL11 to start rendering LazyFont text.
+     * Will do nothing if {@link MagicUI#setViewportOpenGLCalls(boolean)} is set to false.
+     * Set that to false after your render calls if you set it to true.
      */
     public static void openGL11ForTextWithinViewport() {
-        glPushAttrib(GL_ENABLE_BIT);
-        glMatrixMode(GL_PROJECTION);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        openGLForMiscWithinViewport();
     }
 
     /**
-     * Taken from MagicLib when it was a private method
-     * GL11 to close, when you want render text of Lazyfont.
+     * GL11 to end after rendering LazyFont text.
+     * Will do nothing if {@link MagicUI#setViewportOpenGLCalls(boolean)} is set to false.
+     * Set that to false after your render calls if you set it to true.
      */
     public static void closeGL11ForTextWithinViewport() {
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glMatrixMode(GL_MODELVIEW);
-        glPopAttrib();
+        closeGLForMiscWithinViewport();
     }
 
     /**
-     * @author tomatopaste
      * Sets OpenGL state for rendering in HUD coordinates
+     * Will do nothing if {@link MagicUI#setViewportOpenGLCalls(boolean)} is set to false.
+     * Set that to false after your render calls if you set it to true.
+     * @author tomatopaste
      */
     public static void openGLForMiscWithinViewport() {
+        final int w = (int) (Display.getWidth() * Display.getPixelScaleFactor());
+        final int h = (int) (Display.getHeight() * Display.getPixelScaleFactor());
+
         glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glViewport(0, 0, w, h);
         glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        glOrtho(0, w, 0, h, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glTranslatef(0.01f, 0.01f, 0);
     }
 
     /**
+     * Ends OpenGL state for rendering in HUD coordinates
+     * Will do nothing if {@link MagicUI#setViewportOpenGLCalls(boolean)} is set to false.
+     * Set that to false after your render calls if you set it to true.
      * @author tomatopaste
      */
     public static void closeGLForMiscWithinViewport() {
-        // Finalize drawing
         glDisable(GL_BLEND);
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
         glPopAttrib();
     }
 }

@@ -53,11 +53,11 @@ import static org.lwjgl.opengl.GL11.*;
  */
 
 public class CombatUI {
-    public static final float STATUS_BAR_WIDTH = 45f * MagicUI.UI_SCALING;
-    public static final float STATUS_BAR_HEIGHT = 9f * MagicUI.UI_SCALING;
-    public static final float STATUS_BAR_PADDING = 200f * MagicUI.UI_SCALING;
-    public static final float BAR_HEIGHT = 13f * MagicUI.UI_SCALING;
-    public static final float INFO_TEXT_PADDING = 20f * MagicUI.UI_SCALING;
+    public static final float STATUS_BAR_WIDTH = 45f;
+    public static final float STATUS_BAR_HEIGHT = 9f;
+    public static final float STATUS_BAR_PADDING = 200f;
+    public static final float BAR_HEIGHT = 13f;
+    public static final float INFO_TEXT_PADDING = 20f;
 
     private static final String[] alphabet = new String[]{
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
@@ -85,17 +85,18 @@ public class CombatUI {
      * method) then they will not have an effect on the output location. This must be predetermined by the input
      * guiBarCount parameter to make room for them.
      *
-     * @param ship         Player ship
-     * @param fill         Value 0 to 1, how full the bar is from left to right
-     * @param name         Name of subsystem
-     * @param infoText     Info string opportunity
-     * @param stateText    Subsystem activity status
-     * @param hotkey       Hotkey string of key used to activate subsystem
-     * @param flavourText  A brief description of what the subsystem does
-     * @param showInfoText If the subsystem is in show info mode
-     * @param guiBarCount  The number of gui bars this subsystem will use
-     * @param inputLoc     the Input location (top left) of the subsystem GUI element
-     * @param rootLoc      the Root location of subsystem GUI elements
+     * @param ship           Player ship
+     * @param fill           Value 0 to 1, how full the bar is from left to right
+     * @param name           Name of subsystem
+     * @param extraText      Info string opportunity. Appears to the right of the status bar.
+     * @param extraTextColor color of extraText. if null, uses standard text color
+     * @param stateText      Subsystem activity status. Appears to left of status bar.
+     * @param hotkey         Hotkey string of key used to activate subsystem
+     * @param briefText      A brief description of what the subsystem does
+     * @param showInfoText   If the subsystem is in show info mode
+     * @param guiBarCount    The number of gui bars this subsystem will use
+     * @param inputLoc       the Input location (top left) of the subsystem GUI element
+     * @param rootLoc        the Root location of subsystem GUI elements
      * @return The output location (bottom left) of GUI element
      * @author tomatopaste
      */
@@ -103,33 +104,29 @@ public class CombatUI {
             ShipAPI ship,
             float fill,
             String name,
-            String infoText,
+            String extraText,
+            Color extraTextColor,
             String stateText,
             String hotkey,
-            String flavourText,
+            String briefText,
             boolean showInfoText,
             int guiBarCount,
             Vector2f inputLoc,
-            Vector2f rootLoc
-    ) {
+            Vector2f rootLoc) {
         CombatEngineAPI engine = Global.getCombatEngine();
-        if (!ship.equals(engine.getPlayerShip()) || engine.isUIShowingDialog()) return null;
-        if (engine.getCombatUI() == null || engine.getCombatUI().isShowingCommandUI() || !engine.isUIShowingHUD())
-            return null;
-
         Color colour = (ship.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
 
         final int bars = (showInfoText) ? guiBarCount + 1 : guiBarCount;
 
-        Vector2f loc = new Vector2f(inputLoc);
+        Vector2f loc = MagicUI.scaledCopy(inputLoc);
 
         MagicUI.openGL11ForTextWithinViewport();
 
-        MagicUI.addText(ship, name, colour, loc, false);
+        MagicUI.addTextNonScaling(ship, name, colour, loc, false);
 
         Vector2f hotkeyTextLoc = new Vector2f(loc);
-        hotkeyTextLoc.y -= BAR_HEIGHT * MagicUI.UI_SCALING * (guiBarCount);
-        hotkeyTextLoc.x += INFO_TEXT_PADDING;
+        hotkeyTextLoc.y -= MagicUI.scale(BAR_HEIGHT * guiBarCount);
+        hotkeyTextLoc.x += MagicUI.scale(INFO_TEXT_PADDING);
 
         String hotkeyText = MagicTxt.getString("subsystemHotkeyAutomaticText");
         if (hotkey != null && !MagicSubsystem.BLANK_KEY.equals(hotkey)) {
@@ -138,38 +135,42 @@ public class CombatUI {
 
         float hotkeyTextWidth = MagicUI.TODRAW14.getWidth();
         if (showInfoText) {
-            MagicUI.addText(ship, hotkeyText, colour, hotkeyTextLoc, false);
+            MagicUI.addTextNonScaling(ship, hotkeyText, colour, hotkeyTextLoc, false);
         }
 
-        if (showInfoText && flavourText != null && !flavourText.isEmpty()) {
+        if (showInfoText && briefText != null && !briefText.isEmpty()) {
             Vector2f flavourTextLoc = new Vector2f(hotkeyTextLoc);
-            flavourTextLoc.x += hotkeyTextWidth + (20f * MagicUI.UI_SCALING);
+            flavourTextLoc.x += hotkeyTextWidth + MagicUI.scale(20f);
 
-            String briefText = MagicTxt.getString("subsystemBriefText", flavourText);
-            MagicUI.addText(ship, briefText, colour, flavourTextLoc, false);
+            String briefTextFormat = MagicTxt.getString("subsystemBriefText", briefText);
+            MagicUI.addTextNonScaling(ship, briefTextFormat, colour, flavourTextLoc, false);
         }
 
         Vector2f boxLoc = new Vector2f(loc);
-        boxLoc.x += STATUS_BAR_PADDING;
+        boxLoc.x += MagicUI.scale(STATUS_BAR_PADDING);
 
-        final float boxHeight = STATUS_BAR_HEIGHT;
-        final float boxEndWidth = STATUS_BAR_WIDTH;
+        final float boxHeight = MagicUI.scale(STATUS_BAR_HEIGHT);
+        final float boxEndWidth = MagicUI.scale(STATUS_BAR_WIDTH);
 
         float boxWidth = boxEndWidth * fill;
 
         if (stateText != null && !stateText.isEmpty()) {
             Vector2f stateLoc = new Vector2f(boxLoc);
             MagicUI.TODRAW14.setText(stateText);
-            stateLoc.x -= MagicUI.TODRAW14.getWidth() + (4f * MagicUI.UI_SCALING);
+            stateLoc.x -= MagicUI.TODRAW14.getWidth() + MagicUI.scale(4f);
 
-            MagicUI.addText(ship, stateText, colour, stateLoc, false);
+            MagicUI.addTextNonScaling(ship, stateText, colour, stateLoc, false);
         }
 
-        if (infoText != null && !infoText.isEmpty()) {
-            Vector2f infoLoc = new Vector2f(boxLoc);
-            infoLoc.x += boxEndWidth + (5f * MagicUI.UI_SCALING);
+        if (extraText != null && !extraText.isEmpty()) {
+            if (extraTextColor == null) {
+                extraTextColor = colour;
+            }
 
-            MagicUI.addText(ship, infoText, colour, infoLoc, false);
+            Vector2f infoLoc = new Vector2f(boxLoc);
+            infoLoc.x += boxEndWidth + MagicUI.scale(5f);
+
+            MagicUI.addTextNonScaling(ship, extraText, extraTextColor, infoLoc, false);
         }
 
         MagicUI.closeGL11ForTextWithinViewport();
@@ -191,32 +192,37 @@ public class CombatUI {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glTranslatef(0.01f, 0.01f, 0);
 
+        //render connecting line for system
         Vector2f nodeLoc = new Vector2f(loc);
-        nodeLoc.y -= 4f * MagicUI.UI_SCALING;
-        nodeLoc.x -= 2f * MagicUI.UI_SCALING;
+        nodeLoc.y -= MagicUI.scale(4f);
+        nodeLoc.x -= MagicUI.scale(2f);
 
-        Vector2f titleLoc = getSubsystemTitleLoc(ship);
+        Vector2f titleLoc = MagicUI.scaledCopy(getSubsystemTitleLoc(ship));
         boolean isHigh = loc.y > titleLoc.y;
 
+        //starts at subsystem name
         glLineWidth(MagicUI.UI_SCALING);
         glBegin(GL_LINE_STRIP);
         glColor4f(colour.getRed() / 255f, colour.getGreen() / 255f, colour.getBlue() / 255f, 1f - engine.getCombatUI().getCommandUIOpacity());
         glVertex2f(nodeLoc.x, nodeLoc.y);
 
-        nodeLoc.y += (isHigh) ? -6f * MagicUI.UI_SCALING : 6f * MagicUI.UI_SCALING;
-        nodeLoc.x -= 6f * MagicUI.UI_SCALING;
+        //connects with vertical line created by selected weapon group widget
+        nodeLoc.y += MagicUI.scale((isHigh) ? -6f : 6f);
+        nodeLoc.x -= MagicUI.scale(6f);
         glVertex2f(nodeLoc.x, nodeLoc.y);
 
-        boolean isTitleHigh = rootLoc.y > titleLoc.y - 16f;
-        nodeLoc.y = getSubsystemTitleLoc(ship).y;
-        nodeLoc.y -= 16f;
-        nodeLoc.y -= (isTitleHigh) ? -6f * MagicUI.UI_SCALING : 6f * MagicUI.UI_SCALING;
+        //goes up to subsystem title
+        boolean isTitleHigh = rootLoc.y > titleLoc.y - MagicUI.scale(16f);
+        nodeLoc.y = titleLoc.y;
+        nodeLoc.y -= MagicUI.scale(16f);
+        nodeLoc.y -= MagicUI.scale((isTitleHigh) ? -6f : 6f);
         glVertex2f(nodeLoc.x, nodeLoc.y);
 
         glEnd();
 
+        //render subsystem status bar
         Vector2f boxRenderLoc = new Vector2f(boxLoc);
-        boxRenderLoc.y -= 3f * MagicUI.UI_SCALING;
+        boxRenderLoc.y -= MagicUI.scale(3f);
 
         //drop shadow
         Vector2f shadowLoc = new Vector2f(boxRenderLoc);
@@ -262,8 +268,7 @@ public class CombatUI {
         glPopMatrix();
         glPopAttrib();
 
-        loc.y -= bars * BAR_HEIGHT;
-        return loc;
+        return Vector2f.add(inputLoc, new Vector2f(0f, bars * BAR_HEIGHT), null);
     }
 
     /**
@@ -278,49 +283,39 @@ public class CombatUI {
      * @param fillLength  Length of progress bar
      * @param fillLevel   Fill level of progress bar
      * @param text1       Text 1
-     * @param text2       Text 2
-     * @param text2OnLeft
-     * @param inputLoc    Input location. This will be modified according to the X indent specified
+     * @param text2       Text 2. Can be null or empty.
+     * @param text2OnLeft Whether to draw text2 on the left or right, if it is provided.
+     * @param inputLoc    Input location
      */
     public static void renderAuxiliaryStatusBar(ShipAPI ship, float indent, boolean indentLine, float fillStartX, float fillLength, float fillLevel, String text1, String text2, boolean text2OnLeft, Vector2f inputLoc) {
         CombatEngineAPI engine = Global.getCombatEngine();
-
         Color colour = (ship.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
 
-        inputLoc.x += indent * MagicUI.UI_SCALING;
+        Vector2f textLoc = new Vector2f(inputLoc);
+        textLoc.x += indent;
+        MagicUI.scale(textLoc);
 
         Vector2f boxLoc = new Vector2f(inputLoc);
-        boxLoc.x += fillStartX * MagicUI.UI_SCALING;
+        boxLoc.x += indent + fillStartX;
+        MagicUI.scale(boxLoc);
 
-        final float boxHeight = STATUS_BAR_HEIGHT;
-        final float boxEndWidth = fillLength * MagicUI.UI_SCALING;
-
+        final float boxEndWidth = MagicUI.scale(fillLength);
         float boxWidth = boxEndWidth * fillLevel;
 
         MagicUI.openGL11ForTextWithinViewport();
-
-        MagicUI.TODRAW14.setMaxWidth(6969);
-
-        MagicUI.TODRAW14.setText(text1);
-        MagicUI.TODRAW14.setBaseColor(Color.BLACK);
-        MagicUI.TODRAW14.draw(inputLoc.x + 1, inputLoc.y - 1);
-        MagicUI.TODRAW14.setBaseColor(colour);
-        MagicUI.TODRAW14.draw(inputLoc);
+        MagicUI.addTextNonScaling(ship, text1, colour, textLoc, false);
 
         if (text2 != null && !text2.isEmpty()) {
             Vector2f text2Pos = new Vector2f(boxLoc);
             MagicUI.TODRAW14.setText(text2);
 
             if (text2OnLeft) {
-                text2Pos.x -= MagicUI.TODRAW14.getWidth() + (4f * MagicUI.UI_SCALING);
+                text2Pos.x -= MagicUI.TODRAW14.getWidth() + MagicUI.scale(4f);
             } else {
-                text2Pos.x += boxEndWidth + (4f * MagicUI.UI_SCALING);
+                text2Pos.x += boxEndWidth + MagicUI.scale(4f);
             }
 
-            MagicUI.TODRAW14.setBaseColor(Color.BLACK);
-            MagicUI.TODRAW14.draw(text2Pos.x + 1, text2Pos.y - 1);
-            MagicUI.TODRAW14.setBaseColor(colour);
-            MagicUI.TODRAW14.draw(text2Pos);
+            MagicUI.addTextNonScaling(ship, text2, colour, text2Pos, false);
         }
 
         MagicUI.closeGL11ForTextWithinViewport();
@@ -343,27 +338,28 @@ public class CombatUI {
         glTranslatef(0.01f, 0.01f, 0);
 
         if (indentLine) {
-            Vector2f nodeLoc = new Vector2f(inputLoc);
-            nodeLoc.x -= 2f * MagicUI.UI_SCALING;
-            nodeLoc.y -= 11f * MagicUI.UI_SCALING;
+            Vector2f nodeLoc = new Vector2f(textLoc);
+            nodeLoc.x -= MagicUI.scale(2f);
+            nodeLoc.y -= MagicUI.scale(11f);
 
             glLineWidth(MagicUI.UI_SCALING);
             glBegin(GL_LINE_STRIP);
             glColor4f(colour.getRed() / 255f, colour.getGreen() / 255f, colour.getBlue() / 255f, 1f - engine.getCombatUI().getCommandUIOpacity());
             glVertex2f(nodeLoc.x, nodeLoc.y);
 
-            nodeLoc.x -= 6f * MagicUI.UI_SCALING;
-            nodeLoc.y += 6f * MagicUI.UI_SCALING;
+            nodeLoc.x -= MagicUI.scale(6f);
+            nodeLoc.y += MagicUI.scale(6f);
             glVertex2f(nodeLoc.x, nodeLoc.y);
 
-            nodeLoc.y += 4f * MagicUI.UI_SCALING; //7
+            nodeLoc.y += MagicUI.scale(4f); //7
             glVertex2f(nodeLoc.x, nodeLoc.y);
 
             glEnd();
         }
 
         Vector2f boxRenderLoc = new Vector2f(boxLoc);
-        boxRenderLoc.y -= 3f * MagicUI.UI_SCALING;
+        boxRenderLoc.y -= MagicUI.scale(3f);
+        final float boxHeight = MagicUI.scale(STATUS_BAR_HEIGHT);
 
         //drop shadow
         Vector2f shadowLoc = new Vector2f(boxRenderLoc);
@@ -412,29 +408,27 @@ public class CombatUI {
 
     /**
      * Determines the root location (top left corner) of Subsystem UI elements by calculating total height of all
-     * subsystems on player ship
+     * subsystems on player ship.
      *
      * @param ship      Player ship
      * @param numBars   Sum of number of gui slots from all subsystems
      * @param barHeight Height of an individual bar (DO NOT SCALE WITH UI)
-     * @return Root location
+     * @return Root location. Not scaled by UI scaling.
      */
     public static Vector2f getSubsystemsRootLocation(ShipAPI ship, int numBars, float barHeight) {
         Vector2f loc = new Vector2f(529f, 74f);
         Vector2f.add(loc, MagicUI.getUIElementOffset(ship, ship.getVariant(), MagicUI.PERCENTBARVEC1, MagicUI.PERCENTBARVEC2), loc);
 
-        float height = numBars * barHeight * MagicUI.UI_SCALING;
+        float height = numBars * barHeight;
 
         int numWeapons = getNumWeapons(ship);
-        float maxWeaponHeight = numWeapons * (13f * MagicUI.UI_SCALING) + 30f;
-        if (numWeapons == 0) maxWeaponHeight -= 5f * MagicUI.UI_SCALING;
+        float maxWeaponHeight = numWeapons * 13f + 30f;
+        if (numWeapons == 0) maxWeaponHeight -= 5f;
 
-        final float minOffset = 10f * MagicUI.UI_SCALING;
+        final float minOffset = 10f;
         float weaponOffset = maxWeaponHeight + minOffset;
 
         loc.y = weaponOffset + height;
-
-        loc.x *= MagicUI.UI_SCALING;
 
         return loc;
     }
@@ -452,21 +446,20 @@ public class CombatUI {
     }
 
     /**
-     * Finds the SUBSYSTEM deco element root location
+     * Finds the SUBSYSTEM deco element root location.
      *
      * @param ship Player ship
-     * @return Location
+     * @return Location. Not scaled to UI scaling.
      */
     public static Vector2f getSubsystemTitleLoc(ShipAPI ship) {
         Vector2f loc = new Vector2f(529f, 72f);
         Vector2f.add(loc, MagicUI.getUIElementOffset(ship, ship.getVariant(), MagicUI.PERCENTBARVEC1, MagicUI.PERCENTBARVEC2), loc);
-        loc.scale(MagicUI.UI_SCALING);
 
         return loc;
     }
 
     /**
-     * Draws the SUBSYSTEM deco element
+     * Draws the SUBSYSTEM deco element.
      *
      * @param ship     Player ship
      * @param showInfo If the "more info" mode is enabled
@@ -474,44 +467,33 @@ public class CombatUI {
      */
     public static void drawSubsystemsTitle(ShipAPI ship, boolean showInfo, Vector2f rootLoc) {
         CombatEngineAPI engine = Global.getCombatEngine();
-        if (!ship.equals(engine.getPlayerShip()) || engine.isUIShowingDialog()) return;
-        if (engine.getCombatUI() == null || engine.getCombatUI().isShowingCommandUI() || !engine.isUIShowingHUD())
-            return;
-
         Color colour = (ship.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
 
-        float barHeight = 13f * MagicUI.UI_SCALING;
-        Vector2f loc = getSubsystemTitleLoc(ship);
-        String info = MagicTxt.getString("subsystemInfoText", Keyboard.getKeyName(MagicSubsystemsManager.INSTANCE.getInfoHotkey()));
+        float barHeight = MagicUI.scale(13f);
+        Vector2f loc = MagicUI.scale(getSubsystemTitleLoc(ship));
+
+        String infoText = MagicTxt.getString("subsystemInfoText", Keyboard.getKeyName(MagicSubsystemsManager.INSTANCE.getInfoHotkey()));
 
         MagicUI.openGL11ForTextWithinViewport();
 
         Vector2f titleTextLoc = new Vector2f(loc);
         Vector2f infoTextLoc = new Vector2f(rootLoc);
-        infoTextLoc.y += (barHeight + 8f) * MagicUI.UI_SCALING;
+        infoTextLoc.y += barHeight + MagicUI.scale(8f);
         //infoTextLoc.x -= 4f * MagicUI.UI_SCALING;
 
-        MagicUI.TODRAW14.setText(MagicTxt.getString("subsystemTitleText"));
-        titleTextLoc.x -= MagicUI.TODRAW14.getWidth() + (14f * MagicUI.UI_SCALING);
-
-        MagicUI.TODRAW14.setBaseColor(Color.BLACK);
-        MagicUI.TODRAW14.draw(titleTextLoc.x + 1f, titleTextLoc.y - 1f);
-        MagicUI.TODRAW14.setBaseColor(colour);
-        MagicUI.TODRAW14.draw(titleTextLoc);
+        String titleText = MagicTxt.getString("subsystemTitleText");
+        MagicUI.TODRAW14.setText(titleText);
+        titleTextLoc.x -= MagicUI.TODRAW14.getWidth() + MagicUI.scale(14f);
+        MagicUI.addTextNonScaling(ship, titleText, colour, titleTextLoc, false);
 
         if (showInfo) {
             int alpha = (int) MathUtils.clamp(
-                    (255f * 1.5f) - (Global.getCombatEngine().getTotalElapsedTime(false) - MagicSubsystemsCombatPlugin.Companion.getInfoHotkeyLastPressed()) * 255f,
+                    (255f * 1.5f) - (Global.getCombatEngine().getTotalElapsedTime(true) - MagicSubsystemsCombatPlugin.Companion.getInfoHotkeyLastPressed()) * 255f,
                     65f,
                     255f);
-            Color backgroundColor = new Color(0, 0, 0, alpha);
             Color foregroundColor = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
 
-            MagicUI.TODRAW14.setText(info);
-            MagicUI.TODRAW14.setBaseColor(backgroundColor);
-            MagicUI.TODRAW14.draw(infoTextLoc.x + 1f, infoTextLoc.y - 1f);
-            MagicUI.TODRAW14.setBaseColor(foregroundColor);
-            MagicUI.TODRAW14.draw(infoTextLoc);
+            MagicUI.addTextNonScaling(ship, infoText, foregroundColor, infoTextLoc, false);
         }
 
         MagicUI.closeGL11ForTextWithinViewport();
@@ -524,25 +506,30 @@ public class CombatUI {
 
         Vector2f sysBarNode = new Vector2f(loc);
 
-        final float length = 354f * MagicUI.UI_SCALING; //354
+        final float length = MagicUI.scale(354f);
+
+        //initial point beneath leftmost point of ship system name, above weapon groups
         sysBarNode.x -= length;
-        sysBarNode.y += 4f * MagicUI.UI_SCALING;
+        sysBarNode.y += MagicUI.scale(4f);
         glVertex2f(sysBarNode.x, sysBarNode.y);
 
-        //sysBarNode.x += length - (16f * MagicUI.UI_SCALING);
-        sysBarNode.x += length - (113f * MagicUI.UI_SCALING);
+        //above weapons groups, below ship system
+        sysBarNode.x += length - MagicUI.scale(113f);
         glVertex2f(sysBarNode.x, sysBarNode.y);
 
-        sysBarNode.x += 20f * MagicUI.UI_SCALING;
-        sysBarNode.y -= 20f * MagicUI.UI_SCALING;
+        //above first weapon group, ends beneath ship system status test and above LINKED/ALTERNATING text
+        sysBarNode.x += MagicUI.scale(20f);
+        sysBarNode.y -= MagicUI.scale(20f);
         glVertex2f(sysBarNode.x, sysBarNode.y);
 
-        sysBarNode.x += (85f - 6f * MagicUI.UI_SCALING);
+        //ends shortly after SUBSYSTEMS text.
+        sysBarNode.x += MagicUI.scale(85f - 6f);
         glVertex2f(sysBarNode.x, sysBarNode.y);
 
-        boolean isTitleHigh = rootLoc.y > loc.y - 16f;
-        sysBarNode.y += (isTitleHigh) ? 6f * MagicUI.UI_SCALING : -6f * MagicUI.UI_SCALING;
-        sysBarNode.x += 6f * MagicUI.UI_SCALING;
+        //tiny diagonal line, intersects with vertical line created by selected weapon group widget
+        boolean isTitleHigh = rootLoc.y > loc.y - MagicUI.scale(16f);
+        sysBarNode.y += MagicUI.scale((isTitleHigh) ? 6f : -6f);
+        sysBarNode.x += MagicUI.scale(6f);
         glVertex2f(sysBarNode.x, sysBarNode.y);
 
         glEnd();
@@ -588,14 +575,6 @@ public class CombatUI {
             SpriteAPI background,
             SpriteDimWrapper shipSprite
     ) {
-        if (mothership != Global.getCombatEngine().getPlayerShip()) {
-            return;
-        }
-
-        if (Global.getCombatEngine().getCombatUI() == null || Global.getCombatEngine().getCombatUI().isShowingCommandUI() || !Global.getCombatEngine().isUIShowingHUD()) {
-            return;
-        }
-
         final Vector2f tileDim = new Vector2f(100f, 20f);
         final Vector2f statusDim = new Vector2f(100f, 12f);
         final Vector2f reserveDim = new Vector2f(12f, 12f);
@@ -603,9 +582,9 @@ public class CombatUI {
         final Vector2f iconDim = new Vector2f(32f, 32f);
         final Vector2f spatialDim = new Vector2f(128f, 128f);
 
-        final Vector2f edgePad = new Vector2f(-16f - reserveDim.x - (2f * MagicUI.UI_SCALING), 16f);
-        edgePad.scale(MagicUI.UI_SCALING);
-        Vector2f start = Vector2f.add(new Vector2f(Global.getSettings().getScreenWidth() * MagicUI.UI_SCALING, 0f), edgePad, new Vector2f());
+        final Vector2f edgePad = new Vector2f(-16f - 2f - reserveDim.x, 16f);
+
+        Vector2f start = Vector2f.add(new Vector2f(Global.getSettings().getScreenWidthPixels(), 0f), edgePad, new Vector2f());
         Vector2f.add(start, MagicSubsystemsManager.getWidgetOffsetVector(), start);
 
         Color colour = (mothership.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
@@ -613,42 +592,41 @@ public class CombatUI {
         Vector2f decoSize = new Vector2f(tileDim.x, tileDim.y + statusDim.y);
 
         // decorator L bar thing
-        decoRender(Color.BLACK, start, new Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), decoSize);
+        decoRender(Color.BLACK, start, new Vector2f(1, -1), decoSize);
         decoRender(colour, start, new Vector2f(0f, 0f), decoSize);
 
         final Vector2f decoPad = new Vector2f(-4f, 4f);
-        decoPad.scale(MagicUI.UI_SCALING);
         Vector2f.add(start, decoPad, start);
 
         // chevrons
-        tileRender(Color.BLACK, start, new Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), tileDim, tiles, extra, text1, true);
+        tileRender(Color.BLACK, start, new Vector2f(1, -1), tileDim, tiles, extra, text1, true);
         float hPad = tileRender(colour, start, new Vector2f(0f, 0f), tileDim, tiles, extra, text1, true);
 
-        final float pad = MagicUI.UI_SCALING * 4f;
+        final float pad = 4f;
         start.y += tileDim.y + pad;
 
         // cooldown bar
         boolean full = reserve >= reserveMax && cooldown > 0.95f;
-        statusRender(Color.BLACK, start, new Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), statusDim, text2, cooldown, hPad, full);
+        statusRender(Color.BLACK, start, new Vector2f(1, -1), statusDim, text2, cooldown, hPad, full);
         statusRender(colour, start, new Vector2f(0f, 0f), statusDim, text2, cooldown, hPad, full);
 
         // reserve squares
         Vector2f reserveStart = new Vector2f(start);
-        reserveRender(Color.BLACK, reserveStart, new Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), reserveDim, reserve, reserveMax);
+        reserveRender(Color.BLACK, reserveStart, new Vector2f(1, -1), reserveDim, reserve, reserveMax);
         reserveRender(colour, reserveStart, new Vector2f(0f, 0f), reserveDim, reserve, reserveMax);
 
         if (numStates > 0) {
             // hexagons, arrow, title text
             start.y += statusDim.y + pad;
-            stateRender(Color.BLACK, start, new Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), stateRender, state, numStates, activeState);
+            stateRender(Color.BLACK, start, new Vector2f(1, -1), stateRender, state, numStates, activeState);
             stateRender(colour, start, new Vector2f(0f, 0f), stateRender, state, numStates, activeState);
 
             // icon
-            start.x += MagicUI.UI_SCALING;
+            start.x += 1;
             start.y += iconDim.y + pad;
-            iconRender(Color.BLACK, icon, start, new Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), iconDim);
+            iconRender(Color.BLACK, icon, start, new Vector2f(1, -1), iconDim);
             iconRender(colour, icon, start, new Vector2f(0f, 0f), iconDim);
-            start.x -= MagicUI.UI_SCALING;
+            start.x -= 1;
         }
 
         // spatial widget
@@ -678,11 +656,9 @@ public class CombatUI {
             ShipAPI mothership,
             SpriteDimWrapper shipSprite
     ) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
         boolean renderBG = !hasRenderedSpatial;
         hasRenderedSpatial = true;
@@ -703,8 +679,9 @@ public class CombatUI {
             float d2s = Vector2f.sub(drone.getLocation(), mothership.getLocation(), new Vector2f()).lengthSquared();
             d2 = Math.max(d2, d2s);
         }
+        float d2Sqrt = (float) Math.sqrt(d2);
 
-        float zoom = 0.4f * dim.x / (float) Math.sqrt(d2);
+        float zoom = 0.4f * dim.x / d2Sqrt;
 
         Vector2f center = new Vector2f(node.x - (dim.x * 0.5f), node.y + (dim.y * 0.5f));
 
@@ -750,30 +727,37 @@ public class CombatUI {
             sprite.sprite.renderAtCenter(x, y);
 
             if (drone.getShield() != null && drone.getShield().isOn()) {
+                Vector2f unscaledCenter = Vector2f.add(start, offset, null);
+                Vector2f.add(unscaledCenter, new Vector2f(-size.x * 0.5f, size.y * 0.5f), unscaledCenter);
+                float unscaledZoom = 0.4f * size.x / d2Sqrt;
+
                 Vector2f droneShieldDiff = Vector2f.sub(drone.getShieldCenterEvenIfNoShield(), mothership.getLocation(), new Vector2f());
-                droneShieldDiff.scale(zoom);
+                droneShieldDiff.scale(unscaledZoom);
                 VectorUtils.rotate(droneShieldDiff, -mothership.getFacing() + 90f);
 
-                float shieldX = droneShieldDiff.x + center.x;
-                float shieldY = droneShieldDiff.y + center.y;
+                float shieldX = droneShieldDiff.x + unscaledCenter.x;
+                float shieldY = droneShieldDiff.y + unscaledCenter.y;
 
-                drawShieldArc(drone, colour, zoom, new Vector2f(shieldX, shieldY), 0.5f, 90f - mothership.getFacing());
+                drawShieldArc(drone, colour, unscaledZoom, new Vector2f(shieldX, shieldY), 0.5f, 90f - mothership.getFacing());
             }
         }
         MagicUI.closeGLForMiscWithinViewport();
     }
 
     /**
-     * Draws a curved line imitating the shield arc of a ship
+     * Draws a curved line imitating the shield arc of a ship.
      *
      * @param ship        Ship
      * @param colour      Colour
      * @param zoom        Zoom mult
-     * @param center      Center loc of ship on hud
+     * @param center      Center loc of ship on HUD.
      * @param alpha       Alpha mult
      * @param angleOffset Angle of shield
      */
     public static void drawShieldArc(ShipAPI ship, Color colour, float zoom, Vector2f center, float alpha, float angleOffset) {
+        Vector2f node = MagicUI.scaledCopy(center);
+        float scaledZoom = MagicUI.scale(zoom);
+
         glColor4f(
                 colour.getRed() / 255f,
                 colour.getGreen() / 255f,
@@ -784,7 +768,7 @@ public class CombatUI {
         List<Vector2f> points = new ArrayList<>();
         float angle = ship.getShield().getActiveArc();
 
-        Vector2f i1 = new Vector2f(ship.getShieldRadiusEvenIfNoShield() * zoom, 0f);
+        Vector2f i1 = new Vector2f(ship.getShieldRadiusEvenIfNoShield() * scaledZoom, 0f);
         VectorUtils.rotate(i1, ship.getShield().getFacing() + (angle * 0.5f) + angleOffset);
 
         int intervals = Math.max(5, (int) (angle / 20f));
@@ -799,19 +783,22 @@ public class CombatUI {
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         glBegin(GL_LINE_STRIP);
         for (Vector2f point : points) {
-            glVertex2f(point.x + center.x, point.y + center.y);
+            glVertex2f(point.x + node.x, point.y + node.y);
         }
         glEnd();
         glDisable(GL_LINE_SMOOTH);
     }
 
     /**
-     * Unused but useful for UI debugging
+     * Unused but useful for UI debugging.
      *
      * @param x X pos
      * @param y Y pos
      */
     public static void drawDot(float x, float y) {
+        x = MagicUI.scale(x);
+        y = MagicUI.scale(y);
+
         glBegin(GL_TRIANGLE_STRIP);
         glVertex2f(x, y + 4f);
         glVertex2f(x - 4f, y);
@@ -823,6 +810,7 @@ public class CombatUI {
     /**
      * Simple wrapper to make drawing sprites easier (not sure why this was necessary, but it is what it is)
      * Only requires an input SpriteAPI
+     * @author tomatopaste
      */
     public static class SpriteDimWrapper {
         public final SpriteAPI sprite;
@@ -850,17 +838,15 @@ public class CombatUI {
     public static void iconRender(Color colour, SpriteAPI sprite, Vector2f start, Vector2f offset, Vector2f size) {
         if (sprite == null) return;
 
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
-        sprite.setSize(size.x, size.y);
+        sprite.setSize(dim.x, dim.y);
         sprite.setColor(colour);
 
         MagicUI.openGLForMiscWithinViewport();
-        sprite.render(node.x, node.y - (size.y * 0.25f));
+        sprite.render(node.x, node.y - (dim.y * 0.25f));
         MagicUI.closeGLForMiscWithinViewport();
     }
 
@@ -876,24 +862,22 @@ public class CombatUI {
      * @param active Index of active state (other hexagons will appear darker)
      */
     public static void stateRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, String text, int num, int active) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
-        float w = num * size.x;
+        float w = num * dim.x;
 
         MagicUI.openGLForMiscWithinViewport();
 
-        float x1 = 0.05f * size.x;
-        float x2 = 0.3f * size.x;
-        float x3 = 0.7f * size.x;
-        float x4 = 0.95f * size.x;
+        float x1 = 0.05f * dim.x;
+        float x2 = 0.3f * dim.x;
+        float x3 = 0.7f * dim.x;
+        float x4 = 0.95f * dim.x;
 
-        float y1 = 0.1f * size.x + node.y;
-        float y2 = 0.5f * size.y + node.y;
-        float y3 = 0.9f * size.y + node.y;
+        float y1 = 0.1f * dim.x + node.y;
+        float y2 = 0.5f * dim.y + node.y;
+        float y3 = 0.9f * dim.y + node.y;
 
         float x = node.x - w;
         for (int i = 0; i < num; i++) {
@@ -917,12 +901,12 @@ public class CombatUI {
 
             glEnd();
 
-            x += size.x;
+            x += dim.x;
         }
 
         float x5 = node.x - w + (0.25f * dim.x);
         float x6 = node.x;
-        float y5 = node.y + dim.y + (2f * MagicUI.UI_SCALING);
+        float y5 = node.y + dim.y + MagicUI.scale(2f);
         float y6 = y5 + MagicUI.UI_SCALING;
 
         glColor4f(
@@ -939,10 +923,10 @@ public class CombatUI {
         glVertex2f(x6, y6);
         glEnd();
 
-        float x7 = (active * size.x) + (0.5f * size.x) + node.x - w;
+        float x7 = (active * dim.x) + (0.5f * dim.x) + node.x - w;
         float x8 = x7 + (dim.x * 0.25f);
         float x9 = x7 - (dim.x * 0.25f);
-        float y7 = y5 + (6f * MagicUI.UI_SCALING);
+        float y7 = y5 + MagicUI.scale(6f);
 
         glBegin(GL_TRIANGLES);
         glVertex2f(x8, y6);
@@ -963,12 +947,12 @@ public class CombatUI {
 
             MagicUI.TODRAW14.setBaseColor(Color.BLACK);
             MagicUI.TODRAW14.draw(tx + x, ty + node.y);
-            x += size.x;
+            x += dim.x;
         }
 
         MagicUI.TODRAW14.setText(text);
         MagicUI.TODRAW14.setBaseColor(colour);
-        MagicUI.TODRAW14.draw(node.x - MagicUI.TODRAW14.getWidth(), node.y + dim.y + (10f * MagicUI.UI_SCALING) + MagicUI.TODRAW14.getHeight());
+        MagicUI.TODRAW14.draw(node.x - MagicUI.TODRAW14.getWidth(), node.y + dim.y + MagicUI.scale(10f) + MagicUI.TODRAW14.getHeight());
 
         MagicUI.closeGL11ForTextWithinViewport();
     }
@@ -984,11 +968,9 @@ public class CombatUI {
      * @param max    Maximum number of reserve drones
      */
     public static void reserveRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, int num, int max) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
         float x1 = node.x + (dim.x * 0.2f);
         float x2 = node.x + (dim.x * 0.8f);
@@ -1016,7 +998,7 @@ public class CombatUI {
             glVertex2f(x2, y + y1);
             glVertex2f(x2, y + y2);
 
-            y += dim.x;
+            y += dim.y;
             glEnd();
         }
 
@@ -1034,15 +1016,18 @@ public class CombatUI {
 
         MagicUI.closeGLForMiscWithinViewport();
 
-        int overflow = Math.max(num - max, 0);
 
-        MagicUI.TODRAW14.setText("+" + overflow);
-        MagicUI.TODRAW14.setBaseColor(colour);
-        float x5 = node.x + (2f * MagicUI.UI_SCALING);
-        float y5 = y + MagicUI.TODRAW14.getHeight() + MagicUI.UI_SCALING;
 
         MagicUI.openGL11ForTextWithinViewport();
-        MagicUI.TODRAW14.draw(x5, y5);
+
+        int overflow = Math.max(num - max, 0);
+        String overflowText = "+" + overflow;
+        MagicUI.TODRAW14.setText(overflowText);
+        float x5 = node.x + MagicUI.scale(2f);
+        float y5 = y + MagicUI.TODRAW14.getHeight() + MagicUI.UI_SCALING;
+
+        MagicUI.addTextNonScaling(null, overflowText, colour, new Vector2f(x5, y5), false);
+
         MagicUI.closeGL11ForTextWithinViewport();
     }
 
@@ -1055,19 +1040,15 @@ public class CombatUI {
      * @param size   Dimensions of HUD element
      */
     private static void decoRender(Color colour, Vector2f start, Vector2f offset, Vector2f size) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
-        final Vector2f decoPad = new Vector2f(-4f, 4f);
-        decoPad.scale(MagicUI.UI_SCALING);
+        final Vector2f decoPad = MagicUI.scaledVector(-4f, 4f);
 
         MagicUI.openGLForMiscWithinViewport();
 
         // edge deco
-
         glBegin(GL_TRIANGLE_STRIP);
 
         glColor4f(
@@ -1094,38 +1075,34 @@ public class CombatUI {
     }
 
     /**
-     * Draws a cooldown bar with text
+     * Draws a cooldown bar with text. Draws "subsystemDroneReservesFullText" in center of bar if "full" is true.
+     * The root location is on the left side of the bar.
      *
      * @param colour Color
-     * @param start  Root location. This isn't scaled by UI scaling.
-     * @param offset Offset from root location. This is scaled by UI scaling.
-     * @param size   Dimensions of element. This is scaled by UI scaling.
+     * @param start  Root location.
+     * @param offset Offset from root location.
+     * @param size   Dimensions of element.
      * @param text   Text
      * @param fill   Fill level of progress bar
      * @param hPad   Additional padding between text and bar.
      * @param full   If the progress bar is full
      */
     public static void statusRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, String text, float fill, float hPad, boolean full) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
         MagicUI.openGL11ForTextWithinViewport();
 
-        final float textPad = 10f * MagicUI.UI_SCALING;
-
-        MagicUI.TODRAW14.setText(text);
-        MagicUI.TODRAW14.setBaseColor(colour);
-
-        float ty = node.y + (int) (dim.y * 0.5f) + (int) (MagicUI.TODRAW14.getHeight() * 0.5f) + 2f;
-
-        MagicUI.TODRAW14.draw(node.x - MagicUI.TODRAW14.getWidth() - dim.x - textPad, ty);
+        final float textPad = MagicUI.scale(10f);
+        float tx = node.x - MagicUI.TODRAW14.getWidth() - dim.x - textPad;
+        float ty = node.y + (int) (dim.y * 0.5f) + (int) (MagicUI.TODRAW14.getHeight() * 0.5f) + MagicUI.scale(2f);
+        Vector2f textPos = new Vector2f(tx, ty);
+        MagicUI.addTextNonScaling(null, text, colour, textPos, false);
 
         MagicUI.closeGL11ForTextWithinViewport();
 
-        Vector2f.add(node, new Vector2f(hPad * MagicUI.UI_SCALING, 0f), null);
+        Vector2f.add(node, MagicUI.scaledVector(hPad, 0f), null);
 
         MagicUI.openGLForMiscWithinViewport();
 
@@ -1153,7 +1130,7 @@ public class CombatUI {
         float y7 = node.y + (dim.y * 0.9f);
         float y8 = y7 - MagicUI.UI_SCALING;
         float x5 = node.x - dim.x;
-        float x6 = x5 + (4f * MagicUI.UI_SCALING);
+        float x6 = x5 + MagicUI.scale(4f);
 
         glBegin(GL_TRIANGLE_STRIP);
         glVertex2f(x5, y5);
@@ -1187,9 +1164,9 @@ public class CombatUI {
      * Also positioned at the leftmost side of text.
      *
      * @param colour Color
-     * @param start  Root location. This isn't scaled by UI scaling.
-     * @param offset Offset from root location. This is scaled by UI scaling.
-     * @param size   Dimensions of element. This is scaled by UI scaling.
+     * @param start  Root location.
+     * @param offset Offset from root location.
+     * @param size   Dimensions of element.
      * @param text   Text
      * @param fill   Fill level of progress bar
      * @param hPad   Additional padding between text and bar.
@@ -1198,23 +1175,15 @@ public class CombatUI {
      */
     public static Vector2f systemlikeStatusRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, String text, float fill, float hPad, boolean full) {
         CombatEngineAPI engine = Global.getCombatEngine();
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f loc = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(loc);
 
         MagicUI.openGL11ForTextWithinViewport();
-
-        final float textPad = hPad * MagicUI.UI_SCALING + 80f * MagicUI.UI_SCALING;
-
-        MagicUI.TODRAW14.setText(text);
-        MagicUI.TODRAW14.setBaseColor(colour);
-        MagicUI.TODRAW14.draw(loc.x, loc.y);
-
+        MagicUI.addTextNonScaling(null, text, colour, loc, false);
         MagicUI.closeGL11ForTextWithinViewport();
 
-        Vector2f.add(loc, new Vector2f( textPad, -3f * MagicUI.UI_SCALING), loc);
+        Vector2f.add(loc, MagicUI.scaledVector(hPad + 80f, -3f), loc);
 
         MagicUI.openGLForMiscWithinViewport();
 
@@ -1259,7 +1228,6 @@ public class CombatUI {
             MagicUI.openGL11ForTextWithinViewport();
 
             MagicUI.TODRAW14.setText(MagicTxt.getString("subsystemDroneReservesFullText"));
-
             MagicUI.TODRAW14.setBaseColor(Color.BLACK);
             MagicUI.TODRAW14.draw((int) (loc.x + dim.x / 2f - MagicUI.TODRAW14.getWidth() / 2f), (int) (loc.y + MagicUI.TODRAW14.getHeight() / 4f));
 
@@ -1283,22 +1251,20 @@ public class CombatUI {
      * @return width of +"extra" text if rendered. otherwise 0
      */
     public static float tileRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, boolean[] tiles, int extra, String text, boolean textOnLeft) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
+        String extraText = "+" + extra;
         float pad = 0f;
         if (extra >= 0) {
-            MagicUI.TODRAW14.setText("+" + extra);
+            MagicUI.TODRAW14.setText(extraText);
             pad = MagicUI.TODRAW14.getWidth();
         }
 
         MagicUI.openGLForMiscWithinViewport();
 
         // chevron tiles
-
         float y1 = node.y + (0.9f * dim.y);
         float y2 = node.y + (0.4f * dim.y);
         float y3 = node.y + (0.1f * dim.y);
@@ -1337,29 +1303,25 @@ public class CombatUI {
 
         MagicUI.openGL11ForTextWithinViewport();
 
-        MagicUI.TODRAW14.setBaseColor(colour);
-
         if (extra >= 0) {
             // extra text
             // TODRAW14 already set
             float x4 = node.x - MagicUI.TODRAW14.getWidth();
             float y4 = MagicUI.TODRAW14.getHeight() + node.y;
-
-            MagicUI.TODRAW14.draw(x4, y4);
+            MagicUI.addTextNonScaling(null, extraText, colour, new Vector2f(x4, y4), false);
         }
 
         if (text != null && !text.isEmpty()) {
-            final float textPad = 10f * MagicUI.UI_SCALING;
-
             MagicUI.TODRAW14.setText(text);
 
+            final float textPad = MagicUI.scale(10f);
             float x5 = node.x + dim.x + pad + textPad + MagicUI.TODRAW14.getWidth();
             if (textOnLeft) {
                 x5 = node.x - dim.x - pad - textPad - MagicUI.TODRAW14.getWidth();
             }
-            float y5 = node.y + (dim.y * 0.5f) + (int) (MagicUI.TODRAW14.getHeight() * 0.5f) + 1f;
+            float y5 = node.y + (dim.y * 0.5f) + (int) (MagicUI.TODRAW14.getHeight() * 0.5f) + MagicUI.UI_SCALING;
 
-            MagicUI.TODRAW14.draw(x5, y5);
+            MagicUI.addTextNonScaling(null, text, colour, new Vector2f(x5, y5), false);
         }
 
         MagicUI.closeGL11ForTextWithinViewport();
@@ -1383,15 +1345,14 @@ public class CombatUI {
      * @return width of +"extra" text if rendered. otherwise 0
      */
     public static float dimRender(Color colour, Vector2f start, Vector2f offset, SpriteDimWrapper dimWrapper, Vector2f size, boolean[] tiles, int extra, String text, boolean textOnLeft) {
-        Vector2f dim = new Vector2f(size);
-        dim.scale(MagicUI.UI_SCALING);
-        offset.scale(MagicUI.UI_SCALING);
-
+        Vector2f dim = MagicUI.scaledCopy(size);
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
+        MagicUI.scale(node);
 
+        String extraText = "+" + extra;
         float pad = 0f;
         if (extra >= 0) {
-            MagicUI.TODRAW14.setText("+" + extra);
+            MagicUI.TODRAW14.setText(extraText);
             pad = MagicUI.TODRAW14.getWidth();
         }
 
@@ -1418,29 +1379,25 @@ public class CombatUI {
 
         MagicUI.openGL11ForTextWithinViewport();
 
-        MagicUI.TODRAW14.setBaseColor(colour);
-
         if (extra >= 0) {
             // extra text
             // TODRAW14 already set
             float x4 = node.x - MagicUI.TODRAW14.getWidth();
             float y4 = MagicUI.TODRAW14.getHeight() + node.y;
-
-            MagicUI.TODRAW14.draw(x4, y4);
+            MagicUI.addTextNonScaling(null, extraText, colour, new Vector2f(x4, y4), false);
         }
 
         if (text != null && !text.isEmpty()) {
-            final float textPad = 10f * MagicUI.UI_SCALING;
-
             MagicUI.TODRAW14.setText(text);
 
+            final float textPad = MagicUI.scale(10f);
             float x5 = node.x + dim.x + pad + textPad + MagicUI.TODRAW14.getWidth();
             if (textOnLeft) {
                 x5 = node.x - dim.x - pad - textPad - MagicUI.TODRAW14.getWidth();
             }
-            float y5 = node.y + (dim.y * 0.5f) + (int) (MagicUI.TODRAW14.getHeight() * 0.5f) + 1f;
+            float y5 = node.y + (dim.y * 0.5f) + (int) (MagicUI.TODRAW14.getHeight() * 0.5f) + MagicUI.UI_SCALING;
 
-            MagicUI.TODRAW14.draw(x5, y5);
+            MagicUI.addTextNonScaling(null, text, colour, new Vector2f(x5, y5), false);
         }
 
         MagicUI.closeGL11ForTextWithinViewport();

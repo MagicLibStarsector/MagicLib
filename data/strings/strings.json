@@ -319,6 +319,9 @@
     "subsystemState_In": "ACTIVE",
     "subsystemState_Active": "ACTIVE",
     "subsystemState_Out": "ACTIVE",
-    "subsystemState_Cooldown": ""
+    "subsystemState_Cooldown": "",
+    "subsystemState_OutOfRange": "OUT OF RANGE",
+    "subsystemState_NoTarget": "NO TARGET",
+    "subsystemState_FluxCapped": "FLUX TOO HIGH",
   }
 }

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
+import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.util.MagicTxt;
@@ -16,6 +17,9 @@ import java.util.Objects;
 
 public abstract class MagicSubsystem {
     public static String BLANK_KEY = "N/A";
+    public static String STATUS_OUT_OF_RANGE = MagicTxt.getString("subsystemState_OutOfRange");
+    public static String STATUS_NO_TARGET = MagicTxt.getString("subsystemState_NoTarget");
+    public static String STATUS_FLUX_TOO_HIGH = MagicTxt.getString("subsystemState_FluxCapped");
 
     protected static int ORDER_MOD_MODULAR = 4;
     protected static int ORDER_MOD_UNIQUE = 5;
@@ -125,6 +129,34 @@ public abstract class MagicSubsystem {
      * @return
      */
     public abstract float getBaseCooldownDuration();
+
+    /**
+     * The subsystem will show "NO TARGET" on the HUD if no target is selected.
+     * Will also prevent system activation.
+     * @return Whether the subsystem requires a target.
+     */
+    public boolean requiresTarget() {
+        return false;
+    }
+
+    /**
+     * The subsystem will show "NO TARGET" on the HUD if a friendly target is selected.
+     * Will also prevent system activation.
+     * @return Whether the subsystem requires a hostile target.
+     */
+    public boolean targetOnlyEnemies() {
+        return true;
+    }
+
+    /**
+     * The subsystem will show "OUT OF RANGE" on the HUD if the selected target is out of range.
+     * Will also prevent system activation.
+     * This is only used if {@link MagicSubsystem#requiresTarget} returns true.
+     * @return the subsystem's range
+     */
+    public float getRange() {
+        return -1f;
+    }
 
     /**
      * Flux cost on activation.
@@ -260,6 +292,8 @@ public abstract class MagicSubsystem {
      * deactivated.
      * Should check for internal parameters, like if state == READY or if the subsystem has charges.
      * This method also checks for flux cost of activating the subsystem.
+     * This method also checks for targets if {@link MagicSubsystem#requiresTarget()} returns true.
+     * This method also checks for system range if it requires a target and {@link MagicSubsystem#getRange()} is equal to or above zero.
      * If overridden, you probably want to call super.
      *
      * @return
@@ -268,6 +302,16 @@ public abstract class MagicSubsystem {
         if (!isToggle() || state == State.READY) {
             if (usesChargesOnActivate() && hasCharges() && charges <= 0) {
                 return false;
+            }
+
+            if (requiresTarget()) {
+                if (ship.getShipTarget() == null) {
+                    return false;
+                } else if (targetOnlyEnemies() && ship.getOwner() == ship.getShipTarget().getOwner()) {
+                    return false;
+                } else if (getRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > getRange()) {
+                    return false;
+                }
             }
 
             if (getFluxCostFlatOnActivation() > 0f) {
@@ -709,35 +753,53 @@ public abstract class MagicSubsystem {
 
     /**
      * Some extra info that displays to the right of the status bar. Always visible if not null/empty.
+     * By default, displays info related to why the system can't be activated.
      * @return extra info
      */
     public String getExtraInfoText() {
+        if (requiresTarget()) {
+            if (ship.getShipTarget() == null) {
+                return STATUS_NO_TARGET;
+            } else if (targetOnlyEnemies() && ship.getOwner() == ship.getShipTarget().getOwner()) {
+                return STATUS_NO_TARGET;
+            } else if (getRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > getRange()) {
+                return STATUS_OUT_OF_RANGE;
+            }
+        }
+
+        if (getFluxCostFlatOnActivation() > 0f) {
+            if (ship.getFluxTracker().getCurrFlux() + getFluxCostFlatOnActivation() >= ship.getFluxTracker().getMaxFlux()) {
+                return STATUS_FLUX_TOO_HIGH;
+            }
+        }
+
+        if (getFluxCostPercentOnActivation() > 0f) {
+            if (ship.getFluxTracker().getCurrFlux() + getFluxCostPercentOnActivation() * ship.getHullSpec().getFluxCapacity() >= ship.getFluxTracker().getMaxFlux()) {
+                return STATUS_FLUX_TOO_HIGH;
+            }
+        }
         return null;
     }
 
     /**
-     * This prints to the left of the status bar, after the name of the subsystem.
-     *
+     * Color of the text to the right of the status bar.
+     * By default, copies the System Can't Be Used Color for when a shipsystem is out of range or needs a target.
+     * @return color of extra info text
+     */
+    public Color getExtraInfoColor() {
+        return getHUDColor().darker().darker();
+    }
+
+    /**
+     * This prints beneath the subsystem bar.
      * @return Ammo text to display.
      */
     public String getAmmoText() {
-        String chargeText = "-";
-        if (this.hasCharges()) {
-            chargeText = String.valueOf(this.charges);
-        }
-        return chargeText;
+        return MagicTxt.getString("subsystemChargesText", String.valueOf(charges));
     }
 
     /**
-     * @return Padding to put after name and before ammo.
-     */
-    public float getNameTextPadding() {
-        return 6f;
-    }
-
-    /**
-     * Prints to the right of the status bar.
-     *
+     * Prints to the left of the status bar.
      * @return state text to display
      */
     public String getStateText() {
@@ -815,10 +877,6 @@ public abstract class MagicSubsystem {
         }
     }
 
-    public String getChargesText() {
-        return MagicTxt.getString("subsystemChargesText", String.valueOf(charges));
-    }
-
     /**
      * Number of "bar heights" that the subsystem needs.
      * By default, 1. For systems with charges, 2.
@@ -851,12 +909,40 @@ public abstract class MagicSubsystem {
             nameText = String.format("%s [%s]", nameText, keyText);
         }
 
+        boolean displayStateText = true;
+        if (requiresTarget()) {
+            if (ship.getShipTarget() == null) {
+                displayStateText = false;
+            } else if (targetOnlyEnemies() && ship.getOwner() == ship.getShipTarget().getOwner()) {
+                displayStateText = false;
+            } else if (getRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > getRange()) {
+                displayStateText = false;
+            }
+        }
+
+        if (getFluxCostFlatOnActivation() > 0f) {
+            if (ship.getFluxTracker().getCurrFlux() + getFluxCostFlatOnActivation() >= ship.getFluxTracker().getMaxFlux()) {
+                displayStateText = false;
+            }
+        }
+
+        if (getFluxCostPercentOnActivation() > 0f) {
+            if (ship.getFluxTracker().getCurrFlux() + getFluxCostPercentOnActivation() * ship.getHullSpec().getFluxCapacity() >= ship.getFluxTracker().getMaxFlux()) {
+                displayStateText = false;
+            }
+        }
+
         String stateText = getStateText();
+        if (!displayStateText) {
+            stateText = null;
+        }
+
         CombatUI.drawSubsystemStatus(
                 ship,
                 getBarFill(),
                 nameText,
                 getExtraInfoText(),
+                getExtraInfoColor(),
                 stateText,
                 keyText,
                 getBriefText(),
@@ -873,7 +959,7 @@ public abstract class MagicSubsystem {
                     false, CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING,
                     CombatUI.STATUS_BAR_WIDTH,
                     chargeInterval.getElapsed() / chargeInterval.getIntervalDuration(),
-                    getChargesText(),
+                    getAmmoText(),
                     null,
                     false, getBarLocationForBarNum(barLoc, 1)
             );
