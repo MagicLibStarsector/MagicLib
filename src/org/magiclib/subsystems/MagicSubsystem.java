@@ -815,6 +815,10 @@ public abstract class MagicSubsystem {
         }
     }
 
+    public String getChargesText() {
+        return MagicTxt.getString("subsystemChargesText", String.valueOf(charges));
+    }
+
     /**
      * Number of "bar heights" that the subsystem needs.
      * By default, 1. For systems with charges, 2.
@@ -869,7 +873,7 @@ public abstract class MagicSubsystem {
                     false, CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING,
                     CombatUI.STATUS_BAR_WIDTH,
                     chargeInterval.getElapsed() / chargeInterval.getIntervalDuration(),
-                    MagicTxt.getString("subsystemChargesText", String.valueOf(charges)),
+                    getChargesText(),
                     null,
                     getBarLocationForBarNum(barLoc, 1)
             );

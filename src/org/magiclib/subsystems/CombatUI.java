@@ -13,6 +13,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.util.MagicTxt;
+import org.magiclib.util.MagicUI;
 
 import java.awt.*;
 import java.util.*;
@@ -76,10 +77,10 @@ public class CombatUI {
 
 
     // Used to determine if the background sprite has been rendered for the spatial ship/drones graph
-    public static boolean hasRendered = false;
+    public static boolean hasRenderedSpatial = false;
 
-    public static boolean getHasRendered() {
-        return hasRendered;
+    public static boolean getHasRenderedSpatial() {
+        return hasRenderedSpatial;
     }
 
     static {
@@ -150,7 +151,7 @@ public class CombatUI {
 
         Vector2f loc = new Vector2f(inputLoc);
 
-//        openGL11ForText();
+        openGL11ForTextWithinViewport();
 
         TODRAW14.setMaxWidth(6969);
 
@@ -216,7 +217,7 @@ public class CombatUI {
             TODRAW14.draw(infoLoc);
         }
 
-//        closeGL11ForText();
+        closeGL11ForTextWithinViewport();
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
@@ -335,12 +336,12 @@ public class CombatUI {
         Vector2f boxLoc = new Vector2f(inputLoc);
         boxLoc.x += fillStartX * UIscaling;
 
-        final float boxHeight = 9f * UIscaling;
+        final float boxHeight = STATUS_BAR_HEIGHT;
         final float boxEndWidth = fillLength * UIscaling;
 
         float boxWidth = boxEndWidth * fillLevel;
 
-        //openGL11ForText();
+        openGL11ForTextWithinViewport();
 
         TODRAW14.setMaxWidth(6969);
 
@@ -360,7 +361,7 @@ public class CombatUI {
             TODRAW14.draw(text2Pos);
         }
 
-        //closeGL11ForText();
+        closeGL11ForTextWithinViewport();
 
         final int width = (int) (Display.getWidth() * Display.getPixelScaleFactor());
         final int height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
@@ -516,7 +517,7 @@ public class CombatUI {
         Vector2f loc = getSubsystemTitleLoc(ship);
         String info = MagicTxt.getString("subsystemInfoText", Keyboard.getKeyName(MagicSubsystemsManager.INSTANCE.getInfoHotkey()));
 
-//        openGL11ForText();
+        openGL11ForTextWithinViewport();
 
 
         Vector2f titleTextLoc = new Vector2f(loc);
@@ -547,9 +548,9 @@ public class CombatUI {
             TODRAW14.draw(infoTextLoc);
         }
 
-//        closeGL11ForText();
-//
-//        openGLForMisc();
+        closeGL11ForTextWithinViewport();
+
+        openGLForMiscWithinViewport();
 
         glLineWidth(UIscaling);
         glBegin(GL_LINE_STRIP);
@@ -580,7 +581,7 @@ public class CombatUI {
 
         glEnd();
 
-//        closeGLForMisc();
+        closeGLForMiscWithinViewport();
     }
 
     /**
@@ -648,15 +649,13 @@ public class CombatUI {
         decoRender(Color.BLACK, start, new Vector2f(UIscaling, -UIscaling), decoSize);
         decoRender(colour, start, new Vector2f(0f, 0f), decoSize);
 
-        Vector2f reserveStart = new Vector2f(start);
-
         final Vector2f decoPad = new Vector2f(-4f, 4f);
         decoPad.scale(UIscaling);
         Vector2f.add(start, decoPad, start);
 
         // chevrons
-        tileRender(Color.BLACK, start, new Vector2f(UIscaling, -UIscaling), tileDim, tiles, extra, text1);
-        float hPad = tileRender(colour, start, new Vector2f(0f, 0f), tileDim, tiles, extra, text1);
+        tileRender(Color.BLACK, start, new Vector2f(UIscaling, -UIscaling), tileDim, tiles, extra, text1, true);
+        float hPad = tileRender(colour, start, new Vector2f(0f, 0f), tileDim, tiles, extra, text1, true);
 
         final float pad = UIscaling * 4f;
         start.y += tileDim.y + pad;
@@ -667,20 +666,23 @@ public class CombatUI {
         statusRender(colour, start, new Vector2f(0f, 0f), statusDim, text2, cooldown, hPad, full);
 
         // reserve squares
+        Vector2f reserveStart = new Vector2f(start);
         reserveRender(Color.BLACK, reserveStart, new Vector2f(UIscaling, -UIscaling), reserveDim, reserve, reserveMax);
         reserveRender(colour, reserveStart, new Vector2f(0f, 0f), reserveDim, reserve, reserveMax);
 
-        // hexagons, arrow, title text
-        start.y += statusDim.y + pad;
-        stateRender(Color.BLACK, start, new Vector2f(UIscaling, -UIscaling), stateRender, state, numStates, activeState);
-        stateRender(colour, start, new Vector2f(0f, 0f), stateRender, state, numStates, activeState);
+        if (numStates > 0) {
+            // hexagons, arrow, title text
+            start.y += statusDim.y + pad;
+            stateRender(Color.BLACK, start, new Vector2f(UIscaling, -UIscaling), stateRender, state, numStates, activeState);
+            stateRender(colour, start, new Vector2f(0f, 0f), stateRender, state, numStates, activeState);
 
-        // icon
-        start.x += UIscaling;
-        start.y += iconDim.y + pad;
-        iconRender(Color.BLACK, icon, start, new Vector2f(UIscaling, -UIscaling), iconDim);
-        iconRender(colour, icon, start, new Vector2f(0f, 0f), iconDim);
-        start.x -= UIscaling;
+            // icon
+            start.x += UIscaling;
+            start.y += iconDim.y + pad;
+            iconRender(Color.BLACK, icon, start, new Vector2f(UIscaling, -UIscaling), iconDim);
+            iconRender(colour, icon, start, new Vector2f(0f, 0f), iconDim);
+            start.x -= UIscaling;
+        }
 
         // spatial widget
         start.y += pad;
@@ -714,11 +716,11 @@ public class CombatUI {
 
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
 
-        boolean renderBG = !hasRendered;
-        hasRendered = true;
+        boolean renderBG = !hasRenderedSpatial;
+        hasRenderedSpatial = true;
 
         if (renderBG) {
-            openGLForMisc();
+            openGLForMiscWithinViewport();
 
             background.setColor(colour);
             background.setAlphaMult(0.08f);
@@ -739,6 +741,9 @@ public class CombatUI {
         Vector2f center = new Vector2f(node.x - (dim.x * 0.5f), node.y + (dim.y * 0.5f));
 
         if (renderBG) {
+            Color baseShipColor = shipSprite.sprite.getColor();
+
+            shipSprite.sprite.setAngle(mothership.getFacing() - 90f);
             shipSprite.sprite.setColor(Color.BLACK);
             shipSprite.sprite.setSize(dim.x * zoom * 1.1f, dim.y * zoom * shipSprite.ratio * 1.1f);
             shipSprite.sprite.renderAtCenter(center.x, center.y);
@@ -746,27 +751,27 @@ public class CombatUI {
             shipSprite.sprite.setColor(colour);
             shipSprite.sprite.setSize(dim.x * zoom, dim.y * zoom * shipSprite.ratio);
             shipSprite.sprite.renderAtCenter(center.x, center.y);
+
+            shipSprite.sprite.setColor(baseShipColor);
+
+            if (mothership.getShield() != null && mothership.getShield().isOn()) {
+                drawShieldArc(mothership, colour, zoom, center, 0.2f, 90f - mothership.getFacing());
+            }
+
+            closeGLForMiscWithinViewport();
         }
 
-        closeGLForMisc();
-
-        openGLForMisc();
-        if (mothership.getShield() != null && mothership.getShield().isOn()) {
-            drawShieldArc(mothership, colour, zoom, center, 0.2f, 90f - mothership.getFacing());
-        }
-        closeGLForMisc();
-
-        openGLForMisc();
+        openGLForMiscWithinViewport();
         for (ShipAPI drone : drones.keySet()) {
             SpriteDimWrapper sprite = drones.get(drone);
 
-            Vector2f d = Vector2f.sub(drone.getLocation(), mothership.getLocation(), new Vector2f());
-            d.scale(zoom);
-            VectorUtils.rotate(d, 90f - mothership.getFacing());
+            Vector2f droneDiff = Vector2f.sub(drone.getLocation(), mothership.getLocation(), new Vector2f());
+            droneDiff.scale(zoom);
+            VectorUtils.rotate(droneDiff, 90f - mothership.getFacing());
 
             sprite.sprite.setAngle(drone.getFacing() - mothership.getFacing());
-            float x = d.x + center.x + (sprite.sprite.getCenterX() * 0.5f);
-            float y = d.y + center.y + (sprite.sprite.getCenterY() * 0.5f);
+            float x = droneDiff.x + center.x + (sprite.sprite.getCenterX() * 0.5f);
+            float y = droneDiff.y + center.y + (sprite.sprite.getCenterY() * 0.5f);
 
             sprite.sprite.setColor(Color.BLACK);
             sprite.sprite.setSize(zoom * sprite.width * 1.05f, zoom * sprite.height * 1.05f);
@@ -775,25 +780,19 @@ public class CombatUI {
             sprite.sprite.setColor(colour);
             sprite.sprite.setSize(zoom * sprite.width, zoom * sprite.height);
             sprite.sprite.renderAtCenter(x, y);
-        }
-        closeGLForMisc();
 
-        openGLForMisc();
-        for (ShipAPI drone : drones.keySet()) {
             if (drone.getShield() != null && drone.getShield().isOn()) {
-                SpriteDimWrapper sprite = drones.get(drone);
+                Vector2f droneShieldDiff = Vector2f.sub(drone.getShieldCenterEvenIfNoShield(), mothership.getLocation(), new Vector2f());
+                droneShieldDiff.scale(zoom);
+                VectorUtils.rotate(droneShieldDiff, -mothership.getFacing() + 90f);
 
-                Vector2f d = Vector2f.sub(drone.getShieldCenterEvenIfNoShield(), mothership.getLocation(), new Vector2f());
-                d.scale(zoom);
-                VectorUtils.rotate(d, -mothership.getFacing() + 90f);
+                float shieldX = droneShieldDiff.x + center.x;
+                float shieldY = droneShieldDiff.y + center.y;
 
-                float x = d.x + center.x;
-                float y = d.y + center.y;
-
-                drawShieldArc(drone, colour, zoom, new Vector2f(x, y), 0.5f, 90f - mothership.getFacing());
+                drawShieldArc(drone, colour, zoom, new Vector2f(shieldX, shieldY), 0.5f, 90f - mothership.getFacing());
             }
         }
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
     }
 
     /**
@@ -889,9 +888,9 @@ public class CombatUI {
         sprite.setSize(size.x, size.y);
         sprite.setColor(colour);
 
-        openGLForMisc();
+        openGLForMiscWithinViewport();
         sprite.render(node.x, node.y - (size.y * 0.25f));
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
     }
 
     /**
@@ -913,7 +912,7 @@ public class CombatUI {
 
         float w = num * size.x;
 
-        openGLForMisc();
+        openGLForMiscWithinViewport();
 
         float x1 = 0.05f * size.x;
         float x2 = 0.3f * size.x;
@@ -979,9 +978,9 @@ public class CombatUI {
         glVertex2f(x9, y6);
         glEnd();
 
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
 
-        openGL11ForText();
+        openGL11ForTextWithinViewport();
 
         x = node.x - w;
         for (int i = 0; i < num; i++) {
@@ -999,7 +998,7 @@ public class CombatUI {
         TODRAW14.setBaseColor(colour);
         TODRAW14.draw(node.x - TODRAW14.getWidth(), node.y + dim.y + (10f * UIscaling) + TODRAW14.getHeight());
 
-        closeGL11ForText();
+        closeGL11ForTextWithinViewport();
     }
 
     /**
@@ -1025,7 +1024,7 @@ public class CombatUI {
 
         float y = node.y;
 
-        openGLForMisc();
+        openGLForMiscWithinViewport();
 
         for (int i = 0; i < max; i++) {
             glBegin(GL_TRIANGLE_STRIP);
@@ -1060,7 +1059,7 @@ public class CombatUI {
         glVertex2f(x4, y4);
         glEnd();
 
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
 
         int overflow = Math.max(num - max, 0);
 
@@ -1069,9 +1068,9 @@ public class CombatUI {
         float x5 = node.x + (2f * UIscaling);
         float y5 = y + TODRAW14.getHeight() + UIscaling;
 
-        openGL11ForText();
+        openGL11ForTextWithinViewport();
         TODRAW14.draw(x5, y5);
-        closeGL11ForText();
+        closeGL11ForTextWithinViewport();
     }
 
     /**
@@ -1091,7 +1090,7 @@ public class CombatUI {
         final Vector2f decoPad = new Vector2f(-4f, 4f);
         decoPad.scale(UIscaling);
 
-        openGLForMisc();
+        openGLForMiscWithinViewport();
 
         // edge deco
 
@@ -1117,18 +1116,18 @@ public class CombatUI {
 
         glEnd();
 
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
     }
 
     /**
      * Draws a cooldown bar with text
      * @param colour Color
-     * @param start Root location
-     * @param offset Offset from root location
-     * @param size Dimensions of element
+     * @param start Root location. This isn't scaled by UI scaling.
+     * @param offset Offset from root location. This is scaled by UI scaling.
+     * @param size Dimensions of element. This is scaled by UI scaling.
      * @param text Text
      * @param fill Fill level of progress bar
-     * @param hPad Horizontal padding for element
+     * @param hPad Additional padding between text and bar.
      * @param full If the progress bar is full
      */
     public static void statusRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, String text, float fill, float hPad, boolean full) {
@@ -1136,24 +1135,24 @@ public class CombatUI {
         dim.scale(UIscaling);
         offset.scale(UIscaling);
 
-        dim.x += hPad;
-
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
 
-        openGL11ForText();
+        openGL11ForTextWithinViewport();
 
         final float textPad = 10f * UIscaling;
 
         TODRAW14.setText(text);
         TODRAW14.setBaseColor(colour);
 
-        float ty = node.y + (dim.y * 0.5f) + (int) (TODRAW14.getHeight() * 0.5f) + 1f;
+        float ty = node.y + (int) (dim.y * 0.5f) + (int) (TODRAW14.getHeight() * 0.5f) + 2f;
 
         TODRAW14.draw(node.x - TODRAW14.getWidth() - dim.x - textPad, ty);
 
-        closeGL11ForText();
+        closeGL11ForTextWithinViewport();
 
-        openGLForMisc();
+        Vector2f.add(node, new Vector2f(hPad * MagicUI.UI_SCALING, 0f), null);
+
+        openGLForMiscWithinViewport();
 
         glColor4f(
                 colour.getRed() / 255f,
@@ -1194,34 +1193,133 @@ public class CombatUI {
         glVertex2f(x6, y8);
         glEnd();
 
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
 
         if (full) {
-            openGL11ForText();
+            openGL11ForTextWithinViewport();
 
-            TODRAW14.setText("reserve full");
+            TODRAW14.setText(MagicTxt.getString("subsystemDroneReservesFullText"));
 
             TODRAW14.setBaseColor(Color.BLACK);
             TODRAW14.draw(node.x - (int) (0.5f * dim.x) - (int) (0.5f * TODRAW14.getWidth()), ty);
 
-            closeGL11ForText();
+            closeGL11ForTextWithinViewport();
         }
     }
 
     /**
-     * @return left text width
+     * Draws a cooldown bar with text. This one fills left-to-right and has the little end bar.
+     * Also positioned at the leftmost side of text.
+     * @param colour Color
+     * @param start Root location. This isn't scaled by UI scaling.
+     * @param offset Offset from root location. This is scaled by UI scaling.
+     * @param size Dimensions of element. This is scaled by UI scaling.
+     * @param text Text
+     * @param fill Fill level of progress bar
+     * @param hPad Additional padding between text and bar.
+     * @param full If the progress bar is full
+     * @return End pos of bar
      */
-    private static float tileRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, boolean[] tiles, int extra, String text) {
+    public static Vector2f systemlikeStatusRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, String text, float fill, float hPad, boolean full) {
+        CombatEngineAPI engine = Global.getCombatEngine();
+        Vector2f dim = new Vector2f(size);
+        dim.scale(UIscaling);
+        offset.scale(UIscaling);
+
+        Vector2f loc = Vector2f.add(start, offset, new Vector2f());
+
+        openGL11ForTextWithinViewport();
+
+        final float textPad = 80f * UIscaling;
+
+        TODRAW14.setText(text);
+        TODRAW14.setBaseColor(colour);
+        TODRAW14.draw(loc.x, loc.y);
+
+        closeGL11ForTextWithinViewport();
+
+        Vector2f.add(loc, new Vector2f(hPad * MagicUI.UI_SCALING + textPad, -3f * MagicUI.UI_SCALING), loc);
+
+        openGLForMiscWithinViewport();
+
+        glColor4f(
+                colour.getRed() / 255f,
+                colour.getGreen() / 255f,
+                colour.getBlue() / 255f,
+                1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity()
+        );
+
+
+        float x1 = loc.x;
+        float y1 = loc.y;
+        float x2 = loc.x + dim.x * fill;
+        float y2 = loc.y - dim.y;
+
+        glBegin(GL_TRIANGLE_STRIP);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x1, y2);
+        glVertex2f(x2, y2);
+        glEnd();
+
+        Vector2f boxEndBarLoc = new Vector2f(loc.x + dim.x, y1);
+
+        glLineWidth(UIscaling);
+        glBegin(GL_LINES);
+        glColor4f(0f, 0f, 0f, 1f - engine.getCombatUI().getCommandUIOpacity());
+        glVertex2f(boxEndBarLoc.x + 1, boxEndBarLoc.y - 1);
+        glVertex2f(boxEndBarLoc.x + 1, boxEndBarLoc.y - dim.y - 1);
+        glEnd();
+
+        glLineWidth(UIscaling);
+        glBegin(GL_LINES);
+        glColor4f(colour.getRed() / 255f, colour.getGreen() / 255f, colour.getBlue() / 255f, 1f - engine.getCombatUI().getCommandUIOpacity());
+        glVertex2f(boxEndBarLoc.x, boxEndBarLoc.y);
+        glVertex2f(boxEndBarLoc.x, boxEndBarLoc.y - dim.y);
+        glEnd();
+
+        closeGLForMiscWithinViewport();
+
+        if (full) {
+            openGL11ForTextWithinViewport();
+
+            TODRAW14.setText(MagicTxt.getString("subsystemDroneReservesFullText"));
+
+            TODRAW14.setBaseColor(Color.BLACK);
+            TODRAW14.draw((int) (loc.x + dim.x / 2f - TODRAW14.getWidth() / 2f), (int) (loc.y + TODRAW14.getHeight() / 4f));
+
+            closeGL11ForTextWithinViewport();
+        }
+
+        return boxEndBarLoc;
+    }
+
+    /**
+     * Renders a series of chevron tiles
+     * @param colour color for rendering
+     * @param start where to start rendering
+     * @param offset offset from start
+     * @param size size of chevrons
+     * @param tiles tile data. false is darker
+     * @param extra number of "extra" drones deployed. if -1, does not render
+     * @param text optional displayed text
+     * @param textOnLeft if true, text is rendered on left
+     * @return width of +"extra" text if rendered. otherwise 0
+     */
+    public static float tileRender(Color colour, Vector2f start, Vector2f offset, Vector2f size, boolean[] tiles, int extra, String text, boolean textOnLeft) {
         Vector2f dim = new Vector2f(size);
         dim.scale(UIscaling);
         offset.scale(UIscaling);
 
         Vector2f node = Vector2f.add(start, offset, new Vector2f());
 
-        TODRAW14.setText("+" + extra);
-        float pad = TODRAW14.getWidth();
+        float pad = 0f;
+        if (extra >= 0) {
+            TODRAW14.setText("+" + extra);
+            pad = TODRAW14.getWidth();
+        }
 
-        openGLForMisc();
+        openGLForMiscWithinViewport();
 
         // chevron tiles
 
@@ -1257,34 +1355,121 @@ public class CombatUI {
             xp += interval;
         }
 
-        closeGLForMisc();
+        closeGLForMiscWithinViewport();
 
         // Text rendering
 
-        openGL11ForText();
+        openGL11ForTextWithinViewport();
 
         TODRAW14.setBaseColor(colour);
 
-        // extra text
-        // TODRAW14 already set
-        float x4 = node.x - TODRAW14.getWidth();
-        float y4 = TODRAW14.getHeight() + node.y;
+        if (extra >= 0) {
+            // extra text
+            // TODRAW14 already set
+            float x4 = node.x - TODRAW14.getWidth();
+            float y4 = TODRAW14.getHeight() + node.y;
 
-        TODRAW14.draw(x4, y4);
+            TODRAW14.draw(x4, y4);
+        }
 
-        final float textPad = 10f * UIscaling;
+        if (text != null && !text.isEmpty()) {
+            final float textPad = 10f * UIscaling;
 
-        TODRAW14.setText(text);
-        float x5 = node.x - dim.x - pad - textPad - TODRAW14.getWidth();
-        float y5 = node.y + (dim.y * 0.5f) + (int) (TODRAW14.getHeight() * 0.5f) + 1f;
+            TODRAW14.setText(text);
 
-        TODRAW14.draw(x5, y5);
+            float x5 = node.x + dim.x + pad + textPad + TODRAW14.getWidth();
+            if (textOnLeft) {
+                x5 = node.x - dim.x - pad - textPad - TODRAW14.getWidth();
+            }
+            float y5 = node.y + (dim.y * 0.5f) + (int) (TODRAW14.getHeight() * 0.5f) + 1f;
 
-        closeGL11ForText();
+            TODRAW14.draw(x5, y5);
+        }
+
+        closeGL11ForTextWithinViewport();
 
         return pad;
     }
 
+
+    /**
+     * Renders a series of dims.
+     * @param colour color for rendering
+     * @param start where to start rendering
+     * @param offset offset from start
+     * @param dimWrapper sprite to render
+     * @param size size of chevrons
+     * @param tiles tile data. false is darker
+     * @param extra number of "extra" drones deployed. if -1, does not render
+     * @param text optional displayed text
+     * @param textOnLeft if true, text is rendered on left
+     * @return width of +"extra" text if rendered. otherwise 0
+     */
+    public static float dimRender(Color colour, Vector2f start, Vector2f offset, SpriteDimWrapper dimWrapper, Vector2f size, boolean[] tiles, int extra, String text, boolean textOnLeft) {
+        Vector2f dim = new Vector2f(size);
+        dim.scale(UIscaling);
+        offset.scale(UIscaling);
+
+        Vector2f node = Vector2f.add(start, offset, new Vector2f());
+
+        float pad = 0f;
+        if (extra >= 0) {
+            TODRAW14.setText("+" + extra);
+            pad = TODRAW14.getWidth();
+        }
+
+        openGLForMiscWithinViewport();
+
+        // chevron tiles
+        dimWrapper.sprite.setSize(dim.x, dim.y);
+
+        float interval = dim.x + pad;
+        float xp = node.x;
+        for (boolean tile : tiles) {
+            float x = xp + interval / 2f;
+            float y = node.y;
+            Color c = tile ? colour : colour.darker().darker();
+            dimWrapper.sprite.setColor(c);
+            dimWrapper.sprite.renderAtCenter(x, y);
+
+            xp += interval;
+        }
+
+        closeGLForMiscWithinViewport();
+
+        // Text rendering
+
+        openGL11ForTextWithinViewport();
+
+        TODRAW14.setBaseColor(colour);
+
+        if (extra >= 0) {
+            // extra text
+            // TODRAW14 already set
+            float x4 = node.x - TODRAW14.getWidth();
+            float y4 = TODRAW14.getHeight() + node.y;
+
+            TODRAW14.draw(x4, y4);
+        }
+
+        if (text != null && !text.isEmpty()) {
+            final float textPad = 10f * UIscaling;
+
+            TODRAW14.setText(text);
+
+            float x5 = node.x + dim.x + pad + textPad + TODRAW14.getWidth();
+            if (textOnLeft) {
+                x5 = node.x - dim.x - pad - textPad - TODRAW14.getWidth();
+            }
+            float y5 = node.y + (dim.y * 0.5f) + (int) (TODRAW14.getHeight() * 0.5f) + 1f;
+
+            TODRAW14.draw(x5, y5);
+        }
+
+        closeGL11ForTextWithinViewport();
+
+        return pad;
+    }
     ///// UTILS /////
 
     /**
@@ -1337,12 +1522,9 @@ public class CombatUI {
      * Taken from MagicLib when it was a private method
      * GL11 to start, when you want render text of Lazyfont.
      */
-    private static void openGL11ForText() {
+    public static void openGL11ForTextWithinViewport() {
         glPushAttrib(GL_ENABLE_BIT);
         glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        glOrtho(0.0, Display.getWidth(), 0.0, Display.getHeight(), -1.0, 1.0);
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1352,10 +1534,10 @@ public class CombatUI {
      * Taken from MagicLib when it was a private method
      * GL11 to close, when you want render text of Lazyfont.
      */
-    private static void closeGL11ForText() {
+    public static void closeGL11ForTextWithinViewport() {
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
-        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
         glPopAttrib();
     }
 
@@ -1363,34 +1545,20 @@ public class CombatUI {
      * @author tomatopaste
      * Sets OpenGL state for rendering in HUD coordinates
      */
-    public static void openGLForMisc() {
-        final int w = (int) (Display.getWidth() * Display.getPixelScaleFactor());
-        final int h = (int) (Display.getHeight() * Display.getPixelScaleFactor());
-
+    public static void openGLForMiscWithinViewport() {
         glPushAttrib(GL_ALL_ATTRIB_BITS);
-        glViewport(0, 0, w, h);
         glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(0, w, 0, h, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glTranslatef(0.01f, 0.01f, 0);
     }
 
     /**
      * @author tomatopaste
      */
-    public static void closeGLForMisc() {
+    public static void closeGLForMiscWithinViewport() {
+        // Finalize drawing
         glDisable(GL_BLEND);
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
         glPopAttrib();
     }
 }

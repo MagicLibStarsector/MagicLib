@@ -63,6 +63,8 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
 
         combatEngine.playerShip?.let { ship ->
             MagicSubsystemsManager.getSubsystemsForShipCopy(ship)?.let { subsystems ->
+                CombatUI.hasRenderedSpatial = false
+
                 val barHeight = 13f
                 var totalBars = subsystems.sumOf { it.numHUDBars }
                 if (displayAdditionalInfo) {

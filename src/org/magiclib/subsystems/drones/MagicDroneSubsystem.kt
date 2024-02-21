@@ -6,15 +6,19 @@ import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipCommand
 import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
+import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.mission.FleetSide
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import org.lazywizard.lazylib.combat.CombatUtils
-import org.lazywizard.lazylib.ui.LazyFont
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.subsystems.CombatUI
+import org.magiclib.subsystems.CombatUI.SpriteDimWrapper
 import org.magiclib.subsystems.MagicSubsystem
 import org.magiclib.subsystems.advanceAndCheckElapsed
+import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicUI
+import java.awt.Color
 
 abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     var activeWings: MutableMap<ShipAPI, PIDController> = LinkedHashMap()
@@ -222,12 +226,16 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
                     var shouldSpawnDrone = dronesToSpawn > 0
                     if (!shouldSpawnDrone) {
                         shouldSpawnDrone =
-                            if ((hasSeparateDroneCharges() && getMaxDroneCharges() == 0) || maxCharges == 0) {
-                                droneCreationInterval.intervalElapsed()
-                            } else if (hasSeparateDroneCharges()) {
-                                droneCharges > 0
-                            } else {
+                            if (hasSeparateDroneCharges()) {
+                                if (getMaxDroneCharges() == 0) {
+                                    droneCreationInterval.intervalElapsed()
+                                } else {
+                                    droneCharges > 0
+                                }
+                            } else if (hasCharges()) {
                                 charges > 0
+                            } else {
+                                droneCreationInterval.intervalElapsed()
                             }
                     }
 
@@ -239,19 +247,29 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
                             dronesToSpawn--
                         } else {
                             if (getFluxCostFlatOnDroneDeployment() > 0f) {
-                                ship.fluxTracker.increaseFlux(getFluxCostFlatOnDroneDeployment(), isHardFluxForDroneDeployment())
+                                ship.fluxTracker.increaseFlux(
+                                    getFluxCostFlatOnDroneDeployment(),
+                                    isHardFluxForDroneDeployment()
+                                )
                             }
 
                             if (getFluxCostPercentOnDroneDeployment() > 0f) {
-                                ship.fluxTracker.increaseFlux(getFluxCostPercentOnDroneDeployment() * ship.hullSpec.fluxCapacity, isHardFluxForDroneDeployment())
+                                ship.fluxTracker.increaseFlux(
+                                    getFluxCostPercentOnDroneDeployment() * ship.hullSpec.fluxCapacity,
+                                    isHardFluxForDroneDeployment()
+                                )
                             }
 
-                            if ((hasSeparateDroneCharges() && getMaxDroneCharges() == 0) || maxCharges == 0) {
-                                droneCreationInterval.advance(0f) //reset interval
-                            } else if (hasSeparateDroneCharges()) {
-                                droneCharges--
-                            } else {
+                            if (hasSeparateDroneCharges()) {
+                                if (getMaxDroneCharges() == 0) {
+                                    droneCreationInterval.advance(0f) //reset interval
+                                } else {
+                                    droneCharges--
+                                }
+                            } else if (hasCharges()) {
                                 charges--
+                            } else {
+                                droneCreationInterval.advance(0f) //reset interval
                             }
                         }
                     }
@@ -321,67 +339,156 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
         return super.getBarFill()
     }
 
+    open fun getDroneHUDBackground(): SpriteAPI {
+        return Global.getSettings().getSprite("systemMap", "icon_stable_location")
+    }
+
+    open fun getDroneDimWrapper(): SpriteDimWrapper {
+        return SpriteDimWrapper(Global.getSettings().getSprite("warroom", "icon_fighter"))
+    }
+
+    open fun getDroneName(): String {
+        return Global.getSettings().getFighterWingSpec(getDroneVariant())?.wingName
+            ?: Global.getSettings().getVariant(getDroneVariant())?.displayName
+            ?: displayText
+    }
+
+    override fun getNumHUDBars(): Int {
+        return super.getNumHUDBars() + 1
+    }
+
     override fun drawHUDBar(
         viewport: ViewportAPI,
         rootLoc: Vector2f,
         barLoc: Vector2f,
         displayAdditionalInfo: Boolean
     ) {
-        var barLoc = barLoc
-        MagicUI.setTextAligned(LazyFont.TextAlignment.LEFT)
+        super.drawHUDBar(viewport, rootLoc, barLoc, displayAdditionalInfo)
 
-        val nameText: String
-        val keyText = keyText
-        nameText = if (keyText.isNotEmpty()) {
-            String.format("%s (%s)", displayText, keyText)
+        val colour = if (ship.isAlive) hudColor else CombatUI.BLUCOLOR
+
+        var forgeCooldown: Float
+        val reserveCharges: Int
+        val reserveMaxCharges: Int
+
+        if (hasSeparateDroneCharges()) {
+            forgeCooldown = droneCreationInterval.elapsed / droneCreationInterval.intervalDuration
+            reserveCharges = droneCharges
+            reserveMaxCharges = getMaxDroneCharges()
+        } else if (hasCharges()) {
+            forgeCooldown = chargeInterval.elapsed / chargeInterval.intervalDuration
+            reserveCharges = charges
+            reserveMaxCharges = maxCharges
         } else {
-            String.format("%s", displayText)
+            forgeCooldown = droneCreationInterval.elapsed / droneCreationInterval.intervalDuration
+            reserveCharges = 0
+            reserveMaxCharges = 0
         }
 
-        val nameWidth = MagicUI.getTextWidth(nameText)
-        MagicUI.addText(ship, nameText, hudColor, Vector2f.add(barLoc, Vector2f(0f, 10f), null), false)
+        if (reserveCharges == reserveMaxCharges) {
+            forgeCooldown = 1f
+        }
 
-        barLoc = Vector2f.add(barLoc, Vector2f(nameWidth + nameTextPadding + 2f, 0f), null)
+        val chevronRow = if (hasCharges()) 2 else 1
+        var chevronRowPos = getBarLocationForBarNum(barLoc, chevronRow)
+        Vector2f.add(chevronRowPos, Vector2f(CombatUI.INFO_TEXT_PADDING, 0f), chevronRowPos)
 
-        val ammoWidth = MagicUI.getTextWidth(ammoText)
-        MagicUI.addText(
-            ship,
-            ammoText, hudColor, Vector2f.add(barLoc, Vector2f(0f, 10f), null), false
+        val forgeText = if (reserveMaxCharges > 0) {
+            MagicTxt.getString("subsystemDroneForgeText", reserveCharges.toString())
+        } else {
+            MagicTxt.getString("subsystemDroneForgeNoChargesText")
+        }
+        val forgeBarDim = Vector2f(CombatUI.STATUS_BAR_WIDTH, CombatUI.STATUS_BAR_HEIGHT)
+
+        // cooldown bar
+        val full = reserveCharges >= reserveMaxCharges && forgeCooldown > 0.95f
+        CombatUI.systemlikeStatusRender(
+            Color.BLACK,
+            chevronRowPos,
+            Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING),
+            forgeBarDim,
+            forgeText,
+            forgeCooldown,
+            0f,
+            false
         )
 
-        barLoc = Vector2f.add(barLoc, Vector2f(ammoWidth - 2f, 0f), null)
-
-        val stateText = stateText
-        if (!stateText.isEmpty()) {
-            MagicUI.addText(
-                ship, getStateText(),
-                hudColor, Vector2f.add(barLoc, Vector2f((12 + 4 + 59).toFloat(), 10f), null), false
-            )
-        }
-
-        MagicUI.addBar(
-            ship,
-            barFill, hudColor, hudColor, 0f, Vector2f.add(barLoc, Vector2f(12f, 0f), null)
+        chevronRowPos = CombatUI.systemlikeStatusRender(
+            colour,
+            chevronRowPos,
+            Vector2f(0f, 0f),
+            forgeBarDim,
+            forgeText,
+            forgeCooldown,
+            2f,
+            full
         )
 
-        if ((hasSeparateDroneCharges() && getMaxDroneCharges() > 0) || (!usesChargesOnActivate() && maxCharges > 0)) {
-            val droneBarPadding = 1 * MagicUI.UI_SCALING
-            val droneBarWidth =
-                ((59 * MagicUI.UI_SCALING - droneBarPadding * (getMaxDroneCharges() - 1)) / getMaxDroneCharges()).coerceAtLeast(
-                    1f
-                )
+        val droneIconDim = Vector2f(16f * MagicUI.UI_SCALING, 18f * MagicUI.UI_SCALING)
+        Vector2f.add(chevronRowPos, Vector2f(16f * MagicUI.UI_SCALING, 0f), chevronRowPos)
 
-            val max = (droneCharges + 1).coerceAtMost(getMaxDroneCharges())
-            for (i in 0 until max) {
-                val droneBarPos =
-                    Vector2f.add(barLoc, Vector2f(12f + droneBarWidth * i + droneBarPadding * i, -2 * MagicUI.UI_SCALING), null)
-                val droneBarFill =
-                    if (droneCharges < getMaxDroneCharges() && i == max - 1) droneCreationInterval.elapsed / droneCreationInterval.intervalDuration else 1f
-                MagicUI.addBar(
-                    ship,
-                    droneBarFill, hudColor, hudColor, 0f, droneBarPos, 2 * MagicUI.UI_SCALING, droneBarWidth, false
-                )
-            }
+        val aliveDrones = activeWings.size
+        val deadDrones = getMaxDeployedDrones() - aliveDrones
+
+        val aliveIconPos = Vector2f.add(chevronRowPos, Vector2f(0f, -droneIconDim.y / 2f), null)
+        CombatUI.iconRender(Color.BLACK, getDroneDimWrapper().sprite, aliveIconPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), droneIconDim)
+        CombatUI.iconRender(hudColor, getDroneDimWrapper().sprite, aliveIconPos, Vector2f(0f, 0f), droneIconDim)
+
+        val aliveCountPos = Vector2f.add(aliveIconPos, Vector2f(droneIconDim.x - 2f * MagicUI.UI_SCALING, droneIconDim.y / 2f + 2f * MagicUI.UI_SCALING), null)
+        CombatUI.openGL11ForTextWithinViewport()
+        Vector2f.add(aliveCountPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), aliveCountPos)
+        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", aliveDrones.toString()), Color.BLACK, aliveCountPos, false)
+        Vector2f.add(aliveCountPos, Vector2f(-MagicUI.UI_SCALING, MagicUI.UI_SCALING), aliveCountPos)
+        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", aliveDrones.toString()), hudColor, aliveCountPos, false)
+        CombatUI.closeGL11ForTextWithinViewport()
+
+        Vector2f.add(chevronRowPos, Vector2f(droneIconDim.x + 20f * MagicUI.UI_SCALING, 0f), chevronRowPos)
+
+        val deadIconPos = Vector2f.add(chevronRowPos, Vector2f(0f, -droneIconDim.y / 2f), null)
+        CombatUI.iconRender(Color.BLACK, getDroneDimWrapper().sprite, deadIconPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), droneIconDim)
+        CombatUI.iconRender(hudColor.darker().darker(), getDroneDimWrapper().sprite, deadIconPos, Vector2f(0f, 0f), droneIconDim)
+
+        val deadCountPos = Vector2f.add(deadIconPos, Vector2f(droneIconDim.x - 2f * MagicUI.UI_SCALING, droneIconDim.y / 2f + 2f * MagicUI.UI_SCALING), null)
+        CombatUI.openGL11ForTextWithinViewport()
+        Vector2f.add(deadCountPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), deadCountPos)
+        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", deadDrones.toString()), Color.BLACK, deadCountPos, false)
+        Vector2f.add(deadCountPos, Vector2f(-MagicUI.UI_SCALING, MagicUI.UI_SCALING), deadCountPos)
+        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", deadDrones.toString()), hudColor, deadCountPos, false)
+        CombatUI.closeGL11ForTextWithinViewport()
+
+
+        // chevrons for alive wings
+        /*
+        var aliveDrones = booleanArrayOf()
+        for (i in 0 until getMaxDeployedDrones()) {
+            aliveDrones = aliveDrones.plus(i < activeWings.size)
         }
+
+        Vector2f.add(chevronRowPos, Vector2f(4f * MagicUI.UI_SCALING, 5f * MagicUI.UI_SCALING), chevronRowPos)
+        val tileDim = Vector2f(CombatUI.BAR_HEIGHT, CombatUI.BAR_HEIGHT)
+
+        CombatUI.dimRender(
+            Color.BLACK,
+            chevronRowPos,
+            Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING),
+            getDroneDimWrapper(),
+            tileDim,
+            aliveDrones,
+            -1,
+            null,
+            true
+        )
+
+        CombatUI.dimRender(
+            colour,
+            chevronRowPos,
+            Vector2f(0f, 0f),
+            getDroneDimWrapper(),
+            tileDim,
+            aliveDrones,
+            -1,
+            null,
+            true)
+         */
     }
 }
