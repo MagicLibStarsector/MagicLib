@@ -17,6 +17,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
+import static org.lwjgl.opengl.GL11.*;
+
 /**
  * Draws a small UI charge-bar/tick box next to the normal ship-system for special systems.
  *
@@ -32,20 +34,20 @@ public class MagicUI {
     public static DrawableString TODRAW14;
     public static DrawableString TODRAW10;
 
+    public static final Vector2f SYSTEMBARVEC1 = new Vector2f(0, 0);
+    public static final Vector2f SYSTEMBARVEC2 = new Vector2f(29f, 58f);
+    public static final Vector2f PERCENTBARVEC1 = new Vector2f(21f, 0f); // Just 21 pixel of width of difference.
+    public static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
+    public static final Vector2f PERCENTBARPAD = new Vector2f(0, 14f);
+
+    public static final float UI_SCALING = Global.getSettings().getScreenScaleMult();
+
     private static final Map<String, StatusBarData> statusBars = new LinkedHashMap<>();
     private static Color lastColor;
     private static float lastUpdate;
     private static long dialogTime = 0;
     private static long commandTime = 0;
     private static long hudTime = 0;
-
-    private static final Vector2f SYSTEMBARVEC1 = new Vector2f(0, 0);
-    private static final Vector2f SYSTEMBARVEC2 = new Vector2f(29f, 58f);
-    private static final Vector2f PERCENTBARVEC1 = new Vector2f(21f, 0f); // Just 21 pixel of width of difference.
-    private static final Vector2f PERCENTBARVEC2 = new Vector2f(50f, 58f);
-    private static final Vector2f PERCENTBARPAD = new Vector2f(0, 14f);
-
-    public static final float UI_SCALING = Global.getSettings().getScreenScaleMult();
 
 
     static {
@@ -56,10 +58,11 @@ public class MagicUI {
         try {
             LazyFont fontdraw = LazyFont.loadFont("graphics/fonts/victor14.fnt");
             TODRAW14 = fontdraw.createText();
+            //TODRAW14.setFontSize(14 * UI_SCALING);
 
             fontdraw = LazyFont.loadFont("graphics/fonts/victor10.fnt");
             TODRAW10 = fontdraw.createText();
-
+            //TODRAW10.setFontSize(14 * UI_SCALING);
         } catch (FontException ex) {
         }
     }
@@ -701,7 +704,7 @@ public class MagicUI {
      * @param vec2    Vector2f used if there are wings but less than 2 weapon groups.
      * @return the offset.
      */
-    private static Vector2f getUIElementOffset(ShipAPI ship, ShipVariantAPI variant, Vector2f vec1, Vector2f vec2) {
+    public static Vector2f getUIElementOffset(ShipAPI ship, ShipVariantAPI variant, Vector2f vec1, Vector2f vec2) {
         int numEntries = 0;
         final List<WeaponGroupSpec> weaponGroups = variant.getWeaponGroups();
         final List<WeaponAPI> usableWeapons = ship.getUsableWeapons();
@@ -839,6 +842,7 @@ public class MagicUI {
      * @param ship   The player ship died or alive.
      * @param number The number displayed, bounded per the method to 0 at 999
      *               999.
+     * @param numberPos where to draw the number
      */
     public static void addInterfaceStatusNumber(ShipAPI ship, int number, Vector2f numberPos) {
         if (ship != Global.getCombatEngine().getPlayerShip()) {
@@ -1020,7 +1024,7 @@ public class MagicUI {
      * @param ship      The player ship.
      * @param text      Text to display.
      * @param textColor The color of the text
-     * @param screenPos The position on the Screen.
+     * @param screenPos The position on the Screen. Should not be scaled to UI Scaling.
      * @param openGLStack whether to open an OpenGL11 stack for the text
      */
     public static void addText(ShipAPI ship, String text, Color textColor, Vector2f screenPos, boolean openGLStack) {
@@ -1031,7 +1035,7 @@ public class MagicUI {
 
         float alpha = getUIAlpha();
 
-        Color shadowcolor = new Color(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
+        Color shadowColor = new Color(Color.BLACK.getRed() / 255f, Color.BLACK.getGreen() / 255f, Color.BLACK.getBlue() / 255f,
                 1f - Global.getCombatEngine().getCombatUI().getCommandUIOpacity());
         Color color = new Color(borderCol.getRed() / 255f, borderCol.getGreen() / 255f, borderCol.getBlue() / 255f,
                 alpha * (borderCol.getAlpha() / 255f)
@@ -1043,7 +1047,6 @@ public class MagicUI {
         if (UI_SCALING != 1) {
             boxLoc.scale(UI_SCALING);
             shadowLoc.scale(UI_SCALING);
-            TODRAW14.setFontSize(14 * UI_SCALING);
         }
 
         if (openGLStack) {
@@ -1053,7 +1056,7 @@ public class MagicUI {
         TODRAW14.setMaxWidth(4600 * UI_SCALING);
         TODRAW14.setMaxHeight(14 * UI_SCALING);
         TODRAW14.setText(text);
-        TODRAW14.setColor(shadowcolor);
+        TODRAW14.setColor(shadowColor);
         TODRAW14.draw(shadowLoc);
         TODRAW14.setColor(color);
         TODRAW14.draw(boxLoc);
@@ -1257,5 +1260,49 @@ public class MagicUI {
             alpha = Misc.interpolate(0f, 1f, Math.min((hudTime - commandTime) / COMMAND_FADE_IN_TIME, 1f));
         }
         return MathUtils.clamp(alpha, 0f, 1f);
+    }
+
+    /**
+     * Taken from MagicLib when it was a private method
+     * GL11 to start, when you want render text of Lazyfont.
+     */
+    public static void openGL11ForTextWithinViewport() {
+        glPushAttrib(GL_ENABLE_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    /**
+     * Taken from MagicLib when it was a private method
+     * GL11 to close, when you want render text of Lazyfont.
+     */
+    public static void closeGL11ForTextWithinViewport() {
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glMatrixMode(GL_MODELVIEW);
+        glPopAttrib();
+    }
+
+    /**
+     * @author tomatopaste
+     * Sets OpenGL state for rendering in HUD coordinates
+     */
+    public static void openGLForMiscWithinViewport() {
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glMatrixMode(GL_PROJECTION);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    /**
+     * @author tomatopaste
+     */
+    public static void closeGLForMiscWithinViewport() {
+        // Finalize drawing
+        glDisable(GL_BLEND);
+        glPopAttrib();
     }
 }

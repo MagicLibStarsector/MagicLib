@@ -344,7 +344,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     }
 
     open fun getDroneDimWrapper(): SpriteDimWrapper {
-        return SpriteDimWrapper(Global.getSettings().getSprite("warroom", "icon_fighter"))
+        return SpriteDimWrapper(Global.getSettings().getSprite("ui", "ship_arrow"))
     }
 
     open fun getDroneName(): String {
@@ -354,7 +354,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     }
 
     override fun getNumHUDBars(): Int {
-        return super.getNumHUDBars() + 1
+        return super.getNumHUDBars() + 2
     }
 
     override fun drawHUDBar(
@@ -365,7 +365,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     ) {
         super.drawHUDBar(viewport, rootLoc, barLoc, displayAdditionalInfo)
 
-        val colour = if (ship.isAlive) hudColor else CombatUI.BLUCOLOR
+        val colour = if (ship.isAlive) hudColor else MagicUI.BLUCOLOR
 
         var forgeCooldown: Float
         val reserveCharges: Int
@@ -385,86 +385,40 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
             reserveMaxCharges = 0
         }
 
-        if (reserveCharges == reserveMaxCharges) {
-            forgeCooldown = 1f
-        }
-
-        val chevronRow = if (hasCharges()) 2 else 1
-        var chevronRowPos = getBarLocationForBarNum(barLoc, chevronRow)
-        Vector2f.add(chevronRowPos, Vector2f(CombatUI.INFO_TEXT_PADDING, 0f), chevronRowPos)
-
         val forgeText = if (reserveMaxCharges > 0) {
             MagicTxt.getString("subsystemDroneForgeText", reserveCharges.toString())
         } else {
             MagicTxt.getString("subsystemDroneForgeNoChargesText")
         }
-        val forgeBarDim = Vector2f(CombatUI.STATUS_BAR_WIDTH, CombatUI.STATUS_BAR_HEIGHT)
+        var textOnLeft: String? = null
+        if (reserveCharges == reserveMaxCharges && reserveMaxCharges != 0) {
+            forgeCooldown = 0f
+            textOnLeft = MagicTxt.getString("subsystemDroneReservesFullText")
+        }
 
-        // cooldown bar
-        val full = reserveCharges >= reserveMaxCharges && forgeCooldown > 0.95f
-        CombatUI.systemlikeStatusRender(
-            Color.BLACK,
-            chevronRowPos,
-            Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING),
-            forgeBarDim,
-            forgeText,
+        val chevronRow = if (hasCharges()) 2 else 1
+        val chevronRowPos = getBarLocationForBarNum(barLoc, chevronRow)
+
+        CombatUI.renderAuxiliaryStatusBar(
+            ship,
+            CombatUI.INFO_TEXT_PADDING,
+            false,
+            CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING,
+            CombatUI.STATUS_BAR_WIDTH,
             forgeCooldown,
-            0f,
-            false
-        )
-
-        chevronRowPos = CombatUI.systemlikeStatusRender(
-            colour,
-            chevronRowPos,
-            Vector2f(0f, 0f),
-            forgeBarDim,
             forgeText,
-            forgeCooldown,
-            2f,
-            full
+            textOnLeft,
+            true,
+            chevronRowPos
         )
-
-        val droneIconDim = Vector2f(16f * MagicUI.UI_SCALING, 18f * MagicUI.UI_SCALING)
-        Vector2f.add(chevronRowPos, Vector2f(16f * MagicUI.UI_SCALING, 0f), chevronRowPos)
-
-        val aliveDrones = activeWings.size
-        val deadDrones = getMaxDeployedDrones() - aliveDrones
-
-        val aliveIconPos = Vector2f.add(chevronRowPos, Vector2f(0f, -droneIconDim.y / 2f), null)
-        CombatUI.iconRender(Color.BLACK, getDroneDimWrapper().sprite, aliveIconPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), droneIconDim)
-        CombatUI.iconRender(hudColor, getDroneDimWrapper().sprite, aliveIconPos, Vector2f(0f, 0f), droneIconDim)
-
-        val aliveCountPos = Vector2f.add(aliveIconPos, Vector2f(droneIconDim.x - 2f * MagicUI.UI_SCALING, droneIconDim.y / 2f + 2f * MagicUI.UI_SCALING), null)
-        CombatUI.openGL11ForTextWithinViewport()
-        Vector2f.add(aliveCountPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), aliveCountPos)
-        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", aliveDrones.toString()), Color.BLACK, aliveCountPos, false)
-        Vector2f.add(aliveCountPos, Vector2f(-MagicUI.UI_SCALING, MagicUI.UI_SCALING), aliveCountPos)
-        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", aliveDrones.toString()), hudColor, aliveCountPos, false)
-        CombatUI.closeGL11ForTextWithinViewport()
-
-        Vector2f.add(chevronRowPos, Vector2f(droneIconDim.x + 20f * MagicUI.UI_SCALING, 0f), chevronRowPos)
-
-        val deadIconPos = Vector2f.add(chevronRowPos, Vector2f(0f, -droneIconDim.y / 2f), null)
-        CombatUI.iconRender(Color.BLACK, getDroneDimWrapper().sprite, deadIconPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), droneIconDim)
-        CombatUI.iconRender(hudColor.darker().darker(), getDroneDimWrapper().sprite, deadIconPos, Vector2f(0f, 0f), droneIconDim)
-
-        val deadCountPos = Vector2f.add(deadIconPos, Vector2f(droneIconDim.x - 2f * MagicUI.UI_SCALING, droneIconDim.y / 2f + 2f * MagicUI.UI_SCALING), null)
-        CombatUI.openGL11ForTextWithinViewport()
-        Vector2f.add(deadCountPos, Vector2f(MagicUI.UI_SCALING, -MagicUI.UI_SCALING), deadCountPos)
-        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", deadDrones.toString()), Color.BLACK, deadCountPos, false)
-        Vector2f.add(deadCountPos, Vector2f(-MagicUI.UI_SCALING, MagicUI.UI_SCALING), deadCountPos)
-        MagicUI.addText(ship, MagicTxt.getString("subsystemDroneCountText", deadDrones.toString()), hudColor, deadCountPos, false)
-        CombatUI.closeGL11ForTextWithinViewport()
-
 
         // chevrons for alive wings
-        /*
         var aliveDrones = booleanArrayOf()
         for (i in 0 until getMaxDeployedDrones()) {
             aliveDrones = aliveDrones.plus(i < activeWings.size)
         }
 
-        Vector2f.add(chevronRowPos, Vector2f(4f * MagicUI.UI_SCALING, 5f * MagicUI.UI_SCALING), chevronRowPos)
+        Vector2f.add(chevronRowPos, Vector2f(0f, 6f * MagicUI.UI_SCALING - CombatUI.BAR_HEIGHT * 2f), chevronRowPos)
         val tileDim = Vector2f(CombatUI.BAR_HEIGHT, CombatUI.BAR_HEIGHT)
 
         CombatUI.dimRender(
@@ -489,6 +443,6 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
             -1,
             null,
             true)
-         */
+
     }
 }

@@ -875,7 +875,7 @@ public abstract class MagicSubsystem {
                     chargeInterval.getElapsed() / chargeInterval.getIntervalDuration(),
                     getChargesText(),
                     null,
-                    getBarLocationForBarNum(barLoc, 1)
+                    false, getBarLocationForBarNum(barLoc, 1)
             );
         }
     }

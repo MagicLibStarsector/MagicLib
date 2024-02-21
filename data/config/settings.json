@@ -49,6 +49,9 @@
       "achievement_orange": "graphics/magic/icons/achievement_orange2.png",
       "magicPaintjobs": "graphics/magic/hullmods/paintjob.png",
       "magicLibIcon": "graphics/magic/icons/magicLibIcon.png",
+    },
+    "ui": {
+      "ship_arrow": "graphics/warroom/ship_arrow.png"
     }
   },
   "ruleCommandPackages": [
