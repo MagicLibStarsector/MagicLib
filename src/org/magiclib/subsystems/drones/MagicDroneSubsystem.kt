@@ -74,7 +74,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     }
 
     /**
-     * This is useful if you want a charged activator to use while allowing drones to have their own set of charges.
+     * This is useful if you want a charged subsystem to use while allowing drones to have their own set of charges that recharge in parallel.
      */
     open fun hasSeparateDroneCharges(): Boolean {
         return false

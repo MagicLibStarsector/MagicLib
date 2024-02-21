@@ -8,13 +8,13 @@ import org.magiclib.subsystems.MagicSubsystem;
 
 import java.awt.*;
 
-public class ChargedDriveActivator extends MagicSubsystem {
+public class ChargedDriveSubsystem extends MagicSubsystem {
     private static final float ESTIMATED_DRIVE_RANGE = 400f;
     private static final Color engineColor = new Color(0x00FF80);
 
     private float speedBoost = 0f;
 
-    public ChargedDriveActivator(ShipAPI ship) {
+    public ChargedDriveSubsystem(ShipAPI ship) {
         super(ship);
     }
 

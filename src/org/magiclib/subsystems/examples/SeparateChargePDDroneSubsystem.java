@@ -8,8 +8,8 @@ import com.fs.starfarer.api.combat.ShipAPI;
  * Spawns two PD drones. The drones are on a separate charge interval than the activator itself. Activation speeds
  * up the formation's spin speed for a short time, and has two charges.
  */
-public class SeparateChargePDDroneActivator extends MagicDroneSubsystem {
-    public SeparateChargePDDroneActivator(ShipAPI ship) {
+public class SeparateChargePDDroneSubsystem extends MagicDroneSubsystem {
+    public SeparateChargePDDroneSubsystem(ShipAPI ship) {
         super(ship);
     }
 

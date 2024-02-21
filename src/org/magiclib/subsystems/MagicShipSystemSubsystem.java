@@ -5,11 +5,14 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ShipSystemSpecAPI;
 import com.fs.starfarer.api.plugins.ShipSystemStatsScript;
 
-public abstract class ShipSystemActivator extends MagicSubsystem {
+/**
+ * Calls relevant hooks in a ship system.
+ */
+public abstract class MagicShipSystemSubsystem extends MagicSubsystem {
     private ShipSystemSpecAPI systemSpec = Global.getSettings().getShipSystemSpec(getShipSystemId());
     private ShipSystemStatsScript system = systemSpec.getStatsScript();
 
-    public ShipSystemActivator(ShipAPI ship) {
+    public MagicShipSystemSubsystem(ShipAPI ship) {
         super(ship);
     }
 

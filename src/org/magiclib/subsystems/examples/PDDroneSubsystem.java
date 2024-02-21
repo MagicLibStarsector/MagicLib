@@ -6,8 +6,8 @@ import com.fs.starfarer.api.combat.ShipAPI;
 /**
  * Spawns a PD drone. Has no usable key and doesn't take a key index.
  */
-public class PDDroneActivator extends MagicDroneSubsystem {
-    public PDDroneActivator(ShipAPI ship) {
+public class PDDroneSubsystem extends MagicDroneSubsystem {
+    public PDDroneSubsystem(ShipAPI ship) {
         super(ship);
     }
 

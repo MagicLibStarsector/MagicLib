@@ -8,8 +8,8 @@ import com.fs.starfarer.api.combat.ShipAPI;
 /**
  * Spawns four PD drones. The formation can be switched by key.
  */
-public class FormationSwitchPDDroneActivator extends MagicDroneSubsystem {
-    public FormationSwitchPDDroneActivator(ShipAPI ship) {
+public class FormationSwitchPDDroneSubsystem extends MagicDroneSubsystem {
+    public FormationSwitchPDDroneSubsystem(ShipAPI ship) {
         super(ship);
     }
 
