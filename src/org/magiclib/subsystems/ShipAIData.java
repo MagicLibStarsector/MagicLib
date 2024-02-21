@@ -19,6 +19,7 @@ public class ShipAIData {
 
     /**
      * If the ship is a fighter and is returning
+     *
      * @return
      */
     public boolean isFighterReturning() {
@@ -32,6 +33,7 @@ public class ShipAIData {
     /**
      * Returns the maximum range of all non-missile weapons on the ship, or a minimum of 1000.
      * If this is a fighter, returns 500f if the fighter is returning, otherwise returns the attack run range determined by the spec.
+     *
      * @return see above
      */
     public float getEngagementRange() {
@@ -111,8 +113,9 @@ public class ShipAIData {
      * If ship is accelerating forwards, the vector points more forwards
      * If strafing, the vector points more towards direction of strafe
      * If decelerating or moving backwards, the vector points more backwards
-     *
+     * <p>
      * These rules combine to make a vector, so you can get a diagonal one by moving forwards while strafing.
+     *
      * @return
      */
     public Vector2f getDesiredMoveVector() {

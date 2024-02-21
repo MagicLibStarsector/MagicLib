@@ -1,8 +1,8 @@
 package org.magiclib.subsystems.examples;
 
+import com.fs.starfarer.api.combat.ShipAPI;
 import org.magiclib.subsystems.drones.MagicDroneSubsystem;
 import org.magiclib.subsystems.drones.SpinningCircleFormation;
-import com.fs.starfarer.api.combat.ShipAPI;
 
 /**
  * Spawns two PD drones. The drones are on a separate charge interval than the activator itself. Activation speeds

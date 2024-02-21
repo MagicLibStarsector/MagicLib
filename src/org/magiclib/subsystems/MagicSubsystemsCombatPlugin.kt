@@ -4,7 +4,6 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.input.InputEventAPI
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.util.MagicUI
 import java.util.*
 
 class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
@@ -56,7 +55,7 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
         }
     }
 
-    class SubsystemLayeredRenderingPlugin: BaseCombatLayeredRenderingPlugin() {
+    class SubsystemLayeredRenderingPlugin : BaseCombatLayeredRenderingPlugin() {
         override fun render(layer: CombatEngineLayers?, viewport: ViewportAPI?) {
             if (layer == CombatEngineLayers.JUST_BELOW_WIDGETS) {
                 viewport?.let {

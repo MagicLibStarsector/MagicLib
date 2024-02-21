@@ -1,9 +1,9 @@
 package org.magiclib.subsystems.examples;
 
-import org.magiclib.subsystems.drones.MagicDroneSubsystem;
-import org.magiclib.subsystems.drones.HoveringFormation;
-import org.magiclib.subsystems.drones.SpinningCircleFormation;
 import com.fs.starfarer.api.combat.ShipAPI;
+import org.magiclib.subsystems.drones.HoveringFormation;
+import org.magiclib.subsystems.drones.MagicDroneSubsystem;
+import org.magiclib.subsystems.drones.SpinningCircleFormation;
 
 /**
  * Spawns four PD drones. The formation can be switched by key.

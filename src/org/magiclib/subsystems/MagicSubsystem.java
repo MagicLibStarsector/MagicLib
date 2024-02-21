@@ -62,6 +62,7 @@ public abstract class MagicSubsystem {
      * This also affects rendering order.
      * There are some static ints in this class for orders that are common. See {@link MagicSubsystem#ORDER_SHIP_UNIQUE}
      * and others.
+     *
      * @return order of the subsystem
      */
     public int getOrder() {
@@ -107,7 +108,7 @@ public abstract class MagicSubsystem {
      * How long the subsystem is active for.
      * For toggle subsystems, this is the minimum duration that the subsystem must be active for before it can be turned off.
      * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setActiveDuration(float, boolean)}
-     * 
+     *
      * @return
      */
     public abstract float getBaseActiveDuration();
@@ -133,6 +134,7 @@ public abstract class MagicSubsystem {
     /**
      * The subsystem will show "NO TARGET" on the HUD if no target is selected.
      * Will also prevent system activation.
+     *
      * @return Whether the subsystem requires a target.
      */
     public boolean requiresTarget() {
@@ -142,6 +144,7 @@ public abstract class MagicSubsystem {
     /**
      * The subsystem will show "NO TARGET" on the HUD if a friendly target is selected.
      * Will also prevent system activation.
+     *
      * @return Whether the subsystem requires a hostile target.
      */
     public boolean targetOnlyEnemies() {
@@ -152,6 +155,7 @@ public abstract class MagicSubsystem {
      * The subsystem will show "OUT OF RANGE" on the HUD if the selected target is out of range.
      * Will also prevent system activation.
      * This is only used if {@link MagicSubsystem#requiresTarget} returns true.
+     *
      * @return the subsystem's range
      */
     public float getRange() {
@@ -160,6 +164,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Flux cost on activation.
+     *
      * @return flat amount of flux
      */
     public float getFluxCostFlatOnActivation() {
@@ -168,6 +173,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Flux cost on activation as percent of base flux capacity of the ship.
+     *
      * @return percent of base flux
      */
     public float getFluxCostPercentOnActivation() {
@@ -176,6 +182,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Set flux cost on activation to be hard flux.
+     *
      * @return is hard flux?
      */
     public boolean isHardFluxForActivation() {
@@ -184,6 +191,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Flux cost while active. This method should return a per-second value, but will be split across all frames.
+     *
      * @return flat amount of flux per second
      */
     public float getFluxCostFlatPerSecondWhileActive() {
@@ -192,6 +200,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Flux cost on activation as percent of base flux capacity of the ship. This method should return a per-second value, but will be split across all frames.
+     *
      * @return percent of base flux per second
      */
     public float getFluxCostPercentPerSecondWhileActive() {
@@ -200,6 +209,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Set flux cost while active to be hard flux.
+     *
      * @return is hard flux?
      */
     public boolean isHardFluxPerSecondWhileActive() {
@@ -224,6 +234,7 @@ public abstract class MagicSubsystem {
      * If ACTIVE, then 1f is returned.
      * If OUT, then calculation is 1 - {@link MagicSubsystem#getStateCompleteRatio()}
      * Otherwise, returns 0f.
+     *
      * @return effectLevel
      */
     public float getEffectLevel() {
@@ -365,6 +376,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Called when the state is switched to something else.
+     *
      * @param oldState the old state of the subsystem
      */
     public void onStateSwitched(State oldState) {
@@ -430,6 +442,7 @@ public abstract class MagicSubsystem {
      * Called to set the state of the system. This changes the stateInterval and resets it, and also calls
      * {@link MagicSubsystem#onStateSwitched(State)}, which you should override unless you have a good idea what
      * you're doing.
+     *
      * @param newState
      */
     public void setState(State newState) {
@@ -456,6 +469,7 @@ public abstract class MagicSubsystem {
      * like activating it, adding charges, handling the state interval, and all other things the subsystem needs to do
      * frame-by-frame during active combat. Override {@link MagicSubsystem#advance(float)} unless you call super or
      * know exactly what you're doing.
+     *
      * @param amount frame time
      */
     public void advanceInternal(float amount) {
@@ -546,6 +560,7 @@ public abstract class MagicSubsystem {
     /**
      * If {@link MagicSubsystem#getKey()} returns a non-null non-empty string, retrieves the index for its value from {@link Keyboard#getKeyIndex(String)}
      * Otherwise uses {@link MagicSubsystem#getKeyIndex()} to retrieve the key from the {@link MagicSubsystemsManager#getKeyForIndex(int)} method
+     *
      * @return keycode
      */
     public final int getAssignedKey() {
@@ -564,6 +579,7 @@ public abstract class MagicSubsystem {
 
     /**
      * The automatically-assigned key index when a subsystem is added to a ship.
+     *
      * @return key index for the {@link MagicSubsystemsManager#getKeyForIndex(int)} method
      */
     public int getKeyIndex() {
@@ -744,6 +760,7 @@ public abstract class MagicSubsystem {
 
     /**
      * A short description of what your subsystem does. Only shows while INFO is toggled.
+     *
      * @return summary
      */
     public String getBriefText() {
@@ -754,6 +771,7 @@ public abstract class MagicSubsystem {
     /**
      * Some extra info that displays to the right of the status bar. Always visible if not null/empty.
      * By default, displays info related to why the system can't be activated.
+     *
      * @return extra info
      */
     public String getExtraInfoText() {
@@ -784,6 +802,7 @@ public abstract class MagicSubsystem {
     /**
      * Color of the text to the right of the status bar.
      * By default, copies the System Can't Be Used Color for when a shipsystem is out of range or needs a target.
+     *
      * @return color of extra info text
      */
     public Color getExtraInfoColor() {
@@ -792,6 +811,7 @@ public abstract class MagicSubsystem {
 
     /**
      * This prints beneath the subsystem bar.
+     *
      * @return Ammo text to display.
      */
     public String getAmmoText() {
@@ -800,6 +820,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Prints to the left of the status bar.
+     *
      * @return state text to display
      */
     public String getStateText() {
@@ -808,6 +829,7 @@ public abstract class MagicSubsystem {
 
     /**
      * How full the status bar will appear.
+     *
      * @return a float between 0 and 1
      */
     public float getBarFill() {
@@ -837,6 +859,7 @@ public abstract class MagicSubsystem {
 
     /**
      * The color to display all the info about the system in
+     *
      * @return a color
      */
     public Color getHUDColor() {
@@ -846,6 +869,7 @@ public abstract class MagicSubsystem {
     /**
      * The displayed key text to activate the system. Only displayed if the system has an actual key to display.
      * Uses {@link MagicSubsystem#getAssignedKey()} to find the key responsible for activating the system.
+     *
      * @return displayed key
      */
     public String getKeyText() {
@@ -880,6 +904,7 @@ public abstract class MagicSubsystem {
     /**
      * Number of "bar heights" that the subsystem needs.
      * By default, 1. For systems with charges, 2.
+     *
      * @return bar count
      */
     public int getNumHUDBars() {
@@ -890,7 +915,7 @@ public abstract class MagicSubsystem {
     }
 
     public Vector2f getBarLocationForBarNum(Vector2f baseBarLoc, int barNum) {
-        return Vector2f.add(baseBarLoc, new Vector2f(0f, -CombatUI.BAR_HEIGHT * barNum),  null);
+        return Vector2f.add(baseBarLoc, new Vector2f(0f, -CombatUI.BAR_HEIGHT * barNum), null);
     }
 
     /**
@@ -968,6 +993,7 @@ public abstract class MagicSubsystem {
 
     /**
      * Renders onto the world viewport.
+     *
      * @param viewport the world viewport
      */
     public void renderWorld(ViewportAPI viewport) {
@@ -989,6 +1015,7 @@ public abstract class MagicSubsystem {
 
         /**
          * Display text for the subsystem state.
+         *
          * @return display text
          */
         public String getText() {

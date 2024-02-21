@@ -6,7 +6,6 @@ import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipCommand
 import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
-import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.mission.FleetSide
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc

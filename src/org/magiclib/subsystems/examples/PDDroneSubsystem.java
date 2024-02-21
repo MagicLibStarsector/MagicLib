@@ -1,7 +1,7 @@
 package org.magiclib.subsystems.examples;
 
-import org.magiclib.subsystems.drones.MagicDroneSubsystem;
 import com.fs.starfarer.api.combat.ShipAPI;
+import org.magiclib.subsystems.drones.MagicDroneSubsystem;
 
 /**
  * Spawns a PD drone. Has no usable key and doesn't take a key index.

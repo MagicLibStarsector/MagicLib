@@ -810,6 +810,7 @@ public class CombatUI {
     /**
      * Simple wrapper to make drawing sprites easier (not sure why this was necessary, but it is what it is)
      * Only requires an input SpriteAPI
+     *
      * @author tomatopaste
      */
     public static class SpriteDimWrapper {
@@ -1015,7 +1016,6 @@ public class CombatUI {
         glEnd();
 
         MagicUI.closeGLForMiscWithinViewport();
-
 
 
         MagicUI.openGL11ForTextWithinViewport();
