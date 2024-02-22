@@ -81,7 +81,7 @@ public abstract class MagicSubsystem {
         this.outDuration = getBaseOutDuration();
         this.cooldownDuration = getBaseCooldownDuration();
         this.chargeGenerationDuration = getBaseChargeRechargeDuration();
-        this.charges = getMaxCharges();
+        this.charges = calcMaxCharges();
 
         this.chargeInterval = new IntervalUtil(chargeGenerationDuration, chargeGenerationDuration);
         this.stateInterval = new IntervalUtil(inDuration, inDuration);
@@ -158,8 +158,21 @@ public abstract class MagicSubsystem {
      *
      * @return the subsystem's range
      */
-    public float getRange() {
+    protected float getRange() {
         return -1f;
+    }
+
+    /**
+     * Uses system stats to calculate the actual base range based on {@link MagicSubsystem#scaleSystemStat(float, float)}
+     * @return range
+     */
+    public int calcRange() {
+        float baseValue = getRange();
+        if (baseValue == 0) {
+            return 0;
+        }
+
+        return (int) scaleSystemStat(baseValue, ship.getMutableStats().getSystemRangeBonus().computeEffective(baseValue));
     }
 
     /**
@@ -257,12 +270,33 @@ public abstract class MagicSubsystem {
         return false;
     }
 
+    /**
+     * Base amount of charges unaffected by any stats.
+     * @return
+     */
     public boolean hasCharges() {
         return getMaxCharges() > 0;
     }
 
-    public int getMaxCharges() {
+    protected int getMaxCharges() {
         return 0;
+    }
+
+    protected float scaleSystemStat(float base, float effective) {
+        return base + (effective - base) * getSystemStatsEffectMult();
+    }
+
+    /**
+     * Uses system stats to calculate the actual max charges based on {@link MagicSubsystem#scaleSystemStat(float, float)}
+     * @return charges
+     */
+    public int calcMaxCharges() {
+        float baseValue = getMaxCharges();
+        if (baseValue == 0) {
+            return 0;
+        }
+
+        return (int) scaleSystemStat(baseValue, ship.getMutableStats().getSystemUsesBonus().computeEffective(baseValue));
     }
 
     /**
@@ -273,6 +307,15 @@ public abstract class MagicSubsystem {
      */
     public float getBaseChargeRechargeDuration() {
         return 0f;
+    }
+
+    /**
+     * How much the subsystem is affected by ship system stats like Systems Expertise.
+     * Set to 0 to disable the mult.
+     * @return a multiplier for those stats.
+     */
+    public float getSystemStatsEffectMult() {
+        return 1f;
     }
 
     public boolean usesChargesOnActivate() {
@@ -304,7 +347,7 @@ public abstract class MagicSubsystem {
      * Should check for internal parameters, like if state == READY or if the subsystem has charges.
      * This method also checks for flux cost of activating the subsystem.
      * This method also checks for targets if {@link MagicSubsystem#requiresTarget()} returns true.
-     * This method also checks for system range if it requires a target and {@link MagicSubsystem#getRange()} is equal to or above zero.
+     * This method also checks for system range if it requires a target and {@link MagicSubsystem#calcRange()} is equal to or above zero.
      * If overridden, you probably want to call super.
      *
      * @return
@@ -320,7 +363,7 @@ public abstract class MagicSubsystem {
                     return false;
                 } else if (targetOnlyEnemies() && ship.getOwner() == ship.getShipTarget().getOwner()) {
                     return false;
-                } else if (getRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > getRange()) {
+                } else if (calcRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > calcRange()) {
                     return false;
                 }
             }
@@ -482,15 +525,19 @@ public abstract class MagicSubsystem {
             if (!getAdvancesWhileDead() && !alive) return;
 
             if (state != State.READY && !stateInterval.intervalElapsed()) {
-                stateInterval.advance(amount);
+                if (state == State.COOLDOWN) {
+                    stateInterval.advance(scaleSystemStat(amount, ship.getMutableStats().getSystemCooldownBonus().computeEffective(amount)));
+                } else {
+                    stateInterval.advance(amount);
+                }
             }
 
-            if (charges < getMaxCharges()) {
+            if (charges < calcMaxCharges()) {
                 if (chargeInterval.intervalElapsed()) {
                     charges++;
                     chargeInterval.setInterval(getChargeGenerationDuration(), getChargeGenerationDuration());
                 } else {
-                    chargeInterval.advance(amount);
+                    chargeInterval.advance(scaleSystemStat(amount, ship.getMutableStats().getSystemRegenBonus().computeEffective(amount)));
                 }
             }
 
@@ -777,7 +824,7 @@ public abstract class MagicSubsystem {
                 return STATUS_NO_TARGET;
             } else if (targetOnlyEnemies() && ship.getOwner() == ship.getShipTarget().getOwner()) {
                 return STATUS_NO_TARGET;
-            } else if (getRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > getRange()) {
+            } else if (calcRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > calcRange()) {
                 return STATUS_OUT_OF_RANGE;
             }
         }
@@ -937,7 +984,7 @@ public abstract class MagicSubsystem {
                 displayStateText = false;
             } else if (targetOnlyEnemies() && ship.getOwner() == ship.getShipTarget().getOwner()) {
                 displayStateText = false;
-            } else if (getRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > getRange()) {
+            } else if (calcRange() >= 0 && MathUtils.getDistance(ship, ship.getShipTarget()) > calcRange()) {
                 displayStateText = false;
             }
         }

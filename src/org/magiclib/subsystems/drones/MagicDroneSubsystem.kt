@@ -82,8 +82,21 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     /**
      * Maximum amount of stored drone charges. This is only used if the hasSeparateDroneCharges method returns true.
      */
-    open fun getMaxDroneCharges(): Int {
+    protected open fun getMaxDroneCharges(): Int {
         return 0
+    }
+
+    /**
+     * Uses system stats to calculate the actual drone charges based on {@link MagicSubsystem#scaleSystemStat(float, float)}
+     * @return drone charges
+     */
+    open fun calcMaxDroneCharges(): Int {
+        val baseValue = getMaxDroneCharges()
+        if (baseValue == 0) {
+            return 0
+        }
+
+        return scaleSystemStat(baseValue.toFloat(), ship.mutableStats.systemUsesBonus.computeEffective(baseValue.toFloat())).toInt()
     }
 
     /**
@@ -193,21 +206,26 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
         }
 
         if (hasSeparateDroneCharges() && (alive || generatesDroneChargesWhileShipIsDead())) {
-            if (droneCharges < getMaxDroneCharges() || (getMaxDroneCharges() == 0 && activeWings.size < getMaxDeployedDrones())) {
+            if (droneCharges < calcMaxDroneCharges() || (calcMaxDroneCharges() == 0 && activeWings.size < getMaxDeployedDrones())) {
                 if (droneCreationInterval.intervalElapsed()) {
-                    if (getMaxDroneCharges() >= 0) {
+                    if (calcMaxDroneCharges() >= 0) {
                         droneCharges++
                         droneCreationInterval.advance(0f) //reset
                     }
-                    //this interval will be left elapsed if getMaxDroneCharges returns 0.
+                    //this interval will be left elapsed if calcMaxDroneCharges returns 0.
                     //this means that killing a drone will effectively create one after a specific amount of time, like normal fighters.
                 } else {
-                    droneCreationInterval.advance(amount)
+                    if (calcMaxDroneCharges() > 0) {
+                        droneCreationInterval.advance(scaleSystemStat(amount, ship.mutableStats.systemRegenBonus.computeEffective(amount)))
+                    } else {
+                        droneCreationInterval.advance(scaleSystemStat(amount, ship.mutableStats.systemCooldownBonus.computeEffective(amount)))
+                    }
                 }
             }
         } else if (!hasSeparateDroneCharges()) {
-            if (maxCharges == 0 && activeWings.size < getMaxDeployedDrones() && !droneCreationInterval.intervalElapsed()) {
-                droneCreationInterval.advance(amount)
+            if (calcMaxCharges() == 0 && activeWings.size < getMaxDeployedDrones() && !droneCreationInterval.intervalElapsed()) {
+                droneCreationInterval.advance(scaleSystemStat(amount, ship.mutableStats.systemCooldownBonus.computeEffective(amount)))
+
                 //this interval will be left elapsed if getMaxDroneCharges returns 0.
                 //this means that killing a drone will effectively create one after a specific amount of time, like normal fighters.
             }
@@ -226,7 +244,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
                     if (!shouldSpawnDrone) {
                         shouldSpawnDrone =
                             if (hasSeparateDroneCharges()) {
-                                if (getMaxDroneCharges() == 0) {
+                                if (calcMaxDroneCharges() == 0) {
                                     droneCreationInterval.intervalElapsed()
                                 } else {
                                     droneCharges > 0
@@ -260,7 +278,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
                             }
 
                             if (hasSeparateDroneCharges()) {
-                                if (getMaxDroneCharges() == 0) {
+                                if (calcMaxDroneCharges() == 0) {
                                     droneCreationInterval.advance(0f) //reset interval
                                 } else {
                                     droneCharges--
@@ -310,7 +328,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
                 if (droneCharges == 0) {
                     return (droneCreationInterval.elapsed / droneCreationInterval.intervalDuration).coerceIn(0f..1f)
                 }
-            } else if (maxCharges > 0 && charges == 0 && activeWings.size < getMaxDeployedDrones()) {
+            } else if (calcMaxCharges() > 0 && charges == 0 && activeWings.size < getMaxDeployedDrones()) {
                 return (chargeInterval.elapsed / chargeInterval.intervalDuration).coerceIn(0f..1f)
             } else {
                 return (droneCreationInterval.elapsed / droneCreationInterval.intervalDuration).coerceIn(0f..1f)
@@ -367,7 +385,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
         } else if (hasCharges()) {
             forgeCooldown = chargeInterval.elapsed / chargeInterval.intervalDuration
             reserveCharges = charges
-            reserveMaxCharges = maxCharges
+            reserveMaxCharges = calcMaxCharges()
         } else {
             forgeCooldown = droneCreationInterval.elapsed / droneCreationInterval.intervalDuration
             reserveCharges = 0

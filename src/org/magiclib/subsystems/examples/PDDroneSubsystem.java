@@ -55,7 +55,7 @@ public class PDDroneSubsystem extends MagicDroneSubsystem {
     @Override
     public float getBarFill() {
         float fill = 0f;
-        if (charges < getMaxCharges()) {
+        if (charges < calcMaxCharges()) {
             fill = chargeInterval.getElapsed() / chargeInterval.getIntervalDuration();
         }
 

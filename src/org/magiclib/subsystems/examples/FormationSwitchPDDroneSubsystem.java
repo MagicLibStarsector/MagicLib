@@ -59,7 +59,7 @@ public class FormationSwitchPDDroneSubsystem extends MagicDroneSubsystem {
 
         if (state == State.COOLDOWN) {
             fill = 1f - stateInterval.getElapsed() / stateInterval.getIntervalDuration();
-        } else if (charges < getMaxCharges()) {
+        } else if (charges < calcMaxCharges()) {
             fill = chargeInterval.getElapsed() / chargeInterval.getIntervalDuration();
         }
 
