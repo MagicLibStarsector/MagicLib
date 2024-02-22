@@ -78,6 +78,22 @@ public class MagicUI {
         return width;
     }
 
+    /**
+     * Gets unscaled text width by unscaling the Victor14 font and then rescaling it.
+     * @param text text to measure
+     * @return unscaled width
+     */
+    public static float getTextWidthUnscaled(String text) {
+        float fontSize = TODRAW14.getFontSize();
+        String oldText = TODRAW14.getText();
+        TODRAW14.setFontSize(14);
+        TODRAW14.setText(text);
+        float width = TODRAW14.getWidth();
+        TODRAW14.setFontSize(fontSize);
+        TODRAW14.setText(oldText);
+        return width;
+    }
+
     public static void setTextAligned(LazyFont.TextAlignment alignment) {
         TODRAW14.setAlignment(alignment);
     }

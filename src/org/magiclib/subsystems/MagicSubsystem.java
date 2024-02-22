@@ -969,13 +969,14 @@ public abstract class MagicSubsystem {
      * @param rootLoc               root location of subsystem info
      * @param barLoc                location to draw (top left)
      * @param displayAdditionalInfo display additional subsystem info (hotkey, brief)
+     * @param longestNameWidth      longest name width of all subsystems on the ship, for making the UI look uniform
      */
-    public void drawHUDBar(ViewportAPI viewport, Vector2f rootLoc, Vector2f barLoc, boolean displayAdditionalInfo) {
+    public void drawHUDBar(ViewportAPI viewport, Vector2f rootLoc, Vector2f barLoc, boolean displayAdditionalInfo, float longestNameWidth) {
         String nameText = getDisplayText();
         String keyText = getKeyText();
 
         if (!displayAdditionalInfo && !keyText.equals(BLANK_KEY)) {
-            nameText = String.format("%s [%s]", nameText, keyText);
+            nameText = MagicTxt.getString("subsystemNameWithKeyText", nameText, keyText);
         }
 
         boolean displayStateText = true;
@@ -1006,6 +1007,7 @@ public abstract class MagicSubsystem {
             stateText = null;
         }
 
+        float additionalBarPadding = Math.max(0f, longestNameWidth - CombatUI.STATUS_BAR_PADDING);
         CombatUI.drawSubsystemStatus(
                 ship,
                 getBarFill(),
@@ -1018,6 +1020,7 @@ public abstract class MagicSubsystem {
                 displayAdditionalInfo,
                 getNumHUDBars(),
                 barLoc,
+                additionalBarPadding,
                 rootLoc
         );
 
@@ -1025,7 +1028,8 @@ public abstract class MagicSubsystem {
             CombatUI.renderAuxiliaryStatusBar(
                     ship,
                     CombatUI.INFO_TEXT_PADDING,
-                    false, CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING,
+                    false,
+                    CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING + additionalBarPadding,
                     CombatUI.STATUS_BAR_WIDTH,
                     chargeInterval.getElapsed() / chargeInterval.getIntervalDuration(),
                     getAmmoText(),

@@ -306,6 +306,7 @@
     "ml_mp_appliedRefit":"Applied: %s",
 
     "subsystemTitleText": "SUBSYSTEMS",
+    "subsystemNameWithKeyText": "%s [%s]",
     "subsystemMoreInfoText": "PRESS %s FOR MORE INFO",
     "subsystemLessInfoText": "PRESS %s FOR LESS INFO",
     "subsystemHotkeyText": "HOTKEY: %s",

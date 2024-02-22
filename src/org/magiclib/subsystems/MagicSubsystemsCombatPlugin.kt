@@ -4,7 +4,10 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.input.InputEventAPI
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.util.MagicTxt
+import org.magiclib.util.MagicUI
 import java.util.*
+import kotlin.math.roundToInt
 
 class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
     companion object {
@@ -87,12 +90,26 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
                         totalBars += subsystems.size
                     }
 
+                    val longestNameLength = MagicUI.getTextWidthUnscaled(subsystems
+                        .map {
+                            if (displayAdditionalInfo)
+                                it.displayText
+                            else
+                                MagicTxt.getString(
+                                    "subsystemNameWithKeyText",
+                                    it.displayText,
+                                    it.keyText
+                                )
+                        }
+                        .maxByOrNull { it.length }!!
+                    ) + MagicUI.getTextWidthUnscaled(MagicTxt.getString("subsystemState_Active"))
+
                     val rootVec = CombatUI.getSubsystemsRootLocation(ship, totalBars, barHeight)
                     var lastVec = Vector2f(rootVec)
                     MagicSubsystemsManager.sortSubsystems(subsystems)
                         .forEach { subsystem ->
                             val numBars = subsystem.numHUDBars + if (displayAdditionalInfo) 1 else 0
-                            subsystem.drawHUDBar(viewport, rootVec, lastVec, displayAdditionalInfo)
+                            subsystem.drawHUDBar(viewport, rootVec, lastVec, displayAdditionalInfo, longestNameLength.roundToInt().toFloat())
                             lastVec = Vector2f.add(lastVec, Vector2f(0f, -barHeight * numBars), null)
                         }
                     CombatUI.drawSubsystemsTitle(ship, true, rootVec, displayAdditionalInfo)
