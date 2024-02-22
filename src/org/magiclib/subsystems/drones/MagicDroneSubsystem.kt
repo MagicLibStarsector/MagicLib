@@ -368,9 +368,10 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
         viewport: ViewportAPI,
         rootLoc: Vector2f,
         barLoc: Vector2f,
-        displayAdditionalInfo: Boolean
+        displayAdditionalInfo: Boolean,
+        longestNameWidth: Float
     ) {
-        super.drawHUDBar(viewport, rootLoc, barLoc, displayAdditionalInfo)
+        super.drawHUDBar(viewport, rootLoc, barLoc, displayAdditionalInfo, longestNameWidth)
 
         val colour = if (ship.isAlive) hudColor else MagicUI.BLUCOLOR
 
@@ -406,11 +407,12 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
         val chevronRow = if (hasCharges()) 2 else 1
         val chevronRowPos = getBarLocationForBarNum(barLoc, chevronRow)
 
+        val additionalBarPadding = (longestNameWidth - CombatUI.STATUS_BAR_PADDING).coerceAtLeast(0f)
         CombatUI.renderAuxiliaryStatusBar(
             ship,
             CombatUI.INFO_TEXT_PADDING,
             false,
-            CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING,
+            CombatUI.STATUS_BAR_PADDING - CombatUI.INFO_TEXT_PADDING + additionalBarPadding,
             CombatUI.STATUS_BAR_WIDTH,
             forgeCooldown,
             forgeText,

@@ -85,18 +85,19 @@ public class CombatUI {
      * method) then they will not have an effect on the output location. This must be predetermined by the input
      * guiBarCount parameter to make room for them.
      *
-     * @param ship           Player ship
-     * @param fill           Value 0 to 1, how full the bar is from left to right
-     * @param name           Name of subsystem
-     * @param extraText      Info string opportunity. Appears to the right of the status bar.
-     * @param extraTextColor color of extraText. if null, uses standard text color
-     * @param stateText      Subsystem activity status. Appears to left of status bar.
-     * @param hotkey         Hotkey string of key used to activate subsystem
-     * @param briefText      A brief description of what the subsystem does
-     * @param showInfoText   If the subsystem is in show info mode
-     * @param guiBarCount    The number of gui bars this subsystem will use
-     * @param inputLoc       the Input location (top left) of the subsystem GUI element
-     * @param rootLoc        the Root location of subsystem GUI elements
+     * @param ship            Player ship
+     * @param fill            Value 0 to 1, how full the bar is from left to right
+     * @param name            Name of subsystem
+     * @param extraText       Info string opportunity. Appears to the right of the status bar.
+     * @param extraTextColor  color of extraText. if null, uses standard text color
+     * @param stateText       Subsystem activity status. Appears to left of status bar.
+     * @param hotkey          Hotkey string of key used to activate subsystem
+     * @param briefText       A brief description of what the subsystem does
+     * @param showInfoText    If the subsystem is in show info mode
+     * @param guiBarCount     The number of gui bars this subsystem will use
+     * @param inputLoc        the Input location (top left) of the subsystem GUI element
+     * @param extraBarPadding
+     * @param rootLoc         the Root location of subsystem GUI elements
      * @return The output location (bottom left) of GUI element
      * @author tomatopaste
      */
@@ -112,6 +113,7 @@ public class CombatUI {
             boolean showInfoText,
             int guiBarCount,
             Vector2f inputLoc,
+            float extraBarPadding,
             Vector2f rootLoc) {
         CombatEngineAPI engine = Global.getCombatEngine();
         Color colour = (ship.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
@@ -147,7 +149,7 @@ public class CombatUI {
         }
 
         Vector2f boxLoc = new Vector2f(loc);
-        boxLoc.x += MagicUI.scale(STATUS_BAR_PADDING);
+        boxLoc.x += MagicUI.scale(STATUS_BAR_PADDING) + MagicUI.scale(extraBarPadding);
 
         final float boxHeight = MagicUI.scale(STATUS_BAR_HEIGHT);
         final float boxEndWidth = MagicUI.scale(STATUS_BAR_WIDTH);
