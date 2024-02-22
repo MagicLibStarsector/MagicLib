@@ -18,6 +18,9 @@ object LunaWrapper {
 
     @JvmStatic
     fun getBoolean(modID: String, fieldID: String): Boolean? = LunaSettings.getBoolean(modID, fieldID)
+
+    @JvmStatic
+    fun getInt(modID: String, fieldID: String): Int? = LunaSettings.getInt(modID, fieldID)
 }
 
 interface LunaWrapperSettingsListener {
