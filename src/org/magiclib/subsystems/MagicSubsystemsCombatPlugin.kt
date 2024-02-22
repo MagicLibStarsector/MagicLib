@@ -95,7 +95,7 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
                             subsystem.drawHUDBar(viewport, rootVec, lastVec, displayAdditionalInfo)
                             lastVec = Vector2f.add(lastVec, Vector2f(0f, -barHeight * numBars), null)
                         }
-                    CombatUI.drawSubsystemsTitle(ship, true, rootVec)
+                    CombatUI.drawSubsystemsTitle(ship, true, rootVec, displayAdditionalInfo)
                 }
             }
         }

@@ -465,14 +465,14 @@ public class CombatUI {
      * @param showInfo If the "more info" mode is enabled
      * @param rootLoc  Root location of the subsystems UI elements {@link CombatUI#getSubsystemsRootLocation(ShipAPI, int, float)}
      */
-    public static void drawSubsystemsTitle(ShipAPI ship, boolean showInfo, Vector2f rootLoc) {
+    public static void drawSubsystemsTitle(ShipAPI ship, boolean showInfo, Vector2f rootLoc, boolean displayAdditionalInfo) {
         CombatEngineAPI engine = Global.getCombatEngine();
         Color colour = (ship.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
 
         float barHeight = MagicUI.scale(13f);
         Vector2f loc = MagicUI.scale(getSubsystemTitleLoc(ship));
 
-        String infoText = MagicTxt.getString("subsystemInfoText", Keyboard.getKeyName(MagicSubsystemsManager.INSTANCE.getInfoHotkey()));
+        String infoText = MagicTxt.getString(displayAdditionalInfo ? "subsystemLessInfoText" : "subsystemMoreInfoText", Keyboard.getKeyName(MagicSubsystemsManager.INSTANCE.getInfoHotkey()));
 
         MagicUI.openGL11ForTextWithinViewport();
 
