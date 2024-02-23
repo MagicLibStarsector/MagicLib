@@ -30,3 +30,21 @@ View the Javadoc: https://magiclibstarsector.github.io/MagicLib/
   - Same with similar methods.
 
 Bonus: Kotlin extension methods for adding/removing subsystems have been added on `ShipAPI`.
+
+
+## Todo add this to the wiki
+
+for the new magiclib version there's new ordering parameter
+```
+MagicSubsystem.getOrder()
+    protected static int ORDER_MOD_MODULAR = 4;
+    protected static int ORDER_MOD_UNIQUE = 5;
+    protected static int ORDER_FACTION_MODULAR = 6;
+    protected static int ORDER_FACTION_UNIQUE = 7;
+    protected static int ORDER_SHIP_MODULAR = 8;
+    protected static int ORDER_SHIP_UNIQUE = 9;
+```
+these are the suggested values but you can use anything
+the default is 0
+if two subsystems have the same "Order", then it picks alphabetically by display name
+highest "Order" gets first key index and renders first

@@ -14,8 +14,13 @@ magiclib_subsystems_widgetOffsetY,Widget Offset - Y,Int,0,,,,,
 # MagicSubsystems: Key indexes
 magiclib_subsystems_InfoKeyBind,Info Keybind,Keycode,23,,"Keybind for viewing subsystem info in combat.",,,
 magiclib_subsystems_KeyBindText,Description,Text,"Keybinds for subsystems. They are used in order. If any are empty they will be ignored and the next available keybind will be used.",,,,,
+# 56 = left alt
 magiclib_subsystems_KeyBind1,Keybind 1,Keycode,56,,"First assigned keybind",,,
-magiclib_subsystems_KeyBind2,Keybind 2,Keycode,46,,"Second assigned keybind",,,
+# 48 = KEY_B
+magiclib_subsystems_KeyBind2,Keybind 2,Keycode,48,,"Second assigned keybind",,,
+# 35 = KEY_H
 magiclib_subsystems_KeyBind3,Keybind 3,Keycode,35,,"Third assigned keybind",,,
+# 36 = KEY_J
 magiclib_subsystems_KeyBind4,Keybind 4,Keycode,36,,"Fourth assigned keybind",,,
+# 49 = KEY_N
 magiclib_subsystems_KeyBind5,Keybind 5,Keycode,49,,"Fifth assigned keybind",,,
