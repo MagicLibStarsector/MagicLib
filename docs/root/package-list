@@ -1478,7 +1478,7 @@ $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/MagicDroneSub
 $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/activeWings/#/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/active-wings.html
 $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/advanceInternal/#kotlin.Float/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/advance-internal.html
 $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/calcMaxDroneCharges/#/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/calc-max-drone-charges.html
-$dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/drawHUDBar/#[Error type: Unresolved type for ViewportAPI]#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#kotlin.Boolean/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/draw-h-u-d-bar.html
+$dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/drawHUDBar/#[Error type: Unresolved type for ViewportAPI]#[Error type: Unresolved type for Vector2f]#[Error type: Unresolved type for Vector2f]#kotlin.Boolean#kotlin.Float/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/draw-h-u-d-bar.html
 $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/droneCharges/#/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/drone-charges.html
 $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/droneCreationInterval/#/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/drone-creation-interval.html
 $dokka.location:org.magiclib.subsystems.drones/MagicDroneSubsystem/droneDeployInterval/#/PointingToDeclaration/root/org.magiclib.subsystems.drones/-magic-drone-subsystem/drone-deploy-interval.html
@@ -1628,7 +1628,7 @@ $dokka.location:org.magiclib.subsystems/CombatUI/dimRender/#java.awt.Color#Vecto
 $dokka.location:org.magiclib.subsystems/CombatUI/drawDot/#float#float/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-dot.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawDroneSystemStateWidget/#ShipAPI#boolean[]#int#java.lang.String#java.lang.String#float#int#int#int#int#java.lang.String#SpriteAPI#java.util.Map<ShipAPI,org.magiclib.subsystems.CombatUI.SpriteDimWrapper>#SpriteAPI#org.magiclib.subsystems.CombatUI.SpriteDimWrapper/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-drone-system-state-widget.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawShieldArc/#ShipAPI#java.awt.Color#float#Vector2f#float#float/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-shield-arc.html
-$dokka.location:org.magiclib.subsystems/CombatUI/drawSubsystemStatus/#ShipAPI#float#java.lang.String#java.lang.String#java.awt.Color#java.lang.String#java.lang.String#java.lang.String#boolean#int#Vector2f#Vector2f/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-subsystem-status.html
+$dokka.location:org.magiclib.subsystems/CombatUI/drawSubsystemStatus/#ShipAPI#float#java.lang.String#java.lang.String#java.awt.Color#java.lang.String#java.lang.String#java.lang.String#boolean#int#Vector2f#float#Vector2f/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-subsystem-status.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawSubsystemsTitle/#ShipAPI#boolean#Vector2f#boolean/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-subsystems-title.html
 $dokka.location:org.magiclib.subsystems/CombatUI/getHasRenderedSpatial/#/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/get-has-rendered-spatial.html
 $dokka.location:org.magiclib.subsystems/CombatUI/getNumWeapons/#ShipAPI/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/get-num-weapons.html
@@ -1684,7 +1684,7 @@ $dokka.location:org.magiclib.subsystems/MagicSubsystem/canUseWhileOverloaded/#/P
 $dokka.location:org.magiclib.subsystems/MagicSubsystem/canUseWhileVenting/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/can-use-while-venting.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystem/chargeGenerationDuration/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/charge-generation-duration.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystem/cooldownDuration/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/cooldown-duration.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystem/drawHUDBar/#ViewportAPI#Vector2f#Vector2f#boolean/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/draw-h-u-d-bar.html
+$dokka.location:org.magiclib.subsystems/MagicSubsystem/drawHUDBar/#ViewportAPI#Vector2f#Vector2f#boolean#float/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/draw-h-u-d-bar.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystem/getAdvancesWhileDead/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/get-advances-while-dead.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystem/getAmmoText/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/get-ammo-text.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystem/getAssignedKey/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystem/get-assigned-key.html
@@ -2123,6 +2123,7 @@ $dokka.location:org.magiclib.util/MagicUI/getHUDRightOffset/#ShipAPI/PointingToD
 $dokka.location:org.magiclib.util/MagicUI/getInterfaceOffsetFromStatusBars/#ShipAPI#ShipVariantAPI/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-interface-offset-from-status-bars.html
 $dokka.location:org.magiclib.util/MagicUI/getInterfaceOffsetFromSystemBar/#ShipAPI#ShipVariantAPI/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-interface-offset-from-system-bar.html
 $dokka.location:org.magiclib.util/MagicUI/getTextWidth/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-text-width.html
+$dokka.location:org.magiclib.util/MagicUI/getTextWidthUnscaled/#java.lang.String/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-text-width-unscaled.html
 $dokka.location:org.magiclib.util/MagicUI/getUIElementOffset/#ShipAPI#ShipVariantAPI#Vector2f#Vector2f/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/get-u-i-element-offset.html
 $dokka.location:org.magiclib.util/MagicUI/openGL11ForText/#/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/open-g-l11-for-text.html
 $dokka.location:org.magiclib.util/MagicUI/openGL11ForTextWithinViewport/#/PointingToDeclaration/root/org.magiclib.util/-magic-u-i/open-g-l11-for-text-within-viewport.html
