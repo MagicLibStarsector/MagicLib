@@ -107,6 +107,13 @@
 		# Bounty provider classes for the Bounty Board.
 		"bountyProviders": [
 			"org.magiclib.bounty.intel.MagicBountyBoardProvider"
+		],
+
+		"subsystemInfoKey": "I",
+		"subsystemKeys": [
+			"T",
+			"G",
+			"H"
 		]
     },
 }

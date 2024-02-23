@@ -354,8 +354,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         textTooltip.addSpacer(10f)
 
         if (activeBounty?.spec?.job_show_type == true) {
+            val bounty = activeBounty!!
+
             when (activeBounty?.spec?.job_type) {
-                JobType.Assassination -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
+                JobType.Assassination -> if (bounty.targetFaction == null || bounty.targetFaction?.id == bountyFactionId) {
                     textTooltip.addPara(
                         MagicTxt.getString("mb_intelType"),
                         4f,
@@ -368,18 +370,18 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                         MagicTxt.getString("mb_intelType0") +
                                 MagicTxt.getString("mb_type_assassination1") +
                                 MagicTxt.getString("mb_intelType1") +
-                                activeBounty!!.targetFaction?.displayName +
+                                bounty.targetFaction?.displayName +
                                 MagicTxt.getString("mb_intelType2"),
                         4f
                     )
                     label.setHighlight(
                         MagicTxt.getString("mb_type_assassination1"),
-                        activeBounty!!.targetFaction?.displayName
+                        bounty.targetFaction?.displayName
                     )
-                    label.setHighlightColors(Misc.getHighlightColor(), activeBounty!!.targetFactionTextColor)
+                    label.setHighlightColors(Misc.getHighlightColor(), bounty.targetFactionTextColor)
                 }
 
-                JobType.Destruction -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
+                JobType.Destruction -> if (bounty.targetFaction == null || bounty.targetFaction?.id == bountyFactionId) {
                     textTooltip.addPara(
                         MagicTxt.getString("mb_intelType"),
                         4f,
@@ -392,18 +394,18 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                         (MagicTxt.getString("mb_intelType0") +
                                 MagicTxt.getString("mb_type_destruction1") +
                                 MagicTxt.getString("mb_intelType1") +
-                                activeBounty!!.targetFaction?.displayName +
+                                bounty.targetFaction?.displayName +
                                 MagicTxt.getString("mb_intelType2")),
                         4f
                     )
                     label.setHighlight(
                         MagicTxt.getString("mb_type_destruction1"),
-                        activeBounty!!.targetFaction?.displayName
+                        bounty.targetFaction?.displayName
                     )
-                    label.setHighlightColors(Misc.getHighlightColor(), activeBounty!!.targetFactionTextColor)
+                    label.setHighlightColors(Misc.getHighlightColor(), bounty.targetFactionTextColor)
                 }
 
-                JobType.Obliteration -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
+                JobType.Obliteration -> if (bounty.targetFaction == null || bounty.targetFaction?.id == bountyFactionId) {
                     textTooltip.addPara(
                         MagicTxt.getString("mb_intelType"),
                         4f,
@@ -416,19 +418,19 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                         (MagicTxt.getString("mb_intelType0") +
                                 MagicTxt.getString("mb_type_obliteration1") +
                                 MagicTxt.getString("mb_intelType1") +
-                                activeBounty!!.targetFaction?.displayName +
+                                bounty.targetFaction?.displayName +
                                 MagicTxt.getString("mb_intelType2")),
                         4f
                     )
                     label.setHighlight(
                         MagicTxt.getString("mb_type_obliteration1"),
-                        activeBounty!!.targetFaction?.displayName
+                        bounty.targetFaction?.displayName
                     )
-                    label.setHighlightColors(Misc.getHighlightColor(), activeBounty!!.targetFactionTextColor)
+                    label.setHighlightColors(Misc.getHighlightColor(), bounty.targetFactionTextColor)
                 }
 
                 JobType.Neutralization,
-                JobType.Neutralisation -> if (activeBounty!!.targetFaction == null || activeBounty!!.targetFaction?.id == bountyFactionId) {
+                JobType.Neutralisation -> if (bounty.targetFaction == null || bounty.targetFaction?.id == bountyFactionId) {
                     textTooltip.addPara(
                         MagicTxt.getString("mb_intelType"),
                         4f,
@@ -441,15 +443,15 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                         (MagicTxt.getString("mb_intelType0") +
                                 MagicTxt.getString("mb_type_neutralisation1") +
                                 MagicTxt.getString("mb_intelType1") +
-                                activeBounty!!.targetFaction?.displayName +
+                                bounty.targetFaction?.displayName +
                                 MagicTxt.getString("mb_intelType2")),
                         4f
                     )
                     label.setHighlight(
                         MagicTxt.getString("mb_type_neutralisation1"),
-                        activeBounty!!.targetFaction?.displayName
+                        bounty.targetFaction?.displayName
                     )
-                    label.setHighlightColors(Misc.getHighlightColor(), activeBounty!!.targetFactionTextColor)
+                    label.setHighlightColors(Misc.getHighlightColor(), bounty.targetFactionTextColor)
                 }
 
                 else -> {}
@@ -508,12 +510,13 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             targetInfoTooltip.addCustom(map, 2f)
 
             if (bountySpec.job_show_distance != ShowDistance.None) {
+                val bounty = activeBounty!!
                 when (bountySpec.job_show_distance) {
                     ShowDistance.Exact -> targetInfoTooltip.addPara(
-                        createLocationPreciseText(activeBounty!!),
+                        createLocationPreciseText(bounty),
                         10f,
                         location.lightColor,
-                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType
+                        bounty.fleetSpawnLocation.starSystem.nameWithLowercaseType
                     )
 
                     ShowDistance.System -> targetInfoTooltip.addPara(
@@ -521,14 +524,14 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                         10f,
                         arrayOf(Misc.getTextColor(), location.lightColor),
                         MagicTxt.getString("mb_distance_they"),
-                        activeBounty!!.fleetSpawnLocation.starSystem.nameWithLowercaseType
+                        bounty.fleetSpawnLocation.starSystem.nameWithLowercaseType
                     )
 
                     else -> targetInfoTooltip.addPara(
-                        createLocationEstimateText(activeBounty!!),
+                        createLocationEstimateText(bounty),
                         10f,
                         location.lightColor,
-                        BreadcrumbSpecial.getLocationDescription(activeBounty!!.fleetSpawnLocation, false)
+                        BreadcrumbSpecial.getLocationDescription(bounty.fleetSpawnLocation, false)
                     )
                 }
             }
@@ -575,7 +578,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         activeBounty.spec.fleet_flagship_name?.let { flagshipName ->
             ships.filter { it.shipName == flagshipName }.forEach { flagship.add(it) }
         }
-        if (flagship.isEmpty()) {
+        if (flagship.isEmpty() && activeBounty.fleet.flagship != null) {
             flagship.add(activeBounty.fleet.flagship)
         }
 

@@ -1,3 +1,22 @@
+Version 1.4.0
+
+**New: MagicSubsystems**
+- tldr; Combat Activators + CMUtils.
+- Add additional "ship systems" to ships, each triggered with a hotkey.
+- Add drones with formations and charges.
+- All displayed in a vanilla-like UI.
+- Contributed by **President Matt Damon**. UI code contributed by **tomatopaste**.
+- See examples in `org.magiclib.subsystems.examples`.
+- See MagicLib README.md for migration guide from Combat Activators.
+
+Version 1.3.11
+
+**MagicBounty**
+- Fixed a crash when a bounty has no flagship (reported by Dostya).
+
+**MagicPaintjobs**
+- Fixed paintjobs duplicating in the selector every save load (reported by Galaga Galaxian).
+
 Version 1.3.10
 
 **MagicBounty**

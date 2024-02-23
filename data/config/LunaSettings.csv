@@ -4,3 +4,23 @@ fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValu
 magiclib_enableAchievements,Enable Achievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
 magiclib_enablePaintjobs,Enable Paintjobs,Boolean,true,,"Disabling paintjobs will not affect unlocks.",,,
 magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,false,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,
+
+# MagicSubsystems
+magiclib_subsystems_Header,MagicSubsystems,Header,Subsystems,,,,,
+magiclib_subsystems_showInfoDefault,Show Extra Info,Boolean,true,,"Whether extra info will be displayed on the Subsystems widget when combat starts.",,,
+# MagicSubsystems: UI settings
+magiclib_subsystems_widgetOffsetX,Widget Offset - X,Int,0,,,,,
+magiclib_subsystems_widgetOffsetY,Widget Offset - Y,Int,0,,,,,
+# MagicSubsystems: Key indexes
+magiclib_subsystems_InfoKeyBind,Info Keybind,Keycode,23,,"Keybind for viewing subsystem info in combat.",,,
+magiclib_subsystems_KeyBindText,Description,Text,"Keybinds for subsystems. They are used in order. If any are empty they will be ignored and the next available keybind will be used.",,,,,
+# 56 = left alt
+magiclib_subsystems_KeyBind1,Keybind 1,Keycode,56,,"First assigned keybind",,,
+# 48 = KEY_B
+magiclib_subsystems_KeyBind2,Keybind 2,Keycode,48,,"Second assigned keybind",,,
+# 35 = KEY_H
+magiclib_subsystems_KeyBind3,Keybind 3,Keycode,35,,"Third assigned keybind",,,
+# 36 = KEY_J
+magiclib_subsystems_KeyBind4,Keybind 4,Keycode,36,,"Fourth assigned keybind",,,
+# 49 = KEY_N
+magiclib_subsystems_KeyBind5,Keybind 5,Keycode,49,,"Fifth assigned keybind",,,
