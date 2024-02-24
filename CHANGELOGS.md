@@ -1,3 +1,8 @@
+Version 1.4.1
+
+**MagicSubsystems**
+- UI is no longer shown if all subsystems were removed during combat.
+
 Version 1.4.0
 
 **New: MagicSubsystems**

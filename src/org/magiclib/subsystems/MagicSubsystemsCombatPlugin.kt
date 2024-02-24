@@ -80,41 +80,46 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
                 return
             }
 
-            combatEngine.playerShip?.let { ship ->
-                MagicSubsystemsManager.getSubsystemsForShipCopy(ship)?.let { subsystems ->
-                    CombatUI.hasRenderedSpatial = false
+            val ship = combatEngine.playerShip ?: return
+            val subsystems = MagicSubsystemsManager.getSubsystemsForShipCopy(ship)?.ifEmpty { null } ?: return
 
-                    val barHeight = 13f
-                    var totalBars = subsystems.sumOf { it.numHUDBars }
-                    if (displayAdditionalInfo) {
-                        totalBars += subsystems.size
-                    }
+            CombatUI.hasRenderedSpatial = false
 
-                    val longestNameLength = MagicUI.getTextWidthUnscaled(subsystems
-                        .map {
-                            if (displayAdditionalInfo)
-                                it.displayText
-                            else
-                                MagicTxt.getString(
-                                    "subsystemNameWithKeyText",
-                                    it.displayText,
-                                    it.keyText
-                                )
-                        }
-                        .maxByOrNull { it.length }!!
-                    ) + MagicUI.getTextWidthUnscaled(MagicTxt.getString("subsystemState_Active"))
-
-                    val rootVec = CombatUI.getSubsystemsRootLocation(ship, totalBars, barHeight)
-                    var lastVec = Vector2f(rootVec)
-                    MagicSubsystemsManager.sortSubsystems(subsystems)
-                        .forEach { subsystem ->
-                            val numBars = subsystem.numHUDBars + if (displayAdditionalInfo) 1 else 0
-                            subsystem.drawHUDBar(viewport, rootVec, lastVec, displayAdditionalInfo, longestNameLength.roundToInt().toFloat())
-                            lastVec = Vector2f.add(lastVec, Vector2f(0f, -barHeight * numBars), null)
-                        }
-                    CombatUI.drawSubsystemsTitle(ship, true, rootVec, displayAdditionalInfo)
-                }
+            val barHeight = 13f
+            var totalBars = subsystems.sumOf { it.numHUDBars }
+            if (displayAdditionalInfo) {
+                totalBars += subsystems.size
             }
+
+            val longestNameLength = MagicUI.getTextWidthUnscaled(subsystems
+                .map {
+                    if (displayAdditionalInfo)
+                        it.displayText
+                    else
+                        MagicTxt.getString(
+                            "subsystemNameWithKeyText",
+                            it.displayText,
+                            it.keyText
+                        )
+                }
+                .maxByOrNull { it.length }!!
+            ) + MagicUI.getTextWidthUnscaled(MagicTxt.getString("subsystemState_Active"))
+
+            val rootVec = CombatUI.getSubsystemsRootLocation(ship, totalBars, barHeight)
+            var lastVec = Vector2f(rootVec)
+            MagicSubsystemsManager.sortSubsystems(subsystems)
+                .forEach { subsystem ->
+                    val numBars = subsystem.numHUDBars + if (displayAdditionalInfo) 1 else 0
+                    subsystem.drawHUDBar(
+                        viewport,
+                        rootVec,
+                        lastVec,
+                        displayAdditionalInfo,
+                        longestNameLength.roundToInt().toFloat()
+                    )
+                    lastVec = Vector2f.add(lastVec, Vector2f(0f, -barHeight * numBars), null)
+                }
+            CombatUI.drawSubsystemsTitle(ship, true, rootVec, displayAdditionalInfo)
         }
     }
 
