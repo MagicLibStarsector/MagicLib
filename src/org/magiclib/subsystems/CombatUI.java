@@ -480,6 +480,7 @@ public class CombatUI {
 
         Vector2f titleTextLoc = new Vector2f(loc);
         Vector2f infoTextLoc = new Vector2f(rootLoc);
+        MagicUI.scale(infoTextLoc);
         infoTextLoc.y += barHeight + MagicUI.scale(8f);
         //infoTextLoc.x -= 4f * MagicUI.UI_SCALING;
 
