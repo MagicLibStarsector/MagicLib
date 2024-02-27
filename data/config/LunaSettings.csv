@@ -11,6 +11,7 @@ magiclib_subsystems_showInfoDefault,Show Extra Info,Boolean,true,,"Whether extra
 # MagicSubsystems: UI settings
 magiclib_subsystems_widgetOffsetX,Widget Offset - X,Int,0,,,,,
 magiclib_subsystems_widgetOffsetY,Widget Offset - Y,Int,0,,,,,
+magiclib_subsystems_infoTextFadeout,Info Text maximum fadeout,Int,0,,"The hotkey text for displaying info will fade to this value after a second of not pressing it. 0 is invisible, while 255 is no fade out.",0,255,
 # MagicSubsystems: Key indexes
 magiclib_subsystems_InfoKeyBind,Info Keybind,Keycode,23,,"Keybind for viewing subsystem info in combat.",,,
 magiclib_subsystems_KeyBindText,Description,Text,"Keybinds for subsystems. They are used in order. If any are empty they will be ignored and the next available keybind will be used.",,,,,
