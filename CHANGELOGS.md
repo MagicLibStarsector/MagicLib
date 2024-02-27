@@ -1,7 +1,12 @@
 Version 1.4.1
 
 **MagicSubsystems**
-- UI is no longer shown if all subsystems were removed during combat.
+- UI is no longer shown if all subsystems were removed during combat (President Matt Damon).
+- Distortion no longer affects subsystem text (President Matt Damon)
+- Info text now scales based on screen size and fades in/out (President Matt Damon).
+
+**MagicPaintjobs**
+- Paintjobs popup is four wide instead of two (Wisp).
 
 Version 1.4.0
 
