@@ -6,7 +6,10 @@ Version 1.4.1
 - Info text now scales based on screen size and fades in/out (President Matt Damon).
 
 **MagicPaintjobs**
-- Paintjobs popup is four wide instead of two (Wisp).
+- Paintjobs popup is four wide instead of two (reported by NITEGHXST).
+
+**MagicAchievements**
+- Memory is now saved during combat as well, which fixes the Revisionist achievement (reported by Fuzzatron)
 
 Version 1.4.0
 
