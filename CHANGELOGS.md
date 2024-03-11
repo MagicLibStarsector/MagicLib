@@ -1,3 +1,8 @@
+Version 1.4.2
+
+**MagicPaintjobs**
+- Fixed all possible paintjobs being shown as applied on the hullmod (reported by NITEGHXST).
+
 Version 1.4.1
 
 **MagicSubsystems**

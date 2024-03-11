@@ -27,6 +27,7 @@ import static org.magiclib.util.MagicTxt.nullStringIfEmpty;
  *             .setFirstName("David")
  *             .setLastName("Rengel")
  *             .setGender(FullName.Gender.MALE)
+ *             .create();
  * </pre>
  *
  * @since 0.46.1
