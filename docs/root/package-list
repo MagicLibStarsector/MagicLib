@@ -34,6 +34,7 @@ $dokka.location:org.magiclib.achievements/MagicAchievement/createTooltip/#Toolti
 $dokka.location:org.magiclib.achievements/MagicAchievement/createTooltipHeader/#TooltipMakerAPI/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/create-tooltip-header.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/dateCompleted/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/date-completed.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/errorMessage/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/error-message.html
+$dokka.location:org.magiclib.achievements/MagicAchievement/getAchievementMemory/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-achievement-memory.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getAdvanceIntervalUtil/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-advance-interval-util.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getDescription/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-description.html
 $dokka.location:org.magiclib.achievements/MagicAchievement/getHasProgressBar/#/PointingToDeclaration/root/org.magiclib.achievements/-magic-achievement/get-has-progress-bar.html
@@ -1628,6 +1629,7 @@ $dokka.location:org.magiclib.subsystems/CombatUI/dimRender/#java.awt.Color#Vecto
 $dokka.location:org.magiclib.subsystems/CombatUI/drawDot/#float#float/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-dot.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawDroneSystemStateWidget/#ShipAPI#boolean[]#int#java.lang.String#java.lang.String#float#int#int#int#int#java.lang.String#SpriteAPI#java.util.Map<ShipAPI,org.magiclib.subsystems.CombatUI.SpriteDimWrapper>#SpriteAPI#org.magiclib.subsystems.CombatUI.SpriteDimWrapper/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-drone-system-state-widget.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawShieldArc/#ShipAPI#java.awt.Color#float#Vector2f#float#float/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-shield-arc.html
+$dokka.location:org.magiclib.subsystems/CombatUI/drawSubsystemStatus/#ShipAPI#float#java.lang.String#java.awt.Color#java.lang.String#java.awt.Color#java.lang.String#java.lang.String#java.lang.String#boolean#int#Vector2f#float#Vector2f/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-subsystem-status.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawSubsystemStatus/#ShipAPI#float#java.lang.String#java.lang.String#java.awt.Color#java.lang.String#java.lang.String#java.lang.String#boolean#int#Vector2f#float#Vector2f/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-subsystem-status.html
 $dokka.location:org.magiclib.subsystems/CombatUI/drawSubsystemsTitle/#ShipAPI#boolean#Vector2f#boolean/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/draw-subsystems-title.html
 $dokka.location:org.magiclib.subsystems/CombatUI/getHasRenderedSpatial/#/PointingToDeclaration/root/org.magiclib.subsystems/-combat-u-i/get-has-rendered-spatial.html
@@ -1745,27 +1747,24 @@ $dokka.location:org.magiclib.subsystems/MagicSubsystem/usesChargesOnActivate/#/P
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.Companion///PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-companion/index.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.Companion/displayAdditionalInfo/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-companion/display-additional-info.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.Companion/infoHotkeyLastPressed/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-companion/info-hotkey-last-pressed.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.SubsystemLayeredRenderingPlugin///PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-subsystem-layered-rendering-plugin/index.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.SubsystemLayeredRenderingPlugin/SubsystemLayeredRenderingPlugin/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-subsystem-layered-rendering-plugin/-subsystem-layered-rendering-plugin.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.SubsystemLayeredRenderingPlugin/drawSubsystemsUI/#[Error type: Unresolved type for ViewportAPI]/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-subsystem-layered-rendering-plugin/draw-subsystems-u-i.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.SubsystemLayeredRenderingPlugin/getActiveLayers/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-subsystem-layered-rendering-plugin/get-active-layers.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.SubsystemLayeredRenderingPlugin/getRenderRadius/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-subsystem-layered-rendering-plugin/get-render-radius.html
-$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin.SubsystemLayeredRenderingPlugin/render/#[Error type: Unresolved type for CombatEngineLayers]?#[Error type: Unresolved type for ViewportAPI]?/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-subsystem-layered-rendering-plugin/render.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin///PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/index.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/MagicSubsystemsCombatPlugin/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/-magic-subsystems-combat-plugin.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/advance/#kotlin.Float#kotlin.collections.List[[Error type: Unresolved type for InputEventAPI]]/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/advance.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/advanceSubsystems/#kotlin.Float/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/advance-subsystems.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/drawSubsystemsInWorld/#[Error type: Unresolved type for ViewportAPI]/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/draw-subsystems-in-world.html
+$dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/drawSubsystemsUI/#[Error type: Unresolved type for ViewportAPI]/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/draw-subsystems-u-i.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/init/#[Error type: Unresolved type for CombatEngineAPI]?/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/init.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/renderInUICoords/#[Error type: Unresolved type for ViewportAPI]?/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/render-in-u-i-coords.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsCombatPlugin/renderInWorldCoords/#[Error type: Unresolved type for ViewportAPI]?/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-combat-plugin/render-in-world-coords.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager///PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/index.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/CUSTOM_DATA_KEY/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/-c-u-s-t-o-m_-d-a-t-a_-k-e-y.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/addSubsystemToShip/#[Error type: Unresolved type for ShipAPI]#[Error type: Unresolved type for MagicSubsystem]/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/add-subsystem-to-ship.html
+$dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/getInfoTextMaxFadeout/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/get-info-text-max-fadeout.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/getKeyForIndex/#kotlin.Int/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/get-key-for-index.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/getSubsystemsForShipCopy/#[Error type: Unresolved type for ShipAPI]/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/get-subsystems-for-ship-copy.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/getWidgetOffsetVector/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/get-widget-offset-vector.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/hotkeyList/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/hotkey-list.html
+$dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/infoAlphaFadeout/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/info-alpha-fadeout.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/infoByDefault/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/info-by-default.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/infoHotkey/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/info-hotkey.html
 $dokka.location:org.magiclib.subsystems/MagicSubsystemsManager/initialize/#/PointingToDeclaration/root/org.magiclib.subsystems/-magic-subsystems-manager/initialize.html
@@ -2167,6 +2166,24 @@ $dokka.location:org.magiclib.util/MagicVariables/loadThemesBlacklist/#/PointingT
 $dokka.location:org.magiclib.util/MagicVariables/mergedThemesBlacklist/#/PointingToDeclaration/root/org.magiclib.util/-magic-variables/merged-themes-blacklist.html
 $dokka.location:org.magiclib.util/MagicVariables/presetShipIdsOfLastCreatedFleet/#/PointingToDeclaration/root/org.magiclib.util/-magic-variables/preset-ship-ids-of-last-created-fleet.html
 $dokka.location:org.magiclib.util/MagicVariables/verbose/#/PointingToDeclaration/root/org.magiclib.util/-magic-variables/verbose.html
+$dokka.location:org.magiclib.util/PIDController///PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/index.html
+$dokka.location:org.magiclib.util/PIDController/KdR/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-kd-r.html
+$dokka.location:org.magiclib.util/PIDController/KdX/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-kd-x.html
+$dokka.location:org.magiclib.util/PIDController/KdY/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-kd-y.html
+$dokka.location:org.magiclib.util/PIDController/KpR/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-kp-r.html
+$dokka.location:org.magiclib.util/PIDController/KpX/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-kp-x.html
+$dokka.location:org.magiclib.util/PIDController/KpY/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-kp-y.html
+$dokka.location:org.magiclib.util/PIDController/PIDController/#float#float#float#float/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/-p-i-d-controller.html
+$dokka.location:org.magiclib.util/PIDController/allowedLocationalErrorSquared/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/allowed-locational-error-squared.html
+$dokka.location:org.magiclib.util/PIDController/allowedRotationalError/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/allowed-rotational-error.html
+$dokka.location:org.magiclib.util/PIDController/copy/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/copy.html
+$dokka.location:org.magiclib.util/PIDController/decelerateIfBelowError/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/decelerate-if-below-error.html
+$dokka.location:org.magiclib.util/PIDController/lastErrorR/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/last-error-r.html
+$dokka.location:org.magiclib.util/PIDController/lastErrorX/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/last-error-x.html
+$dokka.location:org.magiclib.util/PIDController/lastErrorY/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/last-error-y.html
+$dokka.location:org.magiclib.util/PIDController/move/#Vector2f#ShipAPI/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/move.html
+$dokka.location:org.magiclib.util/PIDController/rotate/#float#ShipAPI/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/rotate.html
+$dokka.location:org.magiclib.util/PIDController/strafeRatio/#/PointingToDeclaration/root/org.magiclib.util/-p-i-d-controller/strafe-ratio.html
 $dokka.location:org.magiclib.util/StringCreator///PointingToDeclaration/root/org.magiclib.util/-string-creator/index.html
 $dokka.location:org.magiclib.util/StringCreator/create/#/PointingToDeclaration/root/org.magiclib.util/-string-creator/create.html
 $dokka.location:org.magiclib.weapons////PointingToDeclaration/root/org.magiclib.weapons/index.html
