@@ -17,6 +17,7 @@ import org.magiclib.subsystems.MagicSubsystem
 import org.magiclib.subsystems.advanceAndCheckElapsed
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicUI
+import org.magiclib.util.PIDController
 import java.awt.Color
 
 abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {

@@ -1,4 +1,4 @@
-package org.magiclib.subsystems.drones;
+package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipAPI;
@@ -11,10 +11,6 @@ import org.lwjgl.util.vector.Vector2f;
 //code vaguely copied from the wikipedia article for a PID controller, using tomatopaste's CMUtilWs as reference for when things weren't lining up
 //basic PID controller for smooth moves
 
-/**
- * @deprecated Moved to org.magiclib.util.PIDController. This will still work for backwards compatibility, but may be removed in the future.
- */
-@Deprecated
 public class PIDController {
 
     //error for x, y & rotation

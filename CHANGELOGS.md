@@ -3,6 +3,12 @@ Version 1.4.2
 **MagicPaintjobs**
 - Fixed all possible paintjobs being shown as applied on the hullmod (reported by NITEGHXST).
 
+**MagicBounty**
+- Fixed bounty board job cell all grey when portrait is invalid (reported by mrmagolor, others).
+
+**Misc**
+- Moved `PIDController` from `org.magiclib.subsystems.drones` to `org.magiclib.util` (non-breaking change, old one is marked deprecated).
+
 Version 1.4.1
 
 **MagicSubsystems**
