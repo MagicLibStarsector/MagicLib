@@ -56,9 +56,17 @@ class MagicPaintjobHullMod : BaseHullMod() {
         super.addPostDescriptionSection(tooltip, hullSize, ship, width, isForModSpec)
         ship ?: return
 
-        val skins = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, includeShiny = true)
-        skins.forEach { skin ->
-            tooltip?.addPara(MagicTxt.getString("ml_mp_appliedRefit"), 10f, Misc.getTextColor(), Misc.getPositiveHighlightColor(), skin.name)
+        val skin = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, includeShiny = true)
+            .firstOrNull { MagicPaintjobManager.getCurrentShipPaintjob(ship.fleetMember)?.id == it.id }
+
+        if (skin != null) {
+            tooltip?.addPara(
+                MagicTxt.getString("ml_mp_appliedRefit"),
+                10f,
+                Misc.getTextColor(),
+                Misc.getPositiveHighlightColor(),
+                skin.name
+            )
 
             if (skin.isShiny) {
                 tooltip?.addPara(

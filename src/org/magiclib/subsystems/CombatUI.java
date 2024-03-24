@@ -115,8 +115,50 @@ public class CombatUI {
             Vector2f inputLoc,
             float extraBarPadding,
             Vector2f rootLoc) {
+        return drawSubsystemStatus(ship, fill, name, MagicUI.GREENCOLOR, extraText, extraTextColor, stateText, hotkey, briefText, showInfoText, guiBarCount, inputLoc, extraBarPadding, rootLoc);
+    }
+    /**
+     * Draws the status bar for a basic subsystem, imitating the shipsystem UI. If show info mode is enabled, it will
+     * take up an additional UI slot.
+     * <p>
+     * If the subsystem script attempts to render additional HUD elements (e.g. using the renderAuxiliaryStatusBar
+     * method) then they will not have an effect on the output location. This must be predetermined by the input
+     * guiBarCount parameter to make room for them.
+     *
+     * @param ship            Player ship
+     * @param fill            Value 0 to 1, how full the bar is from left to right
+     * @param name            Name of subsystem
+     * @param hudColor        Color of the subsystem bar and text.
+     * @param extraText       Info string opportunity. Appears to the right of the status bar.
+     * @param extraTextColor  color of extraText. if null, uses standard text color
+     * @param stateText       Subsystem activity status. Appears to left of status bar.
+     * @param hotkey          Hotkey string of key used to activate subsystem
+     * @param briefText       A brief description of what the subsystem does
+     * @param showInfoText    If the subsystem is in show info mode
+     * @param guiBarCount     The number of gui bars this subsystem will use
+     * @param inputLoc        the Input location (top left) of the subsystem GUI element
+     * @param extraBarPadding
+     * @param rootLoc         the Root location of subsystem GUI elements
+     * @return The output location (bottom left) of GUI element
+     * @author tomatopaste
+     */
+    public static Vector2f drawSubsystemStatus(
+            ShipAPI ship,
+            float fill,
+            String name,
+            Color hudColor,
+            String extraText,
+            Color extraTextColor,
+            String stateText,
+            String hotkey,
+            String briefText,
+            boolean showInfoText,
+            int guiBarCount,
+            Vector2f inputLoc,
+            float extraBarPadding,
+            Vector2f rootLoc) {
         CombatEngineAPI engine = Global.getCombatEngine();
-        Color colour = (ship.isAlive()) ? MagicUI.GREENCOLOR : MagicUI.BLUCOLOR;
+        Color colour = (ship.isAlive()) ? hudColor : MagicUI.BLUCOLOR;
 
         final int bars = (showInfoText) ? guiBarCount + 1 : guiBarCount;
 
@@ -480,6 +522,7 @@ public class CombatUI {
 
         Vector2f titleTextLoc = new Vector2f(loc);
         Vector2f infoTextLoc = new Vector2f(rootLoc);
+        MagicUI.scale(infoTextLoc);
         infoTextLoc.y += barHeight + MagicUI.scale(8f);
         //infoTextLoc.x -= 4f * MagicUI.UI_SCALING;
 
@@ -491,7 +534,7 @@ public class CombatUI {
         if (showInfo) {
             int alpha = (int) MathUtils.clamp(
                     (255f * 1.5f) - (Global.getCombatEngine().getTotalElapsedTime(true) - MagicSubsystemsCombatPlugin.Companion.getInfoHotkeyLastPressed()) * 255f,
-                    65f,
+                    MagicSubsystemsManager.getInfoTextMaxFadeout(),
                     255f);
             Color foregroundColor = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
 

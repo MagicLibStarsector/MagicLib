@@ -631,7 +631,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         shipBeingViewed = ship
         // Add null as the first item as a default paintjob.
         val items = listOf(null) + paintjobsForShip
-        val paintjobSelectionCellsPerRow = 2
+        val paintjobSelectionCellsPerRow = 4
         val popupWidth = ((cellWidth + padding) * items.count()
             .coerceAtMost(paintjobSelectionCellsPerRow)
                 + opad * 6) // padding

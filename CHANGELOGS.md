@@ -1,3 +1,27 @@
+Version 1.4.2
+
+**MagicPaintjobs**
+- Fixed all possible paintjobs being shown as applied on the hullmod (reported by NITEGHXST).
+
+**MagicBounty**
+- Fixed bounty board job cell all grey when portrait is invalid (reported by mrmagolor, others).
+
+**Misc**
+- Moved `PIDController` from `org.magiclib.subsystems.drones` to `org.magiclib.util` (non-breaking change, old one is marked deprecated).
+
+Version 1.4.1
+
+**MagicSubsystems**
+- UI is no longer shown if all subsystems were removed during combat (President Matt Damon).
+- Distortion no longer affects subsystem text (President Matt Damon)
+- Info text now scales based on screen size and fades in/out (President Matt Damon).
+
+**MagicPaintjobs**
+- Paintjobs popup is four wide instead of two (reported by NITEGHXST).
+
+**MagicAchievements**
+- Memory is now saved during combat as well, which fixes the Revisionist achievement (reported by Fuzzatron)
+
 Version 1.4.0
 
 **New: MagicSubsystems**

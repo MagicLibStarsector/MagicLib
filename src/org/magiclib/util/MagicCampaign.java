@@ -97,6 +97,7 @@ public class MagicCampaign {
      *             .setFirstName("David")
      *             .setLastName("Rengel")
      *             .setGender(FullName.Gender.MALE)
+     *             .create();
      * </pre>
      *
      * @since 0.46.1

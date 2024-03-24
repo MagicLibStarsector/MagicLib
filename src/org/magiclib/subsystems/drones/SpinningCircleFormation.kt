@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.util.Misc
 import org.lazywizard.lazylib.MathUtils
+import org.magiclib.util.PIDController
 
 class SpinningCircleFormation : DroneFormation() {
     var currentRotation = MathUtils.getRandomNumberInRange(30f, 90f)

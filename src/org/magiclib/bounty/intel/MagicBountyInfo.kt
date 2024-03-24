@@ -48,9 +48,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         return activeBounty?.calculateCreditReward()?.toInt() ?: bountySpec.job_credit_reward
     }
 
-    override fun getJobIcon(): String? {
+    override fun getJobIcon(): String {
         if (bountySpec.job_show_captain) {
             return activeBounty?.fleet?.commander?.portraitSprite ?: bountySpec.target_portrait
+            ?: "graphics/portraits/portrait_generic_grayscale.png"
         }
         return "graphics/portraits/portrait_generic_grayscale.png"
     }
@@ -240,8 +241,15 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         width: Float,
         height: Float
     ) {
+        var jobIcon = this.getJobIcon()
+        // Double check portrait sprite. If it fails, use a generic one and log it.
+        kotlin.runCatching { Global.getSettings().loadTexture(jobIcon) }
+            .onFailure {
+                Global.getLogger(this::class.java).error("Failed to load bounty icon: $jobIcon", it)
+                jobIcon = "graphics/portraits/portrait_generic_grayscale.png"
+            }
         val textTooltip = tooltip.beginImageWithText(
-            this.getJobIcon() ?: "graphics/portraits/portrait_generic_grayscale.png",
+            jobIcon,
             64f,
             width,
             true

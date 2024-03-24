@@ -1,8 +1,11 @@
 package org.magiclib.achievements;
 
 import com.fs.starfarer.api.EveryFrameScript;
+import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
+import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
@@ -535,6 +538,16 @@ public class MagicAchievement {
     /**
      * A map for storing arbitrary data. Works like the vanilla MemoryAPI, except it is saved outside of save files.
      */
+    public @NotNull Map<String, Object> getAchievementMemory() {
+        return memory;
+    }
+
+    /**
+     * A map for storing arbitrary data. Works like the vanilla MemoryAPI, except it is saved outside of save files.
+     *
+     * @deprecated Use {@link #getAchievementMemory()} instead.
+     * The method has been renamed to avoid confusion with the vanilla MemoryAPI, which is not persisted outside of saves.
+     */
     public @NotNull Map<String, Object> getMemory() {
         if (Global.getSector() == null) return memory;
 
@@ -546,6 +559,13 @@ public class MagicAchievement {
         }
 
         saveAfterOneTickScript.saveNextTick = true;
+
+        // Save in combat, too.
+        if (Global.getCurrentState() == GameState.COMBAT && Global.getCombatEngine() != null) {
+            SaveAfterOneTickCombatScript combatScript = new SaveAfterOneTickCombatScript();
+            Global.getCombatEngine().addPlugin(combatScript);
+            combatScript.saveNextTick = true;
+        }
 
         return memory;
     }
@@ -578,6 +598,22 @@ public class MagicAchievement {
 
             saveChangesWithoutLogging();
             saveNextTick = false;
+        }
+    }
+
+    private class SaveAfterOneTickCombatScript extends BaseEveryFrameCombatPlugin {
+        public boolean saveNextTick;
+
+        @Override
+        public void advance(float amount, List<InputEventAPI> events) {
+            if (!saveNextTick) return;
+
+            saveChangesWithoutLogging();
+            saveNextTick = false;
+
+            if (Global.getCombatEngine() != null) {
+                Global.getCombatEngine().removePlugin(this);
+            }
         }
     }
 }

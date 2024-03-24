@@ -20,6 +20,7 @@ object MagicSubsystemsManager {
     var widgetOffsetY = 0
     var infoHotkey: Int = -1
     var infoByDefault: Boolean = true
+    var infoAlphaFadeout: Int = 40
     var hotkeyList: List<Int> = mutableListOf()
 
     /**
@@ -141,6 +142,7 @@ object MagicSubsystemsManager {
 
             widgetOffsetX = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetX") ?: 0
             widgetOffsetY = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetY") ?: 0
+            infoAlphaFadeout = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_infoTextFadeout") ?: 0
         } else {
             infoHotkey = MagicSettings.getInteger("MagicLib", "subsystemInfoKey") ?: 23
             hotkeyList = MagicSettings.getList("MagicLib", "subsystemKeys")
@@ -153,7 +155,12 @@ object MagicSubsystemsManager {
 
     @JvmStatic
     fun getWidgetOffsetVector(): Vector2f {
-        return Vector2f(widgetOffsetX.toFloat(), widgetOffsetY.toFloat());
+        return Vector2f(widgetOffsetX.toFloat(), widgetOffsetY.toFloat())
+    }
+
+    @JvmStatic
+    fun getInfoTextMaxFadeout(): Int {
+        return infoAlphaFadeout
     }
 }
 
