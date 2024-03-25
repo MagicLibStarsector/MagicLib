@@ -4,7 +4,7 @@
   "author": "Modding Community: Dark.Revenant, LazyWizard, Nicke, Originem, Rubi, Schaf-Unschaf, Snrasha, Tartiflette, Wisp, Wyvern...",
   "utility": "true",
   # Using the long version format lets the game correctly compare major/minor/patch versions.
-  "version": { "major": '1', "minor": '4', "patch": '2' },
+  "version": { "major": '1', "minor": '4', "patch": '3' },
   "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
   "gameVersion": "0.97a-RC11",
   "dependencies": [

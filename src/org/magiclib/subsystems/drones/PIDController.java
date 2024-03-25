@@ -1,46 +1,13 @@
 package org.magiclib.subsystems.drones;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.combat.ShipCommand;
-import org.lazywizard.lazylib.MathUtils;
-import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-//thanks to ruddygreat for providing this
-//code vaguely copied from the wikipedia article for a PID controller, using tomatopaste's CMUtilWs as reference for when things weren't lining up
-//basic PID controller for smooth moves
-
-/**
- * @deprecated Moved to org.magiclib.util.PIDController. This will still work for backwards compatibility, but may be removed in the future.
- */
-@Deprecated
+// TODO: Remove this, use the one in org.magiclib.util instead.
+// It's still needed for backwards compat because DroneFormation uses it.
 public class PIDController {
-
-    //error for x, y & rotation
-    public float lastErrorX = 0;
-    public float lastErrorY = 0;
-    public float lastErrorR = 0;
-
-    //strafe accel is this % of forward accel, used as a mult for the y factors
-    public float strafeRatio = 0.5f;
-
-    //proporional values
-    public final float KpX;
-    public final float KpY;
-    public final float KpR;
-
-    //derivative values
-    public final float KdX;
-    public final float KdY;
-    public final float KdR;
-
-    //if error for either value is *BELOW* this, then movement/rotation will not be performed.
-    public float allowedLocationalErrorSquared = 1f;
-    public float allowedRotationalError = 1f;
-
-    //if locational error is below the defined allowed value, then deceleration will be performed.
-    public boolean decelerateIfBelowError = true;
+    // Delegate to the one in org.magiclib.util so logic isn't duplicated.
+    public final org.magiclib.util.PIDController controller;
 
     /**
      * @param Kp movement proportional. higher value increases overshoot.
@@ -49,61 +16,19 @@ public class PIDController {
      * @param Rd rotational derivative. higher value dampens oscillation.
      */
     public PIDController(float Kp, float Kd, float Rp, float Rd) {
-
-        this.KpX = Kp;
-        this.KpY = Kp * strafeRatio;
-        this.KpR = Rp;
-
-        this.KdX = Kd;
-        this.KdY = Kd * strafeRatio;
-        this.KdR = Rd;
+        controller = new org.magiclib.util.PIDController(Kp, Kd, Rp, Rd);
     }
 
     public PIDController copy() {
-        return new PIDController(KpX, KdX, KpR, KdR);
+        return new PIDController(controller.KpX, controller.KdX, controller.KpR, controller.KdR);
     }
 
     public void move(Vector2f dest, ShipAPI drone) {
-        Vector2f diff = Vector2f.sub(dest, drone.getLocation(), new Vector2f());
-        if (diff.lengthSquared() < allowedLocationalErrorSquared) {
-            if (decelerateIfBelowError) {
-                drone.giveCommand(ShipCommand.DECELERATE, null, 0);
-            }
-            return;
-        }
-
-        //this one line is from tomato
-        //rotate the vector for ??? reasons
-        VectorUtils.rotate(diff, 90f - drone.getFacing());
-
-        float errorX = diff.x;
-        float derivativeX = (errorX - lastErrorX) / Global.getCombatEngine().getElapsedInLastFrame();
-        float outputX = KpX * errorX + KdX * derivativeX;
-        ShipCommand commandX = outputX > 0f ? ShipCommand.STRAFE_RIGHT : ShipCommand.STRAFE_LEFT;
-        drone.giveCommand(commandX, null, 0);
-        lastErrorX = errorX;
-
-        float errorY = diff.y;
-        float derivativeY = (errorY - lastErrorY) / Global.getCombatEngine().getElapsedInLastFrame();
-        float outputY = KpY * errorY + KdY * derivativeY;
-        ShipCommand commandY = outputY > 0f ? ShipCommand.ACCELERATE : ShipCommand.ACCELERATE_BACKWARDS;
-        drone.giveCommand(commandY, null, 0);
-        lastErrorY = errorY;
-
+        controller.move(dest, drone);
     }
 
     public void rotate(float destFacing, ShipAPI drone) {
-
-        float rotationError = MathUtils.getShortestRotation(drone.getFacing(), destFacing);
-        if (Math.abs(rotationError) < allowedRotationalError) {
-            return;
-        }
-
-        float derivativeR = (rotationError - lastErrorR) / Global.getCombatEngine().getElapsedInLastFrame();
-        float outputR = KpR * rotationError + KdR * derivativeR;
-        ShipCommand commandR = outputR > 0f ? ShipCommand.TURN_LEFT : ShipCommand.TURN_RIGHT;
-        drone.giveCommand(commandR, null, 0);
-        lastErrorR = rotationError;
+        controller.rotate(destFacing, drone);
     }
 }
 
