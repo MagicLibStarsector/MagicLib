@@ -1,3 +1,8 @@
+Version 1.4.3
+
+**MagicSubsystems**
+- Fixed accidental breaking change in MagicSubsystems 1.4.2. Caused a crash in KoL. Reported by persocom01.
+
 Version 1.4.2
 
 **MagicPaintjobs**
