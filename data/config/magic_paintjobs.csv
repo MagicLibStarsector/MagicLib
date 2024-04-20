@@ -11,4 +11,4 @@ id,hullIds,name,spriteId,unlockedAutomatically,tags,unlockConditions,description
 # description: Optional, default none. The description of the paintjob. Aim for one or two sentences.,,,,,,
 ,,,,,,,
 # Example,,,,,,,
-# magiclib_hullid_examplePaintjob," ""onslaught""",Oldslaught,graphics/ships/oldslaught.png,false,,Complete the 'Slayer' achievement to unlock.,Original Onslaught sprite.
+# magiclib_hullid_examplePaintjob,onslaught,Oldslaught,graphics/ships/oldslaught.png,false,,Complete the 'Slayer' achievement to unlock.,Original Onslaught sprite.
