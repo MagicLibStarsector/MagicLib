@@ -1,3 +1,15 @@
+Version 1.4.4
+
+**MagicSubsystems**
+- Added a check for empty drone list in `HoveringFormation` and `SpinningCircleFormation` (reported by Genir).
+- Changed result of `SpinningCircleFormation` division to get an angle to a float instead of int (reported by Genir).
+
+**MagicAchievements**
+- Added a TextPanel overload to `completeAchievement`, so completing an achievement will display a message there (requested by Lukas04).
+
+**MagicBounty**
+- Bounty board no longer resets scroll position when a bounty is accepted (requested by SteelSirokos).
+
 Version 1.4.3
 
 **MagicSubsystems**

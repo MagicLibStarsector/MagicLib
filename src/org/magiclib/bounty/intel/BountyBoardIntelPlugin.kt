@@ -20,12 +20,17 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     @Transient
     private var lastHeight: Float = 0f
 
-//    @Transient
+    //    @Transient
     private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
+
     @Transient
     private var interval: IntervalUtil = IntervalUtil(1f, 1f)
+
     @Transient
     private var tempBountyInfo: BountyInfo? = null
+
+    @Transient
+    private var scrollPos: Float? = null
 
     init {
         // Add this as a transient script if it's not already there.
@@ -97,12 +102,13 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
                 }
         }
     }
-//
 
     fun layoutPanel(panel: CustomPanelAPI, width: Float = lastWidth, height: Float = lastHeight) {
         val bountyList = BountyListPanelPlugin(panel)
         bountyList.panelWidth = 300f
         bountyList.panelHeight = height - 8f
+        doBeforeRefresh { scrollPos = bountyList.scroller?.yOffset }
+        doAfterRefresh { bountyList.scroller?.yOffset = scrollPos ?: 0f }
 
         val availableBounties: MutableList<BountyInfo> = PROVIDERS
             .flatMap { it.getBounties() }

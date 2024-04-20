@@ -71,6 +71,7 @@ abstract class FilteredListPanelPlugin<T : Filterable<T>>(parentPanel: CustomPan
         outerTooltipLocal.addCustom(holdingPanel, 0f).position.belowMid(filterButtonLocal, 2f)
         outerPanelLocal.addUIElement(outerTooltipLocal).inTL(0f, 0f)
         this.parentPanel.addComponent(outerPanelLocal).inTL(0f, 0f)
+        scroller = scrollerTooltip.externalScroller
 
         return outerPanelLocal
     }

@@ -7,6 +7,7 @@ import org.lazywizard.lazylib.MathUtils
 
 class HoveringFormation : DroneFormation() {
     override fun advance(ship: ShipAPI, drones: Map<ShipAPI, PIDController>, amount: Float) {
+        if (drones.isEmpty()) return
         val angleIncrease = 360f / drones.size
 
         drones.onEachIndexed { index, (drone, controller) ->

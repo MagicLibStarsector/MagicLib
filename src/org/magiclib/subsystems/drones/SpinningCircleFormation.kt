@@ -10,7 +10,8 @@ class SpinningCircleFormation : DroneFormation() {
     var rotationSpeed = 0.2f
 
     override fun advance(ship: ShipAPI, drones: Map<ShipAPI, PIDController>, amount: Float) {
-        val angleIncrease = 360 / drones.size
+        if (drones.isEmpty()) return
+        val angleIncrease = 360f / drones.size
         var angle = 0f
 
         currentRotation += rotationSpeed

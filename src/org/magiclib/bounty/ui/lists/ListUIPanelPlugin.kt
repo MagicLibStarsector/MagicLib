@@ -20,6 +20,8 @@ abstract class ListUIPanelPlugin<T>(protected var parentPanel: CustomPanelAPI) :
     var outerPanel: CustomPanelAPI? = null
     protected var outerTooltip: TooltipMakerAPI? = null
     protected var innerPanel: CustomPanelAPI? = null
+    @Transient
+    var scroller: ScrollPanelAPI? = null
 
     fun getListWidth(): Float {
         return rowWidth
@@ -79,6 +81,7 @@ abstract class ListUIPanelPlugin<T>(protected var parentPanel: CustomPanelAPI) :
         outerTooltipLocal.addCustom(holdingPanel, 0f).position.belowMid(headerComponent, 0f)
         outerPanelLocal.addUIElement(outerTooltipLocal).inTL(0f, 0f)
         this.parentPanel.addComponent(outerPanelLocal).inTL(0f, 0f)
+        scroller = scrollerTooltip.externalScroller
 
         return outerPanelLocal
     }
