@@ -1,6 +1,7 @@
 Version 1.4.4
 
 **MagicSubsystems**
+- Fixed crash when a subsystem has the same hotkey that another mod is using.
 - Added a check for empty drone list in `HoveringFormation` and `SpinningCircleFormation` (reported by Genir).
 - Changed result of `SpinningCircleFormation` division to get an angle to a float instead of int (reported by Genir).
 
@@ -9,6 +10,9 @@ Version 1.4.4
 
 **MagicBounty**
 - Bounty board no longer resets scroll position when a bounty is accepted (requested by SteelSirokos).
+
+**Other**
+- Changed MagicLib license to MIT from CC BY-NC-SA 4.0, basically removing any restrictions.
 
 Version 1.4.3
 

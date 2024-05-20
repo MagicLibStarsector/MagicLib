@@ -1,18 +1,20 @@
 package org.magiclib.subsystems
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.combat.*
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
+import com.fs.starfarer.api.combat.CombatEngineAPI
+import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.input.InputEventAPI
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicUI
-import java.util.*
 import kotlin.math.roundToInt
 
 class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
     companion object {
         var displayAdditionalInfo = MagicSubsystemsManager.infoByDefault
         var infoHotkeyLastPressed = 0f
+        val logger = Global.getLogger(MagicSubsystemsCombatPlugin::class.java)
     }
 
     override fun init(engine: CombatEngineAPI?) {
@@ -24,7 +26,14 @@ class MagicSubsystemsCombatPlugin : BaseEveryFrameCombatPlugin() {
         advanceSubsystems(amount)
 
         events
-            .firstOrNull { it.isKeyUpEvent && it.eventValue == MagicSubsystemsManager.infoHotkey }
+            .firstOrNull {
+                try {
+                    it.isKeyUpEvent && !it.isConsumed && it.eventValue == MagicSubsystemsManager.infoHotkey
+                } catch (e: Exception) {
+                    logger.warn("Error checking for hotkey (${it.eventChar}) event. Make sure it isn't being used by another mod.\nError: $e")
+                    false
+                }
+            }
             ?.let {
                 displayAdditionalInfo = !displayAdditionalInfo
                 infoHotkeyLastPressed = Global.getCombatEngine().getTotalElapsedTime(true)
