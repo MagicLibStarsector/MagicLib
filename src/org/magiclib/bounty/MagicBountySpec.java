@@ -175,6 +175,7 @@ public class MagicBountySpec {
     public String existing_target_memkey;
 
     //ALL OPTIONAL BELOW HERE
+    @Nullable public String target_importantPersonId;
     /**
      * Enemy captain's first name.
      */
@@ -352,6 +353,7 @@ public class MagicBountySpec {
             String job_memKey,
             String job_conclusion_script,
             String existing_target_memkey,
+            String target_importantPersonId,
             String target_first_name,
             String target_last_name,
             String target_portrait,
@@ -495,6 +497,7 @@ public class MagicBountySpec {
         this.job_memKey = job_memKey;
         this.job_conclusion_script = job_conclusion_script;
         this.existing_target_memkey = existing_target_memkey;
+        this.target_importantPersonId = target_importantPersonId;
         this.target_first_name = target_first_name;
         this.target_last_name = target_last_name;
         this.target_portrait = target_portrait;

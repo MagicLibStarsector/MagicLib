@@ -397,7 +397,9 @@ public final class MagicBountyCoordinator {
                 return null;
             }
 
-            PersonAPI captain = MagicCampaign.createCaptainBuilder(MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction))
+            PersonAPI captain = spec.target_importantPersonId != null
+                    ? Global.getSector().getImportantPeople().getPerson(spec.target_importantPersonId)
+                    : MagicCampaign.createCaptainBuilder(MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction))
                     // because apparently putting null in the json shows up as "null", a string...
                     .setIsAI(spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"))
                     .setAICoreType(spec.target_aiCoreId)

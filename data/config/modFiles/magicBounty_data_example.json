@@ -116,6 +116,7 @@
 
         #TARGET COMMANDER (OPTIONAL)
 
+        "target_importantPersonId": "your_important_person_id_optional", # Default: no value. The id of the important person to be used for the bounty commander. Replaces the rest of the target commander settings if set.
         "target_first_name":"Firstname", # Default: randomly selected based on faction.
         "target_last_name":"Lastname", # Default: randomly selected based on faction.
         "target_portrait":"portraitId", # Default: randomly selected based on faction. Id of the sprite in settings.json/graphics/characters or full file path.
