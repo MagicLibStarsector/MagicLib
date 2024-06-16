@@ -47,12 +47,12 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Console Commands-2023.5" level="project" />
     <orderEntry type="library" name="LunaLib" level="project" />
     <orderEntry type="library" name="starfarer-api" level="project" />
     <orderEntry type="library" name="Vayra's Sector" level="project" />
     <orderEntry type="library" name="Kotlin-Runtime" level="project" />
     <orderEntry type="library" name="SWP" level="project" />
     <orderEntry type="library" name="GraphicsLib" level="project" />
+    <orderEntry type="library" name="jars-ConsoleCommands" level="project" />
   </component>
 </module>

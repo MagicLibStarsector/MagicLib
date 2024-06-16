@@ -262,6 +262,7 @@ public class MagicBountyLoader {
 
                     getString(bountyId, "existing_target_memkey", null),
 
+                    getString(bountyId, "target_importantPersonId"),
                     getString(bountyId, "target_first_name"),
                     getString(bountyId, "target_last_name"),
                     getString(bountyId, "target_portrait"),

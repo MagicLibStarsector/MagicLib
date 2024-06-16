@@ -48,8 +48,9 @@
         
 		#"existing_target_memkey":"$memKey",
 
-        #TARGET COMMANDER (OPTIONAL)
-        
+        #TARGET COMMANDER (OPTIONAL),
+
+        "target_importantPersonId": null,
         "target_first_name":"",
         "target_last_name":"",
         "target_portrait":"",

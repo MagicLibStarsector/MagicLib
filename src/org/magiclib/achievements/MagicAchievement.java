@@ -3,9 +3,9 @@ package org.magiclib.achievements;
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
@@ -32,7 +32,8 @@ import java.util.*;
 public class MagicAchievement {
     // Note to self: don't use directly, call getLogger().
     private Logger logger;
-    @NotNull MagicAchievementSpec spec;
+    @NotNull
+    MagicAchievementSpec spec;
 
     @Nullable
     private Float progress = null;
@@ -127,6 +128,18 @@ public class MagicAchievement {
      * @param completedByPlayer The player's character who completed the achievement, if applicable.
      */
     public void completeAchievement(@Nullable PersonAPI completedByPlayer) {
+        completeAchievement(completedByPlayer, null);
+    }
+
+    /**
+     * Call when the achievement is completed.
+     * Sets the date completed and the player who completed it.
+     * Does nothing if already completed; uncomplete first, if you want to re-complete it for some reason.
+     *
+     * @param completedByPlayer The player's character who completed the achievement, if applicable.
+     * @param textPanel         The text panel to send an update to, if applicable, so the player sees the update during a dialog.
+     */
+    public void completeAchievement(@Nullable PersonAPI completedByPlayer, @Nullable TextPanelAPI textPanel) {
         if (isComplete()) return;
 
         this.dateCompleted = new Date();
@@ -134,6 +147,11 @@ public class MagicAchievement {
         if (completedByPlayer != null) {
             this.completedByUserId = completedByPlayer.getId();
             this.completedByUserName = completedByPlayer.getName().getFullName();
+        }
+
+//        Global.getSector().getCampaignUI().getCurrentInteractionDialog().getTextPanel()
+        if (textPanel != null && MagicAchievementManager.getInstance().getIntel() != null) {
+            MagicAchievementManager.getInstance().getIntel().sendUpdate(null, textPanel);
         }
 
         saveChangesWithoutLogging();

@@ -1,3 +1,24 @@
+Version 1.4.5
+
+**MagicBounty**
+- May now use "target_importantPersonId" for bounties to use a specific captain (Important Person id) instead of generating one (requested by multiple).
+
+Version 1.4.4
+
+**MagicSubsystems**
+- Fixed crash when a subsystem has the same hotkey that another mod is using.
+- Added a check for empty drone list in `HoveringFormation` and `SpinningCircleFormation` (reported by Genir).
+- Changed result of `SpinningCircleFormation` division to get an angle to a float instead of int (reported by Genir).
+
+**MagicAchievements**
+- Added a TextPanel overload to `completeAchievement`, so completing an achievement will display a message there (requested by Lukas04).
+
+**MagicBounty**
+- Bounty board no longer resets scroll position when a bounty is accepted (requested by SteelSirokos).
+
+**Other**
+- Changed MagicLib license to MIT from CC BY-NC-SA 4.0, basically removing any restrictions.
+
 Version 1.4.3
 
 **MagicSubsystems**
