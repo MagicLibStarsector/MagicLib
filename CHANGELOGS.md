@@ -1,7 +1,7 @@
 Version 1.4.5
 
 **MagicBounty**
-- May now use "target_importantPersonId" for bounties to use a specific captain (Important Person id) instead of generating one (required by multiple).
+- May now use "target_importantPersonId" for bounties to use a specific captain (Important Person id) instead of generating one (requested by multiple).
 
 Version 1.4.4
 
