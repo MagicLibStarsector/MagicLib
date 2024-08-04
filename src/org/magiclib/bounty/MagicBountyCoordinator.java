@@ -12,6 +12,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -377,6 +378,8 @@ public final class MagicBountyCoordinator {
             suitableTargetLocation = fleet.getCurrentAssignment().getTarget();
 
         } else {
+            List<String> themeBlocklist = new ArrayList<>(spec.location_themes_blacklist);
+            themeBlocklist.addAll(getBlocklistedThemes());
 
             //the bounty has to create the fleet
             suitableTargetLocation = MagicCampaign.findSuitableTarget(
@@ -384,7 +387,7 @@ public final class MagicBountyCoordinator {
                     spec.location_marketFactions,
                     spec.location_distance,
                     spec.location_themes,
-                    spec.location_themes_blacklist,
+                    themeBlocklist,
                     spec.location_entities,
                     //spec.location_defaultToAnySystem,
                     spec.location_defaultToAnyEntity,
@@ -599,7 +602,11 @@ public final class MagicBountyCoordinator {
         this.postScalingCreditRewardMultiplier = postScalingCreditRewardMultiplier;
     }
 
-    public static Boolean getDeadlinesEnabled() {
+    public List<String> getBlocklistedThemes() {
+        return Arrays.asList(Tags.THEME_HIDDEN);
+    }
+
+    public Boolean getDeadlinesEnabled() {
         return DEADLINES_ENABLED;
     }
 }

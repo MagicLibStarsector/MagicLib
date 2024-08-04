@@ -1,10 +1,13 @@
 package org.magiclib.util;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.ShipAPI;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.kotlin.MagicKotlinExtKt;
+import org.magiclib.kotlin.OtherExtensionsKt;
 
 import java.util.*;
 
@@ -63,5 +66,43 @@ public class MagicMisc {
             list.add(value);
         }
         return list;
+    }
+
+    /**
+     * Returns the angle (in degrees) between the <i>originShip</i>'s Forward Vector and <i>otherShip</i>>.
+     * <p>
+     * Contributed by rksharkz.
+     *
+     * @return the difference in degrees
+     * @see MagicMisc#getForwardVector(ShipAPI)
+     * @since 1.4.6
+     */
+    public static float getAngleToAnotherShip(ShipAPI originShip, ShipAPI otherShip) {
+        return OtherExtensionsKt.getAngleToAnotherShip(originShip, otherShip);
+    }
+
+    /**
+     * Returns the absolute angle (in degrees) between this ship and *otherShip*.
+     * <p>
+     * Contributed by rksharkz.
+     *
+     * @return the difference in degrees, as absolute value
+     * @see MagicMisc#getAngleToAnotherShip(ShipAPI, ShipAPI)
+     * @since 1.4.6
+     */
+    public static float getAbsoluteAngleToAnotherShip(ShipAPI originShip, ShipAPI otherShip) {
+        return OtherExtensionsKt.getAbsoluteAngleToAnotherShip(originShip, otherShip);
+    }
+
+    /**
+     * Returns the {@link Vector2f} of where the ship is looking (facing).
+     * <p>
+     * Contributed by rksharkz.
+     *
+     * @return the ship's forward vector, similar to {@link com.fs.starfarer.api.util.Misc#getUnitVectorAtDegreeAngle} used with the ship's {@link ShipAPI#getFacing}
+     * @since 1.4.6
+     */
+    public static Vector2f getForwardVector(ShipAPI ship) {
+        return OtherExtensionsKt.getForwardVector(ship);
     }
 }

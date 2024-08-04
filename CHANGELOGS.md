@@ -1,3 +1,12 @@
+Version 1.4.6
+
+**MagicBounty**
+- If a theme is in both the allowlist and blocklist, it'll be allowed and not blocked.
+- Added `theme_hidden` to the blocklist for all bounties, so bounties won't spawn in secret systems.
+
+**Other**
+- Added ShipAPI `getAngleToAnotherShip` and `getForwardVector` methods to `MagicMisc` (contributed by rksharkz).
+
 Version 1.4.5
 
 **MagicBounty**

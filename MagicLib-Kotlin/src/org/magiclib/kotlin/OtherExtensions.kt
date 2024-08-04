@@ -4,7 +4,13 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.VisualPanelAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.ui.LabelAPI
+import org.lazywizard.lazylib.VectorUtils
+import org.lwjgl.util.vector.Vector2f
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Shows the given people in the [VisualPanelAPI].
@@ -63,4 +69,53 @@ fun IntelInfoPlugin.addToManager(shouldNotifyPlayer: Boolean = false) {
 fun LabelAPI.autoSizeToText(text: String = this.text): LabelAPI {
     this.autoSizeToWidth(this.computeTextWidth(text))
     return this
+}
+
+/**
+ * Returns the angle (in degrees) between the `originShip`'s forward vector and [otherShip]'s.
+ *
+ * Contributed by rksharkz.
+ *
+ * @return the difference in degrees
+ * @see getForwardVector(ShipAPI)
+ * @since 1.4.6
+ */
+fun ShipAPI.getAngleToAnotherShip(otherShip: ShipAPI): Float {
+    val targetDirectionAngle = VectorUtils.getAngle(this.location, otherShip.location)
+    val myForwardVector: Vector2f = this.getForwardVector()
+    val myAngle = VectorUtils.getAngle(myForwardVector, otherShip.location)
+
+    return myAngle - targetDirectionAngle
+}
+
+/**
+ * Returns the absolute angle (in degrees) between this ship and [otherShip].
+ *
+ * Contributed by rksharkz.
+ *
+ * @return the difference in degrees, as absolute value
+ * @see getAngleToAnotherShip
+ * @since 1.4.6
+ */
+fun ShipAPI.getAbsoluteAngleToAnotherShip(otherShip: ShipAPI): Float {
+    return abs(this.getAngleToAnotherShip(otherShip).toDouble()).toFloat()
+}
+
+/**
+ * Returns the [Vector2f] of where the ship is looking (facing).
+ *
+ * Contributed by rksharkz.
+ *
+ * @return the ship's forward vector, similar to [com.fs.starfarer.api.util.Misc.getUnitVectorAtDegreeAngle] used with the ship's [ShipAPI.getFacing]
+ * @since 1.4.6
+ */
+fun ShipAPI.getForwardVector(): Vector2f {
+    val rotationRadians = Math.toRadians(this.facing.toDouble())
+
+    // Calculate the components of the forward vector
+    val x = cos(rotationRadians).toFloat()
+    val y = sin(rotationRadians).toFloat()
+
+    // Return the forward vector
+    return Vector2f(x, y)
 }
