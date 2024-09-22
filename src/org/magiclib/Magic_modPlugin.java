@@ -52,7 +52,7 @@ public class Magic_modPlugin extends BaseModPlugin {
 //            if (!Global.getSettings().getModManager().isModEnabled("vayrasector") || VayraModPlugin.UNIQUE_BOUNTIES == false) {
 //                MagicBountyHVB.convertHVBs(false);
 //            }
-            if (MagicBountyLoader.JSONfailed) {
+            if (MagicBountyLoader.JSONfailedFlagForDevMode) {
                 String message = System.lineSeparator()
                         + System.lineSeparator() + "Malformed MagicBounty_data.json detected"
                         + System.lineSeparator() + System.lineSeparator();
