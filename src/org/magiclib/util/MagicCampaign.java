@@ -1294,6 +1294,9 @@ public class MagicCampaign {
 
         //cull systems with blacklisted themes
         if (avoid_themes != null && !avoid_themes.isEmpty()) {
+            // remove any blacklisted themes that are explicitly requested.
+            // this is to allow a bounty to spawn in a hardcoded-blacklisted system (e.g. gate hauler system).
+            avoid_themes.removeAll(seek_themes);
 
             //merge default theme blacklist if needed 
             if (avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)) {

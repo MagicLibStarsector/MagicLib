@@ -384,7 +384,7 @@ public final class ActiveBounty {
      * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
      */
     public @NotNull Float getDaysRemainingToComplete() {
-        if (!MagicBountyCoordinator.getDeadlinesEnabled())
+        if (!MagicBountyCoordinator.getInstance().getDeadlinesEnabled())
             return Float.POSITIVE_INFINITY;
 
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {

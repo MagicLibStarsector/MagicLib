@@ -1,10 +1,13 @@
 package org.magiclib.bounty;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
+import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,7 +18,6 @@ import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.util.*;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -29,7 +31,7 @@ public class MagicBountyLoader {
      * {@link MagicBountySpec} Map containing all the bounties loaded from JSON file, key is the bounty unique id.
      */
     public static Map<String, MagicBountySpec> BOUNTIES = new HashMap<>();
-    public static boolean JSONfailed = false;
+    public static boolean JSONfailedFlagForDevMode = false;
     public static String BOUNTY_FLEET_TAG = "MagicLib_Bounty_target_fleet";
     private static JSONObject bounty_data;
     private static final Logger LOG = Global.getLogger(MagicBountyLoader.class);
@@ -86,7 +88,7 @@ public class MagicBountyLoader {
         //load MagicBounty_data.json
         bounty_data = loadBountyData();
 
-        if (bounty_data == null) return;
+        if (bounty_data.length() == 0) return;
 
         int x = 0;
         //time to sort that stuff
@@ -625,16 +627,58 @@ public class MagicBountyLoader {
      * Load the bounty data file
      */
     private static JSONObject loadBountyData() {
-        JSONObject this_bounty_data = null;
-        try {
-            if (Magic_modPlugin.isMagicLibTestMode())
-                this_bounty_data = Global.getSettings().getMergedJSONForMod(TESTING_PATH, MagicVariables.MAGICLIB_ID);
-            else
-                this_bounty_data = Global.getSettings().getMergedJSONForMod(PATH, MagicVariables.MAGICLIB_ID);
-        } catch (IOException | JSONException ex) {
-            LOG.fatal("MagicBountyData is unable to read magicBounty_data.json", ex);
-            JSONfailed = true;
+        JSONObject this_bounty_data = new JSONObject();
+        String jsonPath = Magic_modPlugin.isMagicLibTestMode() ? TESTING_PATH : PATH;
+
+        for (final ModSpecAPI modSpec : Global.getSettings().getModManager().getEnabledModsCopy()) {
+            try {
+                JSONObject modJson = Global.getSettings().loadJSON(jsonPath, modSpec.getId());
+
+                if (modJson.length() > 0) {
+                    for (Iterator<String> iterator = modJson.keys(); iterator.hasNext(); ) {
+                        String key = iterator.next();
+                        this_bounty_data.put(key, modJson.getJSONObject(key));
+                    }
+                }
+
+            } catch (final Exception ex) {
+                if (ex instanceof RuntimeException && ex.getMessage().contains("not found in")) {
+                    // Ignore exceptions caused by the mod not having bounties
+                    continue;
+                }
+
+                LOG.fatal("MagicBountyData was unable to read magicBounty_data.json for mod " + modSpec.getId(), ex);
+                JSONfailedFlagForDevMode = true;
+                Global.getSector().addTransientScript(new EveryFrameScript() {
+                    private boolean done = false;
+                    private float timer = 0;
+
+                    @Override
+                    public boolean isDone() {
+                        return done;
+                    }
+
+                    @Override
+                    public boolean runWhilePaused() {
+                        return false;
+                    }
+
+                    @Override
+                    public void advance(float amount) {
+                        timer += amount;
+
+                        if (timer > 2 && !done) {
+                            Global.getSector().getCampaignUI().addMessage(String.format("Unable to load MagicBounties for: %s.\n%s",
+                                    modSpec.getId(),
+                                    ex.getMessage()), Misc.getNegativeHighlightColor());
+                            done = true;
+                            Global.getSector().removeTransientScript(this);
+                        }
+                    }
+                });
+            }
         }
+
         return this_bounty_data;
     }
 

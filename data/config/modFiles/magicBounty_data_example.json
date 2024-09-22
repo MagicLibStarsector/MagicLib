@@ -188,7 +188,7 @@
             "faction"
         ],
         "location_distance": "CLOSE", # Default: no preference. How far from the center to spawn the bounty fleet. Options: "CORE", "CLOSE", "FAR" or just left empty to ignore.
-        "location_themes": [ # Default: no preference. System themes that are valid to spawn the fleet at.
+        "location_themes": [ # Default: no preference. System themes that are valid to spawn the fleet at. Overrides `location_themes_blacklist` (if item is present in both, it's allowed).
             "theme_core_unpopulated",
             "theme_core_populated",
             "theme_core",
@@ -214,9 +214,9 @@
             "procgen_no_theme", #not so special bounties should add this attribute
             "procgen_no_theme_pulsar_blackhole", #or this one
         ],
-        "location_themes_blacklist": [ # Default: none. System themes to never spawn the fleet at.
+        "location_themes_blacklist": [ # Default: `[theme_hidden]` only. System themes to never spawn the fleet at. Items present in `location_themes` are not blacklisted, even if in this list.
             "theme_already_occupied", #Will avoid systems with "hostile" themes taken from a merged list between mods. Includes all Remnant, Plague-Bearer, OCI, Blade-Breaker systems
-            "theme_already_colonized", #Will explicitely exclude systems with active markets, kind of mandatory for pirate bounties given that faction colonize otherwise interesting systems with Nexerelin
+            "theme_already_colonized", #Will explicitly exclude systems with active markets, kind of mandatory for pirate bounties given that faction colonize otherwise interesting systems with Nexerelin
             "theme_hidden", #Used by that one story system
 			"no_pulsar_blackhole",
         ],
