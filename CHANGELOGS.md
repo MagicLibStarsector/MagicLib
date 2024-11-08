@@ -1,9 +1,16 @@
+Version 1.4.7
+**MagicBounty**
+- Console command to validate a bounty now includes `existing_target_memkey` in its calculation.
+  - This is only a change to the console command; the bounty generation itself included this already.
+**Misc**
+- Fixed a few Kotlin extension methods requiring non-null params despite underlying method not needing them (thanks @niko).
+
 Version 1.4.6
 
 **MagicBounty**
-- If a theme is in both the allowlist and blocklist, it'll be allowed and not blocked.
+- Fixed mods with broken bounties causing all bounties to not show up. Added in-game message if this happens.
 - Added `theme_hidden` to the blocklist for all bounties, so bounties won't spawn in secret systems.
-- Fixed one mod with broken bounties causing all bounties to not show up, added in-game message if this happens.
+- If a theme is in both the allowlist and blocklist, it'll be allowed and not blocked.
 
 **Other**
 - Added ShipAPI `getAngleToAnotherShip` and `getForwardVector` methods to `MagicMisc` (contributed by rksharkz).

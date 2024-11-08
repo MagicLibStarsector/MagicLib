@@ -289,13 +289,13 @@ inline fun Float.normalizeAngle() = Misc.normalizeAngle(this)
 /**
  * @since 0.46.0
  */
-inline fun SectorEntityToken.findNearestLocalMarket(maxDist: Float, filter: BaseEventPlugin.MarketFilter) =
+inline fun SectorEntityToken.findNearestLocalMarket(maxDist: Float, filter: BaseEventPlugin.MarketFilter? = null) =
     Misc.findNearestLocalMarket(this, maxDist, filter)
 
 /**
  * @since 0.46.0
  */
-inline fun SectorEntityToken.findNearbyLocalMarkets(maxDist: Float, filter: BaseEventPlugin.MarketFilter) =
+inline fun SectorEntityToken.findNearbyLocalMarkets(maxDist: Float, filter: BaseEventPlugin.MarketFilter? = null) =
     Misc.findNearbyLocalMarkets(this, maxDist, filter)
 
 /**
@@ -1675,9 +1675,9 @@ inline fun CampaignFleetAPI.getGoSlowBurnLevel() = Misc.getGoSlowBurnLevel(this)
  * @since 0.46.0
  */
 inline fun FleetMemberAPI.applyDamage(
-    random: Random, level: Misc.FleetMemberDamageLevel,
+    random: Random? = null, level: Misc.FleetMemberDamageLevel,
     withCRDamage: Boolean, crDamageId: String, crDamageReason: String,
-    withMessage: Boolean, textPanel: TextPanelAPI,
+    withMessage: Boolean, textPanel: TextPanelAPI? = null,
     messageText: String
 ) = Misc.applyDamage(
     this,
@@ -1695,9 +1695,9 @@ inline fun FleetMemberAPI.applyDamage(
  * @since 0.46.0
  */
 inline fun FleetMemberAPI.applyDamage(
-    random: Random, damageMult: Float,
+    random: Random? = null, damageMult: Float,
     withCRDamage: Boolean, crDamageId: String, crDamageReason: String,
-    withMessage: Boolean, textPanel: TextPanelAPI,
+    withMessage: Boolean, textPanel: TextPanelAPI? = null,
     messageText: String
 ) = Misc.applyDamage(
     this,
@@ -1905,7 +1905,7 @@ inline fun FloatArray.findKth(k: Int) = Misc.findKth(this, k)
 /**
  * @since 0.46.0
  */
-inline fun Float.getAdjustedBaseRange(ship: ShipAPI, weapon: WeaponAPI) = Misc.getAdjustedBaseRange(this, ship, weapon)
+inline fun Float.getAdjustedBaseRange(ship: ShipAPI?, weapon: WeaponAPI?) = Misc.getAdjustedBaseRange(this, ship, weapon)
 
 /**
  * @since 0.46.0

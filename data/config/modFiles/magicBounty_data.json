@@ -14,6 +14,7 @@
 		"trigger_weight_mult":1,
 		#"trigger_memKeys_all":{},
 		#"trigger_memKeys_any":{},
+		#"trigger_memKeys_none":{},
 		#"trigger_playerRelationship_atLeast":{"hegemony":0.1,},
 		"trigger_playerRelationship_atMost":{
 			"pirates":-0.25,

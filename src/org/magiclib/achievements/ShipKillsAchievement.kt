@@ -46,6 +46,10 @@ abstract class ShipKillsAchievement(
     override fun onSaveGameLoaded(isComplete: Boolean) {
         super.onSaveGameLoaded(isComplete)
         if (isComplete) {
+            // If achievement is marked as complete, call `onCompleted`.
+            // It _should_ already have been called, but maybe someone edited the text file to unlock it,
+            // or maybe a new paintjob was added to this achievement after the player completed it, so
+            // if we don't re-unlock the paintjobs here, the new ones won't be unlocked.
             onCompleted(null)
             return
         }

@@ -25,6 +25,9 @@
         "trigger_memKeys_any": { # Default: no values. The job will show if ANY of the listed memKeys exist with the specified boolean value.
             "$triggerKey":true,
         },
+        "trigger_memKeys_none": { # Default: no values. The job will NOT show if ANY of the listed memKeys exist with the specified boolean value.
+            "$triggerKey":true,
+        },
         "trigger_playerRelationship_atLeast": { # Default: no values. This job will require the player to have the specified relationship or HIGHER with the specified faction(s).
             "factionLikedId":0.25,
         },

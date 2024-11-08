@@ -1,8 +1,10 @@
 package org.magiclib.bounty.console;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.RepLevel;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
@@ -255,7 +257,7 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
 
         //WHEN 'NONE' MEMKEYS ARE SET
         if (bounty.trigger_memKeys_none != null && !bounty.trigger_memKeys_none.isEmpty()) {
-            Console.showMessage(" - " + "Requires none of the following MemKey(s): ");
+            Console.showMessage(" - " + "Requires the following MemKey(s) to NOT exist with specific values: ");
             boolean key = false;
             for (String k : bounty.trigger_memKeys_none.keySet()) {
                 Boolean value = bounty.trigger_memKeys_none.get(k);
@@ -268,6 +270,25 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
                 }
             }
             if (!key) valid = false;
+        }
+
+        if (bounty.existing_target_memkey != null && !bounty.existing_target_memkey.isEmpty()) {
+            Console.showMessage(" - " + "Requires a fleet with the MemKey set on it: " + bounty.existing_target_memkey);
+            boolean key = false;
+            for (StarSystemAPI s : Global.getSector().getStarSystems()) {
+                for (CampaignFleetAPI f : s.getFleets()) {
+                    if (f.getMemoryWithoutUpdate().contains(bounty.existing_target_memkey)) {
+                        key = true;
+                        Console.showMessage("     " + "PASS");
+                        break;
+                    }
+                }
+            }
+
+            if (!key) {
+                valid = false;
+                Console.showMessage("     " + "FAIL");
+            }
         }
 
         if (valid) {

@@ -17,6 +17,7 @@
         "trigger_weight_mult": 0,
         #"trigger_memKeys_all": {"$key":true,},
         #"trigger_memKeys_any": {"$key":true,},
+        #"trigger_memKeys_none": {"$key":true,},
         #"trigger_playerRelationship_atLeast": {"faction":0.0,},
         #"trigger_playerRelationship_atMost": {"faction":0.0,},
         
