@@ -2,6 +2,7 @@ package org.magiclib.bounty;
 
 import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -48,11 +49,13 @@ public class MagicBountyCampaignPlugin extends BaseCampaignPlugin {
     private static String getBountyKeyForInteractionTarget(SectorEntityToken interactionTarget) {
         Collection<ActiveBounty> bounties = MagicBountyCoordinator.getInstance().getActiveBounties().values();
 
-        if (bounties.size() > 0 && interactionTarget instanceof CampaignFleetAPI) {
+        if (!bounties.isEmpty() && interactionTarget instanceof CampaignFleetAPI) {
             for (ActiveBounty bounty : bounties) {
-                if (bounty.getFlagshipId() != null
-                        && bounty.getFlagshipId().equals(((CampaignFleetAPI) interactionTarget).getFlagship().getId())) {
-                    return bounty.getKey();
+                if (bounty.getFlagshipId() != null) {
+                    FleetMemberAPI flagship = ((CampaignFleetAPI) interactionTarget).getFlagship();
+                    if (flagship != null && bounty.getFlagshipId().equals(flagship.getId())) {
+                        return bounty.getKey();
+                    }
                 }
             }
         }
