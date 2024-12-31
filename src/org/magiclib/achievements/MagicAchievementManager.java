@@ -326,6 +326,11 @@ public class MagicAchievementManager {
             try {
                 JSONObject savedAchievementJson = savedAchievementsJson.getJSONObject(i);
                 String specId = savedAchievementJson.optString("id", "");
+
+                if (specId.isEmpty()) {
+                    continue;
+                }
+
                 // Try to load the achievement from a spec in a loaded mod.
                 MagicAchievement loadedAchievement = generatedAchievementsById.get(specId);
 

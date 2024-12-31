@@ -20,7 +20,7 @@ import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.kotlin.setAlpha
-import org.magiclib.util.MagicMisc
+import org.magiclib.util.MagicCampaign
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.ceil
@@ -103,6 +103,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         return activeBounty?.stage == ActiveBounty.Stage.Accepted
     }
 
+    /**
+     * Whether the bounty should be shown as available to the player.
+     * If it should be, creates it if it doesn't exist.
+     */
     override fun shouldShow(): Boolean {
         if (activeBounty != null) {
             when (activeBounty!!.stage) {
@@ -122,117 +126,60 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             return false
         }
 
-        var shouldShow = true
-        if (bountySpec.trigger_min_days_elapsed > 0 && bountySpec.trigger_min_days_elapsed > MagicMisc.getElapsedDaysSinceGameStart()) {
-            shouldShow = false
-        }
-        if (bountySpec.trigger_player_minLevel > 0 && bountySpec.trigger_player_minLevel > Global.getSector().playerStats.level) {
-            shouldShow = false
-        }
-
-        if (bountySpec.trigger_min_fleet_size > 0) {
-            val playerFleet = Global.getSector().playerFleet
-            val effectiveFP = playerFleet.fleetPoints.toFloat()
-            if (bountySpec.trigger_min_fleet_size > effectiveFP) {
-                shouldShow = false
-            }
-        }
-
-        val memory = Global.getSector().memoryWithoutUpdate
-        //checking trigger_memKeys_all
-        if (bountySpec.trigger_memKeys_all.isNotEmpty() && shouldShow) {
-            shouldShow = checkAllMemKeys(memory)
-        }
-
-        //checking memKeys_none
-        if (bountySpec.trigger_memKeys_none.isNotEmpty() && shouldShow) {
-            shouldShow = checkNoneMemKeys(memory)
-        }
-
-        //checking trigger_memKeys_any
-        if (bountySpec.trigger_memKeys_any.isNotEmpty() && shouldShow) {
-            shouldShow = checkAnyMemKeys(memory)
+        if (!MagicCampaign.isAvailableToPlayer(
+                bountySpec.trigger_player_minLevel,
+                bountySpec.trigger_min_days_elapsed,
+                bountySpec.trigger_min_fleet_size,
+                bountySpec.trigger_memKeys_all,
+                bountySpec.trigger_memKeys_any,
+                bountySpec.trigger_memKeys_none,
+                bountySpec.trigger_playerRelationship_atLeast,
+                bountySpec.trigger_playerRelationship_atMost
+            )
+        ) {
+            return false
         }
 
         //CHECK FOR EXISTING FLEET
-        if (bountySpec.existing_target_memkey != null && shouldShow) {
+        if (bountySpec.existing_target_memkey != null) {
             var targetFleetGone = true
             for (s in Global.getSector().starSystems) {
                 for (f in s.fleets) {
                     if (f.memoryWithoutUpdate.contains(bountySpec.existing_target_memkey)) {
-                        targetFleetGone = false
-                        break
+                        // The fleet already exists, so don't offer the bounty.
+                        return false
                     }
                 }
-                if (!targetFleetGone) break
             }
-            shouldShow = !targetFleetGone
         }
 
-        //check if close enough to receive from faction
+        //check if close enough to receive from an offering faction
         val rangeToShowBounties = 10f
-        if (bountySpec.job_forFaction != null && shouldShow) {
-            var withinRange = false
-            for (s in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {
-                if (Misc.getMarketsInLocation(s, bountySpec.job_forFaction).isNotEmpty()) {
+        var withinRange = false
+        for (system in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {
+            for (market in Misc.getMarketsInLocation(system)) {
+                if (MagicCampaign.isAvailableAtMarket(
+                        market,
+                        bountySpec.trigger_market_id,
+                        bountySpec.trigger_marketFaction_any,
+                        bountySpec.trigger_marketFaction_alliedWith,
+                        bountySpec.trigger_marketFaction_none,
+                        bountySpec.trigger_marketFaction_enemyWith,
+                        bountySpec.trigger_market_minSize
+                    )
+                ) {
                     withinRange = true
                     break
                 }
             }
-
-            shouldShow = withinRange
         }
+        if (!withinRange) return false
 
-        if (shouldShow && activeBounty == null) {
+        if (activeBounty == null) {
             MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
         }
 
-        return shouldShow
-    }
-
-    private fun checkAllMemKeys(memory: MemoryAPI): Boolean {
-        var allMemKeysFound = true
-        for (f in bountySpec.trigger_memKeys_all.keys) {
-            //check if the memKey exists
-            if (!memory.keys.contains(f) || memory[f] == null) {
-                allMemKeysFound = false
-                break
-            }
-            //check if it has the proper value
-            if (bountySpec.trigger_memKeys_all[f] != memory.getBoolean(f)) {
-                allMemKeysFound = false
-                break
-            }
-        }
-        return allMemKeysFound
-    }
-
-    private fun checkNoneMemKeys(memory: MemoryAPI): Boolean {
-        var noKeysFound = true
-        for ((key, value) in bountySpec.trigger_memKeys_none.entries) {
-            if (memory.contains(key) && memory[key] != null) {
-                if (memory.getBoolean(key) == value) {
-                    noKeysFound = false
-                    break
-                }
-            }
-        }
-        return noKeysFound
-    }
-
-    private fun checkAnyMemKeys(memory: MemoryAPI): Boolean {
-        var anyKeyFound = false
-        for (key in bountySpec.trigger_memKeys_any.keys) {
-            //check if the memKey exists
-            if (memory.keys.contains(key)) {
-                //check if it has the proper value
-                if (bountySpec.trigger_memKeys_any[key] == memory.getBoolean(key)) {
-                    anyKeyFound = true
-                    break
-                }
-            }
-        }
-        return anyKeyFound
+        return true
     }
 
     override fun decorateListItem(

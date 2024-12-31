@@ -23,8 +23,11 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     //    @Transient
     private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
 
+    /**
+     * One day between bounty board refreshes.
+     */
     @Transient
-    private var interval: IntervalUtil = IntervalUtil(1f, 1f)
+    private val interval: IntervalUtil = IntervalUtil(1f, 1f)
 
     @Transient
     private var tempBountyInfo: BountyInfo? = null
