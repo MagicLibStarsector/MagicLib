@@ -24,23 +24,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Console.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/javadoc.zip!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/Vayras Sector-3.2.1/jars/VayraSector.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -50,9 +33,40 @@
     <orderEntry type="library" name="LunaLib" level="project" />
     <orderEntry type="library" name="starfarer-api" level="project" />
     <orderEntry type="library" name="Vayra's Sector" level="project" />
-    <orderEntry type="library" name="Kotlin-Runtime" level="project" />
     <orderEntry type="library" name="SWP" level="project" />
     <orderEntry type="library" name="GraphicsLib" level="project" />
     <orderEntry type="library" name="jars-ConsoleCommands" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib-2.8b/jars/LazyLib.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib-2.8b/jars/LazyLib.jar!/" />
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib-2.8b/jars/LazyLib.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib-2.8b/jars/lib/Kotlin-Runtime.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib-2.8b/jars/LazyLib-Kotlin.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib-2.8b/jars/LazyLib-Kotlin.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

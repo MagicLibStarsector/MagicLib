@@ -49,6 +49,10 @@ public class MagicAchievement {
     private final Map<String, Object> memory = new HashMap<>();
     @Nullable
     private Boolean hasProgressBar = null;
+    private static final long MEMORY_CHECK_INTERVAL_MS = 500;
+    private transient long lastMemoryCheckTimestampMillis = 0L;
+    private transient int lastMemoryHash = 0;
+
 
     /**
      * Shown if set. Only persisted in memory, not save file.
@@ -557,7 +561,7 @@ public class MagicAchievement {
      * A map for storing arbitrary data. Works like the vanilla MemoryAPI, except it is saved outside of save files.
      */
     public @NotNull Map<String, Object> getAchievementMemory() {
-        return memory;
+        return getMemory();
     }
 
     /**
@@ -569,23 +573,54 @@ public class MagicAchievement {
     public @NotNull Map<String, Object> getMemory() {
         if (Global.getSector() == null) return memory;
 
-        // There's no way to tell if a mod mutates an object in the map,
-        // so save it automatically one tick after a mod gets it.
-        if (saveAfterOneTickScript == null) {
-            saveAfterOneTickScript = new SaveAfterOneTickScript();
-            Global.getSector().addTransientScript(saveAfterOneTickScript);
-        }
+        long now = System.currentTimeMillis();
+        if (now - lastMemoryCheckTimestampMillis >= MEMORY_CHECK_INTERVAL_MS) {
+            lastMemoryCheckTimestampMillis = now;
 
-        saveAfterOneTickScript.saveNextTick = true;
+            int currentHash = calculateDeepHash(memory);
+            if (currentHash != lastMemoryHash) {
+                lastMemoryHash = currentHash;
 
-        // Save in combat, too.
-        if (Global.getCurrentState() == GameState.COMBAT && Global.getCombatEngine() != null) {
-            SaveAfterOneTickCombatScript combatScript = new SaveAfterOneTickCombatScript();
-            Global.getCombatEngine().addPlugin(combatScript);
-            combatScript.saveNextTick = true;
+                if (saveAfterOneTickScript == null) {
+                    saveAfterOneTickScript = new SaveAfterOneTickScript();
+                    Global.getSector().addTransientScript(saveAfterOneTickScript);
+                }
+                saveAfterOneTickScript.saveNextTick = true;
+
+                // Save in combat, too.
+                if (Global.getCurrentState() == GameState.COMBAT && Global.getCombatEngine() != null) {
+                    SaveAfterOneTickCombatScript combatScript = new SaveAfterOneTickCombatScript();
+                    Global.getCombatEngine().addPlugin(combatScript);
+                    combatScript.saveNextTick = true;
+                }
+            }
         }
 
         return memory;
+    }
+
+    private int calculateDeepHash(Map<String, Object> map) {
+        int hash = 7;
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            hash = 31 * hash + Objects.hashCode(entry.getKey());
+            hash = 31 * hash + deepHash(entry.getValue());
+        }
+        return hash;
+    }
+
+    private int deepHash(Object obj) {
+        if (obj instanceof Map) {
+            //noinspection unchecked
+            return calculateDeepHash((Map<String, Object>) obj);
+        } else if (obj instanceof Collection) {
+            int hash = 7;
+            for (Object element : (Collection<?>) obj) {
+                hash = 31 * hash + deepHash(element);
+            }
+            return hash;
+        } else {
+            return Objects.hashCode(obj);
+        }
     }
 
     /**

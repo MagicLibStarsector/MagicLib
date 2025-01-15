@@ -225,6 +225,12 @@ public class MagicAchievementManager {
         JSONObject commonJson;
         JSONArray savedAchievements = new JSONArray();
 
+        // Prevents accidentally wiping achievements if the feature is disabled on game load.
+        // Also, no reason to save nothing anyway.
+        if (achievements.isEmpty()) {
+            return;
+        }
+
         // Put all achievements into a json array.
         for (MagicAchievement achievement : achievements.values()) {
             try {

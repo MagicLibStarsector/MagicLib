@@ -1,7 +1,7 @@
 {
 	"test_bounty":{
 
-		"required_mods_id": ["do_not_load"],
+		"required_mods_id": [],
 
 		"trigger_market_id":["asharu"],
 		"trigger_marketFaction_any":["independent"],
@@ -74,6 +74,7 @@
 		"fleet_flagship_alwaysRecoverable":false,
 		"fleet_preset_ships":{
 			"tempest_Attack":2,
+			#"asdf":1,
 			#"shade_Assault":1,
 			#"omen_PD":2,
 			"revenant_Elite":1,
