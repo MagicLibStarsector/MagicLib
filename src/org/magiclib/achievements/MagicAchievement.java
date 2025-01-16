@@ -49,10 +49,9 @@ public class MagicAchievement {
     private final Map<String, Object> memory = new HashMap<>();
     @Nullable
     private Boolean hasProgressBar = null;
-    private static final long MEMORY_CHECK_INTERVAL_MS = 500;
-    private transient long lastMemoryCheckTimestampMillis = 0L;
+    private transient long lastMemoryCheck = 0L;
+    private static final long MEMORY_CHECK_INTERVAL_MS = 2000; // 2 seconds
     private transient int lastMemoryHash = 0;
-
 
     /**
      * Shown if set. Only persisted in memory, not save file.
@@ -574,10 +573,10 @@ public class MagicAchievement {
         if (Global.getSector() == null) return memory;
 
         long now = System.currentTimeMillis();
-        if (now - lastMemoryCheckTimestampMillis >= MEMORY_CHECK_INTERVAL_MS) {
-            lastMemoryCheckTimestampMillis = now;
+        if (now - lastMemoryCheck >= MEMORY_CHECK_INTERVAL_MS) {
+            lastMemoryCheck = now;
 
-            int currentHash = calculateDeepHash(memory);
+            int currentHash = toHashcode(memory);
             if (currentHash != lastMemoryHash) {
                 lastMemoryHash = currentHash;
 
@@ -599,28 +598,9 @@ public class MagicAchievement {
         return memory;
     }
 
-    private int calculateDeepHash(Map<String, Object> map) {
-        int hash = 7;
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            hash = 31 * hash + Objects.hashCode(entry.getKey());
-            hash = 31 * hash + deepHash(entry.getValue());
-        }
-        return hash;
-    }
 
-    private int deepHash(Object obj) {
-        if (obj instanceof Map) {
-            //noinspection unchecked
-            return calculateDeepHash((Map<String, Object>) obj);
-        } else if (obj instanceof Collection) {
-            int hash = 7;
-            for (Object element : (Collection<?>) obj) {
-                hash = 31 * hash + deepHash(element);
-            }
-            return hash;
-        } else {
-            return Objects.hashCode(obj);
-        }
+    private int toHashcode(Object obj) {
+        return org.magiclib.Magic_modPlugin.magiclibXStream.toXML(obj).hashCode();
     }
 
     /**
