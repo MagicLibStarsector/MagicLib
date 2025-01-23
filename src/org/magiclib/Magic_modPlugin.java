@@ -24,10 +24,6 @@ import java.awt.*;
  * Master ModPlugin for MagicLib. Handles all the loading of data and scripts.
  */
 public class Magic_modPlugin extends BaseModPlugin {
-    /**
-     * DO NOT USE. Meant to be used internally as a hacky way to compare arbitrary objects by serializing them to XML.
-     */
-    public static XStream magiclibXStream;
 
     ////////////////////////////////////////
     //                                    //
@@ -191,7 +187,6 @@ public class Magic_modPlugin extends BaseModPlugin {
     @Override
     public void configureXStream(XStream x) {
         super.configureXStream(x);
-        magiclibXStream = x;
         data.scripts.Magic_modPlugin.configureXStream(x);
 
         x.alias("MagicBountyBarEvent", MagicBountyBarEvent.class);
