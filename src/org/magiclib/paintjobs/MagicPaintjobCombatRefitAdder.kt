@@ -15,22 +15,31 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
         } ?: return
         cacheShipPreviewClass(newCoreUI)
 
-        val delegateChild = newCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("dismiss", it) } as? UIPanelAPI ?: return
-        val oldCoreUI = delegateChild.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("getMissionInstance", it) } as? UIPanelAPI ?: return
-        val holographicBG = oldCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("forceFoldIn", it) } ?: return
+        val delegateChild =
+            newCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("dismiss", it) } as? UIPanelAPI ?: return
+        val oldCoreUI = delegateChild.getChildrenCopy()
+            .find { ReflectionUtils.hasMethodOfName("getMissionInstance", it) } as? UIPanelAPI ?: return
+        val holographicBG =
+            oldCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("forceFoldIn", it) } ?: return
         val refitTab = holographicBG.let { ReflectionUtils.invoke("getCurr", it) } as? UIPanelAPI ?: return
 
         panelCreator.addPaintjobButton(refitTab)
     }
 
-    private fun cacheShipPreviewClass(newCoreUI : UIPanelAPI){
+    private fun cacheShipPreviewClass(newCoreUI: UIPanelAPI) {
         if (MagicPaintjobRefitPanelCreator.SHIP_PREVIEW_CLASS != null) return
-        val missionWidget = newCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("getMissionList", it) } as? UIPanelAPI ?: return
+        val missionWidget =
+            newCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("getMissionList", it) } as? UIPanelAPI
+                ?: return
         val holographicBG = missionWidget.getChildrenCopy()[1] // 2 of the same class in the tree here
         val missionDetail = holographicBG.let { ReflectionUtils.invoke("getCurr", it) } as? UIPanelAPI ?: return
-        val missionShipPreview = missionDetail.getChildrenCopy().find { ReflectionUtils.hasConstructorOfParameters(it, missionDetail.javaClass) } as? UIPanelAPI ?: return
-        val shipPreview = missionShipPreview.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("isSchematicMode", it) } ?: return
+        val missionShipPreview = missionDetail.getChildrenCopy()
+            .find { ReflectionUtils.hasConstructorOfParameters(it, missionDetail.javaClass) } as? UIPanelAPI ?: return
+        val shipPreview =
+            missionShipPreview.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("isSchematicMode", it) }
+                ?: return
         MagicPaintjobRefitPanelCreator.SHIP_PREVIEW_CLASS = shipPreview.javaClass
-        MagicPaintjobRefitPanelCreator.SHIPS_FIELD = ReflectionUtils.getFieldsOfType(shipPreview, Array<Ship>::class.java)[0]
+        MagicPaintjobRefitPanelCreator.SHIPS_FIELD =
+            ReflectionUtils.getFieldsOfType(shipPreview, Array<Ship>::class.java)[0]
     }
 }

@@ -3,12 +3,12 @@ package org.magiclib.paintjobs
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CoreUITabId
-import com.fs.starfarer.api.ui.*
+import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.campaign.CampaignState
 import com.fs.state.AppDriver
 
 
-class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
+internal class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
     private val panelCreator = MagicPaintjobRefitPanelCreator()
     override fun isDone(): Boolean {
         return false
@@ -29,8 +29,10 @@ class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
             ReflectionUtils.invoke("getCoreUI", dialog) as? UIPanelAPI
         } ?: ReflectionUtils.invoke("getCore", state) as? UIPanelAPI) ?: return
 
-        val borderContainer = newCoreUI.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("setBorderInsetLeft", it) } as? UIPanelAPI ?: return
-        val refitTab = borderContainer.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("goBackToParentIfNeeded", it) } as? UIPanelAPI ?: return
+        val borderContainer = newCoreUI.getChildrenCopy()
+            .find { ReflectionUtils.hasMethodOfName("setBorderInsetLeft", it) } as? UIPanelAPI ?: return
+        val refitTab = borderContainer.getChildrenCopy()
+            .find { ReflectionUtils.hasMethodOfName("goBackToParentIfNeeded", it) } as? UIPanelAPI ?: return
 
         panelCreator.addPaintjobButton(refitTab)
     }
