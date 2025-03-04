@@ -7,41 +7,45 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 
-fun UIPanelAPI.getChildrenCopy() : List<UIComponentAPI> {
+internal fun UIPanelAPI.getChildrenCopy(): List<UIComponentAPI> {
     return ReflectionUtils.invoke("getChildrenCopy", this) as List<UIComponentAPI>
 }
 
-fun UIPanelAPI.getChildrenNonCopy() : List<UIComponentAPI>  {
+internal fun UIPanelAPI.getChildrenNonCopy(): List<UIComponentAPI> {
     return ReflectionUtils.invoke("getChildrenNonCopy", this) as List<UIComponentAPI>
 }
 
-fun UIPanelAPI.getWidth() : Float  {
+internal fun UIPanelAPI.getWidth(): Float {
     return ReflectionUtils.invoke("getWidth", this) as Float
 }
 
-fun UIPanelAPI.getHeight() : Float  {
+internal fun UIPanelAPI.getHeight(): Float {
     return ReflectionUtils.invoke("getHeight", this) as Float
 }
 
-fun UIPanelAPI.clearChildren() {
+internal fun UIPanelAPI.clearChildren() {
     ReflectionUtils.invoke("clearChildren", this)
 }
 
-fun UIComponentAPI.getParent() : UIPanelAPI?  {
+internal fun UIComponentAPI.getParent(): UIPanelAPI? {
     return ReflectionUtils.invoke("getParent", this) as UIPanelAPI
 }
 
-fun TooltipMakerAPI.getParentWidget() : UIComponentAPI? {
+internal fun TooltipMakerAPI.getParentWidget(): UIComponentAPI? {
     return ReflectionUtils.invoke("getParentWidget", this) as UIPanelAPI
 }
 
-fun UIComponentAPI.setOpacity(alpha: Float)
-{
+internal fun UIComponentAPI.setOpacity(alpha: Float) {
     ReflectionUtils.invoke("setOpacity", this, alpha)
 }
 
-fun TooltipMakerAPI.addTooltip(to: UIComponentAPI, location: TooltipMakerAPI.TooltipLocation, width: Float, lambda: (TooltipMakerAPI) -> Unit) {
-    this.addTooltipTo(object: TooltipMakerAPI.TooltipCreator {
+internal fun TooltipMakerAPI.addTooltip(
+    to: UIComponentAPI,
+    location: TooltipMakerAPI.TooltipLocation,
+    width: Float,
+    lambda: (TooltipMakerAPI) -> Unit
+) {
+    this.addTooltipTo(object : TooltipMakerAPI.TooltipCreator {
         override fun isTooltipExpandable(tooltipParam: Any?): Boolean {
             return false
         }
@@ -79,7 +83,7 @@ private class ButtonListener(button: ButtonAPI) : BaseCustomUIPanelPlugin() {
 }
 
 // Extension function for ButtonAPI
-fun ButtonAPI.onClick(function: () -> Unit) {
+internal fun ButtonAPI.onClick(function: () -> Unit) {
     // Use reflection to check if this button already has a listener
     val existingListener = ReflectionUtils.invoke("getListener", this)
     if (existingListener is ButtonListener) {
