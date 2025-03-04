@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.XStream;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.achievements.TestingAchievementSpec;
+import org.magiclib.paintjobs.MagicPaintjobCampaignRefitAdder;
 import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.bounty.*;
 import org.magiclib.kotlin.MagicKotlinModPlugin;
@@ -113,6 +114,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         //Add industry item wrangler
         SectorAPI sector = Global.getSector();
         if (sector != null) {
+            sector.addTransientScript(new MagicPaintjobCampaignRefitAdder());
             sector.addTransientListener(new MagicIndustryItemWrangler());
             sector.addTransientScript(new MagicCampaignTrailPlugin());
         }
