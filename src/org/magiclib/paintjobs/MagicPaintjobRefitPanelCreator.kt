@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.loading.specs.HullVariantSpec
+import org.lwjgl.input.Keyboard
 import org.magiclib.kotlin.setAlpha
 import java.awt.Color
 
@@ -66,67 +67,36 @@ internal class MagicPaintjobRefitPanelCreator {
             0f
         )
         paintjobButton.position.inTL(0f, 0f)
-
+        paintjobButton.setShortcut(Keyboard.KEY_S, true)
         paintjobButton.onClick {
-            if (paintjobButton.text == "Paintjob") {
+            val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
+            val shipDisplay = ReflectionUtils.invoke("getShipDisplay", refitPanel) as? UIPanelAPI
+            //val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
+            val variant = shipDisplay?.let { ReflectionUtils.invoke("getCurrentVariant", it) as? HullVariantSpec }
 
-                val shipDisplay = ReflectionUtils.invoke("getShipDisplay", refitPanel) as? UIPanelAPI
-                //val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
-                val variant = shipDisplay?.let { ReflectionUtils.invoke("getCurrentVariant", it) as? HullVariantSpec }
-                val shipPreviews = makeShipPreviews(variant!!)
-                val paintjobPanel = createMagicPaintjobRefitPanel()
-                val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
-                coreUI.addComponent(paintjobPanel)
+            val paintjobPanel = createMagicPaintjobRefitPanel(variant!!)
+            coreUI.addComponent(paintjobPanel)
 
-                val inCampaign = ReflectionUtils.invoke("isCampaignUI", coreUI) as Boolean
-                if (inCampaign) paintjobPanel.position.inTL(refitPanel.position.x, refitPanel.position.y)
+            paintjobPanel.position.setXAlignOffset(refitPanel.position.x-paintjobPanel.position.x)
+            paintjobPanel.position.setYAlignOffset(refitPanel.position.y-paintjobPanel.position.y+40)
 
-                var prev: UIPanelAPI? = null
-                shipPreviews.forEach { preview ->
-                    paintjobPanel.addComponent(preview).let { pos ->
-                        if (prev == null) pos.inTL(0f, 10f) else pos.rightOfTop(prev, 3f)
-                        prev = preview
-                    }
-                }
+            // add back button here to make sure its lined up with existing button
+            val goBackButton = paintjobPanel.addButton(
+                "Go Back",
+                paintjobButtonTextColor,
+                paintjobButtonColor,
+                Alignment.MID,
+                CutStyle.ALL,
+                addButton.position.width,
+                addButton.position.height
+            )
+
+            goBackButton.position.setXAlignOffset(paintjobButton.position.x-goBackButton.position.x)
+            goBackButton.position.setYAlignOffset(paintjobButton.position.y-goBackButton.position.y)
+            goBackButton.setShortcut(Keyboard.KEY_S, true)
+            goBackButton.onClick {
+                paintjobPanel.getParent()!!.removeComponent(paintjobPanel)
             }
         }
-    }
-
-    private fun makeShipPreviews(hullVariantSpec: HullVariantSpec): List<UIPanelAPI> {
-        val baseHullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(
-            (hullVariantSpec as ShipVariantAPI).hullSpec.baseHullId,
-            includeShiny = false
-        )
-        val shipPreviews = mutableListOf<UIPanelAPI>()
-        (listOf(null) + baseHullPaintjobs).forEach { baseHullPaintjob ->
-            val shipPreview = ReflectionUtils.instantiate(SHIP_PREVIEW_CLASS!!)!!
-
-            ReflectionUtils.invoke("setVariant", shipPreview, hullVariantSpec)
-            ReflectionUtils.invoke("overrideVariant", shipPreview, hullVariantSpec)
-            ReflectionUtils.invoke("setShowBorder", shipPreview, false)
-            ReflectionUtils.invoke("setScaleDownSmallerShipsMagnitude", shipPreview, 1f)
-            ReflectionUtils.invoke("adjustOverlay", shipPreview, 0f, 0f)
-            (shipPreview as UIPanelAPI).position.setSize(200f, 200f)
-
-            // make the ship list so the ships exist when we try and get them
-            ReflectionUtils.invoke("prepareShip", shipPreview)
-            val ships = ReflectionUtils.get(SHIPS_FIELD!!, shipPreview) as Array<ShipAPI>
-
-            // if the paintjob exists, replace the sprites
-            if (baseHullPaintjob != null) {
-                ships.forEach { ship ->
-                    val paintjobs =
-                        MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, includeShiny = false)
-                    paintjobs.forEach { paintjob ->
-                        if (paintjob.id.contains(baseHullPaintjob.id, true)) {
-                            MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
-                        }
-                    }
-                }
-            }
-            shipPreviews.add(shipPreview)
-
-        }
-        return shipPreviews
     }
 }
