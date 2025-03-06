@@ -2,10 +2,8 @@ package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
-import com.fs.starfarer.api.ui.ButtonAPI
-import com.fs.starfarer.api.ui.TooltipMakerAPI
-import com.fs.starfarer.api.ui.UIComponentAPI
-import com.fs.starfarer.api.ui.UIPanelAPI
+import com.fs.starfarer.api.ui.*
+import java.awt.Color
 
 internal fun UIPanelAPI.getChildrenCopy(): List<UIComponentAPI> {
     return ReflectionUtils.invoke("getChildrenCopy", this) as List<UIComponentAPI>
@@ -59,6 +57,21 @@ internal fun TooltipMakerAPI.addTooltip(
         }
 
     }, to, location)
+}
+
+internal fun UIPanelAPI.addButton(text: String, baseColor: Color, bgColor: Color, align: Alignment, style: CutStyle,
+                                  width: Float, height: Float): ButtonAPI{
+    // make a button in a temp panel/element
+    val tempPanel = Global.getSettings().createCustom(width, height, null)
+    val tempTMAPI = tempPanel.createUIElement(width, height, false)
+    tempTMAPI.setButtonFontOrbitron20()
+    val button = tempTMAPI.addButton(text, null, baseColor, bgColor, align, style, width, height, 0f)
+
+    // hijack button and move it to UIPanel
+    this.addComponent(button)
+    button.position.setXAlignOffset(0f)
+    button.position.setYAlignOffset(0f)
+    return button
 }
 
 // CustomPanelAPI implements the same Listener that a ButtonAPI requires,
