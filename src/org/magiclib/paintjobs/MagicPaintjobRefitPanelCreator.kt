@@ -18,15 +18,19 @@ internal class MagicPaintjobRefitPanelCreator {
     private var buttonPanel: CustomPanelAPI? = null
     private var paintjobPanel: CustomPanelAPI? = null
     fun addPaintjobButton(refitTab: UIPanelAPI) {
-        val refitPanel = refitTab.getChildrenCopy()
-            .find { ReflectionUtils.hasMethodOfName("syncWithCurrentVariant", it) } as? UIPanelAPI ?: return
-        val statsAndHullmodsPanel =
-            refitPanel.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("getColorFor", it) } as? UIPanelAPI
-                ?: return
-        val hullmodsPanel = statsAndHullmodsPanel.getChildrenCopy()
-            .find { ReflectionUtils.hasMethodOfName("removeNotApplicableMods", it) } as? UIPanelAPI ?: return
-        val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
+        val refitPanel = refitTab.getChildrenCopy().find {
+            ReflectionUtils.hasMethodOfName("syncWithCurrentVariant", it)
+        } as? UIPanelAPI ?: return
 
+        val statsAndHullmodsPanel = refitPanel.getChildrenCopy().find {
+            ReflectionUtils.hasMethodOfName("getColorFor", it)
+        } as? UIPanelAPI ?: return
+
+        val hullmodsPanel = statsAndHullmodsPanel.getChildrenCopy().find {
+            ReflectionUtils.hasMethodOfName("removeNotApplicableMods", it)
+        } as? UIPanelAPI ?: return
+
+        val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
         val existingElements = hullmodsPanel.getChildrenCopy()
         val lastElement = existingElements.last()
 
@@ -34,9 +38,8 @@ internal class MagicPaintjobRefitPanelCreator {
         if (buttonPanel != null && fleetMember == null) hullmodsPanel.removeComponent(buttonPanel)
 
         // button already exists
-        if (buttonPanel != null && existingElements.contains(buttonPanel as UIComponentAPI)) {
-            return
-        }
+        if (buttonPanel != null && existingElements.contains(buttonPanel as UIComponentAPI)) return
+
         // addHullmods button should always exist
         val addButton = existingElements.filter { ReflectionUtils.hasMethodOfName("getText", it) }.find {
             (ReflectionUtils.invoke("getText", it) as String).contains("Add")
@@ -119,7 +122,6 @@ internal class MagicPaintjobRefitPanelCreator {
                             MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
                         }
                     }
-
                 }
             }
             shipPreviews.add(shipPreview)
