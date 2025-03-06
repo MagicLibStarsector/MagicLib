@@ -1,41 +1,38 @@
 package org.magiclib.paintjobs
 
+import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 
 internal object ReflectionUtils {
 
     private val fieldClass = Class.forName("java.lang.reflect.Field", false, Class::class.java.classLoader)
-    private val setFieldHandle = MethodHandles.lookup()
-        .findVirtual(fieldClass, "set", MethodType.methodType(Void.TYPE, Any::class.java, Any::class.java))
-    private val getFieldHandle =
-        MethodHandles.lookup().findVirtual(fieldClass, "get", MethodType.methodType(Any::class.java, Any::class.java))
-    private val getFieldTypeHandle =
-        MethodHandles.lookup().findVirtual(fieldClass, "getType", MethodType.methodType(Class::class.java))
-    private val getFieldNameHandle =
-        MethodHandles.lookup().findVirtual(fieldClass, "getName", MethodType.methodType(String::class.java))
-    private val setFieldAccessibleHandle = MethodHandles.lookup()
-        .findVirtual(fieldClass, "setAccessible", MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
+    private val setFieldHandle = MethodHandles.lookup().findVirtual(fieldClass, "set",
+        MethodType.methodType(Void.TYPE, Any::class.java, Any::class.java))
+    private val getFieldHandle = MethodHandles.lookup().findVirtual(fieldClass, "get",
+        MethodType.methodType(Any::class.java, Any::class.java))
+    private val getFieldTypeHandle = MethodHandles.lookup().findVirtual(fieldClass, "getType",
+        MethodType.methodType(Class::class.java))
+    private val getFieldNameHandle = MethodHandles.lookup().findVirtual(fieldClass, "getName",
+        MethodType.methodType(String::class.java))
+    private val setFieldAccessibleHandle = MethodHandles.lookup().findVirtual(fieldClass, "setAccessible",
+        MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
 
     private val methodClass = Class.forName("java.lang.reflect.Method", false, Class::class.java.classLoader)
-    private val getMethodNameHandle =
-        MethodHandles.lookup().findVirtual(methodClass, "getName", MethodType.methodType(String::class.java))
-    private val invokeMethodHandle = MethodHandles.lookup().findVirtual(
-        methodClass,
-        "invoke",
-        MethodType.methodType(Any::class.java, Any::class.java, Array<Any>::class.java)
-    )
-    private val setMethodAccessibleHandle = MethodHandles.lookup()
-        .findVirtual(methodClass, "setAccessible", MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
-
-    internal val getMethodReturnHandle =
-        MethodHandles.lookup().findVirtual(methodClass, "getReturnType", MethodType.methodType(Class::class.java))
-    private val getMethodParametersHandle = MethodHandles.lookup()
-        .findVirtual(methodClass, "getParameterTypes", MethodType.methodType(arrayOf<Class<*>>().javaClass))
+    private val getMethodNameHandle = MethodHandles.lookup().findVirtual(methodClass, "getName",
+        MethodType.methodType(String::class.java))
+    private val invokeMethodHandle = MethodHandles.lookup().findVirtual(methodClass, "invoke",
+        MethodType.methodType(Any::class.java, Any::class.java, Array<Any>::class.java))
+    private val setMethodAccessibleHandle = MethodHandles.lookup().findVirtual(methodClass, "setAccessible",
+        MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
+    private val getMethodReturnHandle = MethodHandles.lookup().findVirtual(methodClass, "getReturnType",
+        MethodType.methodType(Class::class.java))
+    private val getMethodParametersHandle = MethodHandles.lookup().findVirtual(methodClass, "getParameterTypes",
+        MethodType.methodType(arrayOf<Class<*>>().javaClass))
 
     private val constructorClass = Class.forName("java.lang.reflect.Constructor", false, Class::class.java.classLoader)
-    private val getConstructorParametersHandle = MethodHandles.lookup()
-        .findVirtual(constructorClass, "getParameterTypes", MethodType.methodType(arrayOf<Class<*>>().javaClass))
+    private val getConstructorParametersHandle = MethodHandles.lookup().findVirtual(
+        constructorClass, "getParameterTypes", MethodType.methodType(arrayOf<Class<*>>().javaClass))
 
 
     @JvmStatic
@@ -86,14 +83,51 @@ internal object ReflectionUtils {
         return getFieldHandle.invoke(field, instanceToGetFrom)
     }
 
-    fun hasConstructorOfParameters(instance: Any, vararg parameterTypes: Class<*>): Boolean {
-        val constructors = instance.javaClass.getDeclaredConstructors() as Array<*>
-        // Iterate over each constructor and check its parameter types.
-        for (ctor in constructors) {
-            val params = getConstructorParametersHandle.invoke(ctor) as Array<Class<*>>
-            if (params.contentEquals(parameterTypes)) return true
-        }
-        return false
+    fun hasFieldOfName(name: String, instance: Any): Boolean {
+        val instancesOfFields: Array<out Any> = instance.javaClass.getDeclaredFields()
+        return instancesOfFields.any { getFieldNameHandle.invoke(it) == name }
+    }
+
+    fun findFieldWithMethodReturnType(instance: Any, clazz: Class<*>): ReflectedField? {
+        val instancesOfFields: Array<out Any> = instance.javaClass.declaredFields
+
+        return instancesOfFields.map { fieldObj -> fieldObj to getFieldTypeHandle.invoke(fieldObj) }
+            .firstOrNull { (fieldObj, fieldClass) ->
+                ((fieldClass!! as Class<Any>).declaredMethods as Array<Any>).any { methodObj ->
+                    getMethodReturnHandle.invoke(
+                        methodObj
+                    ) == clazz
+                }
+            }?.let { (fieldObj, fieldClass) ->
+                return ReflectedField(fieldObj)
+            }
+    }
+
+    fun findFieldWithMethodName(instance: Any, methodName: String): ReflectedField? {
+        val instancesOfFields: Array<out Any> = instance.javaClass.declaredFields
+
+        return instancesOfFields.map { fieldObj -> fieldObj to getFieldTypeHandle.invoke(fieldObj) }
+            .firstOrNull { (fieldObj, fieldClass) ->
+                hasMethodOfNameInClass(methodName, fieldClass as Class<Any>)
+            }?.let { (fieldObj, fieldClass) ->
+                return ReflectedField(fieldObj)
+            }
+    }
+
+    fun findFieldsOfType(instance: Any, clazz: Class<*>): List<ReflectedField> {
+        val instancesOfFields: Array<out Any> = instance.javaClass.declaredFields
+
+        return instancesOfFields.map { fieldObj -> fieldObj to getFieldTypeHandle.invoke(fieldObj) }
+            .filter { (fieldObj, fieldClass) ->
+                fieldClass == clazz
+            }.map { (fieldObj, fieldClass) -> ReflectedField(fieldObj) }
+    }
+
+    fun getFieldsOfType(instance: Any, clazz: Class<*>): List<String> {
+        val instancesOfMethods: Array<out Any> = instance.javaClass.getDeclaredFields()
+
+        return instancesOfMethods.filter { getFieldTypeHandle.invoke(it) == clazz }
+            .map { getFieldNameHandle.invoke(it) as String }
     }
 
     fun hasMethodOfName(name: String, instance: Any, contains: Boolean = false): Boolean {
@@ -114,31 +148,9 @@ internal object ReflectionUtils {
     fun getMethodOfReturnType(instance: Any, clazz: Class<*>): String? {
         val instancesOfMethods: Array<out Any> = instance.javaClass.getDeclaredMethods()
 
-        return instancesOfMethods.firstOrNull { getMethodReturnHandle.invoke(it) == clazz }
-            ?.let { getMethodNameHandle.invoke(it) as String }
-    }
-
-    fun hasVariableOfName(name: String, instance: Any): Boolean {
-        val instancesOfFields: Array<out Any> = instance.javaClass.getDeclaredFields()
-        return instancesOfFields.any { getFieldNameHandle.invoke(it) == name }
-    }
-
-    fun getFieldsOfType(instance: Any, clazz: Class<*>): List<String> {
-        val instancesOfMethods: Array<out Any> = instance.javaClass.getDeclaredFields()
-
-        return instancesOfMethods.filter { getFieldTypeHandle.invoke(it) == clazz }
-            .map { getFieldNameHandle.invoke(it) as String }
-    }
-
-    fun getConstructor(clazz: Class<*>, vararg arguments: Class<*>) =
-        MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(Void.TYPE, arguments))
-
-    fun instantiate(clazz: Class<*>, vararg arguments: Any?): Any? {
-        val args = arguments.map { it!!::class.javaPrimitiveType ?: it::class.java }
-
-        val constructorHandle = getConstructor(clazz, *args.toTypedArray())
-
-        return constructorHandle.invokeWithArguments(arguments.toList())
+        return instancesOfMethods.firstOrNull {
+            getMethodReturnHandle.invoke(it) == clazz
+        }?.let { getMethodNameHandle.invoke(it) as String }
     }
 
     fun invoke(methodName: String, instance: Any, vararg arguments: Any?, declared: Boolean = false): Any? {
@@ -177,32 +189,6 @@ internal object ReflectionUtils {
         return invokeMethodHandle.invoke(method, null, arguments)
     }
 
-    fun findFieldWithMethodReturnType(instance: Any, clazz: Class<*>): ReflectedField? {
-        val instancesOfFields: Array<out Any> = instance.javaClass.declaredFields
-
-        return instancesOfFields.map { fieldObj -> fieldObj to getFieldTypeHandle.invoke(fieldObj) }
-            .firstOrNull { (fieldObj, fieldClass) ->
-                ((fieldClass!! as Class<Any>).declaredMethods as Array<Any>).any { methodObj ->
-                    getMethodReturnHandle.invoke(
-                        methodObj
-                    ) == clazz
-                }
-            }?.let { (fieldObj, fieldClass) ->
-                return ReflectedField(fieldObj)
-            }
-    }
-
-    fun findFieldWithMethodName(instance: Any, methodName: String): ReflectedField? {
-        val instancesOfFields: Array<out Any> = instance.javaClass.declaredFields
-
-        return instancesOfFields.map { fieldObj -> fieldObj to getFieldTypeHandle.invoke(fieldObj) }
-            .firstOrNull { (fieldObj, fieldClass) ->
-                hasMethodOfNameInClass(methodName, fieldClass as Class<Any>)
-            }?.let { (fieldObj, fieldClass) ->
-                return ReflectedField(fieldObj)
-            }
-    }
-
     fun hasMethodOfNameInClass(name: String, instance: Class<Any>, contains: Boolean = false): Boolean {
         val instancesOfMethods: Array<out Any> = instance.getDeclaredMethods()
 
@@ -225,14 +211,27 @@ internal object ReflectionUtils {
             .map { getMethodParametersHandle.invoke(it) as Array<Class<*>> }
     }
 
-    fun findFieldsOfType(instance: Any, clazz: Class<*>): List<ReflectedField> {
-        val instancesOfFields: Array<out Any> = instance.javaClass.declaredFields
-
-        return instancesOfFields.map { fieldObj -> fieldObj to getFieldTypeHandle.invoke(fieldObj) }
-            .filter { (fieldObj, fieldClass) ->
-                fieldClass == clazz
-            }.map { (fieldObj, fieldClass) -> ReflectedField(fieldObj) }
+    fun hasConstructorOfParameters(instance: Any, vararg parameterTypes: Class<*>): Boolean {
+        val constructors = instance.javaClass.getDeclaredConstructors() as Array<*>
+        // Iterate over each constructor and check its parameter types.
+        for (ctor in constructors) {
+            val params = getConstructorParametersHandle.invoke(ctor) as Array<Class<*>>
+            if (params.contentEquals(parameterTypes)) return true
+        }
+        return false
     }
+
+    fun getConstructor(clazz: Class<*>, vararg arguments: Class<*>): MethodHandle =
+        MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(Void.TYPE, arguments))
+
+    fun instantiate(clazz: Class<*>, vararg arguments: Any?): Any? {
+        val args = arguments.map { it!!::class.javaPrimitiveType ?: it::class.java }
+
+        val constructorHandle = getConstructor(clazz, *args.toTypedArray())
+
+        return constructorHandle.invokeWithArguments(arguments.toList())
+    }
+
 
     class ReflectedField(val field: Any) {
         fun get(instance: Any?): Any? {

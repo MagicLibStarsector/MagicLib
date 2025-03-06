@@ -29,10 +29,13 @@ internal class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
             ReflectionUtils.invoke("getCoreUI", dialog) as? UIPanelAPI
         } ?: ReflectionUtils.invoke("getCore", state) as? UIPanelAPI) ?: return
 
-        val borderContainer = newCoreUI.getChildrenCopy()
-            .find { ReflectionUtils.hasMethodOfName("setBorderInsetLeft", it) } as? UIPanelAPI ?: return
-        val refitTab = borderContainer.getChildrenCopy()
-            .find { ReflectionUtils.hasMethodOfName("goBackToParentIfNeeded", it) } as? UIPanelAPI ?: return
+        val borderContainer = newCoreUI.getChildrenCopy().find {
+            ReflectionUtils.hasMethodOfName("setBorderInsetLeft", it)
+        } as? UIPanelAPI ?: return
+
+        val refitTab = borderContainer.getChildrenCopy().find {
+            ReflectionUtils.hasMethodOfName("goBackToParentIfNeeded", it)
+        } as? UIPanelAPI ?: return
 
         panelCreator.addPaintjobButton(refitTab)
     }
