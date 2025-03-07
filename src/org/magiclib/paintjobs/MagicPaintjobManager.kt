@@ -4,6 +4,7 @@ import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
@@ -361,15 +362,18 @@ object MagicPaintjobManager {
     @JvmStatic
     fun removePaintjobFromShip(fleetMember: FleetMemberAPI) {
         val variant = fleetMember.variant ?: return
+        removePaintjobFromShip(variant)
+        fleetMember.spriteOverride = null
+    }
 
+    @JvmStatic
+    fun removePaintjobFromShip(variant: ShipVariantAPI){
         variant.tags.filter { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
             .forEach { variant.removeTag(it) }
 
         if (variant.hasHullMod(MagicPaintjobHullMod.ID)) {
             variant.removePermaMod(MagicPaintjobHullMod.ID)
         }
-
-        fleetMember.spriteOverride = null
     }
 
     @JvmStatic
