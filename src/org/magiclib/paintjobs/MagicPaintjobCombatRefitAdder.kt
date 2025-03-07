@@ -15,6 +15,7 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
         } ?: return
         cacheShipPreviewClass(newCoreUI)
 
+/*
         val delegateChild = newCoreUI.getChildrenCopy().find {
             ReflectionUtils.hasMethodOfName("dismiss", it)
         } as? UIPanelAPI ?: return
@@ -30,8 +31,7 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
         val refitTab = holographicBG.let {
             ReflectionUtils.invoke("getCurr", it)
         } as? UIPanelAPI ?: return
-
-        panelCreator.addPaintjobButton(refitTab)
+*/
     }
 
     private fun cacheShipPreviewClass(newCoreUI: UIPanelAPI) {

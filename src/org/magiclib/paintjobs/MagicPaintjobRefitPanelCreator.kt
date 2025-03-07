@@ -17,7 +17,6 @@ internal class MagicPaintjobRefitPanelCreator {
     }
 
     private var buttonPanel: CustomPanelAPI? = null
-    private var paintjobPanel: CustomPanelAPI? = null
     fun addPaintjobButton(refitTab: UIPanelAPI) {
         val refitPanel = refitTab.getChildrenCopy().find {
             ReflectionUtils.hasMethodOfName("syncWithCurrentVariant", it)
