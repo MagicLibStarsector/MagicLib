@@ -29,7 +29,8 @@ class MagicPaintjobHullMod : BaseHullMod() {
 
         val paintjob = getAppliedPaintjob(ship) ?: return
 
-        MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
+        MagicPaintjobManager.applyPaintjob(ship, paintjob)
+
     }
 
     private fun getAppliedPaintjob(ship: ShipAPI): MagicPaintjobSpec? {

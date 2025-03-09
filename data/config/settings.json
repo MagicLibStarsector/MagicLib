@@ -53,6 +53,9 @@
     },
     "ui": {
       "ship_arrow": "graphics/warroom/ship_arrow.png"
+    },
+    "icons": {
+      "lock": "graphics/magic/icons/lockIcon.png"
     }
   },
   "ruleCommandPackages": [
