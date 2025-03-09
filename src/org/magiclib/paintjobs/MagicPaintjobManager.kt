@@ -377,27 +377,32 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
-    fun applyPaintjob(fleetMember: FleetMemberAPI?, combatShip: ShipAPI?, paintjob: MagicPaintjobSpec) {
+    fun applyPaintjob(fleetMember: FleetMemberAPI?, paintjob: MagicPaintjobSpec) {
+        applyPaintjob(fleetMember?.variant, paintjob)
+        // This causes the sprite to show at full size on game (re)load, ie massive hyperspace ships.
+//      fleetMember.spriteOverride = paintjob.spriteId
+    }
+
+    @JvmStatic
+    fun applyPaintjob(variant: ShipVariantAPI?, paintjob: MagicPaintjobSpec) {
+        if(variant != null){
+            if (!variant.hasHullMod(MagicPaintjobHullMod.ID)) {
+                variant.addPermaMod(MagicPaintjobHullMod.ID)
+            }
+
+            variant.tags.filter {
+                it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX)
+            }.forEach { variant.removeTag(it) }
+            variant.addTag(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
+        }
+    }
+
+    @JvmStatic
+    fun applyPaintjob(combatShip: ShipAPI?, paintjob: MagicPaintjobSpec) {
         if (!isEnabled) return
         // In case it's a sprite path that wasn't loaded, load it.
         val spriteId = paintjob.spriteId
         Global.getSettings().loadTexture(spriteId)
-
-        if (fleetMember != null) {
-            val variant = fleetMember.variant
-            if (variant?.hasHullMod(MagicPaintjobHullMod.ID) != true) {
-                variant.addPermaMod(MagicPaintjobHullMod.ID)
-            }
-
-            if (variant != null) {
-                variant.tags.filter { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
-                    .forEach { variant.removeTag(it) }
-                variant.addTag(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX + paintjob.id)
-            }
-
-            // This causes the sprite to show at full size on game (re)load, ie massive hyperspace ships.
-//            fleetMember.spriteOverride = paintjob.spriteId
-        }
 
         if (combatShip != null) {
             val sprite = Global.getSettings().getSprite(spriteId) ?: return
@@ -415,6 +420,14 @@ object MagicPaintjobManager {
             combatShip.spriteAPI.angle = angle
             combatShip.spriteAPI.color = color
         }
+    }
+
+    @JvmStatic
+    fun getCurrentShipPaintjob(variant: ShipVariantAPI): MagicPaintjobSpec? {
+        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
+        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+
+        return getPaintjob(paintjobId)
     }
 
     @JvmStatic

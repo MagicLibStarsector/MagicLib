@@ -1,11 +1,8 @@
 package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.combat.ShipAPI
-import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.ui.*
-import com.fs.starfarer.loading.specs.HullVariantSpec
 import org.lwjgl.input.Keyboard
 import org.magiclib.kotlin.setAlpha
 import java.awt.Color
@@ -34,8 +31,12 @@ internal class MagicPaintjobRefitPanelCreator {
         val existingElements = hullmodsPanel.getChildrenCopy()
         val lastElement = existingElements.last()
 
-        // button should be removed on modules
-        if (buttonPanel != null && fleetMember == null) hullmodsPanel.removeComponent(buttonPanel)
+        // button should be removed on modules and ships without paintjobs
+        if(fleetMember == null ||
+            MagicPaintjobManager.getPaintjobsForHull(fleetMember.hullId, false).isEmpty() ){
+            buttonPanel?.let{ hullmodsPanel.removeComponent(it) }
+            return
+        }
 
         // button already exists
         if (buttonPanel != null && existingElements.contains(buttonPanel as UIComponentAPI)) return
@@ -69,14 +70,10 @@ internal class MagicPaintjobRefitPanelCreator {
         paintjobButton.setShortcut(Keyboard.KEY_S, true)
         paintjobButton.onClick {
             val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
-            val shipDisplay = ReflectionUtils.invoke("getShipDisplay", refitPanel) as? UIPanelAPI
-            //val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
-            val variant = shipDisplay?.let { ReflectionUtils.invoke("getCurrentVariant", it) as? HullVariantSpec }
-
-            val paintjobPanel = createMagicPaintjobRefitPanel(variant!!)
+            val paintjobPanel = createMagicPaintjobRefitPanel(refitPanel)
             coreUI.addComponent(paintjobPanel)
 
-            paintjobPanel.position.setXAlignOffset(refitPanel.position.x-paintjobPanel.position.x)
+            paintjobPanel.position.setXAlignOffset(refitPanel.position.x-paintjobPanel.position.x+3)
             paintjobPanel.position.setYAlignOffset(refitPanel.position.y-paintjobPanel.position.y+40)
 
             // add back button here to make sure its lined up with existing button
