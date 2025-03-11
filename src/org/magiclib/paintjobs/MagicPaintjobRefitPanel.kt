@@ -144,7 +144,7 @@ internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI): CustomPanel
     selectorPlugins.forEach { selectorPlugin ->
         selectorPlugin.onClick {
             if (selectorPlugin.isUnlocked){
-                selectorPlugins.forEach{ it.isSelected = false }
+                selectorPlugins.forEach { it.isSelected = false }
                 selectorPlugin.isSelected = true
 
                 if(selectorPlugin.paintjobSpec == null) MagicPaintjobManager.removePaintjobFromShip(baseVariant)
