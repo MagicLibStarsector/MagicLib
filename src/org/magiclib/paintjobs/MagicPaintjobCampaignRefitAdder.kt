@@ -19,6 +19,7 @@ internal class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
     }
 
     override fun advance(amount: Float) {
+        if (!MagicPaintjobManager.isEnabled) return // return if not enabled
         if (!Global.getSector().isPaused) return //Return if not paused
         if (Global.getSector().campaignUI.currentCoreTab != CoreUITabId.REFIT) return //Return if not Refit
 

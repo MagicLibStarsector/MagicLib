@@ -197,7 +197,7 @@ private fun createShipPreview(hullVariantSpec: HullVariantSpec, basePaintjobSpec
 
     val clonedVariant = hullVariantSpec.clone()
     MagicPaintjobManager.removePaintjobFromShip(clonedVariant)
-    clonedVariant.moduleVariants?.values?.forEach{ moduleVariant ->
+    clonedVariant.moduleVariants?.values?.forEach { moduleVariant ->
         MagicPaintjobManager.removePaintjobFromShip(moduleVariant as ShipVariantAPI)
     }
 

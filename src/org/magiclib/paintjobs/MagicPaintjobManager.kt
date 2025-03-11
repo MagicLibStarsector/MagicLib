@@ -1,18 +1,23 @@
 package org.magiclib.paintjobs
 
+import com.fs.graphics.Sprite
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.graphics.SpriteAPI
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
+import org.lazywizard.lazylib.ext.json.optFloat
 import org.lazywizard.lazylib.ext.logging.w
 import org.magiclib.LunaWrapper
 import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
+import org.magiclib.kotlin.optColor
 import org.magiclib.kotlin.toStringList
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
@@ -20,7 +25,9 @@ import org.magiclib.util.MagicVariables
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
-    const val specsFilename = "data/config/magic_paintjobs.csv"
+    const val specsFilename = "magic_paintjobs.csv"
+    const val folderName = "paintjobs/"
+    const val configPath = "data/config/"
     private const val commonFilename = "magic_paintjobs.json"
     private const val isIntelImportantMemKey = "\$magiclib_isPaintjobIntelImportant"
     private val jsonObjectKey = "unlockedPaintjobs"
@@ -31,6 +38,8 @@ object MagicPaintjobManager {
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
+
+
 
     @JvmStatic
     var isEnabled = true
@@ -107,22 +116,17 @@ object MagicPaintjobManager {
         val newSpecs: MutableList<MagicPaintjobSpec> = mutableListOf()
 
         for (mod in Global.getSettings().modManager.enabledModsCopy) {
-            var modCsv: JSONArray? = null
-            try {
-                modCsv = Global.getSettings().loadCSV(specsFilename, mod.id)
-            } catch (e: java.lang.Exception) {
-                if (e is RuntimeException && e.message!!.contains("not found in")) {
-                    // Swallow exceptions caused by the mod not having pjs.
-                } else {
-                    logger.warn(
-                        "Unable to load paintjobs in " + mod.id + " by " + MagicMisc.takeFirst(
-                            mod.author,
-                            50
-                        ) + " from file " + specsFilename, e
-                    )
-                }
-            }
-            if (modCsv == null) continue
+            val fileLocations = listOf("$configPath$specsFilename", "$configPath$folderName$specsFilename")
+
+            val modCsv = fileLocations.firstNotNullOfOrNull { path ->
+                // ignore file not there errors
+                runCatching { Global.getSettings().loadCSV(path, mod.id) }.onFailure { e ->
+                    if(!(e is RuntimeException && e.message?.contains("not found in") == true)){
+                        logger.warn("Unable to load paintjobs in ${mod.id} by " +
+                                "${MagicMisc.takeFirst(mod.author, 50)} from file $path", e)
+                    }
+                }.getOrNull()
+            } ?: continue
 
             logger.info(modCsv)
 
@@ -140,6 +144,61 @@ object MagicPaintjobManager {
                     val unlockedAutomatically = item.optBoolean("unlockedAutomatically", true)
                     val spriteId = item.getString("spriteId").trim()
                     val tags = item.optString("tags", "")?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
+
+                    val jsonLocations = listOf("$configPath$id.paintjob", "$configPath$folderName$id.paintjob")
+                    val paintjobJson = jsonLocations.firstNotNullOfOrNull { path ->
+                        runCatching { Global.getSettings().loadJSON(path, mod.id) }.onFailure { e ->
+                            // ignore file not there errors
+                            if(!(e is RuntimeException && e.message?.contains("not found in") == true)){
+                                logger.warn("Unable to load paintjob JSON of $id paintjob", e)
+                            }
+                        }.getOrNull()
+                    }
+
+                    val decos = paintjobJson?.runCatching {
+                        getJSONObject("decos").let { decosJson ->
+                            // map weaponSlotID to spritePath
+                            decosJson.keys().asSequence().associate { weaponSlotID ->
+                                weaponSlotID as String to decosJson.getString(weaponSlotID)
+                            }
+                        }
+                    }?.onFailure { e ->
+                        if(!(e is JSONException && e.message?.contains("not found") == true)){
+                            logger.warn("Unable to load decos JSON of $id paintjob", e)
+                        }
+                    }?.getOrNull()
+
+                    val engineSpec = paintjobJson?.runCatching {
+                        getJSONObject("engines")?.let { engineJson ->
+                            MagicPaintjobSpec.PaintjobEngineSpec(
+                                engineJson.optColor("color", null),
+                                engineJson.optColor("contrailColor", null),
+                                engineJson.optFloat("spawnDistMult").takeIf { !it.isNaN() },
+                                engineJson.optFloat("contrailWidthMultiplier").takeIf { !it.isNaN() },
+                                engineJson.optColor("glowAlternateColor", null),
+                                engineJson.optFloat("glowSizeMult").takeIf { !it.isNaN() }
+                            )
+                        }
+                    }?.onFailure { e ->
+                        if(!(e is JSONException && e.message?.contains("not found") == true)) {
+                            logger.warn("Unable to load engines JSON of $id paintjob", e)
+                        }
+                    }?.getOrNull()
+
+                    val shieldSpec = paintjobJson?.runCatching {
+                        getJSONObject("shield")?.let{ shieldJson ->
+                            MagicPaintjobSpec.PaintjobShieldSpec(
+                                shieldJson.optColor("innerColor", null),
+                                shieldJson.optColor("ringColor", null),
+                                shieldJson.optFloat("innerRotationRate").takeIf { !it.isNaN() },
+                                shieldJson.optFloat("ringRotationRate").takeIf { !it.isNaN() },
+                            )
+                        }
+                    }?.onFailure { e ->
+                        if(!(e is JSONException && e.message?.contains("not found") == true)) {
+                            logger.warn("Unable to load shield JSON of $id paintjob", e)
+                        }
+                    }?.getOrNull()
 
                     var skip = false
                     for (paintjobSpec in newSpecs) {
@@ -189,7 +248,10 @@ object MagicPaintjobManager {
                                 description = description,
                                 unlockConditions = unlockConditions,
                                 spriteId = spriteId,
-                                tags = tags
+                                tags = tags,
+                                decos = decos,
+                                engineSpec = engineSpec,
+                                shieldSpec = shieldSpec
                             )
                                 .also {
                                     if (unlockedAutomatically && it.isUnlockable)
@@ -209,6 +271,7 @@ object MagicPaintjobManager {
                     )
                 }
             }
+
         }
 
         val newPaintjobSpecsById: MutableMap<String, MagicPaintjobSpec> = HashMap()
@@ -404,22 +467,72 @@ object MagicPaintjobManager {
         val spriteId = paintjob.spriteId
         Global.getSettings().loadTexture(spriteId)
 
-        if (combatShip != null) {
-            val sprite = Global.getSettings().getSprite(spriteId) ?: return
-            val x = combatShip.spriteAPI.centerX
-            val y = combatShip.spriteAPI.centerY
-            val alpha = combatShip.spriteAPI.alphaMult
-            val angle = combatShip.spriteAPI.angle
-            val color = combatShip.spriteAPI.color
-            combatShip.setSprite(sprite)
-            if (Global.getSettings().modManager.isModEnabled("shaderLib")) {
-                ShaderLib.overrideShipTexture(combatShip, spriteId)
-            }
-            combatShip.spriteAPI.setCenter(x, y)
-            combatShip.spriteAPI.alphaMult = alpha
-            combatShip.spriteAPI.angle = angle
-            combatShip.spriteAPI.color = color
+        if (combatShip == null) return
+        val replacementShipSprite = getReplacementSprite(combatShip.spriteAPI, spriteId) ?: return
+        combatShip.setSprite(replacementShipSprite)
+
+        if (Global.getSettings().modManager.isModEnabled("shaderLib")) {
+            ShaderLib.overrideShipTexture(combatShip, spriteId)
         }
+
+        combatShip.shield?.let { shield ->
+            paintjob.shieldSpec?.let { spec ->
+                spec.innerColor?.let { shield.innerColor = it }
+                spec.ringColor?.let { shield.ringColor = it }
+                spec.innerRotationRate?.let { shield.innerRotationRate = it }
+                spec.ringRotationRate?.let { shield.ringRotationRate = it }
+            }
+        }
+
+        combatShip.engineController?.shipEngines?.forEach { shipEngine ->
+            val slot = shipEngine.engineSlot
+            paintjob.engineSpec?.let { spec ->
+                spec.color?.let { slot.color = it }
+                spec.contrailColor?.let { slot.contrailColor = it }
+                spec.contrailSpawnDistMult?.let { slot.contrailSpawnDistMult = it }
+                spec.contrailWidthMultiplier?.let { slot.contrailWidthMultiplier = it }
+                spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
+                spec.glowSizeMult?.let { slot.glowSizeMult = it }
+            }
+        }
+
+        val tempSprite = Global.getSettings().getSprite(spriteId)
+        // get all weapons that are decos and are in the paintjob spec
+        combatShip.allWeapons?.forEach { weapon ->
+            if (weapon.isDecorative && paintjob.decos?.contains(weapon.slot.id) == true){
+                // get all weapon sprite's and check which ones we need to replace
+                ReflectionUtils.getFieldsOfType(weapon, Sprite::class.java).forEach { fieldName ->
+                    (ReflectionUtils.get(fieldName, weapon) as Sprite?)?.let { weaponSprite ->
+                        // it's hard to get a textureId out of a true sprite, so box it into SpriteAPI
+                        ReflectionUtils.invoke("setSprite", tempSprite, weaponSprite)
+                        if (tempSprite.textureId == weapon.sprite.textureId){
+                            // if we need to replace it, get the decoSpriteAPI
+                            getReplacementSprite(combatShip.spriteAPI, paintjob.decos!![weapon.slot.id]!!)?.let { decoSpriteAPI ->
+                                // then unbox it to get trueSprite
+                                val decoSprite = ReflectionUtils.invoke("getSprite", decoSpriteAPI) as Sprite
+                                // get the texture from the sprite
+                                val texture = ReflectionUtils.invoke("getTexture", decoSprite)
+                                // and set the texture of the weaponSprite
+                                val setTextureMethod = ReflectionUtils.getMethodsOfName("setTexture", weaponSprite)[0]
+                                ReflectionUtils.rawInvoke(setTextureMethod, weaponSprite, texture)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getReplacementSprite(originalSprite: SpriteAPI, replacementSpriteID: String): SpriteAPI?{
+        Global.getSettings().loadTexture(replacementSpriteID)
+        val replacementSprite = Global.getSettings().getSprite(replacementSpriteID) ?: return null
+
+        replacementSprite.setCenter(originalSprite.centerX, originalSprite.centerY)
+        replacementSprite.alphaMult = originalSprite.alphaMult
+        replacementSprite.angle = originalSprite.angle
+        replacementSprite.color = originalSprite.color
+
+        return replacementSprite
     }
 
     @JvmStatic

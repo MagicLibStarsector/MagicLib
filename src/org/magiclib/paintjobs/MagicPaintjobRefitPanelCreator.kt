@@ -31,8 +31,9 @@ internal class MagicPaintjobRefitPanelCreator {
         val existingElements = hullmodsPanel.getChildrenCopy()
         val lastElement = existingElements.last()
 
-        // button should be removed on modules and ships without paintjobs
-        if(fleetMember == null ||
+        // button should be removed on modules, ships with a perma paintjob, or ships without any possible paintjobs
+        if(!MagicPaintjobManager.isEnabled || fleetMember == null ||
+            MagicPaintjobManager.getCurrentShipPaintjob(fleetMember)?.isPermanent == true ||
             MagicPaintjobManager.getPaintjobsForHull(fleetMember.hullId, false).isEmpty() ){
             buttonPanel?.let{ hullmodsPanel.removeComponent(it) }
             return

@@ -14,7 +14,7 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
             ReflectionUtils.invoke("getScreenPanel", it) as? UIPanelAPI
         } ?: return
         cacheShipPreviewClass(newCoreUI)
-
+        if (!MagicPaintjobManager.isEnabled) return // return if not enabled
 /*
         val delegateChild = newCoreUI.getChildrenCopy().find {
             ReflectionUtils.hasMethodOfName("dismiss", it)
