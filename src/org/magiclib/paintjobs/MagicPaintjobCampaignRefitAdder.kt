@@ -9,7 +9,7 @@ import com.fs.state.AppDriver
 
 
 internal class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
-    private val panelCreator = MagicPaintjobRefitPanelCreator()
+    private val panelCreator = MagicPaintjobRefitPanelCreator(true)
     override fun isDone(): Boolean {
         return false
     }

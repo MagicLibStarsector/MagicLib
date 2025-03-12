@@ -13,9 +13,8 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI): CustomPanelAPI {
-    val width = 700f
-    val height = 800f
+internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI, width: Float, height: Float,
+                                           inCampaign: Boolean): CustomPanelAPI {
     val endPad = 6f
     val midPad = 5f
     val selectorsPerRow = 3
@@ -53,7 +52,9 @@ internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI): CustomPanel
                 borderColor.alpha * alphaMult / 255f
             )
             val rp = refitPanel.position
-            drawBorder(rp.x-210,rp.y-3,rp.x-210+1250,rp.y-3+850)
+            val outerBorderWidth = if(inCampaign) 1250 else 1010
+            val outerBorderHeight = if(inCampaign) 850 else 734
+            drawBorder(rp.x-210,rp.y-3,rp.x-210+outerBorderWidth,rp.y-3+outerBorderHeight)
 
             val darkerBorderColor = borderColor.darker()
             GL11.glColor4f(

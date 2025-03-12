@@ -24,7 +24,7 @@ class MagicPaintjobHullMod : BaseHullMod() {
         super.applyEffectsAfterShipCreation(ship, id)
         ship ?: return
         id ?: return
-
+        if(!MagicPaintjobManager.isEnabled ) return
         val paintjob = getAppliedPaintjob(ship) ?: return
 
         MagicPaintjobManager.applyPaintjob(ship, paintjob)

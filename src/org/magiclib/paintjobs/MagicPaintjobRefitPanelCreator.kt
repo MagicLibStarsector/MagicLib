@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard
 import org.magiclib.kotlin.setAlpha
 import java.awt.Color
 
-internal class MagicPaintjobRefitPanelCreator {
+internal class MagicPaintjobRefitPanelCreator(var inCampaign: Boolean) {
     companion object {
         var SHIP_PREVIEW_CLASS: Class<*>? = null
         var SHIPS_FIELD: String? = null
@@ -71,11 +71,17 @@ internal class MagicPaintjobRefitPanelCreator {
         paintjobButton.setShortcut(Keyboard.KEY_S, true)
         paintjobButton.onClick {
             val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
-            val paintjobPanel = createMagicPaintjobRefitPanel(refitPanel)
+            val width = if(inCampaign) 700f else 667f
+            val height =  if(inCampaign) 800f else 722f
+            val paintjobPanel = createMagicPaintjobRefitPanel(refitPanel, width, height, inCampaign)
             coreUI.addComponent(paintjobPanel)
 
-            paintjobPanel.position.setXAlignOffset(refitPanel.position.x-paintjobPanel.position.x+3)
-            paintjobPanel.position.setYAlignOffset(refitPanel.position.y-paintjobPanel.position.y+40)
+            // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.
+            // the other calcs here do ensure correct relative placement
+            val xOffset = refitPanel.position.x - paintjobPanel.position.x + if(inCampaign) 3 else -204
+            val yOffset = refitPanel.position.y - paintjobPanel.position.y - height + if(inCampaign) +840 else +725
+            paintjobPanel.position.setXAlignOffset(xOffset)
+            paintjobPanel.position.setYAlignOffset(yOffset)
 
             // add back button here to make sure its lined up with existing button
             val goBackButton = paintjobPanel.addButton(

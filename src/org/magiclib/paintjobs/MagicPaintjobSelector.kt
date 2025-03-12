@@ -186,7 +186,7 @@ internal fun createPaintjobSelector(hullVariantSpec: HullVariantSpec, paintjobSp
         position.inTL(0f, width+topPad)
         setTitleOrbitronLarge()
         addTitle(paintjobSpec?.name ?: "Default")
-        addPara(paintjobSpec?.description ?: "The Vanilla Paintjob", 3f)
+        addPara(paintjobSpec?.description ?: "The Standard Paintjob", 3f)
     }
 
     return Pair(selectorPanel, plugin)

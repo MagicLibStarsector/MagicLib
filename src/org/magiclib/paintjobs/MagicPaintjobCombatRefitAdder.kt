@@ -8,14 +8,14 @@ import com.fs.starfarer.title.TitleScreenState
 import com.fs.state.AppDriver
 
 class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
-    private val panelCreator = MagicPaintjobRefitPanelCreator()
+    private val panelCreator = MagicPaintjobRefitPanelCreator(false)
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
         val newCoreUI = (AppDriver.getInstance().currentState as? TitleScreenState)?.let {
             ReflectionUtils.invoke("getScreenPanel", it) as? UIPanelAPI
         } ?: return
         cacheShipPreviewClass(newCoreUI)
         if (!MagicPaintjobManager.isEnabled) return // return if not enabled
-/*
+
         val delegateChild = newCoreUI.getChildrenCopy().find {
             ReflectionUtils.hasMethodOfName("dismiss", it)
         } as? UIPanelAPI ?: return
@@ -31,7 +31,8 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
         val refitTab = holographicBG.let {
             ReflectionUtils.invoke("getCurr", it)
         } as? UIPanelAPI ?: return
-*/
+
+        panelCreator.addPaintjobButton(refitTab)
     }
 
     private fun cacheShipPreviewClass(newCoreUI: UIPanelAPI) {
