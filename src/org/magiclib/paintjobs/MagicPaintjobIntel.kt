@@ -605,7 +605,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     onClick {
                         // Toggle paintjob.
                         if (isWearingPj) MagicPaintjobManager.removePaintjobFromShip(fleetShip)
-                        else MagicPaintjobManager.applyPaintjob(fleetShip, pj)
+                        else MagicPaintjobManager.applyPaintjob(fleetShip, null, pj)
 
                         refreshPanel()
                     }
@@ -753,7 +753,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                         onClick {
                             // Toggle paintjob.
                             if (isWearingPj || paintjob == null) MagicPaintjobManager.removePaintjobFromShip(ship)
-                            else MagicPaintjobManager.applyPaintjob(ship, paintjob)
+                            else MagicPaintjobManager.applyPaintjob(ship, null, paintjob)
 
                             refreshPanel()
                         }

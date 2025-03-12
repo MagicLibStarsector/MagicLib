@@ -1,11 +1,9 @@
 package org.magiclib.paintjobs
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignUIAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.ShipAPI
-import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.util.MagicTxt
@@ -25,21 +23,13 @@ class MagicPaintjobHullMod : BaseHullMod() {
         ship ?: return
         id ?: return
 
+        if (!MagicPaintjobManager.isEnabled) {
+            return
+        }
+
         val paintjob = getAppliedPaintjob(ship) ?: return
 
-        MagicPaintjobManager.applyPaintjob(ship, paintjob)
-        // if the paintjob sets engines, we need to set again in advanceInCombat
-        if (paintjob.engineSpec == null) ship.setCustomData("MagicPaintjobApplied", true)
-    }
-
-    override fun advanceInCombat(ship: ShipAPI, amount: Float) {
-        if (!MagicPaintjobManager.isEnabled || "MagicPaintjobApplied" in ship.customData) return
-        val paintjob = getAppliedPaintjob(ship) ?: return
-        // if the paintjob sets engines, delay until the engines exist
-        if (ship.engineController.shipEngines.isEmpty() && paintjob.engineSpec != null) return
-
-        MagicPaintjobManager.applyPaintjob(ship, paintjob)
-        ship.setCustomData("MagicPaintjobApplied", true)
+        MagicPaintjobManager.applyPaintjob(null, ship, paintjob)
     }
 
     private fun getAppliedPaintjob(ship: ShipAPI): MagicPaintjobSpec? {

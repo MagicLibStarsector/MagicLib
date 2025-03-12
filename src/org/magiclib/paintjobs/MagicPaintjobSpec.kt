@@ -1,7 +1,5 @@
 package org.magiclib.paintjobs
 
-import java.awt.Color
-
 data class MagicPaintjobSpec @JvmOverloads constructor(
     val modId: String,
     val modName: String,
@@ -15,9 +13,6 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var unlockedAutomatically: Boolean = true,
     var spriteId: String,
     var tags: List<String>?,
-    var decos: Map<String, String>?,
-    var engineSpec: PaintjobEngineSpec?,
-    var shieldSpec: PaintjobShieldSpec?
 ) {
     val isShiny: Boolean
         get() = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
@@ -26,20 +21,4 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
         get() = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
 
     val isUnlockable = !isShiny
-
-    data class PaintjobEngineSpec(
-        var color: Color?,
-        var contrailColor: Color?,
-        var	contrailSpawnDistMult: Float?,
-        var	contrailWidthMultiplier: Float?,
-        var	glowAlternateColor: Color?,
-        var	glowSizeMult: Float?
-    )
-
-    data class PaintjobShieldSpec(
-        var innerColor: Color?,
-        var ringColor: Color?,
-        var innerRotationRate: Float?,
-        var ringRotationRate: Float?,
-    )
 }

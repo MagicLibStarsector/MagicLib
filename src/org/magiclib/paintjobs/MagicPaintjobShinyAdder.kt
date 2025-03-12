@@ -30,6 +30,7 @@ class MagicPaintjobShinyAdder : BaseCampaignEventListener(false) {
             if (Random(fleet.getSalvageSeed()).nextInt(probability) == 1) {
                 MagicPaintjobManager.applyPaintjob(
                     ship,
+                    null,
                     allShinyPaintjobs.filter { ship.hullId in it.hullIds }.random()
                 )
 
