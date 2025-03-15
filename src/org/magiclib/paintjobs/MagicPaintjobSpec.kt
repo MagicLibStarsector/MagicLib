@@ -17,7 +17,8 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var tags: List<String>?,
     var decos: Map<String, String>?,
     var engineSpec: PaintjobEngineSpec?,
-    var shieldSpec: PaintjobShieldSpec?
+    var shieldSpec: PaintjobShieldSpec?,
+    var paintjobFamily: String?
 ) {
     val isShiny: Boolean
         get() = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
@@ -43,3 +44,11 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
         var ringRotationRate: Float?,
     )
 }
+
+data class MagicWeaponPaintjobSpec(
+    val modId: String,
+    val id: String,
+    val paintjobFamilies: Set<String> = setOf(),
+    val weaponIds: Set<String> = setOf(),
+    var spriteMap: Map<String, String>?,
+)

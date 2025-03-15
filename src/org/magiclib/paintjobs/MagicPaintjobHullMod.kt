@@ -24,30 +24,39 @@ class MagicPaintjobHullMod : BaseHullMod() {
         super.applyEffectsAfterShipCreation(ship, id)
         ship ?: return
         id ?: return
-        if(!MagicPaintjobManager.isEnabled ) return
-        val paintjob = getAppliedPaintjob(ship) ?: return
+        if (!MagicPaintjobManager.isEnabled) return
+        val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship.variant) ?: return
 
         MagicPaintjobManager.applyPaintjob(ship, paintjob)
-        // if the paintjob sets engines, we need to set again in advanceInCombat
+
         if (paintjob.engineSpec == null) ship.setCustomData("MagicPaintjobApplied", true)
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
-        if (!MagicPaintjobManager.isEnabled || "MagicPaintjobApplied" in ship.customData) return
-        val paintjob = getAppliedPaintjob(ship) ?: return
+        if (!MagicPaintjobManager.isEnabled) return
+        val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship.variant) ?: return
+
+        // fighter wing paintjobs
+        for(wing in ship.allWings){
+            for(fighter in wing.wingMembers){
+                if ("MagicPaintjobApplied" in fighter.customData) continue
+
+                MagicPaintjobManager.getPaintjobsForHull(fighter.hullSpec.baseHullId).firstOrNull {
+                    it.paintjobFamily?.equals(paintjob.paintjobFamily) == true
+                }?.let { MagicPaintjobManager.applyPaintjob(fighter, it) }
+
+                fighter.setCustomData("MagicPaintjobApplied", true)
+            }
+        }
+
+
+        if ("MagicPaintjobApplied" in ship.customData) return
         // if the paintjob sets engines, delay until the engines exist
         if (ship.engineController.shipEngines.isEmpty() && paintjob.engineSpec != null) return
 
         MagicPaintjobManager.applyPaintjob(ship, paintjob)
-        ship.setCustomData("MagicPaintjobApplied", true)
-    }
 
-    private fun getAppliedPaintjob(ship: ShipAPI): MagicPaintjobSpec? {
-        // (the tag should only be on the variant, not the ship, but I don't trust myself)
-        val tag = (ship.tags + ship.variant.tags).firstOrNull { it.startsWith(PAINTJOB_TAG_PREFIX) }
-        return tag?.removePrefix(PAINTJOB_TAG_PREFIX)?.let { paintjobId ->
-            MagicPaintjobManager.getPaintjob(paintjobId)
-        }
+        ship.setCustomData("MagicPaintjobApplied", true)
     }
 
     override fun canBeAddedOrRemovedNow(

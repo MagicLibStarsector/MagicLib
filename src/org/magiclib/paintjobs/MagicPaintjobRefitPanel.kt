@@ -74,7 +74,7 @@ internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI, width: Float
         }
 
         override fun processInput(events: MutableList<InputEventAPI>?) {
-            events!!.forEach { event ->
+            for (event in events!!) {
                 if (!event.isConsumed && event.isKeyboardEvent && event.eventValue == Keyboard.KEY_ESCAPE) {
                     paintjobPanel.getParent()!!.removeComponent(paintjobPanel)
                     event.consume()
@@ -142,7 +142,7 @@ internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI, width: Float
     }
 
     // sync all the selectors, and apply the paintjob
-    selectorPlugins.forEach { selectorPlugin ->
+    for (selectorPlugin in selectorPlugins) {
         selectorPlugin.onClick {
             if (selectorPlugin.isUnlocked){
                 selectorPlugins.forEach { it.isSelected = false }
@@ -152,14 +152,14 @@ internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI, width: Float
                 else MagicPaintjobManager.applyPaintjob(baseVariant, selectorPlugin.paintjobSpec)
 
                 baseVariant.moduleVariants?.values?.forEach { moduleVariant ->
-                    val moduleHullID = (moduleVariant as ShipVariantAPI).hullSpec.hullId
-                    val modulePaintjobs = MagicPaintjobManager.getPaintjobsForHull(moduleHullID, false)
-                    modulePaintjobs.forEach { modulePaintjob ->
-                        if(selectorPlugin.paintjobSpec == null)
-                            MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
-                        else if (modulePaintjob.id.contains(selectorPlugin.paintjobSpec.id, true)) {
-                            MagicPaintjobManager.applyPaintjob(moduleVariant, modulePaintjob)
-                        }
+
+                    if(selectorPlugin.paintjobSpec == null)
+                        MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
+                    else{
+                        val moduleHullID = (moduleVariant as ShipVariantAPI).hullSpec.hullId
+                        MagicPaintjobManager.getPaintjobsForHull(moduleHullID).firstOrNull {
+                            it.paintjobFamily == selectorPlugin.paintjobSpec.paintjobFamily
+                        }?.let { MagicPaintjobManager.applyPaintjob(moduleVariant, it) }
                     }
                 }
                 ReflectionUtils.invoke("syncWithCurrentVariant", refitPanel)

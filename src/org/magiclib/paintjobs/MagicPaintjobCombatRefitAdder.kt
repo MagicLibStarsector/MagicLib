@@ -1,5 +1,6 @@
 package org.magiclib.paintjobs
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
@@ -8,8 +9,16 @@ import com.fs.starfarer.title.TitleScreenState
 import com.fs.state.AppDriver
 
 class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
+    companion object {
+        var SHIP_PREVIEW_CLASS: Class<*>? = null
+        var SHIPS_FIELD: String? = null
+        var combatEngineHash: Int? = null // this only semi works, but whatever
+    }
+
     private val panelCreator = MagicPaintjobRefitPanelCreator(false)
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
+        if(combatEngineHash != null && combatEngineHash != Global.getCombatEngine().hashCode()) return
+
         val newCoreUI = (AppDriver.getInstance().currentState as? TitleScreenState)?.let {
             ReflectionUtils.invoke("getScreenPanel", it) as? UIPanelAPI
         } ?: return
@@ -36,7 +45,7 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
     }
 
     private fun cacheShipPreviewClass(newCoreUI: UIPanelAPI) {
-        if (MagicPaintjobRefitPanelCreator.SHIP_PREVIEW_CLASS != null) return
+        if (SHIP_PREVIEW_CLASS != null) return
 
         val missionWidget = newCoreUI.getChildrenCopy().find {
             ReflectionUtils.hasMethodOfName("getMissionList", it)
@@ -56,8 +65,8 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
             ReflectionUtils.hasMethodOfName("isSchematicMode", it)
         } ?: return
 
-        MagicPaintjobRefitPanelCreator.SHIP_PREVIEW_CLASS = shipPreview.javaClass
+        SHIP_PREVIEW_CLASS = shipPreview.javaClass
         val shipFields = ReflectionUtils.getFieldsOfType(shipPreview, Array<Ship>::class.java)
-        MagicPaintjobRefitPanelCreator.SHIPS_FIELD = shipFields[0] // only one field should be Array<Ship>
+        SHIPS_FIELD = shipFields[0] // only one field should be Array<Ship>
     }
 }

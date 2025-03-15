@@ -8,11 +8,6 @@ import org.magiclib.kotlin.setAlpha
 import java.awt.Color
 
 internal class MagicPaintjobRefitPanelCreator(var inCampaign: Boolean) {
-    companion object {
-        var SHIP_PREVIEW_CLASS: Class<*>? = null
-        var SHIPS_FIELD: String? = null
-    }
-
     private var buttonPanel: CustomPanelAPI? = null
     fun addPaintjobButton(refitTab: UIPanelAPI) {
         val refitPanel = refitTab.getChildrenCopy().find {
@@ -34,13 +29,13 @@ internal class MagicPaintjobRefitPanelCreator(var inCampaign: Boolean) {
         // button should be removed on modules, ships with a perma paintjob, or ships without any possible paintjobs
         if(!MagicPaintjobManager.isEnabled || fleetMember == null ||
             MagicPaintjobManager.getCurrentShipPaintjob(fleetMember)?.isPermanent == true ||
-            MagicPaintjobManager.getPaintjobsForHull(fleetMember.hullId, false).isEmpty() ){
+            MagicPaintjobManager.getPaintjobsForHull(fleetMember.hullId).isEmpty() ){
             buttonPanel?.let{ hullmodsPanel.removeComponent(it) }
             return
         }
 
         // button already exists
-        if (buttonPanel != null && existingElements.contains(buttonPanel as UIComponentAPI)) return
+        if (buttonPanel != null && existingElements.contains(buttonPanel!!)) return
 
         // addHullmods button should always exist
         val addButton = existingElements.filter { ReflectionUtils.hasMethodOfName("getText", it) }.find {
@@ -48,6 +43,8 @@ internal class MagicPaintjobRefitPanelCreator(var inCampaign: Boolean) {
         } ?: return
 
         // make a new button
+        MagicPaintjobCombatRefitAdder.combatEngineHash = Global.getCombatEngine()?.hashCode()
+
         buttonPanel = Global.getSettings().createCustom(addButton.position.width, addButton.position.height, null)
         hullmodsPanel.addComponent(buttonPanel).belowLeft(lastElement, 3f)
         val mainElement = buttonPanel!!.createUIElement(addButton.position.width, addButton.position.height, false)

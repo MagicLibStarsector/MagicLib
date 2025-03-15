@@ -201,7 +201,7 @@ private fun createShipPreview(hullVariantSpec: HullVariantSpec, basePaintjobSpec
         MagicPaintjobManager.removePaintjobFromShip(moduleVariant as ShipVariantAPI)
     }
 
-    val shipPreview = ReflectionUtils.instantiate(MagicPaintjobRefitPanelCreator.SHIP_PREVIEW_CLASS!!)!!
+    val shipPreview = ReflectionUtils.instantiate(MagicPaintjobCombatRefitAdder.SHIP_PREVIEW_CLASS!!)!!
     ReflectionUtils.invoke("setVariant", shipPreview, clonedVariant)
     ReflectionUtils.invoke("overrideVariant", shipPreview, clonedVariant)
     ReflectionUtils.invoke("setShowBorder", shipPreview, false)
@@ -211,17 +211,13 @@ private fun createShipPreview(hullVariantSpec: HullVariantSpec, basePaintjobSpec
 
     // make the ship list so the ships exist when we try and get them
     ReflectionUtils.invoke("prepareShip", shipPreview)
-    val ships = ReflectionUtils.get(MagicPaintjobRefitPanelCreator.SHIPS_FIELD!!, shipPreview) as Array<ShipAPI>
 
     // if the paintjob exists, replace the sprites
     basePaintjobSpec?.let { paintjob ->
-        ships.forEach { ship ->
-            val modulePaintjobs = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId, false)
-            modulePaintjobs.forEach { modulePaintjob ->
-                if (modulePaintjob.id.contains(paintjob.id, true)) {
-                    MagicPaintjobManager.applyPaintjob(ship, modulePaintjob)
-                }
-            }
+        for(ship in ReflectionUtils.get(MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!, shipPreview) as Array<ShipAPI>){
+            MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId).firstOrNull {
+                it.paintjobFamily?.equals(paintjob.paintjobFamily) == true
+            }?.let { MagicPaintjobManager.applyPaintjob(ship, it) }
         }
     }
 
