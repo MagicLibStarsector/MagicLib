@@ -68,16 +68,16 @@ internal class MagicPaintjobRefitPanelCreator(var inCampaign: Boolean) {
         paintjobButton.setShortcut(Keyboard.KEY_S, true)
         paintjobButton.onClick {
             val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
-            val width = if(inCampaign && Global.getSettings().screenWidth > 1100) 700f else 667f
-            val height =  if(inCampaign && Global.getSettings().screenHeight > 900) 800f else 722f
-            val paintjobPanel = createMagicPaintjobRefitPanel(refitPanel, width, height, inCampaign)
+            val width = if(inCampaign) (refitTab.position.width - 343).coerceIn(667f, 700f) else 667f
+            val height = if(inCampaign) (refitTab.position.height - 12).coerceIn(722f, 800f) else 722f
+            val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, refitPanel, width, height, inCampaign)
             coreUI.addComponent(paintjobPanel)
 
             // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.
             // the other calcs here do ensure correct relative placement
-            val xOffset = refitPanel.position.x - paintjobPanel.position.x +
-                    if(inCampaign && Global.getSettings().screenWidth > 1100) 3 else -204 // offset to cover ship picker
-            val yOffset = refitPanel.position.y + refitPanel.getHeight() - paintjobPanel.position.y - height - 3
+            val xOffset = refitTab.position.x - paintjobPanel.position.x +
+                    if(inCampaign) (refitTab.position.width - 1037).coerceIn(6f, 213f) else 6f
+            val yOffset = refitTab.position.y + refitTab.position.height - paintjobPanel.position.y - height - 6
             paintjobPanel.position.setXAlignOffset(xOffset)
             paintjobPanel.position.setYAlignOffset(yOffset)
 
