@@ -15,7 +15,6 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var unlockedAutomatically: Boolean = true,
     var spriteId: String,
     var tags: List<String>?,
-    var decos: Map<String, String>?,
     var engineSpec: PaintjobEngineSpec?,
     var shieldSpec: PaintjobShieldSpec?,
     var paintjobFamily: String?

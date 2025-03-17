@@ -167,19 +167,6 @@ object MagicPaintjobManager {
                         }.getOrNull()
                     }
 
-                    val decos = paintjobJson?.runCatching {
-                        getJSONObject("decos").let { decosJson ->
-                            // map weaponSlotID to spritePath
-                            decosJson.keys().asSequence().associate { weaponSlotID ->
-                                weaponSlotID as String to decosJson.getString(weaponSlotID)
-                            }
-                        }
-                    }?.onFailure { e ->
-                        if (!(e is JSONException && e.message?.contains("not found") == true)){
-                            logger.warn("Unable to load decos JSON of $id paintjob", e)
-                        }
-                    }?.getOrNull()
-
                     val engineSpec = paintjobJson?.runCatching {
                         getJSONObject("engines")?.let { engineJson ->
                             MagicPaintjobSpec.PaintjobEngineSpec(
@@ -261,7 +248,6 @@ object MagicPaintjobManager {
                                 unlockConditions = unlockConditions,
                                 spriteId = spriteId,
                                 tags = tags,
-                                decos = decos,
                                 engineSpec = engineSpec,
                                 shieldSpec = shieldSpec,
                                 paintjobFamily = paintjobFamily

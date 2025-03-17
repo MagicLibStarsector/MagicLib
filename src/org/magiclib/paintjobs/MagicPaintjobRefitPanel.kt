@@ -52,8 +52,8 @@ internal fun createMagicPaintjobRefitPanel(refitPanel : UIPanelAPI, width: Float
                 borderColor.alpha * alphaMult / 255f
             )
             val rp = refitPanel.position
-            val outerBorderWidth = if(inCampaign) 1250 else 1010
-            val outerBorderHeight = if(inCampaign) 850 else 734
+            val outerBorderWidth = if(inCampaign && Global.getSettings().screenWidth > 1100) 1250 else 1010
+            val outerBorderHeight = if(inCampaign && Global.getSettings().screenHeight > 900) 850 else 734
             drawBorder(rp.x-210,rp.y-3,rp.x-210+outerBorderWidth,rp.y-3+outerBorderHeight)
 
             val darkerBorderColor = borderColor.darker()
