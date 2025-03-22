@@ -1,4 +1,4 @@
-package org.magiclib.paintjobs
+package org.magiclib
 
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
@@ -7,27 +7,37 @@ import java.lang.invoke.MethodType
 internal object ReflectionUtils {
 
     private val fieldClass = Class.forName("java.lang.reflect.Field", false, Class::class.java.classLoader)
-    private val setFieldHandle = MethodHandles.lookup().findVirtual(fieldClass, "set",
+    private val setFieldHandle = MethodHandles.lookup().findVirtual(
+        fieldClass, "set",
         MethodType.methodType(Void.TYPE, Any::class.java, Any::class.java))
-    private val getFieldHandle = MethodHandles.lookup().findVirtual(fieldClass, "get",
+    private val getFieldHandle = MethodHandles.lookup().findVirtual(
+        fieldClass, "get",
         MethodType.methodType(Any::class.java, Any::class.java))
-    private val getFieldTypeHandle = MethodHandles.lookup().findVirtual(fieldClass, "getType",
+    private val getFieldTypeHandle = MethodHandles.lookup().findVirtual(
+        fieldClass, "getType",
         MethodType.methodType(Class::class.java))
-    private val getFieldNameHandle = MethodHandles.lookup().findVirtual(fieldClass, "getName",
+    private val getFieldNameHandle = MethodHandles.lookup().findVirtual(
+        fieldClass, "getName",
         MethodType.methodType(String::class.java))
-    private val setFieldAccessibleHandle = MethodHandles.lookup().findVirtual(fieldClass, "setAccessible",
+    private val setFieldAccessibleHandle = MethodHandles.lookup().findVirtual(
+        fieldClass, "setAccessible",
         MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
 
     private val methodClass = Class.forName("java.lang.reflect.Method", false, Class::class.java.classLoader)
-    private val getMethodNameHandle = MethodHandles.lookup().findVirtual(methodClass, "getName",
+    private val getMethodNameHandle = MethodHandles.lookup().findVirtual(
+        methodClass, "getName",
         MethodType.methodType(String::class.java))
-    private val invokeMethodHandle = MethodHandles.lookup().findVirtual(methodClass, "invoke",
+    private val invokeMethodHandle = MethodHandles.lookup().findVirtual(
+        methodClass, "invoke",
         MethodType.methodType(Any::class.java, Any::class.java, Array<Any>::class.java))
-    private val setMethodAccessibleHandle = MethodHandles.lookup().findVirtual(methodClass, "setAccessible",
+    private val setMethodAccessibleHandle = MethodHandles.lookup().findVirtual(
+        methodClass, "setAccessible",
         MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
-    private val getMethodReturnHandle = MethodHandles.lookup().findVirtual(methodClass, "getReturnType",
+    private val getMethodReturnHandle = MethodHandles.lookup().findVirtual(
+        methodClass, "getReturnType",
         MethodType.methodType(Class::class.java))
-    private val getMethodParametersHandle = MethodHandles.lookup().findVirtual(methodClass, "getParameterTypes",
+    private val getMethodParametersHandle = MethodHandles.lookup().findVirtual(
+        methodClass, "getParameterTypes",
         MethodType.methodType(arrayOf<Class<*>>().javaClass))
 
     private val constructorClass = Class.forName("java.lang.reflect.Constructor", false, Class::class.java.classLoader)
@@ -126,7 +136,7 @@ internal object ReflectionUtils {
     fun getFieldsOfType(instance: Any, clazz: Class<*>): List<String> {
         val instancesOfMethods: Array<out Any> = instance.javaClass.getDeclaredFields()
 
-        return instancesOfMethods.filter { getFieldTypeHandle.invoke(it) == clazz }
+        return instancesOfMethods.filter { clazz.isAssignableFrom(getFieldTypeHandle.invoke(it) as Class<*>) }
             .map { getFieldNameHandle.invoke(it) as String }
     }
 

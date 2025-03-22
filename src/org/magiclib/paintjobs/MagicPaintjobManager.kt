@@ -20,6 +20,7 @@ import org.lazywizard.lazylib.ext.logging.w
 import org.magiclib.LunaWrapper
 import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
+import org.magiclib.ReflectionUtils
 import org.magiclib.kotlin.forEach
 import org.magiclib.kotlin.optColor
 import org.magiclib.kotlin.toStringList
@@ -325,7 +326,7 @@ object MagicPaintjobManager {
                 }
 
                 /* TODO: Uncomment this for 0.98
-                if (!Global.getSettings().actuallyAllWeaponSpecs.any{ it.weaponId in weaponIds }) {
+                if (!Global.getSettings().actuallyAllWeaponSpecs.any { it.weaponId in weaponIds }) {
                     logger.warn("Weapon Paintjob with id: $id has no valid weaponId's, skipping.")
                     return@forEach
                 }
