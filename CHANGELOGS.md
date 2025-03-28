@@ -1,9 +1,15 @@
+Version 1.5.1
+- Fixed version checker file to not constantly say there's an update.
+
 Version 1.5.0
+
 **MagicPaintjobs v2**
+by Starficz
 - Added new Refit UI button to MagicPaintjobs.
-- magic_paintjobs.csv has a new optional column, paintjobFamily.
-- Added optional Engine/Shields support for ships, which requires a new file of [id].paintjob (from magic_paintjobs.csv) to work
+- magic_paintjobs.csv has a new optional column, `paintjobFamily`.
+- Added optional Engine/Shields support for ships, which requires a new file of `[id].paintjob` (from magic_paintjobs.csv) to work
   - The file is in JSON, all attributes optional, with the format being:
+  ```json
   {
     "engineSpec":{
       "color":[0,0,0,0], 
@@ -20,15 +26,16 @@ Version 1.5.0
       "ringRotationRate":1
     }
   }
+  ```
 - A new CSV now exists for weapons: magic_weapon_paintjobs.csv
-  - The file is in format: id,paintjobFamilies,weaponIds,spriteMap
-    - id: Unique id for this paintjob
-    - paintjobFamilies: The paintjobFamily(s) (comma separated string for multiple) applicable
-    - weaponIds: The Starsector weapon ID(s) (comma separated string for multiple) applicable
-    - spriteMap: the sprite(s) (comma separated string for multiple) that should replaced in format: 
-      path/to/original/sprite.png -> path/to/new/sprite.png
+  - The file is in format: `id,paintjobFamilies,weaponIds,spriteMap`
+    - `id`: Unique id for this paintjob
+    - `paintjobFamilies`: The paintjobFamily(s) (comma separated string for multiple) applicable
+    - `weaponIds`: The Starsector weapon ID(s) (comma separated string for multiple) applicable
+    - `spriteMap`: the sprite(s) (comma separated string for multiple) that should be replaced in format: 
+      `path/to/original/sprite.png` -> `path/to/new/sprite.png`
 - Wings/modules/weapons of a painted parent ship will automatically get applied with a paintjob that has a matching paintjobFamily.
-- All paintjob related files can now either be in \data\config or \data\config\paintjobs
+- All paintjob related files can now either be in `\data\config` or `\data\config\paintjobs`
 
 Version 1.4.6
 
