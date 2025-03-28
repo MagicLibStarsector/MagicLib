@@ -163,6 +163,7 @@ internal object ReflectionUtils {
         }?.let { getMethodNameHandle.invoke(it) as String }
     }
 
+    @Suppress("USELESS_CAST")
     fun invoke(methodName: String, instance: Any, vararg arguments: Any?, declared: Boolean = false): Any? {
         val method: Any?
 
@@ -171,9 +172,9 @@ internal object ReflectionUtils {
         val methodType = MethodType.methodType(Void.TYPE, args)
 
         method = if (!declared) {
-            clazz.getMethod(methodName, *methodType.parameterArray())
+            clazz.getMethod(methodName, *methodType.parameterArray()) as Any?
         } else {
-            clazz.getDeclaredMethod(methodName, *methodType.parameterArray())
+            clazz.getDeclaredMethod(methodName, *methodType.parameterArray()) as Any?
         }
 
         if (declared) setMethodAccessibleHandle.invoke(method, true)
@@ -185,15 +186,16 @@ internal object ReflectionUtils {
         return invokeMethodHandle.invoke(method, instance, arguments)
     }
 
+    @Suppress("USELESS_CAST")
     fun invokeStatic(methodName: String, clazz: Class<*>, vararg arguments: Any?, declared: Boolean = false): Any? {
         val method: Any?
         val args = arguments.map { it!!::class.javaPrimitiveType ?: it::class.java }
         val methodType = MethodType.methodType(Void.TYPE, args)
 
         method = if (!declared) {
-            clazz.getMethod(methodName, *methodType.parameterArray())
+            clazz.getMethod(methodName, *methodType.parameterArray()) as Any?
         } else {
-            clazz.getDeclaredMethod(methodName, *methodType.parameterArray())
+            clazz.getDeclaredMethod(methodName, *methodType.parameterArray()) as Any?
         }
 
         return invokeMethodHandle.invoke(method, null, arguments)
