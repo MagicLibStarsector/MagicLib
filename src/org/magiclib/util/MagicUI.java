@@ -896,9 +896,9 @@ public class MagicUI {
         TODRAW14.setText(text);
         TODRAW14.setMaxWidth(46 * UI_SCALING);
         TODRAW14.setMaxHeight(14 * UI_SCALING);
-        TODRAW14.setColor(shadowcolor);
+        TODRAW14.setBaseColor(shadowcolor);
         TODRAW14.draw(shadowLoc);
-        TODRAW14.setColor(color);
+        TODRAW14.setBaseColor(color);
         TODRAW14.draw(textLoc);
         closeGL11ForText();
 
@@ -950,9 +950,9 @@ public class MagicUI {
         openGL11ForText();
         TODRAW14.setText(numb + "");
         float width = TODRAW14.getWidth() - 1;
-        TODRAW14.setColor(shadowcolor);
+        TODRAW14.setBaseColor(shadowcolor);
         TODRAW14.draw(shadowLoc.x - width, shadowLoc.y);
-        TODRAW14.setColor(color);
+        TODRAW14.setBaseColor(color);
         TODRAW14.draw(numberPos.x - width, numberPos.y);
         closeGL11ForText();
     }
@@ -1207,9 +1207,9 @@ public class MagicUI {
 
         openGL11ForText();
         TODRAW10.setText(text);
-        TODRAW10.setColor(shadowcolor);
+        TODRAW10.setBaseColor(shadowcolor);
         TODRAW10.draw(shadowLoc);
-        TODRAW10.setColor(color);
+        TODRAW10.setBaseColor(color);
         TODRAW10.draw(boxLoc);
         closeGL11ForText();
     }

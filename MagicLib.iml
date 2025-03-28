@@ -21,38 +21,42 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="MagicLib-Kotlin" />
+    <orderEntry type="library" name="LunaLib" level="project" />
+    <orderEntry type="library" name="starfarer-api" level="project" />
+    <orderEntry type="library" name="SWP" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Console.jar!/" />
+          <root url="jar://$MODULE_DIR$/../Vayra/Vayra's Sector - Last Release/jars/VayraSector.jar!/" />
         </CLASSES>
-        <JAVADOC>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/javadoc.zip!/" />
-        </JAVADOC>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="LazyLib-Kotlin" level="application" />
+    <orderEntry type="library" name="LazyLib" level="application" />
+    <orderEntry type="library" name="Kotlin-Runtime" level="application" />
+    <orderEntry type="library" name="starsector-98" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector-0.98a-RC5/mods/Console Commands/jars/lw_Console.jar!/" />
+        </CLASSES>
+        <JAVADOC />
         <SOURCES>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar!/" />
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib-Kotlin.jar!/" />
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector-0.98a-RC5/mods/Console Commands/jars/lw_Console.jar!/" />
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector-0.98a-RC5/mods/Console Commands/jars/lw_Console.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/Vayras Sector-3.2.1/jars/VayraSector.jar!/" />
+          <root url="jar://C:/Program Files (x86)/Fractal Softworks/Starsector/mods/zz GraphicsLib-1.9.0/jars/Graphics.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="LunaLib" level="project" />
-    <orderEntry type="library" name="starfarer-api" level="project" />
-    <orderEntry type="library" name="Vayra's Sector" level="project" />
-    <orderEntry type="library" name="Kotlin-Runtime" level="project" />
-    <orderEntry type="library" name="SWP" level="project" />
-    <orderEntry type="library" name="GraphicsLib" level="project" />
-    <orderEntry type="library" name="jars-ConsoleCommands" level="project" />
   </component>
 </module>

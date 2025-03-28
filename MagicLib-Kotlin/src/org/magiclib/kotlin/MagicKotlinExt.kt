@@ -29,6 +29,30 @@ inline fun Color.modify(red: Int = this.red, green: Int = this.green, blue: Int 
     Color(red, green, blue, alpha)
 
 /**
+ * Returns the red component in the range 0f-1f in the default sRGB space.
+ */
+inline val Color.redf: Float
+    get() = this.red / 255f
+
+/**
+ * Returns the green component in the range 0f-1f in the default sRGB space.
+ */
+inline val Color.greenf: Float
+    get() = this.green / 255f
+
+/**
+ * Returns the blue component in the range 0f-1f in the default sRGB space.
+ */
+inline val Color.bluef: Float
+    get() = this.blue / 255f
+
+/**
+ * Returns the alpha component in the range 0f-1f in the default sRGB space.
+ */
+inline val Color.alphaf : Float
+    get() = this.alpha / 255f
+
+/**
  * Time how long it takes to run [func] and run [onFinished] afterwards.
  * If `onlyRunTraceInDevMode` is true and dev mode is disabled, `onFinished` will still run but `millis` will be 0.
  *
