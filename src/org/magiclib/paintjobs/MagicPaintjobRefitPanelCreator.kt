@@ -67,8 +67,8 @@ internal object MagicPaintjobRefitPanelCreator {
             // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.
             // the other calcs here do ensure correct relative placement
             val xOffset = if(inCampaign) (refitTab.width - 1037).coerceIn(6f, 213f) else 6f
-            paintjobPanel.xAlignOffset = refitTab.leftX - paintjobPanel.leftX + xOffset
-            paintjobPanel.yAlignOffset = refitTab.topY - paintjobPanel.topY - 6
+            paintjobPanel.xAlignOffset = refitTab.left - paintjobPanel.left + xOffset
+            paintjobPanel.yAlignOffset = refitTab.top - paintjobPanel.top - 6
 
             // add back button here to make sure its lined up with existing button
             val goBackButton = paintjobPanel.addButton(
@@ -83,8 +83,8 @@ internal object MagicPaintjobRefitPanelCreator {
                 addButton.height
             )
 
-            goBackButton.xAlignOffset = newPaintjobButton.leftX - goBackButton.leftX
-            goBackButton.yAlignOffset = newPaintjobButton.bottomY - goBackButton.bottomY
+            goBackButton.xAlignOffset = newPaintjobButton.left - goBackButton.left
+            goBackButton.yAlignOffset = newPaintjobButton.bottom - goBackButton.bottom
             goBackButton.setShortcut(Keyboard.KEY_S, true)
             goBackButton.onClick {
                 paintjobPanel.parent?.removeComponent(paintjobPanel)

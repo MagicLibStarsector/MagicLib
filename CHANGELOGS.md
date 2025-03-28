@@ -1,3 +1,35 @@
+Version 1.5.0
+**MagicPaintjobs v2**
+- Added new Refit UI button to MagicPaintjobs.
+- magic_paintjobs.csv has a new optional column, paintjobFamily.
+- Added optional Engine/Shields support for ships, which requires a new file of [id].paintjob (from magic_paintjobs.csv) to work
+  - The file is in JSON, all attributes optional, with the format being:
+  {
+    "engineSpec":{
+      "color":[0,0,0,0], 
+      "contrailColor":[0,0,0,0], 
+      "spawnDistMult":1, 
+      "contrailWidthMultiplier":1, 
+      "glowAlternateColor":[0,0,0,0], 
+      "glowSizeMult": 1
+    }, 
+    "shield":{
+      "innerColor":[0,0,0,0], 
+      "ringColor":[0,0,0,0], 
+      "innerRotationRate":1, 
+      "ringRotationRate":1
+    }
+  }
+- A new CSV now exists for weapons: magic_weapon_paintjobs.csv
+  - The file is in format: id,paintjobFamilies,weaponIds,spriteMap
+    - id: Unique id for this paintjob
+    - paintjobFamilies: The paintjobFamily(s) (comma separated string for multiple) applicable
+    - weaponIds: The Starsector weapon ID(s) (comma separated string for multiple) applicable
+    - spriteMap: the sprite(s) (comma separated string for multiple) that should replaced in format: 
+      path/to/original/sprite.png -> path/to/new/sprite.png
+- Wings/modules/weapons of a painted parent ship will automatically get applied with a paintjob that has a matching paintjobFamily.
+- All paintjob related files can now either be in \data\config or \data\config\paintjobs
+
 Version 1.4.6
 
 **MagicBounty**

@@ -77,12 +77,12 @@ internal object MagicPaintjobSelector {
             panelColor = Misc.interpolateColor(panelColor, clickedBGColor, clickFader.brightness)
             val panelAlpha = panelColor.alphaf * alphaMult
             GL11.glColor4f(panelColor.redf, panelColor.greenf, panelColor.bluef, panelAlpha)
-            GL11.glRectf(selectorPanel.leftX, selectorPanel.bottomY, selectorPanel.rightX, selectorPanel.topY)
+            GL11.glRectf(selectorPanel.left, selectorPanel.bottom, selectorPanel.right, selectorPanel.top)
 
             val darkerBorderColor = Misc.getDarkPlayerColor().darker()
             val darkerBorderAlpha = darkerBorderColor.alphaf * alphaMult
             GL11.glColor4f(darkerBorderColor.redf, darkerBorderColor.greenf, darkerBorderColor.bluef, darkerBorderAlpha)
-            drawBorder(selectorPanel.leftX, selectorPanel.bottomY, selectorPanel.rightX, selectorPanel.topY)
+            drawBorder(selectorPanel.left, selectorPanel.bottom, selectorPanel.right, selectorPanel.top)
 
             GL11.glPopMatrix()
         }
@@ -96,14 +96,14 @@ internal object MagicPaintjobSelector {
             if (!isUnlocked) {
                 val lockedAlpha = Misc.interpolate(lockedColor.alphaf, 0f, lockedHoverFader.brightness) * alphaMult
                 GL11.glColor4f(lockedColor.redf, lockedColor.greenf, lockedColor.bluef, lockedAlpha)
-                GL11.glRectf(selectorPanel.leftX, selectorPanel.bottomY, selectorPanel.rightX, selectorPanel.topY)
+                GL11.glRectf(selectorPanel.left, selectorPanel.bottom, selectorPanel.right, selectorPanel.top)
 
                 val lockedSprite = Global.getSettings().getSprite("icons", "lock")
                 lockedSprite.alphaMult = Misc.interpolate(lockAlpha, 0f, lockedHoverFader.brightness)
                 val scaleFactor = lockSize * selectorPanel.width / max(lockedSprite.width, lockedSprite.height)
                 if (scaleFactor < 1)
                     lockedSprite.setSize(scaleFactor*lockedSprite.width, scaleFactor*lockedSprite.height)
-                lockedSprite.renderAtCenter(selectorPanel.centerX, selectorPanel.topY - selectorPanel.width/2)
+                lockedSprite.renderAtCenter(selectorPanel.centerX, selectorPanel.top - selectorPanel.width/2)
             }
             GL11.glPopMatrix()
         }
@@ -118,8 +118,8 @@ internal object MagicPaintjobSelector {
         override fun processInput(events: MutableList<InputEventAPI>?) {
             events!!.filter { it.isMouseEvent }.forEach { event ->
 
-                val inElement = event.x.toFloat() in selectorPanel.leftX..selectorPanel.rightX &&
-                        event.y.toFloat() in selectorPanel.bottomY..selectorPanel.topY
+                val inElement = event.x.toFloat() in selectorPanel.left..selectorPanel.right &&
+                        event.y.toFloat() in selectorPanel.bottom..selectorPanel.top
                 if (inElement) {
                     for (onHover in onHoverFunctions) onHover(event)
                     if (!isHovering) onHoverEnterFunctions.forEach { it(event) }
@@ -211,7 +211,7 @@ internal object MagicPaintjobSelector {
         basePaintjobSpec?.let { paintjob ->
             for(ship in ReflectionUtils.get(MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!, shipPreview) as Array<ShipAPI>){
                 MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec.baseHullId).firstOrNull {
-                    it.paintjobFamily?.equals(paintjob.paintjobFamily) == true
+                    it.paintjobFamily?.equals(paintjob.paintjobFamily) == true || it.id == paintjob.id
                 }?.let { MagicPaintjobManager.applyPaintjob(ship, it) }
             }
         }

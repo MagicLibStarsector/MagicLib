@@ -101,16 +101,16 @@ internal val UIComponentAPI.x
 internal val UIComponentAPI.y
     get() = this.position.y
 
-internal val UIComponentAPI.leftX
+internal val UIComponentAPI.left
     get() = this.x
 
-internal val UIComponentAPI.bottomY
+internal val UIComponentAPI.bottom
     get() = this.y
 
-internal val UIComponentAPI.topY
+internal val UIComponentAPI.top
     get() = this.y + this.height
 
-internal val UIComponentAPI.rightX
+internal val UIComponentAPI.right
     get() = this.x + this.width
 
 internal fun UIComponentAPI.setLocation(x: Float, y: Float){
@@ -140,7 +140,7 @@ internal fun UIPanelAPI.getChildrenNonCopy(): List<UIComponentAPI> {
 }
 
 internal fun UIPanelAPI.findChildWithMethod(methodName: String): UIComponentAPI? {
-    return getChildrenCopy().find { ReflectionUtils.hasMethodOfName(methodName, it) } as? UIComponentAPI
+    return getChildrenCopy().find { ReflectionUtils.hasMethodOfName(methodName, it) }
 }
 
 internal fun UIPanelAPI.clearChildren() {

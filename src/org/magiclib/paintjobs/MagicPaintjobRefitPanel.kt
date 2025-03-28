@@ -39,7 +39,7 @@ internal object MagicPaintjobRefitPanel {
             val panelColor = Color.BLACK
             val panelAlpha = panelColor.alphaf * alphaMult
             GL11.glColor4f(panelColor.redf, panelColor.greenf, panelColor.bluef, panelAlpha)
-            GL11.glRectf(paintjobPanel.leftX, paintjobPanel.bottomY, paintjobPanel.rightX, paintjobPanel.topY)
+            GL11.glRectf(paintjobPanel.left, paintjobPanel.bottom, paintjobPanel.right, paintjobPanel.top)
 
             GL11.glDisable(GL11.GL_BLEND)
 
@@ -48,13 +48,13 @@ internal object MagicPaintjobRefitPanel {
             val borderColor = Misc.getDarkPlayerColor()
             val borderAlpha = borderColor.alphaf * alphaMult
             GL11.glColor4f(borderColor.redf, borderColor.greenf, borderColor.bluef, borderAlpha)
-            drawBorder(refitTab.leftX, refitTab.bottomY, refitTab.rightX, refitTab.topY)
+            drawBorder(refitTab.left, refitTab.bottom, refitTab.right, refitTab.top)
 
             // the panel border itself is darker than standard player dark color
             val darkerBorderColor = borderColor.darker()
             val darkerBorderAlpha = darkerBorderColor.alphaf * alphaMult
             GL11.glColor4f(darkerBorderColor.redf, darkerBorderColor.greenf, darkerBorderColor.bluef, darkerBorderAlpha)
-            drawBorder(paintjobPanel.leftX, paintjobPanel.bottomY, paintjobPanel.rightX, paintjobPanel.topY)
+            drawBorder(paintjobPanel.left, paintjobPanel.bottom, paintjobPanel.right, paintjobPanel.top)
 
             GL11.glPopMatrix()
         }
