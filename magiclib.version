@@ -3,7 +3,7 @@
   "modName": "MagicLib",
   "modThreadId": "25868",
   "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/latest/download/MagicLib.zip",
-  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/magicpaintjobs-starficz/CHANGELOGS.md",
+  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/CHANGELOGS.md",
   "modVersion":
     {
       "major": "1",
