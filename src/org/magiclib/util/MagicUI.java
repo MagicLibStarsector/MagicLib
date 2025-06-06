@@ -58,9 +58,11 @@ public class MagicUI {
         try {
             LazyFont fontdraw = LazyFont.loadFont("graphics/fonts/victor14.fnt");
             TODRAW14 = fontdraw.createText();
+            TODRAW14.setBlendSrc(GL11.GL_ONE);
 
             fontdraw = LazyFont.loadFont("graphics/fonts/victor10.fnt");
             TODRAW10 = fontdraw.createText();
+            TODRAW10.setBlendSrc(GL11.GL_ONE);
 
             if (UI_SCALING != 1) {
                 TODRAW14.setFontSize(TODRAW14.getFontSize() * UI_SCALING);
