@@ -7,16 +7,16 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.opengl.GL11
-import org.magiclib.bounty.intel.filters.LocationFilter
+import org.magiclib.bounty.intel.sorters.TogglePrimarySorter
 import org.magiclib.bounty.ui.BaseUIPanelPlugin
 import org.magiclib.bounty.ui.lists.ListItemUIPanelPlugin
-import org.magiclib.bounty.ui.lists.filtered.FilteredListPanelPlugin
-import org.magiclib.bounty.ui.lists.filtered.ListFilter
+import org.magiclib.bounty.ui.lists.sorted.ListSorter
+import org.magiclib.bounty.ui.lists.sorted.SortedListPanelPlugin
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 
-class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlugin<BountyInfo>(parentPanel) {
+class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin<BountyInfo>(parentPanel) {
     override val rowWidth
         get() = panelWidth - 4f
     override val rowHeight = 68f
@@ -27,65 +27,15 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
     private var selectedItem: BountyInfo? = null
     private var finalItem: BountyInfo? = null
 
-    override fun getApplicableFilters(): List<ListFilter<BountyInfo, *>> {
-        return listOf(LocationFilter())
+    override fun getApplicableSorters(): List<ListSorter<BountyInfo, *>> {
+        return listOf(TogglePrimarySorter())
     }
 
     override fun getFiltersFromItem(item: BountyInfo): List<String> {
         return listOf(item.getBountyType())
     }
 
-    enum class Order {
-        ASCENDING,
-        DESCENDING,
-    }
-    private var orderBy = Order.ASCENDING
-    fun getOrderBy(): Order = orderBy
-    fun setOrderBy(value: Order) {
-        orderBy = value
-    }
-
-    enum class SortingMethod {
-        ALPHABETICAL,
-        CREDITS,
-        KNOWNDISTANCE,
-        FIRSTCREATED,
-    }
-    private var sortBy = SortingMethod.FIRSTCREATED
-    fun getSortBy(): SortingMethod = sortBy
-    fun setSortBy(value: SortingMethod) {
-        sortBy = value
-    }
-
     override fun sortMembers(items: List<BountyInfo>): List<BountyInfo> {
-
-        // Sort by the selected method
-        var sorted = when (sortBy) {
-            SortingMethod.CREDITS ->
-                items.sortedBy { it.getBountyPayout() }
-
-            SortingMethod.KNOWNDISTANCE ->
-                items.sortedWith(
-                    compareBy(nullsLast()) { it.getPlayerKnownDistanceIfBountyIsActive() }
-                )
-
-            SortingMethod.FIRSTCREATED ->
-                items.sortedBy { (it as? MagicBountyInfo)?.activeBounty?.bountyCreatedTimestamp }
-
-            SortingMethod.ALPHABETICAL ->
-                items.sortedBy { it.getBountyName() }
-        }
-
-        // Reverse if descending
-        if (orderBy == Order.DESCENDING) {
-            sorted = sorted.reversed()
-        }
-
-        // Assign sortIndexOffset
-        sorted.forEachIndexed { index, item ->
-            item.setSortIndexOffset(index)
-        }
-
         return super.sortMembers(items)
             .sortedBy { it.getSortIndex() }
     }
