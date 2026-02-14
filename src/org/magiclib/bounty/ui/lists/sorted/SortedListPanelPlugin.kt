@@ -8,9 +8,9 @@ import org.magiclib.util.MagicTxt
 
 abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAPI) :
     ListUIPanelPlugin<T>(parentPanel) {
-    var filterButton: ButtonAPI? = null
-    var filterContainerPanel: CustomPanelAPI? = null
-    var filtersForItems: List<ListSorter<T, *>> = getApplicableSorters()
+    var sorterButton: ButtonAPI? = null
+    var sorterContainerPanel: CustomPanelAPI? = null
+    var sortersForItems: List<ListSorter<T, *>> = getApplicableSorters()
 
     protected abstract fun getApplicableSorters(): List<ListSorter<T, *>>
 
@@ -24,7 +24,7 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         val outerPanelLocal = outerPanel ?: parentPanel.createCustomPanel(panelWidth, panelHeight, this)
         outerPanel = outerPanelLocal
 
-        filtersForItems.forEach { it.loadFromPersistentData(members) }
+        sortersForItems.forEach { it.loadFromPersistentData(members) }
         var validMembers = members.filter { shouldMakePanelForItem(it) }
         lastMembers = validMembers
         validMembers = sortMembers(validMembers)
@@ -35,16 +35,16 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         createListHeader(outerTooltipLocal)
 
         val buttonHeight = 20f
-        val filterButtonLocal = outerTooltipLocal.addButton(
-            filterButtonText(),
+        val sorterButtonLocal = outerTooltipLocal.addButton(
+            sorterButtonText(),
             null,
             panelWidth - 4f,
             buttonHeight,
             2f
         )
-        filterButton = filterButtonLocal
-        this.buttons[filterButtonLocal] = FilterButtonHandler()
-        filterButtonLocal.position.inTMid(22f)
+        sorterButton = sorterButtonLocal
+        this.buttons[sorterButtonLocal] = SorterButtonHandler()
+        sorterButtonLocal.position.inTMid(22f)
 
         val listHeight = panelHeight - buttonHeight - 22f
         val holdingPanel = outerPanelLocal.createCustomPanel(panelWidth, listHeight, null)
@@ -67,7 +67,7 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         scrollingPanel.addUIElement(tooltip).inTL(0f, 0f)
         scrollerTooltip.addCustom(scrollingPanel, 0f).position.inTL(0f, 0f)
         holdingPanel.addUIElement(scrollerTooltip).inTL(0f, 0f)
-        outerTooltipLocal.addCustom(holdingPanel, 0f).position.belowMid(filterButtonLocal, 2f)
+        outerTooltipLocal.addCustom(holdingPanel, 0f).position.belowMid(sorterButtonLocal, 2f)
         outerPanelLocal.addUIElement(outerTooltipLocal).inTL(0f, 0f)
         this.parentPanel.addComponent(outerPanelLocal).inTL(0f, 0f)
         scroller = scrollerTooltip.externalScroller
@@ -75,58 +75,58 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         return outerPanelLocal
     }
 
-    protected fun createFilterPanel() {
-        val filterContainerPanelPlugin = InteractiveUIPanelPlugin()
-        filterContainerPanelPlugin.renderBackground = true
-        filterContainerPanelPlugin.eatAllClicks = true
+    protected fun createSorterPanel() {
+        val sorterContainerPanelPlugin = InteractiveUIPanelPlugin()
+        sorterContainerPanelPlugin.renderBackground = true
+        sorterContainerPanelPlugin.eatAllClicks = true
 
-        val filterContainerPanelLocal =
-            outerPanel!!.createCustomPanel(panelWidth, panelHeight * 0.33f, filterContainerPanelPlugin)
-        filterContainerPanel = filterContainerPanelLocal
+        val SorterContainerPanelLocal =
+            outerPanel!!.createCustomPanel(panelWidth, panelHeight * 0.33f, sorterContainerPanelPlugin)
+        sorterContainerPanel = SorterContainerPanelLocal
 
-        val filterContainerTooltip = filterContainerPanelLocal.createUIElement(panelWidth, panelHeight * 0.33f, true)
+        val sorterContainerTooltip = SorterContainerPanelLocal.createUIElement(panelWidth, panelHeight * 0.33f, true)
         var lastItem: UIComponentAPI? = null
 
-        filtersForItems.forEach {
-            val filterPanel = it.createPanel(filterContainerTooltip, panelWidth - 4f, lastMembers!!)
+        sortersForItems.forEach {
+            val sorterPanel = it.createPanel(sorterContainerTooltip, panelWidth - 4f, lastMembers!!)
             if (lastItem != null) {
-                filterPanel.position.belowMid(lastItem, 4f).setXAlignOffset(-3f)
+                sorterPanel.position.belowMid(lastItem, 4f).setXAlignOffset(-3f)
             } else {
-                filterPanel.position.inTMid(4f).setXAlignOffset(-3f)
+                sorterPanel.position.inTMid(4f).setXAlignOffset(-3f)
             }
-            lastItem = filterPanel
+            lastItem = sorterPanel
         }
 
-        filterContainerTooltip.addSpacer(1f) // For some reason the tooltip contents fail to show without this
-        filterContainerPanelLocal.addUIElement(filterContainerTooltip).inBMid(4f)
+        sorterContainerTooltip.addSpacer(1f) // For some reason the tooltip contents fail to show without this
+        SorterContainerPanelLocal.addUIElement(sorterContainerTooltip).inBMid(4f)
 
-        outerPanel!!.addComponent(filterContainerPanelLocal).inTMid(46f)
+        outerPanel!!.addComponent(SorterContainerPanelLocal).inTMid(46f)
     }
 
-    fun closeFilterPanel() {
-        filtersForItems.forEach { it.saveToPersistentData() }
-        outerPanel!!.removeComponent(filterContainerPanel)
-        filterContainerPanel = null
+    fun closeSorterPanel() {
+        sortersForItems.forEach { it.saveToPersistentData() }
+        outerPanel!!.removeComponent(sorterContainerPanel)
+        sorterContainerPanel = null
 
         layoutPanels()
     }
 
-    protected abstract fun getFiltersFromItem(item: T): List<String>
+    protected abstract fun getSortersFromItem(item: T): List<String>
 
-    inner class FilterButtonHandler : ButtonHandler() {
+    inner class SorterButtonHandler : ButtonHandler() {
         override fun onClicked() {
-            filterButton!!.isChecked = false
-            if (this@SortedListPanelPlugin.filterContainerPanel == null) {
-                filterButton!!.text = MagicTxt.getString("mb_confirm")
-                createFilterPanel()
+            sorterButton!!.isChecked = false
+            if (this@SortedListPanelPlugin.sorterContainerPanel == null) {
+                sorterButton!!.text = MagicTxt.getString("mb_confirm")
+                createSorterPanel()
             } else {
-                filterButton!!.text =
-                    filterButtonText()
-                closeFilterPanel()
+                sorterButton!!.text =
+                    sorterButtonText()
+                closeSorterPanel()
             }
         }
     }
 
-    private fun filterButtonText() =
-        MagicTxt.getString("mb_filters") + if (filtersForItems.any { it.isActive() }) " (${filtersForItems.count { it.isActive() }})" else ""
+    private fun sorterButtonText() =
+        MagicTxt.getString("mb_sort")
 }

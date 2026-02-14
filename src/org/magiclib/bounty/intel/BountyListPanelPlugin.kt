@@ -31,7 +31,7 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
         return listOf(TogglePrimarySorter())
     }
 
-    override fun getFiltersFromItem(item: BountyInfo): List<String> {
+    override fun getSortersFromItem(item: BountyInfo): List<String> {
         return listOf(item.getBountyType())
     }
 

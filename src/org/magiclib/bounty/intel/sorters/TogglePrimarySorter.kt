@@ -44,11 +44,11 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         width: Float,
         lastItems: List<Sortable<BountyInfo>>
     ): CustomPanelAPI {
-        val filterPlugin = InteractiveUIPanelPlugin()
-        val filterPanel = Global.getSettings().createCustom(width, 64f, filterPlugin)
+        val sorterPlugin = InteractiveUIPanelPlugin()
+        val sorterPanel = Global.getSettings().createCustom(width, 64f, sorterPlugin)
 
         //checkbox tooltip
-        val toggleGroupTooltip = filterPanel.createUIElement(width, 64f, false)
+        val toggleGroupTooltip = sorterPanel.createUIElement(width, 64f, false)
 
 
         val orderTogglesData = listOf(
@@ -67,7 +67,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
                 currentOrderSelected = checkbox
             }
 
-            filterPlugin.addCheckbox(checkbox) { checked ->
+            sorterPlugin.addCheckbox(checkbox) { checked ->
                 if (checked) {
                     currentOrderSelected?.let { if (it != checkbox) it.isChecked = false }
                     currentOrderSelected = checkbox
@@ -95,7 +95,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
                 checkbox.isChecked = true
                 currentSelected = checkbox
             }
-            filterPlugin.addCheckbox(checkbox) { checked ->
+            sorterPlugin.addCheckbox(checkbox) { checked ->
                 if (checked) {
                     currentSelected?.let { if (it != checkbox) it.isChecked = false }
                     currentSelected = checkbox
@@ -115,14 +115,14 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             it.addPara("E.G: If killing a bounty target would unavoidably trigger a war with a faction.", 8f)
         }
         nonEnemyToBottomButton.isChecked = nonEnemyToBottom
-        filterPlugin.addCheckbox(nonEnemyToBottomButton) { checked ->
+        sorterPlugin.addCheckbox(nonEnemyToBottomButton) { checked ->
             nonEnemyToBottom = checked
         }
 
-        filterPanel.addUIElement(toggleGroupTooltip).inTMid(2f)
-        tooltip.addCustomDoNotSetPosition(filterPanel)
+        sorterPanel.addUIElement(toggleGroupTooltip).inTMid(2f)
+        tooltip.addCustomDoNotSetPosition(sorterPanel)
 
-        return filterPanel
+        return sorterPanel
     }
 
     override fun saveToPersistentData() {
