@@ -168,9 +168,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             val (keep, moveToBottom) = sorted.partition { entry ->
                 val bounty = (entry as? MagicBountyInfo)?.activeBounty
                     ?: return@partition true
-
-                val nameee = bounty.spec.job_name
-
+                
                 val faction = bounty.targetFaction ?: return@partition true
                 val system = bounty.fleetSpawnLocation.starSystem ?: return@partition true
 
