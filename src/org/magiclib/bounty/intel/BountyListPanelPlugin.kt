@@ -35,7 +35,57 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         return listOf(item.getBountyType())
     }
 
+    enum class Order {
+        ASCENDING,
+        DESCENDING,
+    }
+    private var orderBy = Order.ASCENDING
+    fun getOrderBy(): Order = orderBy
+    fun setOrderBy(value: Order) {
+        orderBy = value
+    }
+
+    enum class SortingMethod {
+        ALPHABETICAL,
+        CREDITS,
+        KNOWNDISTANCE,
+        FIRSTCREATED,
+    }
+    private var sortBy = SortingMethod.FIRSTCREATED
+    fun getSortBy(): SortingMethod = sortBy
+    fun setSortBy(value: SortingMethod) {
+        sortBy = value
+    }
+
     override fun sortMembers(items: List<BountyInfo>): List<BountyInfo> {
+
+        // Sort by the selected method
+        var sorted = when (sortBy) {
+            SortingMethod.CREDITS ->
+                items.sortedBy { it.getBountyPayout() }
+
+            SortingMethod.KNOWNDISTANCE ->
+                items.sortedWith(
+                    compareBy(nullsLast()) { it.getPlayerKnownDistanceIfBountyIsActive() }
+                )
+
+            SortingMethod.FIRSTCREATED ->
+                items.sortedBy { (it as? MagicBountyInfo)?.activeBounty?.bountyCreatedTimestamp }
+
+            SortingMethod.ALPHABETICAL ->
+                items.sortedBy { it.getBountyName() }
+        }
+
+        // Reverse if descending
+        if (orderBy == Order.DESCENDING) {
+            sorted = sorted.reversed()
+        }
+
+        // Assign sortIndexOffset
+        sorted.forEachIndexed { index, item ->
+            item.setSortIndexOffset(index)
+        }
+
         return super.sortMembers(items)
             .sortedBy { it.getSortIndex() }
     }
