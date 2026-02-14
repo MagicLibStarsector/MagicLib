@@ -25,6 +25,9 @@ interface BountyInfo : Sortable<BountyInfo> {
     fun getSortIndexOffset(): Int
     fun setSortIndexOffset(value: Int)
 
+    fun getNonEnemyToBottom(): Boolean
+    fun setNonEnemyToBottom(value: Boolean)
+
     fun addNotificationBulletpoints(info: TooltipMakerAPI) {
     }
 

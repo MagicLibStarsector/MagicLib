@@ -18,6 +18,7 @@ import org.magiclib.bounty.MagicBountyLoader.*
 import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
+import org.magiclib.kotlin.interpolateColor
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.kotlin.ucFirst
 import org.magiclib.util.MagicCampaign
@@ -32,6 +33,12 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         get() = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
     var holdingPanel: CustomPanelAPI? = null
     var panelThatCanBeRemoved: CustomPanelAPI? = null
+
+    private var nonEnemyToBottom: Boolean = false
+    override fun getNonEnemyToBottom(): Boolean = nonEnemyToBottom
+    override fun setNonEnemyToBottom(value: Boolean) {
+        nonEnemyToBottom = value
+    }
 
     override fun getBountyId(): String {
         return bountyKey
@@ -256,6 +263,16 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             plugin.baseBgColor = Misc.getDarkHighlightColor().setAlpha(45)
             plugin.hoveredColor = Misc.getDarkHighlightColor().setAlpha(75)
             plugin.selectedColor = Misc.getDarkHighlightColor().setAlpha(125)
+        } else if (nonEnemyToBottom) {
+            val colRed = Color(255, 0, 0, 75)
+
+            plugin.baseBgColor = colRed.setAlpha(40)
+            plugin.hoveredColor = plugin.defaultHoveredColor.interpolateColor(colRed, 0.4f)
+            plugin.selectedColor = plugin.defaultSelectedColor.interpolateColor(colRed, 0.4f)
+        } else {
+            plugin.baseBgColor = plugin.defaultBgColor
+            plugin.hoveredColor = plugin.defaultHoveredColor
+            plugin.selectedColor = plugin.defaultSelectedColor
         }
     }
 

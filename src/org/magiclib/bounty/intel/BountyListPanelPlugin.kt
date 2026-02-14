@@ -142,9 +142,12 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
         ListItemUIPanelPlugin<BountyInfo>(item) {
         private var wasHovered: Boolean = false
         private var wasSelected: Boolean = false
-        var baseBgColor: Color = Color(255, 255, 255, 0)
-        var hoveredColor: Color = Misc.getBasePlayerColor().setAlpha(75)
-        var selectedColor: Color = Misc.getBasePlayerColor().setAlpha(125)
+        val defaultBgColor: Color = Color(255, 255, 255, 0)
+        val defaultHoveredColor: Color = Misc.getBasePlayerColor().setAlpha(75)
+        val defaultSelectedColor: Color = Misc.getBasePlayerColor().setAlpha(125)
+        var baseBgColor: Color = defaultBgColor
+        var hoveredColor: Color = defaultHoveredColor
+        var selectedColor: Color = defaultSelectedColor
         override var bgColor: Color = baseBgColor
 
         override fun layoutPanel(tooltip: TooltipMakerAPI): CustomPanelAPI {

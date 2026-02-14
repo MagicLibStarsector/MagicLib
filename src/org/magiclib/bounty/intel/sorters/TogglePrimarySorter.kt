@@ -10,6 +10,7 @@ import org.magiclib.bounty.intel.MagicBountyInfo
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
+import org.magiclib.internalextensions.addTooltip
 import org.magiclib.kotlin.getMarketsInLocation
 
 class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
@@ -43,9 +44,6 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         width: Float,
         lastItems: List<Sortable<BountyInfo>>
     ): CustomPanelAPI {
-        //val validBounties = lastItems
-        //    .map { it as BountyInfo }
-
         val filterPlugin = InteractiveUIPanelPlugin()
         val filterPanel = Global.getSettings().createCustom(width, 64f, filterPlugin)
 
@@ -111,7 +109,11 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
 
         toggleGroupTooltip.addSpacer(12f)
 
-        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, "Send non-enemies in civilized systems to the bottom", null, ButtonAPI.UICheckboxSize.SMALL, 4f)
+        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, "Drop non-hostiles in populated areas", null, ButtonAPI.UICheckboxSize.SMALL, 4f)
+        toggleGroupTooltip.addTooltip(nonEnemyToBottomButton, TooltipMakerAPI.TooltipLocation.BELOW, 600f) {
+            it.addPara("When enabled, non-hostile bounty targets located in systems with a size 4 or larger friendly market will be moved to the bottom of the list and colored red.", 0f)
+            it.addPara("E.G: If killing a bounty target would unavoidably trigger a war with a faction.", 8f)
+        }
         nonEnemyToBottomButton.isChecked = nonEnemyToBottom
         filterPlugin.addCheckbox(nonEnemyToBottomButton) { checked ->
             nonEnemyToBottom = checked
@@ -161,6 +163,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             sorted.reverse()
         }
 
+        sorted.forEach { it.setNonEnemyToBottom(false) }
         if (nonEnemyToBottom) {
             val sector = Global.getSector()
             val playerFaction = sector.playerFaction
@@ -168,7 +171,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             val (keep, moveToBottom) = sorted.partition { entry ->
                 val bounty = (entry as? MagicBountyInfo)?.activeBounty
                     ?: return@partition true
-                
+
                 val faction = bounty.targetFaction ?: return@partition true
                 val system = bounty.fleetSpawnLocation.starSystem ?: return@partition true
 
@@ -186,10 +189,10 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             sorted.clear()
             sorted.addAll(keep)
             sorted.addAll(moveToBottom)
+            moveToBottom.forEach { it.setNonEnemyToBottom(true) }
         }
 
-
-            // Assign sortIndexOffset
+        // Assign sortIndexOffset
         sorted.forEachIndexed { index, item ->
             item.setSortIndexOffset(index)
         }
