@@ -67,22 +67,16 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val playerFleet = Global.getSector().playerFleet
 
         return when (bountySpec.job_show_distance) {
-            ShowDistance.None,
-            ShowDistance.Vague -> null
+            //ShowDistance.Vague,
+            ShowDistance.None-> null
 
-            ShowDistance.Distance ->
+            ShowDistance.Distance,
+            ShowDistance.Exact,
+            ShowDistance.System ->
                 Misc.getDistanceLY(playerFleet, bounty.fleetSpawnLocation)
 
-            ShowDistance.Exact,
-            ShowDistance.System -> {
-                val system = bounty.fleet.containingLocation as? StarSystemAPI ?: return null
-                val jumpPoint = Misc.getDistressJumpPoint(system)
-                Misc.getDistanceLY(playerFleet, jumpPoint)
-            }
-
             else -> {
-                val constellation = bounty.fleet.constellation ?: return null
-                val token = createConstellationCenterToken(constellation) ?: return null
+                val token = bounty.fleet.constellation?.let { createConstellationCenterToken(it) } ?: bounty.fleetSpawnLocation
                 Misc.getDistanceLY(playerFleet, token)
             }
         }

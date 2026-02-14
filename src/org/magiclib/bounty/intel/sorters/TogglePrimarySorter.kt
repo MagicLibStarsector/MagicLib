@@ -80,10 +80,10 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         toggleGroupTooltip.addSpacer(12f)
 
         val togglesData = listOf(
-            "Credits" to SortingMethod.CREDITS,
+            "Alphabetical" to SortingMethod.ALPHABETICAL,
             "Distance" to SortingMethod.KNOWNDISTANCE,
+            "Credits" to SortingMethod.CREDITS,
             "Time Posted" to SortingMethod.FIRSTCREATED,
-            "Alphabetical" to SortingMethod.ALPHABETICAL
         )
 
         var currentSelected: ButtonAPI? = null
@@ -132,9 +132,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
                 items.sortedBy { it.getBountyPayout() }
 
             SortingMethod.KNOWNDISTANCE ->
-                items.sortedWith(
-                    compareBy(nullsLast()) { it.getPlayerKnownDistanceIfBountyIsActive() }
-                )
+                items.sortedBy { it.getPlayerKnownDistanceIfBountyIsActive() ?: Float.MAX_VALUE }
 
             SortingMethod.FIRSTCREATED ->
                 items.sortedBy { (it as? MagicBountyInfo)?.activeBounty?.bountyCreatedTimestamp }
