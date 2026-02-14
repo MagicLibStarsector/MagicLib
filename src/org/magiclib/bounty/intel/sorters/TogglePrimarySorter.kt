@@ -10,8 +10,11 @@ import org.magiclib.bounty.intel.MagicBountyInfo
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
+import org.magiclib.kotlin.getMarketsInLocation
 
 class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
+
+    private var nonEnemyToBottom = true
 
     enum class Order {
         ASCENDING,
@@ -58,7 +61,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         var currentOrderSelected: ButtonAPI? = null
 
         orderTogglesData.forEachIndexed { index, (label, order) ->
-            val checkbox = toggleGroupTooltip.addCheckbox(16f, 16f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 4f)
+            val checkbox = toggleGroupTooltip.addCheckbox(20f, 16f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 4f)
 
             // Check the current order by default
             if (orderBy == order) {
@@ -89,7 +92,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         var currentSelected: ButtonAPI? = null
 
         togglesData.forEachIndexed { index, (label, method) ->
-            val checkbox = toggleGroupTooltip.addCheckbox(16f, 16f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 4f)
+            val checkbox = toggleGroupTooltip.addCheckbox(20f, 16f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 4f)
             if (sortBy == method) {
                 checkbox.isChecked = true
                 currentSelected = checkbox
@@ -105,6 +108,15 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             }
         }
 
+
+        toggleGroupTooltip.addSpacer(12f)
+
+        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, "Send non-enemies in civilized systems to the bottom", null, ButtonAPI.UICheckboxSize.SMALL, 4f)
+        nonEnemyToBottomButton.isChecked = nonEnemyToBottom
+        filterPlugin.addCheckbox(nonEnemyToBottomButton) { checked ->
+            nonEnemyToBottom = checked
+        }
+
         filterPanel.addUIElement(toggleGroupTooltip).inTMid(2f)
         tooltip.addCustomDoNotSetPosition(filterPanel)
 
@@ -114,6 +126,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
     override fun saveToPersistentData() {
         Global.getSector().persistentData["MagicLib.LocationSorter.sortBy"] = sortBy
         Global.getSector().persistentData["MagicLib.LocationSorter.orderBy"] = orderBy
+        Global.getSector().persistentData["MagicLib.LocationSorter.nonEnemyToBottom"] = nonEnemyToBottom
     }
 
     override fun loadFromPersistentData(members: List<BountyInfo>) {
@@ -121,13 +134,15 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             sortBy = Global.getSector().persistentData["MagicLib.LocationSorter.sortBy"] as SortingMethod
         if (Global.getSector().persistentData.containsKey("MagicLib.LocationSorter.orderBy"))
             orderBy = Global.getSector().persistentData["MagicLib.LocationSorter.orderBy"] as Order
+        if (Global.getSector().persistentData.containsKey("MagicLib.LocationSorter.nonEnemyToBottom"))
+            nonEnemyToBottom = Global.getSector().persistentData["MagicLib.LocationSorter.nonEnemyToBottom"] as Boolean
 
         sortMembers(members)
     }
 
     fun sortMembers(items: List<BountyInfo>) {
 
-        var sorted = when (getSortBy()) {
+        val sorted = when (getSortBy()) {
             SortingMethod.CREDITS ->
                 items.sortedBy { it.getBountyPayout() }
 
@@ -135,21 +150,52 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
                 items.sortedBy { it.getPlayerKnownDistanceIfBountyIsActive() ?: Float.MAX_VALUE }
 
             SortingMethod.FIRSTCREATED ->
-                items.sortedBy { (it as? MagicBountyInfo)?.activeBounty?.bountyCreatedTimestamp }
+                items.sortedBy { (it as? MagicBountyInfo)?.activeBounty?.bountyCreatedTimestamp }.reversed()
 
             SortingMethod.ALPHABETICAL ->
                 items.sortedBy { it.getBountyName() }
-        }
+        }.toMutableList()
 
         // Reverse if descending
         if (getOrderBy() == Order.DESCENDING) {
-            sorted = sorted.reversed()
+            sorted.reverse()
         }
 
-        // Assign sortIndexOffset
+        if (nonEnemyToBottom) {
+            val sector = Global.getSector()
+            val playerFaction = sector.playerFaction
+
+            val (keep, moveToBottom) = sorted.partition { entry ->
+                val bounty = (entry as? MagicBountyInfo)?.activeBounty
+                    ?: return@partition true
+
+                val nameee = bounty.spec.job_name
+
+                val faction = bounty.targetFaction ?: return@partition true
+                val system = bounty.fleetSpawnLocation.starSystem ?: return@partition true
+
+                val isCoreFaction = faction.isShowInIntelTab
+                val isNotEnemy = !faction.isHostileTo(playerFaction)
+
+                val hasLargeMarketInSystem = system.getMarketsInLocation(faction.id)?.any { market ->
+                    market.factionId == faction.id && market.size >= 4
+                } == true
+
+                // keep everything that does NOT match all conditions
+                !(isCoreFaction && isNotEnemy && hasLargeMarketInSystem)
+            }
+
+            sorted.clear()
+            sorted.addAll(keep)
+            sorted.addAll(moveToBottom)
+        }
+
+
+            // Assign sortIndexOffset
         sorted.forEachIndexed { index, item ->
             item.setSortIndexOffset(index)
         }
+
     }
 
     override fun isActive(): Boolean {
