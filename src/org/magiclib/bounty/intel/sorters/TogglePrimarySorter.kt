@@ -143,6 +143,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
     }
 
     fun sortMembers(items: List<BountyInfo>) {
+        items.forEach { it.setSortIndexOffset(0) }
 
         val sorted = when (getSortBy()) {
             SortingMethod.CREDITS ->
