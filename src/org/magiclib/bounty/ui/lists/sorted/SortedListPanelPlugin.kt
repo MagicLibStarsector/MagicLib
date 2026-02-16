@@ -80,11 +80,11 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         sorterContainerPanelPlugin.renderBackground = true
         sorterContainerPanelPlugin.eatAllClicks = true
 
-        val SorterContainerPanelLocal =
+        val sorterContainerPanelLocal =
             outerPanel!!.createCustomPanel(panelWidth, panelHeight * 0.33f, sorterContainerPanelPlugin)
-        sorterContainerPanel = SorterContainerPanelLocal
+        sorterContainerPanel = sorterContainerPanelLocal
 
-        val sorterContainerTooltip = SorterContainerPanelLocal.createUIElement(panelWidth, panelHeight * 0.33f, true)
+        val sorterContainerTooltip = sorterContainerPanelLocal.createUIElement(panelWidth, panelHeight * 0.33f, true)
         var lastItem: UIComponentAPI? = null
 
         sortersForItems.forEach {
@@ -98,9 +98,9 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         }
 
         sorterContainerTooltip.addSpacer(1f) // For some reason the tooltip contents fail to show without this
-        SorterContainerPanelLocal.addUIElement(sorterContainerTooltip).inBMid(4f)
+        sorterContainerPanelLocal.addUIElement(sorterContainerTooltip).inBMid(4f)
 
-        outerPanel!!.addComponent(SorterContainerPanelLocal).inTMid(46f)
+        outerPanel!!.addComponent(sorterContainerPanelLocal).inTMid(46f)
     }
 
     fun closeSorterPanel() {
