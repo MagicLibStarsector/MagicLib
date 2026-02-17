@@ -11,6 +11,7 @@ import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.bounty.ui.lists.sorted.SortableParam
 import org.magiclib.util.MagicTxt
+import java.awt.Color
 
 interface BountyInfo : Sortable<BountyInfo> {
     fun getBountyId(): String
@@ -21,12 +22,8 @@ interface BountyInfo : Sortable<BountyInfo> {
     fun getLocationIfBountyIsActive(): LocationAPI?
     fun getPlayerKnownDistanceIfBountyIsActive(): Float?
 
-    fun getSortIndex(): Int = 1
-    fun getSortIndexOffset(): Int
-    fun setSortIndexOffset(value: Int)
-
-    fun getNonEnemyToBottom(): Boolean
-    fun setNonEnemyToBottom(value: Boolean)
+    fun getCustomPanelColor(): Color?
+    fun setCustomPanelColor(value: Color?)
 
     fun addNotificationBulletpoints(info: TooltipMakerAPI) {
     }

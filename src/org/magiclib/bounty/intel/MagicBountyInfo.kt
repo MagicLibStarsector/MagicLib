@@ -34,10 +34,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     var holdingPanel: CustomPanelAPI? = null
     var panelThatCanBeRemoved: CustomPanelAPI? = null
 
-    private var nonEnemyToBottom: Boolean = false
-    override fun getNonEnemyToBottom(): Boolean = nonEnemyToBottom
-    override fun setNonEnemyToBottom(value: Boolean) {
-        nonEnemyToBottom = value
+    var customColor: Color? = Color(255, 255, 255, 0)
+    override fun getCustomPanelColor(): Color? = customColor
+    override fun setCustomPanelColor(value: Color?) {
+        customColor = value
     }
 
     override fun getBountyId(): String {
@@ -263,12 +263,11 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             plugin.baseBgColor = Misc.getDarkHighlightColor().setAlpha(45)
             plugin.hoveredColor = Misc.getDarkHighlightColor().setAlpha(75)
             plugin.selectedColor = Misc.getDarkHighlightColor().setAlpha(125)
-        } else if (nonEnemyToBottom) {
-            val colRed = Color(255, 0, 0, 75)
-
-            plugin.baseBgColor = colRed.setAlpha(40)
-            plugin.hoveredColor = plugin.defaultHoveredColor.interpolateColor(colRed, 0.4f)
-            plugin.selectedColor = plugin.defaultSelectedColor.interpolateColor(colRed, 0.4f)
+        } else if (customColor != null) {
+            val t = customColor!!.alpha / 255f
+            plugin.baseBgColor = customColor!!.setAlpha(customColor!!.alpha / 2)
+            plugin.hoveredColor = plugin.defaultHoveredColor.interpolateColor(customColor!!, t)
+            plugin.selectedColor = plugin.defaultSelectedColor.interpolateColor(customColor!!, t)
         } else {
             plugin.baseBgColor = plugin.defaultBgColor
             plugin.hoveredColor = plugin.defaultHoveredColor
