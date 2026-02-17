@@ -274,6 +274,17 @@
     "mb_filters_Location_Distance": "Filter by distance to target",
     "mb_filters_Location_FuelRange": "Lock distance filter to your fuel range",
     "mb_filters_Location_SliderTitle": "Distance (LY)",
+    "mb_sort": "Sort",
+    "mb_sort_Ascending": "Ascending",
+    "mb_sort_Descending": "Descending",
+    "mb_sort_Alphabetical": "Alphabetical",
+    "mb_sort_Distance": "Distance",
+    "mb_sort_Credits": "Credits",
+    "mb_sort_FirstCreated": "Time Posted",
+    "mb_sort_DropNonHostiles": "Drop non-hostiles in populated areas",
+    "mb_sort_DropNonHostilesTooltip": "When enabled, non-hostile bounty targets located in systems with a size 4 or larger friendly market will be moved to the bottom of the list and colored red.\n\nE.G: If killing a bounty target would unavoidably trigger a war with a faction.",
+
+
     "mb_intelTutorial": "Select a bounty on the left to see more information.\nFilter the list by clicking \"Filters\" at the top of the list.\nIf the job terms are acceptable, click Accept in the bottom-right of the info panel.",
 
     # MagicAchievements
@@ -331,6 +342,6 @@
     "subsystemState_Cooldown": "",
     "subsystemState_OutOfRange": "OUT OF RANGE",
     "subsystemState_NoTarget": "NO TARGET",
-    "subsystemState_FluxCapped": "FLUX TOO HIGH",
+    "subsystemState_FluxCapped": "FLUX TOO HIGH"
   }
 }

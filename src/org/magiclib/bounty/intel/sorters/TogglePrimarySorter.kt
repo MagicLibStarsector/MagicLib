@@ -12,6 +12,7 @@ import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.internalextensions.addTooltip
 import org.magiclib.kotlin.getMarketsInLocation
+import org.magiclib.util.MagicTxt
 import java.awt.Color
 
 class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
@@ -53,8 +54,8 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
 
 
         val orderTogglesData = listOf(
-            "Ascending" to Order.ASCENDING,
-            "Descending" to Order.DESCENDING
+            MagicTxt.getString("mb_sort_Ascending") to Order.ASCENDING,
+            MagicTxt.getString("mb_sort_Descending") to Order.DESCENDING
         )
 
         var currentOrderSelected: ButtonAPI? = null
@@ -82,10 +83,10 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         toggleGroupTooltip.addSpacer(12f)
 
         val togglesData = listOf(
-            "Alphabetical" to SortingMethod.ALPHABETICAL,
-            "Distance" to SortingMethod.KNOWNDISTANCE,
-            "Credits" to SortingMethod.CREDITS,
-            "Time Posted" to SortingMethod.FIRSTCREATED,
+            MagicTxt.getString("mb_sort_Alphabetical") to SortingMethod.ALPHABETICAL,
+            MagicTxt.getString("mb_sort_Distance") to SortingMethod.KNOWNDISTANCE,
+            MagicTxt.getString("mb_sort_Credits") to SortingMethod.CREDITS,
+            MagicTxt.getString("mb_sort_FirstCreated") to SortingMethod.FIRSTCREATED,
         )
 
         var currentSelected: ButtonAPI? = null
@@ -110,10 +111,9 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
 
         toggleGroupTooltip.addSpacer(12f)
 
-        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, "Drop non-hostiles in populated areas", null, ButtonAPI.UICheckboxSize.SMALL, 4f)
+        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, MagicTxt.getString("mb_sort_DropNonHostiles"), null, ButtonAPI.UICheckboxSize.SMALL, 4f)
         toggleGroupTooltip.addTooltip(nonEnemyToBottomButton, TooltipMakerAPI.TooltipLocation.BELOW, 600f) {
-            it.addPara("When enabled, non-hostile bounty targets located in systems with a size 4 or larger friendly market will be moved to the bottom of the list and colored red.", 0f)
-            it.addPara("E.G: If killing a bounty target would unavoidably trigger a war with a faction.", 8f)
+            it.addPara(MagicTxt.getString("mb_sort_DropNonHostilesTooltip"), 0f)
         }
         nonEnemyToBottomButton.isChecked = nonEnemyToBottom
         sorterPlugin.addCheckbox(nonEnemyToBottomButton) { checked ->
