@@ -12,6 +12,7 @@ import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.internalextensions.addTooltip
 import org.magiclib.kotlin.getMarketsInLocation
+import java.awt.Color
 
 class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
 
@@ -164,7 +165,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             sorted.reverse()
         }
 
-        sorted.forEach { it.setNonEnemyToBottom(false) }
+        sorted.forEach { it.setCustomPanelColor(null) }
         if (nonEnemyToBottom) {
             val sector = Global.getSector()
             val playerFaction = sector.playerFaction
@@ -190,7 +191,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             sorted.clear()
             sorted.addAll(keep)
             sorted.addAll(moveToBottom)
-            moveToBottom.forEach { it.setNonEnemyToBottom(true) }
+            moveToBottom.forEach { it.setCustomPanelColor(Color(255, 0, 0, 102)) }
         }
 
         // Assign sortIndexOffset

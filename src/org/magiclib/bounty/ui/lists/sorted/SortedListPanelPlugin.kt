@@ -58,6 +58,7 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
 
         var lastItem: UIPanelAPI? = null
         validMembers
+            .sortedBy { it.getSortIndex() }
             .map { it to createPanelForItem(tooltip, it) }
             .filter { (_, rowPlugin) -> rowPlugin != null }
             .forEach { (item, rowPlugin) ->

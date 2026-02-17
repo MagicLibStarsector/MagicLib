@@ -18,4 +18,8 @@ abstract class SortableParam<T, V>(val item: T) {
 
 interface Sortable<T> {
     fun getSorterData(): List<SortableParam<T, *>>
+
+    fun getSortIndex(): Int = 1
+    fun getSortIndexOffset(): Int
+    fun setSortIndexOffset(value: Int)
 }
