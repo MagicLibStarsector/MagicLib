@@ -27,7 +27,8 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         sortersForItems.forEach { it.loadFromPersistentData(members) }
         var validMembers = members.filter { shouldMakePanelForItem(it) }
         lastMembers = validMembers
-        validMembers = sortMembers(validMembers)
+        //validMembers = sortMembers(validMembers)
+        validMembers = validMembers.sortedBy { it.getSortIndex() }
 
         val outerTooltipLocal = outerPanelLocal.createUIElement(panelWidth, panelHeight, false)
         outerTooltip = outerTooltipLocal
@@ -58,7 +59,6 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
 
         var lastItem: UIPanelAPI? = null
         validMembers
-            .sortedBy { it.getSortIndex() }
             .map { it to createPanelForItem(tooltip, it) }
             .filter { (_, rowPlugin) -> rowPlugin != null }
             .forEach { (item, rowPlugin) ->
