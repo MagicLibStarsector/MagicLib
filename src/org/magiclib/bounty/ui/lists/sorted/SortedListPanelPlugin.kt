@@ -86,6 +86,8 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         sorterContainerPanel = sorterContainerPanelLocal
 
         val sorterContainerTooltip = sorterContainerPanelLocal.createUIElement(panelWidth, panelHeight * 0.33f, true)
+        sorterContainerTooltip.addSpacer(panelHeight * 0.33f) // sorterContainerTooltip's height is always forced to 0f for some reason which makes all contents invisible. Calling this function allows the contents to be seen and keeps track of height.
+
         var lastItem: UIComponentAPI? = null
 
         sortersForItems.forEach {
@@ -98,7 +100,6 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
             lastItem = sorterPanel
         }
 
-        sorterContainerTooltip.addSpacer(1f) // For some reason the tooltip contents fail to show without this
         sorterContainerPanelLocal.addUIElement(sorterContainerTooltip).inBMid(4f)
 
         outerPanel!!.addComponent(sorterContainerPanelLocal).inTMid(46f)

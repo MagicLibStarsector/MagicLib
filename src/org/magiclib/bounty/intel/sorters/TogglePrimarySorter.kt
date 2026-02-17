@@ -47,10 +47,10 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         lastItems: List<Sortable<BountyInfo>>
     ): CustomPanelAPI {
         val sorterPlugin = InteractiveUIPanelPlugin()
-        val sorterPanel = Global.getSettings().createCustom(width, 64f, sorterPlugin)
+        val sorterPanel = Global.getSettings().createCustom(width, tooltip.heightSoFar, sorterPlugin)
 
         //checkbox tooltip
-        val toggleGroupTooltip = sorterPanel.createUIElement(width, 64f, false)
+        val toggleGroupTooltip = sorterPanel.createUIElement(width, sorterPanel.position.height, false)
 
 
         val orderTogglesData = listOf(
@@ -109,9 +109,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         }
 
 
-        toggleGroupTooltip.addSpacer(12f)
-
-        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, MagicTxt.getString("mb_sort_DropNonHostiles"), null, ButtonAPI.UICheckboxSize.SMALL, 4f)
+        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, MagicTxt.getString("mb_sort_DropNonHostiles"), null, ButtonAPI.UICheckboxSize.SMALL, toggleGroupTooltip.heightSoFar - toggleGroupTooltip.position.height - 16f - 4f)
         toggleGroupTooltip.addTooltip(nonEnemyToBottomButton, TooltipMakerAPI.TooltipLocation.BELOW, 600f) {
             it.addPara(MagicTxt.getString("mb_sort_DropNonHostilesTooltip"), 0f)
         }
