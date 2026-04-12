@@ -159,8 +159,6 @@ public class Magic_modPlugin extends BaseModPlugin {
 //        MagicPaintjobManager.getInstance().diable$MagicLib();
 
         MagicPaintjobManager.onGameLoad();
-
-        MemberMemoryManager.onGameLoad();
     }
 
     @Override

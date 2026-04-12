@@ -5,41 +5,18 @@ import com.fs.starfarer.api.Global
 import org.magiclib.util.memberMemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
 
 internal object MemberMemoryManager {
-    private var memberMemoryStore: MemberMemoryStore? = null
-    private var currentGameState: GameState? = null
     fun getMemberMemoryStore(): MemberMemoryStore = getOrInitStore()
 
-    private fun getOrInitStore(forceReload: Boolean = false): MemberMemoryStore {
-        var existing = memberMemoryStore
-
-        val currentGameState = Global.getCurrentState()
-        if (currentGameState != this.currentGameState || forceReload) {
-            this.currentGameState = currentGameState
-            existing = null
-        }
-
-        if (existing != null) return existing
-
+    private fun getOrInitStore(): MemberMemoryStore {
         val memory = Global.getSector().memoryWithoutUpdate
 
-        val store = memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
+        return memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
             ?: MemberMemoryStore().also { memory.set(SECTOR_MEMBER_MEMORY_KEY, it) }
-
-        memberMemoryStore = store
-        return store
-    }
-
-    @JvmStatic
-    fun onGameLoad() {
-        getOrInitStore(true)
     }
 
     @JvmStatic
     fun beforeGameSave() {
-        val store = memberMemoryStore ?: run {
-            Global.getLogger(this.javaClass).error("MemberMemoryStore is null. This should never happen.")
-            return
-        }
+        val store = getOrInitStore()
 
         if(!store.getMemberIDs().isEmpty()) {
             val mostMemberIDs = getMostMemberIDs()
