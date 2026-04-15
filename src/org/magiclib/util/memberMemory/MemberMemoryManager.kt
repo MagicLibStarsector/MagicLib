@@ -1,6 +1,5 @@
 package org.magiclib.util.memberMemory
 
-import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import org.magiclib.util.memberMemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
 
@@ -10,8 +9,8 @@ internal object MemberMemoryManager {
     private fun getOrInitStore(): MemberMemoryStore {
         val memory = Global.getSector().memoryWithoutUpdate
 
-        return memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
-            ?: MemberMemoryStore().also { memory.set(SECTOR_MEMBER_MEMORY_KEY, it) }
+        return memory?.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
+            ?: MemberMemoryStore().also { memory?.set(SECTOR_MEMBER_MEMORY_KEY, it) }
     }
 
     @JvmStatic
@@ -19,7 +18,14 @@ internal object MemberMemoryManager {
         val store = getOrInitStore()
 
         if(!store.getMemberIDs().isEmpty()) {
-            val mostMemberIDs = getMostMemberIDs()
+            // This shouldn't ever crash, but if it did, beforeGameSave would be a terrible place for it to happen. So prevent it anyway.
+            val mostMemberIDs = try {
+                 getMostMemberIDs()
+            } catch(e: Exception) {
+                Global.getLogger(this.javaClass).error("Failed to get member IDs", e)
+                return
+            }
+
             store.unsetMembersNotInSet(mostMemberIDs)
         }
     }
