@@ -53,9 +53,9 @@ internal object MemberMemoryManager {
 
         val ids = fleetMembers.map { it.id }
 
-        // While there shouldn't be duplicates, let's check just in case.
+        // While there shouldn't be duplicates in normal circumstances, let's check just in case. If any duplicates exist, it's usually fault of a mod.
         if (ids.groupingBy { it }.eachCount().any { it.value > 1 }) {
-            duplicateLocationReporter()
+            duplicateLocationReporter() // Report where duplicates member IDs are into the log.
         }
 
         return ids.toSet()
@@ -80,7 +80,7 @@ internal object MemberMemoryManager {
                 val cargo = sub.cargo ?: return@mapNotNull null
                 StorageRef(market, sub, cargo)
             }
-        }.distinctBy { it }
+        }.distinctBy { it.cargo }
 
         // id -> list of human-readable locations
         val idMap = mutableMapOf<String, MutableList<String>>()
