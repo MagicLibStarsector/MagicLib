@@ -25,6 +25,9 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     val isPermanent: Boolean
         get() = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
 
+    val isHidden: Boolean
+        get() = tags?.contains(MagicPaintjobManager.PJTAG_HIDDEN) == true
+
     val isUnlockable = !isShiny
 
     data class PaintjobEngineSpec(

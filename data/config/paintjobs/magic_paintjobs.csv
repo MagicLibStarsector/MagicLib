@@ -24,4 +24,4 @@ id,hullIds,name,paintjobFamily,spriteId,unlockedAutomatically,tags,unlockConditi
 # SCY_bluesky_lion_armorRR,SCY_lionRR,Bluesky,Bluesky,graphics/bluesky/ships/SCY_nemeanLion_armorRearRight.png,true,,,
 
 
-magiclib_nebula_errorPaintjob,nebula,Unresolved Template,,graphics/ships/magiclib_nebula_red.png,false,MagicLib_PermanentPJ,,
+magiclib_nebula_errorPaintjob,nebula,Unresolved Template,,graphics/ships/magiclib_nebula_red.png,false,"MagicLib_PermanentPJ, MagicLib_HiddenPJ",,
