@@ -235,7 +235,11 @@ object MagicPaintjobManager {
                     } else if (spriteId.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
                         skip = true
-                    } else if (hullIds.none {
+                    } else if (runCatching { Global.getSettings().loadText(spriteId) }.getOrNull() == null) { // Check if file exists without loading the texture
+                        logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has missing or unreadable sprite file, skipping.")
+                        skip = true
+                    }
+                    else if (hullIds.none {
                             kotlin.runCatching { Global.getSettings().getHullSpec(it) }
                                 .getOrNull() != null
                         }) {
