@@ -67,12 +67,18 @@ object MagicPaintjobManager {
 
     /**
      * Returns the paintjobs that are available to the player.
+     *
      * Shiny paintjobs should not be shown to the player and cannot be manually applied or unlocked.
+     *
+     * Hidden paintjobs should not be shown to the player and cannot be manually applied or unlocked.
      */
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobs(includeShiny: Boolean = false): Set<MagicPaintjobSpec> {
-        return paintjobsInner.filter { it.isShiny == includeShiny }.toSet()
+    fun getPaintjobs(includeShiny: Boolean = false, includeHidden: Boolean = false): Set<MagicPaintjobSpec> {
+        return paintjobsInner.filter {
+            (includeShiny || !it.isShiny) &&
+                    (includeHidden || !it.isHidden)
+        }.toSet()
     }
 
     init {
@@ -521,8 +527,8 @@ object MagicPaintjobManager {
         if (Global.getSector() == null) return
         removeIntel()
 
-        // Don't show if there aren't any. Hidden ones aren't shown by default
-        if (getPaintjobs().filter { !it.isHidden }.isEmpty()) return
+        // Don't show if there aren't any.
+        if (getPaintjobs().isEmpty()) return
 
         val intel = MagicPaintjobIntel()
         Global.getSector().intelManager.addIntel(intel, true)

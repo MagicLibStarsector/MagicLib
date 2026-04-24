@@ -6,8 +6,11 @@ import org.magiclib.paintjobs.MagicPaintjobManager
 
 class ListPaintjobsCommand : BaseCommand {
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
-        val normalPjs = MagicPaintjobManager.getPaintjobs()
-        val shinyPjs = MagicPaintjobManager.getPaintjobs(includeShiny = true) - normalPjs
+        val all = MagicPaintjobManager.getPaintjobs(includeShiny = true, includeHidden = true)
+
+        val normalPjs = all.filterTo(mutableSetOf()) { !it.isShiny && !it.isHidden }
+        val shinyPjs  = all.filterTo(mutableSetOf()) { it.isShiny && !it.isHidden }
+        val hiddenPjs = all.filterTo(mutableSetOf()) { it.isHidden }
 
         Console.showMessage("Regular Paintjobs")
         for (pj in normalPjs) {
@@ -16,6 +19,11 @@ class ListPaintjobsCommand : BaseCommand {
 
         Console.showMessage("Shiny Paintjobs")
         for (pj in shinyPjs) {
+            Console.showMessage("\t$pj")
+        }
+
+        Console.showMessage("Hidden Paintjobs")
+        for (pj in hiddenPjs) {
             Console.showMessage("\t$pj")
         }
 

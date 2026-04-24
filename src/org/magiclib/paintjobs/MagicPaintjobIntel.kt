@@ -61,7 +61,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     override fun createLargeDescriptionImpl(panel: CustomPanelAPI, width: Float, height: Float) {
         val opad = 10f
         val pad = 3f
-        val pjs = MagicPaintjobManager.getPaintjobs().toList().filter { !it.isHidden }
+        val pjs = MagicPaintjobManager.getPaintjobs().toList()
         val mainGridTooltip = panel.createUIElement(width, height, true)
         val baseUnit = opad
         val scaleMult = 5f
