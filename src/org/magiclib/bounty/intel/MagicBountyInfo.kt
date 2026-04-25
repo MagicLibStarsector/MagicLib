@@ -4,7 +4,6 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
-import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
@@ -13,6 +12,7 @@ import com.fs.starfarer.api.ui.LabelAPI
 import com.fs.starfarer.api.ui.MapParams
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import org.lwjgl.input.Keyboard
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
 import org.magiclib.bounty.MagicBountyLoader.*
@@ -265,6 +265,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
 
         if (activeBountyLocal.stage == ActiveBounty.Stage.NotAccepted) {
             val acceptButton = actionTooltip.addButton(bountySpec.job_pick_option, null, rightPanelWidth, 24f, 0f)
+            acceptButton.setShortcut(Keyboard.KEY_T, true)
             rightPanelPlugin.addButton(acceptButton) {
                 acceptButton.isChecked = false
                 activeBountyLocal.let {
