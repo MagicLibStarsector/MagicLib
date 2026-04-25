@@ -43,11 +43,11 @@ object MagicPaintjobManager {
     private val jsonObjectKey = "unlockedPaintjobs"
 
     private val unlockedPaintjobsInner = mutableSetOf<String>()
-    private val paintjobsInner = mutableListOf<MagicPaintjobSpec>()
+    private val paintjobsInner = mutableMapOf<String, MagicPaintjobSpec>() //Paintjob ID -> Paintjob Spec
     private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableListOf<String>()
     private val advanceIntervalUtil = IntervalUtil(1f, 1f)
 
-    private val weaponPaintjobsInner = mutableListOf<MagicWeaponPaintjobSpec>()
+    private val weaponPaintjobsInner = mutableMapOf<String, MagicWeaponPaintjobSpec>()
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
@@ -63,7 +63,7 @@ object MagicPaintjobManager {
 
     @JvmStatic
     val unlockedPaintjobs: List<MagicPaintjobSpec>
-        get() = unlockedPaintjobsInner.mapNotNull { id -> paintjobsInner.firstOrNull { it.id == id } }
+        get() = unlockedPaintjobsInner.mapNotNull { id -> paintjobsInner[id] }
 
     /**
      * Returns the paintjobs that are available to the player.
@@ -75,7 +75,7 @@ object MagicPaintjobManager {
     @JvmStatic
     @JvmOverloads
     fun getPaintjobs(includeShiny: Boolean = false, includeHidden: Boolean = false): Set<MagicPaintjobSpec> {
-        return paintjobsInner.filter {
+        return paintjobsInner.values.filter {
             (includeShiny || !it.isShiny) &&
                     (includeHidden || !it.isHidden)
         }.toSet()
@@ -117,9 +117,9 @@ object MagicPaintjobManager {
         val (paintjobSpecs, weaponPaintjobSpecs) = loadPaintjobs()
 
         paintjobsInner.clear()
-        paintjobsInner.addAll(paintjobSpecs.values)
+        paintjobsInner.putAll(paintjobSpecs)
         weaponPaintjobsInner.clear()
-        weaponPaintjobsInner.addAll(weaponPaintjobSpecs.values)
+        weaponPaintjobsInner.putAll(weaponPaintjobSpecs)
     }
 
     @JvmStatic
@@ -379,7 +379,7 @@ object MagicPaintjobManager {
     @JvmStatic
     @JvmOverloads
     fun getPaintjobsForWeapon(weaponId: String, paintjobFamily: String? = null): List<MagicWeaponPaintjobSpec> =
-        weaponPaintjobsInner.filter { spec ->
+        weaponPaintjobsInner.values.filter { spec ->
             weaponId in spec.weaponIds && (paintjobFamily?.let { it in spec.paintjobFamilies } ?: true)
         }
 
@@ -415,7 +415,7 @@ object MagicPaintjobManager {
     @JvmStatic
     @JvmOverloads
     fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> =
-        paintjobsInner.filter {
+        paintjobsInner.values.filter {
             hullId in it.hullIds &&
                     (includeShiny || !it.isShiny) &&
                     (includeHidden || !it.isHidden)
@@ -480,8 +480,8 @@ object MagicPaintjobManager {
             return
         }
 
-        paintjobsInner.removeAll { it.id == paintjob.id }
-        paintjobsInner.add(paintjob)
+        paintjobsInner.keys.removeAll { it == paintjob.id }
+        paintjobsInner[paintjob.id] = paintjob
 
         if (Magic_modPlugin.isMagicLibTestMode()) {
             unlockPaintjob(paintjob.id)
@@ -550,13 +550,13 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
-    fun getPaintjob(paintjobId: String): MagicPaintjobSpec? = paintjobsInner.firstOrNull { it.id == paintjobId }
+    fun getPaintjob(paintjobId: String): MagicPaintjobSpec? = paintjobsInner[paintjobId]
 
     @JvmStatic
     fun removePaintjobFromShip(fleetMember: FleetMemberAPI) {
         val variant = fleetMember.variant ?: return
         removePaintjobFromShip(variant)
-        fleetMember.spriteOverride = null
+        //fleetMember.spriteOverride = null
     }
 
     @JvmStatic
@@ -698,7 +698,14 @@ object MagicPaintjobManager {
     @JvmStatic
     fun getCurrentShipPaintjob(variant: ShipVariantAPI): MagicPaintjobSpec? {
         val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
-        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX)
+
+        // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
+        if (!variant.hasHullMod(MagicPaintjobHullMod.ID)
+            || paintjobId == null) { // If the tag is removed but the hull-mod isn't (probably a developer mistake?*) Remove the hull-mod.
+            removePaintjobFromShip(variant)
+            return null
+        }
 
         return getPaintjob(paintjobId)
     }
@@ -706,16 +713,18 @@ object MagicPaintjobManager {
     @JvmStatic
     fun getCurrentShipPaintjob(fleetMember: FleetMemberAPI): MagicPaintjobSpec? {
         val variant = fleetMember.variant ?: return null
-        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
-        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+        return getCurrentShipPaintjob(variant)
+    }
 
-        // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
-        if (!fleetMember.variant.hasHullMod(MagicPaintjobHullMod.ID)) {
-            removePaintjobFromShip(fleetMember)
-            return null
-        }
+    @JvmStatic
+    fun hasPaintjob(variant: ShipVariantAPI): Boolean {
+        return variant.hasHullMod(MagicPaintjobHullMod.ID) && variant.tags.any { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
+    }
 
-        return getPaintjob(paintjobId)
+    @JvmStatic
+    fun hasPaintjob(fleetMember: FleetMemberAPI): Boolean {
+        val variant = fleetMember.variant ?: return false
+        return hasPaintjob(variant)
     }
 
     @JvmStatic
