@@ -107,8 +107,8 @@ internal object MagicPaintjobRefitPanel {
         val scrollerTooltip = paintjobPanel.createUIElement(width + 2f, height, true)
         scrollerTooltip.position.inTL(0f, 0f)
 
-        val shipDisplay = ReflectionUtils.invoke("getShipDisplay", refitPanel) as UIPanelAPI
-        val baseVariant = ReflectionUtils.invoke("getCurrentVariant", shipDisplay) as HullVariantSpec
+        val shipDisplay = ReflectionUtils.invoke(refitPanel, "getShipDisplay") as UIPanelAPI
+        val baseVariant = ReflectionUtils.invoke(shipDisplay, "getCurrentVariant") as HullVariantSpec
 
         val currentPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(baseVariant)
         val baseHullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(
@@ -181,9 +181,9 @@ internal object MagicPaintjobRefitPanel {
                             }
                         }
                     }
-                    ReflectionUtils.invoke("syncWithCurrentVariant", refitPanel)
-                    ReflectionUtils.invoke("updateModules", shipDisplay)
-                    ReflectionUtils.invoke("updateButtonPositionsToZoomLevel", shipDisplay)
+                    ReflectionUtils.invoke(refitPanel, "syncWithCurrentVariant")
+                    ReflectionUtils.invoke(shipDisplay, "updateModules")
+                    ReflectionUtils.invoke(shipDisplay, "updateButtonPositionsToZoomLevel")
                 }
             }
         }

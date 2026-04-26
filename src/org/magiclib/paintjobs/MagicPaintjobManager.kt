@@ -23,6 +23,8 @@ import org.magiclib.LunaWrapper
 import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
 import org.magiclib.ReflectionUtils
+import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.kotlin.forEach
 import org.magiclib.kotlin.optColor
 import org.magiclib.kotlin.toStringList
@@ -612,17 +614,17 @@ object MagicPaintjobManager {
         }
 
         // get all weapon sprites
-        val weaponSprites = ReflectionUtils.getFieldsOfType(weapon, Sprite::class.java).mapNotNull { field ->
-            ReflectionUtils.get(field, weapon) as Sprite?
-        } + ReflectionUtils.getFieldsOfType(weapon, Array<Sprite>::class.java).mapNotNull { field ->
-            ReflectionUtils.get(field, weapon) as Array<Sprite>?
+        val weaponSprites = weapon.getFieldsMatching(type = Sprite::class.java).mapNotNull { field ->
+            field.get(weapon) as Sprite?
+        } + weapon.getFieldsMatching(type = Array<Sprite>::class.java).mapNotNull { field ->
+            field.get(weapon) as Array<Sprite>?
         }.flatMap {
             it.toList()
-        } + ReflectionUtils.getFieldsOfType(weapon, MultiBarrelRecoilTracker::class.java).mapNotNull { field ->
-            ReflectionUtils.get(field, weapon) as MultiBarrelRecoilTracker?
+        } + weapon.getFieldsMatching(type = MultiBarrelRecoilTracker::class.java).mapNotNull { field ->
+            field.get(weapon) as MultiBarrelRecoilTracker?
         }.map { multiBarrelRecoilTracker ->
-            ReflectionUtils.getFieldsOfType(multiBarrelRecoilTracker, Sprite::class.java).mapNotNull { field ->
-                ReflectionUtils.get(field, multiBarrelRecoilTracker) as Sprite?
+            multiBarrelRecoilTracker.getFieldsMatching(type = Sprite::class.java).mapNotNull { field ->
+                field.get(multiBarrelRecoilTracker) as Sprite?
             }
         }.flatten()
 
@@ -630,7 +632,7 @@ object MagicPaintjobManager {
 
         for (weaponSprite in weaponSprites) {
             // it's hard to get a textureId out of a true sprite, so box it into SpriteAPI
-            ReflectionUtils.invoke("setSprite", tempWeaponSprite, weaponSprite)
+            ReflectionUtils.invoke(tempWeaponSprite, "setSprite", weaponSprite)
 
             // make sure only one textureId matches, I don't think it's possible? for multiple, but CYA
             val replacementMap = paintjobSprites.filter { it.key.textureId == tempWeaponSprite.textureId }
@@ -643,11 +645,10 @@ object MagicPaintjobManager {
             } else if (replacementMap.count() == 1) {
                 val (_, replacementSpriteAPI) = replacementMap.entries.first()
                 // unbox the replacement sprite and get its texture, then replace the weapon sprite's texture
-                val replacementSprite = ReflectionUtils.invoke("getSprite", replacementSpriteAPI) as Sprite
-                val replacementTexture = ReflectionUtils.invoke("getTexture", replacementSprite)
-                val setTextureMethod = ReflectionUtils.getMethodsOfName("setTexture", weaponSprite)[0]
-                ReflectionUtils.rawInvoke(setTextureMethod, weaponSprite, replacementTexture)
-
+                val replacementSprite = ReflectionUtils.invoke(replacementSpriteAPI, "getSprite") as Sprite
+                val replacementTexture = ReflectionUtils.invoke(replacementSprite, "getTexture")
+                val setTextureMethod = weaponSprite.getMethodsMatching(name = "setTexture")[0]
+                setTextureMethod.invoke(weaponSprite, replacementTexture)
             }
         }
     }

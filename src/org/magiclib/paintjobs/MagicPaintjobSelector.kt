@@ -12,6 +12,7 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.loading.specs.HullVariantSpec
 import org.lwjgl.opengl.GL11
 import org.magiclib.ReflectionUtils
+import org.magiclib.ReflectionUtils.getConstructorsMatching
 import org.magiclib.internalextensions.*
 import org.magiclib.kotlin.*
 import org.magiclib.util.MagicTxt
@@ -200,20 +201,20 @@ internal object MagicPaintjobSelector {
             MagicPaintjobManager.removePaintjobFromShip(moduleVariant as ShipVariantAPI)
         }
 
-        val shipPreview = ReflectionUtils.instantiate(MagicPaintjobCombatRefitAdder.SHIP_PREVIEW_CLASS!!)!!
-        ReflectionUtils.invoke("setVariant", shipPreview, clonedVariant)
-        ReflectionUtils.invoke("overrideVariant", shipPreview, clonedVariant)
-        ReflectionUtils.invoke("setShowBorder", shipPreview, false)
-        ReflectionUtils.invoke("setScaleDownSmallerShipsMagnitude", shipPreview, 1f)
-        ReflectionUtils.invoke("adjustOverlay", shipPreview, 0f, 0f)
+        val shipPreview = MagicPaintjobCombatRefitAdder.SHIP_PREVIEW_CLASS!!.getConstructorsMatching(numOfParams = 0).first().newInstance()
+        ReflectionUtils.invoke(shipPreview, "setVariant", clonedVariant)
+        ReflectionUtils.invoke(shipPreview, "overrideVariant", clonedVariant)
+        ReflectionUtils.invoke(shipPreview, "setShowBorder", false)
+        ReflectionUtils.invoke(shipPreview, "setScaleDownSmallerShipsMagnitude", 1f)
+        ReflectionUtils.invoke(shipPreview, "adjustOverlay", 0f, 0f)
         (shipPreview as UIPanelAPI).setSize(width, height)
 
         // make the ship list so the ships exist when we try and get them
-        ReflectionUtils.invoke("prepareShip", shipPreview)
+        ReflectionUtils.invoke(shipPreview, "prepareShip")
 
         // if the paintjob exists, replace the sprites
         basePaintjobSpec?.let { paintjob ->
-            for(ship in ReflectionUtils.get(MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!, shipPreview) as Array<ShipAPI>){
+            for(ship in ReflectionUtils.get(shipPreview, name = MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!) as Array<ShipAPI>){
                 MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec).firstOrNull {
                     it.paintjobFamily?.equals(paintjob.paintjobFamily) == true || it.id == paintjob.id
                 }?.let { MagicPaintjobManager.applyPaintjob(ship, it) }

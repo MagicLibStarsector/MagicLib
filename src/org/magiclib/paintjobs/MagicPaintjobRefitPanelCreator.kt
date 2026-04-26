@@ -27,7 +27,7 @@ internal object MagicPaintjobRefitPanelCreator {
         val hullmodsPanel =
             statsAndHullmodsPanel.findChildWithMethod("removeNotApplicableMods") as? UIPanelAPI ?: return
 
-        val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
+        val fleetMember = ReflectionUtils.invoke(refitPanel, "getMember") as? FleetMemberAPI
         val existingElements = hullmodsPanel.getChildrenCopy()
         val lastElement = existingElements.lastOrNull() ?: return // if children is empty, return
 
@@ -45,10 +45,10 @@ internal object MagicPaintjobRefitPanelCreator {
         if (paintjobButton != null || buttonShouldNotExist) return
 
         // addHullmods button should always exist in hullmodsPanel
-        val addButton = existingElements.filter { ReflectionUtils.hasMethodOfName("getText", it) }.find {
+        val addButton = existingElements.filter { ReflectionUtils.getMethodsMatching(it, "getText").isNotEmpty() }.find {
             (ReflectionUtils.invoke(
+                it,
                 "getText",
-                it
             ) as String).contains(MagicTxt.getString("ml_mp_refit_vanillaHullmodAddButtonText"))
         } ?: return
 
@@ -73,7 +73,7 @@ internal object MagicPaintjobRefitPanelCreator {
             val height = if (inCampaign) (refitTab.height - 12).coerceIn(722f, 800f) else 722f
             val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, refitPanel, width, height)
 
-            val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
+            val coreUI = ReflectionUtils.invoke(refitPanel, "getCoreUI") as UIPanelAPI
             coreUI.addComponent(paintjobPanel)
 
             // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.

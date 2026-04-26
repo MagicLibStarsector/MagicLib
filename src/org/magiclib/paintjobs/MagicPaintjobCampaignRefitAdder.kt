@@ -26,9 +26,9 @@ internal class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
         val state = AppDriver.getInstance().currentState
         if (state !is CampaignState) return
 
-        val newCoreUI = (ReflectionUtils.invoke("getEncounterDialog", state)?.let { dialog ->
-            ReflectionUtils.invoke("getCoreUI", dialog) as? UIPanelAPI
-        } ?: ReflectionUtils.invoke("getCore", state) as? UIPanelAPI) ?: return
+        val newCoreUI = (ReflectionUtils.invoke(state, "getEncounterDialog")?.let { dialog ->
+            ReflectionUtils.invoke(dialog, "getCoreUI") as? UIPanelAPI
+        } ?: ReflectionUtils.invoke(state, "getCore") as? UIPanelAPI) ?: return
 
         val borderContainer = newCoreUI.findChildWithMethod("setBorderInsetLeft") as? UIPanelAPI ?: return
         val refitTab = borderContainer.findChildWithMethod("goBackToParentIfNeeded") as? UIPanelAPI ?: return
