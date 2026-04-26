@@ -28,7 +28,7 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     val isHidden: Boolean
         get() = tags?.contains(MagicPaintjobManager.PJTAG_HIDDEN) == true
 
-    val isUnlockable = !isShiny
+    val isUnlockable = !isShiny && !isHidden
 
     data class PaintjobEngineSpec(
         var color: Color?,
