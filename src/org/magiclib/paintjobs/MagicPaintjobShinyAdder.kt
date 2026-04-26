@@ -60,14 +60,39 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
             for (ship in shipsInFleetWithAvailableShiny) {
                 if (addedShiny) continue // Max of one per fleet
 
+                val hullShinyPaintjobs = allShinyPaintjobs.filter { ship.hullId in it.hullIds }
+                if (hullShinyPaintjobs.isEmpty()) continue
+
+                val rng = Random(fleet.getSalvageSeed())
+
+                val rollChance = hullShinyPaintjobs
+                    .map { it.isShinyRarity }
+                    .average()
+                    .toInt()
+                    .coerceAtLeast(1)
+
                 // Roll the dice once per fleet member that has an available shiny paintjob.
-                if (Random(fleet.getSalvageSeed()).nextInt(probability) == 1) {
+                if (rng.nextInt(rollChance) == 0) {
                     // If PJ already applied to ship, don't reapply.
                     if (!ship.variant.hasHullMod(MagicPaintjobHullMod.ID)) {
-                        applyShinyPaintjob(ship, fleet, allShinyPaintjobs)
-                    }
+                        fun pickWeightedPaintjob(rng: Random): MagicPaintjobSpec {
+                            val totalWeight = hullShinyPaintjobs.sumOf { it.isShinyRarity }
 
-                    addedShiny = true
+                            var roll = rng.nextInt(totalWeight)
+
+                            for (pj in hullShinyPaintjobs) {
+                                roll -= pj.isShinyRarity
+                                if (roll < 0) return pj
+                            }
+
+                            return hullShinyPaintjobs.last()
+                        }
+
+                        val paintjob = pickWeightedPaintjob(rng)
+
+                        applyShinyPaintjob(ship, paintjob)
+                        addedShiny = true
+                    }
                 }
             }
 
@@ -80,13 +105,12 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
 
     private fun applyShinyPaintjob(
         ship: FleetMemberAPI,
-        fleet: CampaignFleetAPI,
-        allShinyPaintjobs: List<MagicPaintjobSpec>
+        paintjob: MagicPaintjobSpec
     ) {
         setClonedVariant(ship)
         MagicPaintjobManager.applyPaintjob(
             ship,
-            allShinyPaintjobs.filter { ship.hullId in it.hullIds }.random(Random(fleet.getSalvageSeed()))
+            paintjob
         )
 
         if (!ship.variant.hasTag(Tags.UNRECOVERABLE)) {
