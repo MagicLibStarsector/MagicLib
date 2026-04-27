@@ -106,6 +106,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     //                                    //
     ////////////////////////////////////////
 
+    private MagicCampaignTrailPlugin magicCampaignTrailPlugin;
     @Override
     public void onGameLoad(boolean newGame) {
         data.scripts.Magic_modPlugin.onGameLoad(newGame);
@@ -118,7 +119,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         if (sector != null) {
             sector.addTransientScript(new MagicPaintjobCampaignRefitAdder());
             sector.addTransientListener(new MagicIndustryItemWrangler());
-            sector.addTransientScript(new MagicCampaignTrailPlugin());
+            magicCampaignTrailPlugin = new MagicCampaignTrailPlugin();
+            sector.addTransientScript(magicCampaignTrailPlugin);
         }
 
         MagicVariables.checkBountySystems();
@@ -162,6 +164,7 @@ public class Magic_modPlugin extends BaseModPlugin {
 
     @Override
     public void beforeGameSave() {
+        data.scripts.Magic_modPlugin.beforeGameSave();
         super.beforeGameSave();
         if (MagicVariables.getMagicBounty()) {
             MagicBountyCoordinator.beforeGameSave();
@@ -169,10 +172,13 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicAchievementManager.getInstance().beforeGameSave();
         MagicPaintjobManager.beforeGameSave();
+        if(magicCampaignTrailPlugin != null)
+            magicCampaignTrailPlugin.beforeGameSave();
     }
 
     @Override
     public void afterGameSave() {
+        data.scripts.Magic_modPlugin.afterGameSave();
         super.afterGameSave();
         if (MagicVariables.getMagicBounty()) {
             MagicBountyCoordinator.afterGameSave();
@@ -180,6 +186,8 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicAchievementManager.getInstance().afterGameSave();
         MagicPaintjobManager.afterGameSave();
+        if(magicCampaignTrailPlugin != null)
+            magicCampaignTrailPlugin.afterGameSave();
     }
 
     /**
