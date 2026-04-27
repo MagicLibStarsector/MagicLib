@@ -282,7 +282,7 @@
     "mb_sort_Credits": "Credits",
     "mb_sort_FirstCreated": "Time Posted",
     "mb_sort_DropNonHostiles": "Drop non-hostiles in populated areas",
-    "mb_sort_DropNonHostilesTooltip": "When enabled, non-hostile bounty targets located in systems with a size 4 or larger friendly market will be moved to the bottom of the list and colored red.\n\nE.G: If killing a bounty target would unavoidably trigger a war with a faction.",
+    "mb_sort_DropNonHostilesTooltip": "Non-hostile bounty targets located in systems with a size 4 or larger friendly market are moved to the bottom of the list and highlighted red.\n\nEngaging these targets would likely start a war with their faction.",
 
 
     "mb_intelTutorial": "Select a bounty on the left to see more information.\nFilter the list by clicking \"Filters\" at the top of the list.\nIf the job terms are acceptable, click Accept in the bottom-right of the info panel.",
