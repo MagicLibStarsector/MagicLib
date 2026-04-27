@@ -65,7 +65,7 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
 
                 val rng = Random(fleet.getSalvageSeed())
 
-                val rollChance = hullShinyPaintjobs.maxOfOrNull { it.isShinyRarity }
+                val rollChance = hullShinyPaintjobs.minOfOrNull { it.isShinyRarity }
                     ?.coerceAtLeast(1) ?: probability
 
                 // Roll the dice once per fleet member that has an available shiny paintjob.
