@@ -14,37 +14,6 @@ import org.magiclib.kotlin.getSalvageSeed
 import kotlin.random.Random
 
 
-/*
-    There are two systems for assigning shinies:
-    - **Per fleet** (roll once for the whole fleet)
-    - **Per member** (each ship rolls individually)
-    These are controlled by tags.
-    ### 1. **Default shiny tag**
-    `MagicLib_ShinyPJ_25`
-    - Per fleet behavior
-    - Uses `_25` as probablity for a fleet to have shinies unless not present, then it uses  `defaultFleetProbability = 25` -> 1 in 25 fleets get shinies.
-    - If probabilities with different values than`_25` exist, the probability is medianed between all of them.
-    - If triggered, a random ship with a shiny paintjob will be given that paintjob
-    - Lower numbers are more likely to be picked
-    ### 3. **Member tag**
-    `MagicLib_ShinyPJ_Member_25`
-    - Per member behavior
-    - Each ship individually rolls for shiny status based on the weight, which is `_25` or if not present `defaultMemberProbability = 25` 1 in 25 members get shinies
-    - No fleet-wide roll involved
-    - Lower numbers are more likely to be picked
-    ### 4. Weight
-    MagicLib_ShinyPJ_Weight_30
-    - When picking between multiple paintjobs
-    - In per fleet behavior when picking between multiple possible paintjobs across the fleet.
-    - In per member behavior when picking between multiple possible paintjobs for the member.
-    - Uses `_30` as chance, if not specified uses `defaultPaintjobWeight = 30` for the weight of the paintjob.
-    - Lower numbers are more likely to be picked
-    ## Priority Logic
-    If both systems exist in a fleet:
-    1. Fleet-level roll happens first
-    2. If no shinies are produced -? fallback to per-member checks
- */
-
 class MagicPaintjobShinyAdder : EveryFrameScript {
     companion object {
         @JvmStatic
@@ -201,7 +170,7 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
                     .map { it.shinyFleetRarity }
 
                 val avg = fleetProbabilities.ifEmpty { listOf(defaultFleetProbability) }.average()
-                val pFleet = 1.0 / avg.coerceAtLeast(1)
+                val pFleet = 1.0 / avg.coerceAtLeast(1.0)
 
                 if (rng.nextDouble() < pFleet) {
                     val candidates = entries.filter { it.fleetPaintjobs.isNotEmpty() }
