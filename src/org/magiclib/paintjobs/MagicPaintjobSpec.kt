@@ -19,13 +19,32 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var shieldSpec: PaintjobShieldSpec?,
     var paintjobFamily: String?
 ) {
-    private val shiny = tags?.any { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) } == true
+    private val shiny = tags?.any { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) || it.startsWith(MagicPaintjobManager.PJTAG_SHINY_MEMBER) } == true
     val isShiny: Boolean
         get() = shiny
 
-    private val shinyRarity = tags?.find { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) }?.substringAfterLast("_")?.toIntOrNull() ?: MagicPaintjobShinyAdder.defaultProbability
-    val isShinyRarity: Int
-        get() = shinyRarity
+    val hasShinyFleetTag =
+        tags?.any { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) } == true
+
+    val shinyFleetRarity =
+        tags?.find { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) }?.substringAfterLast("_")?.toIntOrNull()
+            ?: MagicPaintjobShinyAdder.defaultFleetProbability
+
+    val hasShinyMemberTag =
+        tags?.any { it.startsWith(MagicPaintjobManager.PJTAG_SHINY_MEMBER) } == true
+
+    val shinyMemberRarity =
+        tags?.find { it.startsWith(MagicPaintjobManager.PJTAG_SHINY_MEMBER) }?.substringAfterLast("_")?.toIntOrNull()
+            ?: MagicPaintjobShinyAdder.defaultMemberProbability
+
+    val shinyWeight =
+        tags?.find { it.startsWith(MagicPaintjobManager.PJTAG_SHINY_WEIGHT) }?.substringAfterLast("_")?.toIntOrNull()
+            ?: MagicPaintjobShinyAdder.defaultPaintjobWeight
+
+    init {
+        if(hasShinyFleetTag && hasShinyMemberTag)
+            throw IllegalArgumentException("Paintjob $id has both fleet and member shiny tags. Please choose one or the other.")
+    }
 
     private val permanent = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
     val isPermanent: Boolean

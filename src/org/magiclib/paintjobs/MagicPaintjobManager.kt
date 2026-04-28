@@ -51,6 +51,8 @@ object MagicPaintjobManager {
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
+    const val PJTAG_SHINY_WEIGHT = "MagicLib_ShinyPJ_Weight"
+    const val PJTAG_SHINY_MEMBER = "MagicLib_ShinyPJ_Member"
     const val PJTAG_HIDDEN = "MagicLib_HiddenPJ"
 
 
