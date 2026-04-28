@@ -23,7 +23,7 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     val isShiny: Boolean
         get() = shiny
 
-    private val shinyRarity = tags?.find { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) }?.substringAfterLast("_")?.toIntOrNull() ?: MagicPaintjobShinyAdder.probability
+    private val shinyRarity = tags?.find { it.startsWith(MagicPaintjobManager.PJTAG_SHINY) }?.substringAfterLast("_")?.toIntOrNull() ?: MagicPaintjobShinyAdder.defaultProbability
     val isShinyRarity: Int
         get() = shinyRarity
 

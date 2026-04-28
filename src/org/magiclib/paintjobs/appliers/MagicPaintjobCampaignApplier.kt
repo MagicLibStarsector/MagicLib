@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetEncounterContextPlugin
 import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
 import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
@@ -126,19 +127,22 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         val topRightPlayerFleet = (topRightFleetPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
         val topRightEnemyFleet = (topRightFleetPanel.getChildrenCopy().getOrNull(1) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
 
-        topRightPlayerFleet.getOrNull(0)?.let {
-            if (it !is UIComponentAPI) return@let
+        topRightPlayerFleet.forEach {
+            if (it !is UIComponentAPI) return@forEach
             MagicPaintjobApplierUtils.applyPaintjobsToShipList(it)
         }
-        topRightEnemyFleet.getOrNull(0)?.let {
-            if (it !is UIComponentAPI) return@let
+        topRightEnemyFleet.forEach {
+            if (it !is UIComponentAPI) return@forEach
             MagicPaintjobApplierUtils.applyPaintjobsToShipList(it, 1)
         }
     }
 
+    private var updateTicksRepeating: Int = 2
+    private var visibilityLevelToPlayerFleet: SectorEntityToken.VisibilityLevel = SectorEntityToken.VisibilityLevel.NONE
     private var currentHoveredFleetID: String? = null
     private fun applyToCommandTooltip() {
-        val ui = Global.getSector().campaignUI
+        val sector = Global.getSector()
+        val ui = sector.campaignUI
         if (!ui.isIdle())
             return
         val engine = CampaignEngine.getInstance()
@@ -146,12 +150,26 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         val hoveredFleet = tooltip?.getFieldsMatching(type = CampaignEntity::class.java)?.getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
         if (hoveredFleet == null) {
             currentHoveredFleetID = null
+            visibilityLevelToPlayerFleet = SectorEntityToken.VisibilityLevel.NONE
+            updateTicksRepeating = 0
             return
         }
 
         // Only replace the sprites in the tooltip once
-        if (hoveredFleet.id == currentHoveredFleetID)
+        if (updateTicksRepeating == 0 && hoveredFleet.id == currentHoveredFleetID) {
+
+            // If game is unpaused, check for if state of visibility has changed, which would update and clear the paintjob.
+            if(!sector.isPaused && hoveredFleet.visibilityLevelToPlayerFleet != visibilityLevelToPlayerFleet) {
+                if(visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.NONE)
+                    updateTicksRepeating = 2
+                visibilityLevelToPlayerFleet = hoveredFleet.visibilityLevelToPlayerFleet
+            }
+
             return
+        }
+
+        if(updateTicksRepeating != 0)
+            updateTicksRepeating--
 
         currentHoveredFleetID = hoveredFleet.id
 

@@ -2,7 +2,6 @@ package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
@@ -16,7 +15,7 @@ import kotlin.random.Random
 class MagicPaintjobShinyAdder : EveryFrameScript {
     companion object {
         @JvmStatic
-        var probability = 25 // 1 in 25 chance of spawning a shiny
+        var defaultProbability = 25 // 1 in 25 chance of spawning a shiny
     }
 
     private var isDoneInternal = false
@@ -47,57 +46,146 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
             includeShiny = true
         ).filter { it.isShiny }
     ) {
+        val hullsWithShinies = allShinyPaintjobs.flatMap { it.hullIds }.toSet()
+
         for (fleet in Global.getSector().playerFleet.containingLocation?.fleets ?: emptyList()) {
             if (fleet == null || fleetsCheckedIds.contains(fleet.id) || !MagicPaintjobManager.isEnabled || fleet.isPlayerFleet
             ) {
                 continue
             }
 
-            val shipsInFleetWithAvailableShiny =
-                fleet.fleetData.membersListCopy.filter { it.hullId in allShinyPaintjobs.flatMap { pj -> pj.hullIds } }
-            var addedShiny = false
-
-            for (ship in shipsInFleetWithAvailableShiny) {
-                if (addedShiny) continue // Max of one per fleet
-
-                val hullShinyPaintjobs = allShinyPaintjobs.filter { ship.hullId in it.hullIds }
-                if (hullShinyPaintjobs.isEmpty()) continue
-
-                val rng = Random(fleet.getSalvageSeed())
-
-                val rollChance = hullShinyPaintjobs.minOfOrNull { it.isShinyRarity }
-                    ?.coerceAtLeast(1) ?: probability
-
-                // Roll the dice once per fleet member that has an available shiny paintjob.
-                if (rng.nextInt(rollChance) == 0) {
-                    // If PJ already applied to ship, don't reapply.
-                    if (!ship.variant.hasHullMod(MagicPaintjobHullMod.ID)) {
-                        fun pickWeightedPaintjob(rng: Random): MagicPaintjobSpec {
-                            val totalWeight = hullShinyPaintjobs.sumOf { it.isShinyRarity }
-
-                            var roll = rng.nextInt(totalWeight)
-
-                            for (pj in hullShinyPaintjobs) {
-                                roll -= pj.isShinyRarity
-                                if (roll < 0) return pj
-                            }
-
-                            return hullShinyPaintjobs.last()
-                        }
-
-                        val paintjob = pickWeightedPaintjob(rng)
-
-                        applyShinyPaintjob(ship, paintjob)
-                        addedShiny = true
-                    }
-                }
-            }
-
             // TODO: Removed this optimization that prevents checking a fleet more than once
             // because the game keeps erasing the variant tags and therefore paintjobs
             // so we need to keep re-applying them!
             //            fleetsCheckedIds.add(fleet.id)
+            //
+
+            val shinyAppliedTo =
+                if(fleet.memoryWithoutUpdate.contains("\$shinyAppliedTo"))
+                    fleet.memoryWithoutUpdate.get("\$shinyAppliedTo") as? String
+                else
+                    null
+
+            if(shinyAppliedTo != null) {
+                if(shinyAppliedTo.isEmpty())
+                    continue
+
+                val shinyPaintjob =
+                    if(fleet.memoryWithoutUpdate.contains("\$shinyPaintjob"))
+                        fleet.memoryWithoutUpdate.get("\$shinyPaintjob") as? String
+                    else
+                        null
+                if(shinyPaintjob == null)
+                    continue
+
+                val shinyPaintjobSpec = MagicPaintjobManager.getPaintjob(shinyPaintjob) ?: continue
+
+                val shinyMember = fleet.fleetData.membersListCopy.find { it.id == shinyAppliedTo } ?: continue
+                if(!MagicPaintjobManager.hasPaintjob(shinyMember)) {
+                    applyShinyPaintjob(shinyMember, shinyPaintjobSpec)
+                }
+                continue
+            }
+
+            fleet.memoryWithoutUpdate.set("\$shinyAppliedTo", "") // This fleet has been checked
+
+            if(fleet.fleetData.membersListCopy.any { member -> MagicPaintjobManager.getCurrentShipPaintjob(member)?.isShiny == true }) // Already has shiny?
+                continue
+
+            val seed = fleet.getSalvageSeed()
+            val rng = Random(seed)
+
+            data class ShipEntry(
+                val ship: FleetMemberAPI,
+                val paintjobs: List<MagicPaintjobSpec>,
+                val p: Double // probability this ship produces a shiny
+            )
+
+            //
+            // Fleet level probability
+            //
+
+            val entries = fleet.fleetData.membersListCopy.mapNotNull { ship ->
+                if (ship.hullId !in hullsWithShinies) return@mapNotNull null
+                if (MagicPaintjobManager.hasPaintjob(ship) && MagicPaintjobManager.getCurrentShipPaintjob(ship)?.isShiny != true) return@mapNotNull null
+
+                val paintjobs = allShinyPaintjobs.filter { ship.hullId in it.hullIds }
+                if (paintjobs.isEmpty()) return@mapNotNull null
+
+                // Combine multiple paintjobs on same hull:
+                // p = 1 - product(1 - 1/rarity)
+                var pNone = 1.0
+                for (pj in paintjobs) {
+                    val r = pj.isShinyRarity.coerceAtLeast(1)
+                    pNone *= (1.0 - 1.0 / r)
+                }
+
+                val p = 1.0 - pNone
+
+                ShipEntry(ship, paintjobs, p)
+            }
+
+            if (entries.isEmpty()) continue
+
+            var pNoneFleet = 1.0
+            for (e in entries) {
+                pNoneFleet *= (1.0 - e.p)
+            }
+
+            val pFleet = 1.0 - pNoneFleet
+
+            if (rng.nextDouble() >= pFleet) continue
+
+            //
+            // Select fleet member proportionally to its contribution
+            //
+
+            // Normalize weights by p_i
+            val totalP = entries.sumOf { it.p }
+
+            var roll = rng.nextDouble() * totalP
+
+            val chosen = run {
+                for (e in entries) {
+                    roll -= e.p
+                    if (roll <= 0) return@run e
+                }
+                entries.last()
+            }
+
+            //
+            // Apply paintjob to fleet member in weighted manner
+            //
+
+            //if(MagicPaintjobManager.hasPaintjob(chosen.ship)) // Do not apply if the ship already has a paintjob
+            //    continue
+
+            //if(MagicPaintjobManager.getCurrentShipPaintjob(chosen.ship)?.isShiny == true) // Do not apply if the ship already has a shiny paintjob
+            //    continue
+
+            val paintjob = pickWeightedPaintjob(chosen.paintjobs, rng)
+            applyShinyPaintjob(chosen.ship, paintjob)
+            fleet.memoryWithoutUpdate.set("\$shinyAppliedTo", chosen.ship.id)
+            fleet.memoryWithoutUpdate.set("\$shinyPaintjob", paintjob.id)
         }
+    }
+
+    fun pickWeightedPaintjob(
+        paintjobs: List<MagicPaintjobSpec>,
+        rng: Random
+    ): MagicPaintjobSpec {
+
+        val weights = paintjobs.map { 1.0 / it.isShinyRarity.coerceAtLeast(1) }
+        val total = weights.sum()
+
+        var roll = rng.nextDouble() * total
+
+        for ((i, pj) in paintjobs.withIndex()) {
+            roll -= weights[i]
+            if (roll <= 0) return pj
+        }
+
+        return paintjobs.last()
     }
 
     private fun applyShinyPaintjob(
