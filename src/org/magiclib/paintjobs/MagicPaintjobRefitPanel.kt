@@ -107,8 +107,8 @@ internal object MagicPaintjobRefitPanel {
         val scrollerTooltip = paintjobPanel.createUIElement(width + 2f, height, true)
         scrollerTooltip.position.inTL(0f, 0f)
 
-        val shipDisplay = ReflectionUtils.invoke("getShipDisplay", refitPanel) as UIPanelAPI
-        val baseVariant = ReflectionUtils.invoke("getCurrentVariant", shipDisplay) as HullVariantSpec
+        val shipDisplay = ReflectionUtils.invoke(refitPanel, "getShipDisplay") as UIPanelAPI
+        val baseVariant = ReflectionUtils.invoke(shipDisplay, "getCurrentVariant") as HullVariantSpec
 
         val currentPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(baseVariant)
         val baseHullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(
@@ -168,22 +168,23 @@ internal object MagicPaintjobRefitPanel {
                         MagicPaintjobManager.applyPaintjob(baseVariant, selectorPlugin.paintjobSpec)
                     }
 
-                    baseVariant.moduleVariants?.values?.forEach { moduleVariant ->
+                    (baseVariant as ShipVariantAPI).stationModules?.keys?.forEach { moduleVariantID ->
+                        val moduleVariant = (baseVariant as ShipVariantAPI).getModuleVariant(moduleVariantID) ?: return@forEach
 
                         if (selectorPlugin.paintjobSpec == null)
                             MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
                         else {
-                            val moduleHullID = (moduleVariant as ShipVariantAPI).hullSpec.baseHullId
-                            MagicPaintjobManager.getPaintjobsForHull(moduleHullID).firstOrNull {
+                            val moduleHull = (moduleVariant as ShipVariantAPI).hullSpec
+                            MagicPaintjobManager.getPaintjobsForHull(moduleHull).firstOrNull {
                                 it.paintjobFamily == selectorPlugin.paintjobSpec.paintjobFamily
                             }?.let {
                                 MagicPaintjobManager.applyPaintjob(moduleVariant, it)
                             }
                         }
                     }
-                    ReflectionUtils.invoke("syncWithCurrentVariant", refitPanel)
-                    ReflectionUtils.invoke("updateModules", shipDisplay)
-                    ReflectionUtils.invoke("updateButtonPositionsToZoomLevel", shipDisplay)
+                    ReflectionUtils.invoke(refitPanel, "syncWithCurrentVariant")
+                    ReflectionUtils.invoke(shipDisplay, "updateModules")
+                    ReflectionUtils.invoke(shipDisplay, "updateButtonPositionsToZoomLevel")
                 }
             }
         }

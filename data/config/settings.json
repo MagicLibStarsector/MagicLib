@@ -7,6 +7,7 @@
     "MagicAchievementCombatScript": "org.magiclib.achievements.MagicAchievementCombatScript",
     "MagicSubsystemsCombatPlugin":"org.magiclib.subsystems.MagicSubsystemsCombatPlugin",
     "MagicPaintjobCombatRefitAdder":"org.magiclib.paintjobs.MagicPaintjobCombatRefitAdder",
+    "MagicPaintjobCombatApplier":"org.magiclib.paintjobs.appliers.MagicPaintjobCombatApplier",
 
     "old_ML_fakeBeamPlugin": "data.scripts.plugins.MagicFakeBeamPlugin",
     "old_ML_spriteRenderManager": "data.scripts.plugins.MagicRenderPlugin",
@@ -52,7 +53,8 @@
       "magicLibIcon": "graphics/magic/icons/magiclib_icon.webp",
     },
     "ui": {
-      "ship_arrow": "graphics/warroom/ship_arrow.png"
+      "ship_arrow": "graphics/warroom/ship_arrow.png",
+      "32x_star_circle": "graphics/ui/icons/32x_star_circle.png"
     },
     "icons": {
       "lock": "graphics/magic/icons/lockIcon.png"

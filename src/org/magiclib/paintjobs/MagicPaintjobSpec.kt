@@ -19,14 +19,17 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var shieldSpec: PaintjobShieldSpec?,
     var paintjobFamily: String?
 ) {
+    private val shiny = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
     val isShiny: Boolean
-        get() = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
+        get() = shiny
 
+    private val permanent = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
     val isPermanent: Boolean
-        get() = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
+        get() = permanent
 
+    private val hidden = tags?.contains(MagicPaintjobManager.PJTAG_HIDDEN) == true
     val isHidden: Boolean
-        get() = tags?.contains(MagicPaintjobManager.PJTAG_HIDDEN) == true
+        get() = hidden
 
     val isUnlockable = !isShiny && !isHidden
 

@@ -7,80 +7,81 @@ import com.fs.starfarer.api.campaign.CustomUIPanelPlugin
 import com.fs.starfarer.api.ui.*
 import com.fs.graphics.util.Fader
 import org.magiclib.ReflectionUtils
+import org.magiclib.ReflectionUtils.invoke
 import java.awt.Color
 
 internal var UIComponentAPI.fader: Fader?
-    get() = ReflectionUtils.invoke("getFader", this) as Fader?
+    get() = ReflectionUtils.invoke(this, "getFader") as Fader?
     set(fader) {
-        ReflectionUtils.invoke("setFader", this, fader)
+        ReflectionUtils.invoke( this, "setFader", fader)
     }
 
 internal var UIComponentAPI.opacity: Float
-    get() = ReflectionUtils.invoke("getOpacity", this) as Float
+    get() = ReflectionUtils.invoke(this, "getOpacity") as Float
     set(alpha) {
-        ReflectionUtils.invoke("setOpacity", this, alpha)
+        ReflectionUtils.invoke(this, "setOpacity", alpha)
     }
 
 internal var UIComponentAPI.parent: UIPanelAPI?
-    get() = ReflectionUtils.invoke("getParent", this) as UIPanelAPI?
+    get() = ReflectionUtils.invoke(this, "getParent") as UIPanelAPI?
     set(parent) {
-        ReflectionUtils.invoke("setParent", this, parent)
+        ReflectionUtils.invoke(this, "setParent", parent)
     }
 
 internal fun UIComponentAPI.setMouseOverPad(pad1: Float, pad2: Float, pad3: Float, pad4: Float) {
-    ReflectionUtils.invoke("setMouseOverPad", this, pad1, pad2, pad3, pad4)
+    ReflectionUtils.invoke(this, "setMouseOverPad", pad1, pad2, pad3, pad4)
 }
 
 internal val UIComponentAPI.mouseoverHighlightFader: Fader?
-    get() = ReflectionUtils.invoke("getMouseoverHighlightFader", this) as Fader?
+    get() = ReflectionUtils.invoke(this, "getMouseoverHighlightFader") as Fader?
 
 internal val UIComponentAPI.topAncestor: UIPanelAPI?
-    get() = ReflectionUtils.invoke("findTopAncestor", this) as UIPanelAPI?
+    get() = ReflectionUtils.invoke(this, "findTopAncestor") as UIPanelAPI?
 
 internal fun UIComponentAPI.setTooltipOffsetFromCenter(xPad: Float, yPad: Float){
-    ReflectionUtils.invoke("setTooltipOffsetFromCenter", this, xPad, yPad)
+    ReflectionUtils.invoke(this, "setTooltipOffsetFromCenter", xPad, yPad)
 }
 
 internal fun UIComponentAPI.setTooltipPositionRelativeToAnchor(xPad: Float, yPad: Float, anchor: UIComponentAPI){
-    ReflectionUtils.invoke("setTooltipPositionRelativeToAnchor", this, xPad, yPad, anchor)
+    ReflectionUtils.invoke(this, "setTooltipPositionRelativeToAnchor", xPad, yPad, anchor)
 }
 
 internal fun UIComponentAPI.setSlideData(xOffset: Float, yOffset: Float, durationIn: Float, durationOut: Float){
-    ReflectionUtils.invoke("setSlideData", this, xOffset, yOffset, durationIn, durationOut)
+    ReflectionUtils.invoke(this, "setSlideData",xOffset, yOffset, durationIn, durationOut)
 }
 
 internal fun UIComponentAPI.slideIn(){
-    ReflectionUtils.invoke("slideIn", this)
+    ReflectionUtils.invoke(this, "slideIn")
 }
 
 internal fun UIComponentAPI.slideOut(){
-    ReflectionUtils.invoke("slideOut", this)
+    ReflectionUtils.invoke(this, "slideOut")
 }
 
 internal fun UIComponentAPI.forceSlideIn(){
-    ReflectionUtils.invoke("forceSlideIn", this)
+    ReflectionUtils.invoke(this, "forceSlideIn")
 }
 
 internal fun UIComponentAPI.forceSlideOut(){
-    ReflectionUtils.invoke("forceSlideOut", this)
+    ReflectionUtils.invoke(this, "forceSlideOut")
 }
 
 internal val UIComponentAPI.sliding: Boolean
-    get() = ReflectionUtils.invoke("isSliding", this) as Boolean
+    get() = ReflectionUtils.invoke(this, "isSliding") as Boolean
 
 internal val UIComponentAPI.slidIn: Boolean
-    get() = ReflectionUtils.invoke("isSlidIn", this) as Boolean
+    get() = ReflectionUtils.invoke(this, "isSlidIn") as Boolean
 
 internal val UIComponentAPI.slidOut: Boolean
-    get() = ReflectionUtils.invoke("isSlidOut", this) as Boolean
+    get() = ReflectionUtils.invoke(this, "isSlidOut") as Boolean
 
 internal val UIComponentAPI.slidingIn: Boolean
-    get() = ReflectionUtils.invoke("isSlidingIn", this) as Boolean
+    get() = ReflectionUtils.invoke(this, "isSlidingIn") as Boolean
 
 internal var UIComponentAPI.enabled: Boolean
-    get() = ReflectionUtils.invoke("isEnabled", this) as Boolean
+    get() = ReflectionUtils.invoke(this, "isEnabled") as Boolean
     set(enabled) {
-        ReflectionUtils.invoke("setEnabled", this, enabled)
+        ReflectionUtils.invoke(this, "setEnabled", enabled)
     }
 
 internal var UIComponentAPI.width
@@ -124,27 +125,27 @@ internal val UIComponentAPI.centerY
     get() = this.position.centerY
 
 internal var UIComponentAPI.xAlignOffset: Float
-    get() = ReflectionUtils.invoke("getXAlignOffset", this.position) as Float
+    get() = ReflectionUtils.invoke(this.position , "getXAlignOffset") as Float
     set(xOffset) { this.position.setXAlignOffset(xOffset) }
 
 internal var UIComponentAPI.yAlignOffset: Float
-    get() = ReflectionUtils.invoke("getYAlignOffset", this.position) as Float
+    get() = ReflectionUtils.invoke(this.position, "getYAlignOffset") as Float
     set(yOffset) { this.position.setYAlignOffset(yOffset) }
 
 internal fun UIPanelAPI.getChildrenCopy(): List<UIComponentAPI> {
-    return ReflectionUtils.invoke("getChildrenCopy", this) as List<UIComponentAPI>
+    return ReflectionUtils.invoke(this, "getChildrenCopy") as List<UIComponentAPI>
 }
 
 internal fun UIPanelAPI.getChildrenNonCopy(): List<UIComponentAPI> {
-    return ReflectionUtils.invoke("getChildrenNonCopy", this) as List<UIComponentAPI>
+    return ReflectionUtils.invoke(this, "getChildrenNonCopy") as List<UIComponentAPI>
 }
 
 internal fun UIPanelAPI.findChildWithMethod(methodName: String): UIComponentAPI? {
-    return getChildrenCopy().find { ReflectionUtils.hasMethodOfName(methodName, it) }
+    return getChildrenCopy().find { ReflectionUtils.getMethodsMatching(it, methodName).isNotEmpty() }
 }
 
 internal fun UIPanelAPI.clearChildren() {
-    ReflectionUtils.invoke("clearChildren", this)
+    ReflectionUtils.invoke(this, "clearChildren")
 }
 
 internal fun TooltipMakerAPI.addTooltip(
@@ -210,8 +211,8 @@ private class ButtonListener(button: ButtonAPI) : BaseCustomUIPanelPlugin() {
 
     init {
         val buttonListener = Global.getSettings().createCustom(0f, 0f, this)
-        val setListenerMethod = ReflectionUtils.getMethodsOfName("setListener", button)[0]
-        ReflectionUtils.rawInvoke(setListenerMethod, button, buttonListener)
+        val setListenerMethod = ReflectionUtils.getMethodsMatching(button, name = "setListener")[0]
+        setListenerMethod.invoke(button, buttonListener)
     }
 
     override fun buttonPressed(buttonId: Any?) {
@@ -226,20 +227,12 @@ private class ButtonListener(button: ButtonAPI) : BaseCustomUIPanelPlugin() {
 // Extension function for ButtonAPI
 internal fun ButtonAPI.onClick(function: () -> Unit) {
     // Use reflection to check if this button already has a listener
-    val existingListener = ReflectionUtils.invoke("getListener", this)
-    if (existingListener is ButtonListener) {
-        existingListener.addOnClick(function)
+    val existingListener = this.invoke("getListener")
+    if (existingListener is CustomPanelAPI && existingListener.plugin is ButtonListener) {
+        (existingListener.plugin as ButtonListener).addOnClick(function)
     } else {
         // if not, make one
         val listener = ButtonListener(this)
         listener.addOnClick(function)
     }
 }
-
-internal var CustomPanelAPI.plugin: CustomUIPanelPlugin?
-    get() = ReflectionUtils.getFieldsOfType(this, CustomUIPanelPlugin::class.java).firstOrNull()?.let {
-        ReflectionUtils.get(it, this)
-    } as CustomUIPanelPlugin?
-    set(plugin) = ReflectionUtils.getFieldsOfType(this, CustomUIPanelPlugin::class.java).first().let {
-        ReflectionUtils.set(it, this, plugin)
-    }
