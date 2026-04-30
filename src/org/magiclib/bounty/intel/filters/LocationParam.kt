@@ -1,4 +1,4 @@
-package org.magiclib.bounty.intel.filters
+/*package org.magiclib.bounty.intel.filters
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
@@ -191,4 +191,4 @@ class LocationFilter : ListFilter<BountyInfo, LocationAPI> {
         if (ly < 0) ly = 0f
         return ly
     }
-}
+}*/
