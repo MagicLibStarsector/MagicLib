@@ -153,67 +153,92 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
 
         // Add special items
         for (Map.Entry<String, Integer> entry : bounty.getSpec().job_item_reward.entrySet()) {
-            String itemId = entry.getKey();
+            String key = entry.getKey();
+            String itemId;
+            String type;
+            if(key.startsWith("$") && key.contains(" ")) {
+                String[] split = key.split(" ", 2);
+                type = split[0];
+                if(!type.equals("$commodity") && !type.equals("$weapon") && !type.equals("$fighter") && !type.equals("$hullmod") && !type.equals("$special")) {
+                    throw new RuntimeException("MagicBounty specified item type with a $ but '" + type +"' was not a valid type");
+                }
+                itemId = split[1];
+            } else {
+                type = "";
+                itemId = key;
+            }
+
             Integer count = entry.getValue();
 
-            try {
-                CommoditySpecAPI commoditySpec = Global.getSector().getEconomy().getCommoditySpec(itemId);
-                if (commoditySpec != null) {
-                    loot.addItems(CargoAPI.CargoItemType.RESOURCES, itemId, count);
-                    continue;
+            if(type.isEmpty() || type.equals("$commodity")) {
+                try {
+                    CommoditySpecAPI commoditySpec = Global.getSector().getEconomy().getCommoditySpec(itemId);
+                    if (commoditySpec != null) {
+                        loot.addItems(CargoAPI.CargoItemType.RESOURCES, itemId, count);
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a commodity", ex);
                 }
-            } catch (Exception ex) {
-                Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a commodity", ex);
             }
 
-            try {
-                WeaponSpecAPI weaponSpec = Global.getSettings().getWeaponSpec(itemId);
-                if (weaponSpec != null) {
-                    loot.addWeapons(itemId, count);
-                    continue;
+            if(type.isEmpty() || type.equals("$weapon")) {
+                try {
+                    WeaponSpecAPI weaponSpec = Global.getSettings().getWeaponSpec(itemId);
+                    if (weaponSpec != null) {
+                        loot.addWeapons(itemId, count);
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a weapon", ex);
                 }
-            } catch (Exception ex) {
-                Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a weapon", ex);
             }
 
-            try {
-                FighterWingSpecAPI fighterWingSpecSpec = Global.getSettings().getFighterWingSpec(itemId);
-                if (fighterWingSpecSpec != null) {
-                    loot.addFighters(itemId, count);
-                    continue;
+            if(type.isEmpty() || type.equals("$fighter")) {
+                try {
+                    FighterWingSpecAPI fighterWingSpecSpec = Global.getSettings().getFighterWingSpec(itemId);
+                    if (fighterWingSpecSpec != null) {
+                        loot.addFighters(itemId, count);
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a fighter LCP", ex);
                 }
-            } catch (Exception ex) {
-                Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a fighter LCP", ex);
             }
 
-            try {
-                HullModSpecAPI hullmodSpec = Global.getSettings().getHullModSpec(itemId);
-                if (hullmodSpec != null) {
-                    loot.addHullmods(itemId, count);
-                    continue;
+            if(type.isEmpty() || type.equals("$hullmod")) {
+                try {
+                    HullModSpecAPI hullmodSpec = Global.getSettings().getHullModSpec(itemId);
+                    if (hullmodSpec != null) {
+                        loot.addHullmods(itemId, count);
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a hullmod", ex);
                 }
-            } catch (Exception ex) {
-                Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a hullmod", ex);
             }
 
-            try {
-                String[] split = itemId.split(" ");
-                String specialItemId = split[0];
-                String data = null;
+            if(type.isEmpty() || type.equals("$special")) {
+                try {
+                    String[] split = itemId.split(" ");
+                    String specialItemId = split[0];
+                    String data = null;
 
-                if (split.length > 1) {
-                    data = split[1];
-                }
+                    if (split.length > 1) {
+                        data = split[1];
+                    }
 
-                SpecialItemSpecAPI specialItemSpec = Global.getSettings().getSpecialItemSpec(specialItemId);
-                if (specialItemSpec != null) {
-                    loot.addSpecial(new SpecialItemData(specialItemId, data), count);
-                } else {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a special item", new NullPointerException());
+                    SpecialItemSpecAPI specialItemSpec = Global.getSettings().getSpecialItemSpec(specialItemId);
+                    if (specialItemSpec != null) {
+                        loot.addSpecial(new SpecialItemData(specialItemId, data), count);
+                    } else {
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a special item", new NullPointerException());
+                    }
+                } catch (Exception ex) {
+                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, ex);
                 }
-            } catch (Exception ex) {
-                Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, ex);
             }
+
         }
     }
 }
