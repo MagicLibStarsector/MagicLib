@@ -2,16 +2,16 @@ package org.magiclib.bounty.intel
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.procgen.Constellation
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
-import com.fs.starfarer.api.ui.CustomPanelAPI
-import com.fs.starfarer.api.ui.LabelAPI
-import com.fs.starfarer.api.ui.MapParams
-import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.util.Misc
+import org.lwjgl.util.vector.Vector2f
 import org.lwjgl.input.Keyboard
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
@@ -19,18 +19,27 @@ import org.magiclib.bounty.MagicBountyLoader.*
 import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
+import org.magiclib.kotlin.interpolateColor
 import org.magiclib.kotlin.setAlpha
+import org.magiclib.kotlin.ucFirst
 import org.magiclib.util.MagicCampaign
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+import kotlin.text.isEmpty
 
 open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpec) : BountyInfo {
     val activeBounty: ActiveBounty?
         get() = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
     var holdingPanel: CustomPanelAPI? = null
     var panelThatCanBeRemoved: CustomPanelAPI? = null
+
+    var customColor: Color? = Color(255, 255, 255, 0)
+    override fun getCustomPanelColor(): Color? = customColor
+    override fun setCustomPanelColor(value: Color?) {
+        customColor = value
+    }
 
     override fun getBountyId(): String {
         return bountyKey
@@ -60,18 +69,47 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         return activeBounty?.fleetSpawnLocation?.containingLocation
     }
 
-    override fun getSortIndex(): Int {
-        return when (activeBounty?.stage) {
-            ActiveBounty.Stage.Accepted -> 0
-            ActiveBounty.Stage.NotAccepted -> 1
-            ActiveBounty.Stage.Succeeded -> 3
-            ActiveBounty.Stage.ExpiredAfterAccepting -> 4
-            ActiveBounty.Stage.ExpiredWithoutAccepting -> 4
-            ActiveBounty.Stage.FailedSalvagedFlagship -> 4
-            ActiveBounty.Stage.EndedWithoutPlayerInvolvement -> 4
-            ActiveBounty.Stage.Dismissed -> 4
-            else -> 1
+    override fun getPlayerKnownDistanceIfBountyIsActive(): Float? {
+        getLocationIfBountyIsActive() ?: return null
+        val bounty = activeBounty ?: return null
+        val playerFleet = Global.getSector().playerFleet
+
+        return when (bountySpec.job_show_distance) {
+            //ShowDistance.Vague,
+            ShowDistance.None-> null
+
+            ShowDistance.Distance,
+            ShowDistance.Exact,
+            ShowDistance.System ->
+                Misc.getDistanceLY(playerFleet, bounty.fleetSpawnLocation)
+
+            else -> {
+                val token = bounty.fleet.constellation?.let { createConstellationCenterToken(it) } ?: bounty.fleetSpawnLocation
+                Misc.getDistanceLY(playerFleet, token)
+            }
         }
+    }
+
+    private var sortIndexOffset: Int = 0
+    override fun getSortIndexOffset(): Int = sortIndexOffset
+    override fun setSortIndexOffset(value: Int) {
+        sortIndexOffset = value
+    }
+
+    override fun getSortIndex(): Int {
+        val baseIndex = when (activeBounty?.stage) {
+            ActiveBounty.Stage.Accepted -> 0
+            ActiveBounty.Stage.NotAccepted -> 100000
+            ActiveBounty.Stage.Succeeded -> 300000
+            ActiveBounty.Stage.ExpiredAfterAccepting -> 400000
+            ActiveBounty.Stage.ExpiredWithoutAccepting -> 400000
+            ActiveBounty.Stage.FailedSalvagedFlagship -> 400000
+            ActiveBounty.Stage.EndedWithoutPlayerInvolvement -> 400000
+            ActiveBounty.Stage.Dismissed -> 400000
+            else -> 100000
+        }
+
+        return baseIndex + sortIndexOffset
     }
 
     override fun notifyWhenAvailable(): Boolean {
@@ -226,6 +264,15 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             plugin.baseBgColor = Misc.getDarkHighlightColor().setAlpha(45)
             plugin.hoveredColor = Misc.getDarkHighlightColor().setAlpha(75)
             plugin.selectedColor = Misc.getDarkHighlightColor().setAlpha(125)
+        } else if (customColor != null) {
+            val t = customColor!!.alpha / 255f
+            plugin.baseBgColor = customColor!!.setAlpha(customColor!!.alpha / 2)
+            plugin.hoveredColor = plugin.defaultHoveredColor.interpolateColor(customColor!!, t)
+            plugin.selectedColor = plugin.defaultSelectedColor.interpolateColor(customColor!!, t)
+        } else {
+            plugin.baseBgColor = plugin.defaultBgColor
+            plugin.hoveredColor = plugin.defaultHoveredColor
+            plugin.selectedColor = plugin.defaultSelectedColor
         }
     }
 
@@ -279,13 +326,33 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                 BountyBoardIntelPlugin.refreshPanel(this)
             }
         } else if (activeBountyLocal.stage == ActiveBounty.Stage.Accepted) {
-            val courseButton =
-                actionTooltip.addButton(MagicTxt.getString("mb_plot_course"), null, rightPanelWidth, 24f, 0f)
-            rightPanelPlugin.addButton(courseButton) {
-                courseButton.isChecked = false
-                Global.getSector().layInCourseFor(
-                    Misc.getDistressJumpPoint(activeBountyLocal.fleet.containingLocation as StarSystemAPI)
-                )
+
+            //Add plot course button if there is a clear destination
+            val dis = activeBountyLocal.spec.job_show_distance
+            if(dis != ShowDistance.Distance && dis != ShowDistance.None// && dis != ShowDistance.Vague
+                ) {
+
+                var location: SectorEntityToken? = null
+                if(dis == ShowDistance.Exact || dis == ShowDistance.System) {
+                    val system = activeBountyLocal.fleet.containingLocation as? StarSystemAPI
+                    if(system != null)
+                        location = Misc.getDistressJumpPoint(system)
+                } else {
+                    val constellation = activeBountyLocal.fleet.constellation
+                    if(constellation != null)
+                        location = createConstellationCenterToken(constellation)
+                }
+
+                if(location != null) {
+                    val courseButton =
+                        actionTooltip.addButton(MagicTxt.getString("mb_plot_course"), null, rightPanelWidth, 24f, 0f)
+                    rightPanelPlugin.addButton(courseButton) {
+                        courseButton.isChecked = false
+                        Global.getSector().layInCourseFor(
+                            location
+                        )
+                    }
+                }
             }
         }
 
@@ -456,38 +523,115 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val targetInfoTooltip = panel.createUIElement(width, height, true)
         val childPanelWidth = width - 16f
 
+        val bounty = activeBounty!!
+
+        if (bountySpec.job_type == JobType.Assassination && bountySpec.job_show_captain) {
+            val portrait = targetInfoTooltip.beginImageWithText(getJobIcon(), 64f)
+            var displayName = bounty.fleet.commander.nameString
+            val targetFirstName = bounty.captain.name.first
+            val targetLastName = bounty.captain.name.last
+            if (targetFirstName != null || targetLastName != null) {
+                displayName = "$targetFirstName $targetLastName"
+                if (targetFirstName == null || targetFirstName.isEmpty())
+                    displayName = targetLastName
+                else if (targetLastName == null || targetLastName.isEmpty())
+                    displayName = targetFirstName
+            }
+            portrait.addPara(displayName, bounty.targetFactionTextColor, 0f)
+            portrait.addPara(bounty.fleet.commander.rank.ucFirst(), 2f)
+            targetInfoTooltip.addImageWithText(0f)
+        }
+
         val location = getLocationIfBountyIsActive()
-        if (location is StarSystemAPI) {
+        if (location is StarSystemAPI
+            && bountySpec.job_show_distance != ShowDistance.None) {
+
+            fun setupSystemParams(params: MapParams, location: StarSystemAPI) {
+                params.showSystem(location)
+                params.arrows.add(IntelInfoPlugin.ArrowData(Global.getSector().playerFleet, location.center))
+            }
+
             val params = MapParams()
-            params.showSystem(location)
             val w = targetInfoTooltip.widthSoFar
             val h = (w / 1.6f).roundToInt().toFloat()
-            params.positionToShowAllMarkersAndSystems(false, w.coerceAtMost(h))
-            params.filterData.fuel = true
-            params.arrows.add(IntelInfoPlugin.ArrowData(Global.getSector().playerFleet, location.center))
 
-            val map = targetInfoTooltip.createSectorMap(childPanelWidth, 200f, params, null)
-            targetInfoTooltip.addCustom(map, 2f)
+            when (bountySpec.job_show_distance) {
+                ShowDistance.Exact -> {
+                    setupSystemParams(params, location)
 
-            if (bountySpec.job_show_distance != ShowDistance.None) {
-                val bounty = activeBounty!!
-                when (bountySpec.job_show_distance) {
-                    ShowDistance.Exact -> targetInfoTooltip.addPara(
+                    targetInfoTooltip.addPara(
                         createLocationPreciseText(bounty),
                         10f,
                         location.lightColor,
                         bounty.fleetSpawnLocation.starSystem.nameWithLowercaseType
                     )
+                }
 
-                    ShowDistance.System -> targetInfoTooltip.addPara(
+                ShowDistance.System -> {
+                    setupSystemParams(params, location)
+
+                    targetInfoTooltip.addPara(
                         MagicTxt.getString("mb_distance_system"),
                         10f,
                         arrayOf(Misc.getTextColor(), location.lightColor),
                         MagicTxt.getString("mb_distance_they"),
                         bounty.fleetSpawnLocation.starSystem.nameWithLowercaseType
                     )
+                }
 
-                    else -> targetInfoTooltip.addPara(
+                /*ShowDistance.Vague -> {
+                    params.filterData.names = false
+
+                    val distance = bounty.fleetSpawnLocation.containingLocation.location.length()
+                    var vague = MagicTxt.getString("mb_distance_core")
+                    if (distance > MagicVariables.getSectorSize() * 0.6f) {
+                        vague = MagicTxt.getString("mb_distance_far")
+                    } else if (distance > MagicVariables.getSectorSize() * 0.33f) {
+                        vague = MagicTxt.getString("mb_distance_close")
+                    }
+                    targetInfoTooltip.addPara(
+                        MagicTxt.getString("mb_distance_vague"),
+                        10f,
+                        Misc.getTextColor(),
+                        Misc.getHighlightColor(),
+                        vague
+                    )
+                }*///Commented out due to seeming to be a bad mechanic with the current implementation of the bounty board. Given pre-existing use of it in some mods (such as Seeker), enabling this on an update may cause issues for some users.
+
+                ShowDistance.Distance -> {
+                    params.filterData.names = false
+
+                    val distanceLY = Misc.getDistanceLY(Global.getSector().playerFleet, bounty.fleetSpawnLocation).roundToInt()
+                    targetInfoTooltip.addPara(
+                        MagicTxt.getString("mb_distance"),
+                        10f,
+                        Misc.getTextColor(),
+                        Misc.getHighlightColor(),
+                        distanceLY.toString()
+                    )
+                }
+
+                else -> {
+                    val constellation = location.constellation
+                    if(constellation != null) {
+                        //Show constellation
+                        params.filterData.constellations = true
+                        params.filterData.names = false
+                        params.showConsellations = setOf(constellation)
+                        params.smallConstellations = true
+
+                        //Point towards center of constellation
+                        val token = createConstellationCenterToken(constellation)
+                        if (token != null) {
+                            params.arrows.add(IntelInfoPlugin.ArrowData(Global.getSector().playerFleet, token))
+                            params.markers = listOf(MarkerData(token.location, Global.getSector().hyperspace))
+                        }
+
+                    } else {
+                        setupSystemParams(params, location)
+                    }
+
+                    targetInfoTooltip.addPara(
                         createLocationEstimateText(bounty),
                         10f,
                         location.lightColor,
@@ -495,6 +639,15 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                     )
                 }
             }
+
+            params.positionToShowAllMarkersAndSystems(false, w.coerceAtMost(h))
+            params.markers = null//Markers are purely for positioning the camera. Don't render them.
+
+            params.filterData.fuel = true
+
+            val map = targetInfoTooltip.createSectorMap(childPanelWidth, 200f, params, null)
+            targetInfoTooltip.addCustom(map, 2f)
+
         } else {
             targetInfoTooltip.setButtonFontOrbitron20Bold()
             targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 3f, Color.RED).position.inTMid(2f)
@@ -794,4 +947,25 @@ fun ActiveBounty.calculateCreditReward(): Float? {
         MagicBountyCoordinator.getInstance().preScalingCreditRewardMultiplier,
         MagicBountyCoordinator.getInstance().postScalingCreditRewardMultiplier
     )
+}
+
+fun getConstellationSystemsCenter(constellation: Constellation): Vector2f? {
+    val systems = constellation.systems
+    if (systems.isEmpty()) return null
+
+    val total = Vector2f(0f, 0f)
+    for (system in systems) {
+        Vector2f.add(total, system.location, total)
+    }
+
+    total.scale(1f / systems.size)
+    return total
+}
+
+fun createConstellationCenterToken(constellation: Constellation): SectorEntityToken? {
+    val center = getConstellationSystemsCenter(constellation) ?: return null
+    val hyperspace = Global.getSector().hyperspace
+
+    // Create a temporary token at the calculated position
+    return hyperspace.createToken(center.x, center.y)
 }
