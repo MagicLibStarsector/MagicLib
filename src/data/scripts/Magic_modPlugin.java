@@ -4,10 +4,10 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import data.scripts.plugins.MagicAutoTrails;
-import data.scripts.plugins.MagicCampaignTrailPlugin;
 import data.scripts.terrain.MagicAsteroidBeltTerrainPlugin;
 import data.scripts.terrain.MagicAsteroidFieldTerrainPlugin;
 import data.scripts.util.*;
+import org.magiclib.plugins.MagicCampaignTrailPlugin;
 
 @Deprecated
 public class Magic_modPlugin {
@@ -41,6 +41,7 @@ public class Magic_modPlugin {
     ////////////////////////////////////////
 
 
+    private static MagicCampaignTrailPlugin magicCampaignTrailPlugin;
     public static void onGameLoad(boolean newGame) {
         MagicIncompatibleHullmods.clearData();
 
@@ -48,8 +49,19 @@ public class Magic_modPlugin {
         SectorAPI sector = Global.getSector();
         if (sector != null) {
             sector.addTransientListener(new MagicIndustryItemWrangler());
-            sector.addTransientScript(new MagicCampaignTrailPlugin());
+            magicCampaignTrailPlugin = new MagicCampaignTrailPlugin();
+            sector.addTransientScript(magicCampaignTrailPlugin);
         }
+    }
+
+    public static void beforeGameSave() {
+        if (magicCampaignTrailPlugin != null)
+            magicCampaignTrailPlugin.beforeGameSave();
+    }
+
+    public static void afterGameSave() {
+        if (magicCampaignTrailPlugin != null)
+            magicCampaignTrailPlugin.afterGameSave();
     }
 
     /**
