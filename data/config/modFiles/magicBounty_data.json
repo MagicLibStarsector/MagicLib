@@ -36,8 +36,12 @@
 		"job_reputation_reward":10,
 		"job_item_reward": {
 			"pristine_nanoforge": 2,
-			"ship_bp buffalo": 1,
-			"crew": 10000
+			"ship_bp apogee": 1,
+			"crew": 10000,
+			"$special ship_bp buffalo": 1,
+			"$special shrouded_thunderhead":1,
+            "$special shrouded_mantle":1,
+            "$special shrouded_lens":1,
 		},
 		"job_credit_reward":90000,
 		"job_reward_scaling":1.0,
