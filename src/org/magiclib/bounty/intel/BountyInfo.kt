@@ -8,19 +8,23 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import org.magiclib.bounty.ActiveBounty
-import org.magiclib.bounty.intel.filters.LocationParam
-import org.magiclib.bounty.ui.lists.filtered.Filterable
-import org.magiclib.bounty.ui.lists.filtered.FilterableParam
+import org.magiclib.bounty.ui.lists.sorted.Sortable
+import org.magiclib.bounty.ui.lists.sorted.SortableParam
 import org.magiclib.util.MagicTxt
+import java.awt.Color
 
-interface BountyInfo : Filterable<BountyInfo> {
+interface BountyInfo : Sortable<BountyInfo> {
     fun getBountyId(): String
     fun getBountyName(): String
     fun getBountyType(): String
     fun getBountyPayout(): Int
     fun getJobIcon(): String?
     fun getLocationIfBountyIsActive(): LocationAPI?
-    fun getSortIndex(): Int = 1
+    fun getPlayerKnownDistanceIfBountyIsActive(): Float?
+
+    fun getCustomPanelColor(): Color?
+    fun setCustomPanelColor(value: Color?)
+
     fun addNotificationBulletpoints(info: TooltipMakerAPI) {
     }
 
@@ -49,9 +53,9 @@ interface BountyInfo : Filterable<BountyInfo> {
 
     fun layoutPanel(tooltip: TooltipMakerAPI, width: Float, height: Float)
 
-    override fun getFilterData(): List<FilterableParam<BountyInfo, *>> {
+    override fun getSorterData(): List<SortableParam<BountyInfo, *>> {
         return mutableListOf(
-            LocationParam(this)
+            //LocatioParam(this)
         )
     }
 

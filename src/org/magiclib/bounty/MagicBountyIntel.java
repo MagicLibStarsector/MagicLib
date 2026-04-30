@@ -426,6 +426,13 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                     Misc.ucFirst(MagicBountyUtilsInternal.getPronoun(bounty.getCaptain())),
                                     bounty.getFleetSpawnLocation().getStarSystem().getNameWithLowercaseType());
                             break;
+                        case Distance:
+                            info.addPara(MagicTxt.getString("mb_distance"),
+                                    10f,
+                                    Misc.getTextColor(),
+                                    Misc.getHighlightColor(),
+                                    Math.round(Misc.getDistanceLY(Global.getSector().getPlayerFleet(), bounty.getFleetSpawnLocation())) + "");
+                            break;
                         default:
                             info.addPara(MagicBountyUtilsInternal.createLocationEstimateText(bounty), 10f);
                             break;
@@ -459,8 +466,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
             case Exact:
             case System:
                 return hideoutLocation;
-//            case None:
-//                return null; NOPE, the icon should always be placed somewhere otherwise there is no way to get the location information again.
+            //case Vague:
+            case Distance:
+            case None:
+                return Global.getSector().getPlayerFleet();
             default:
                 // From PersonBountyIntel.getMapLocation
                 Constellation c = hideoutLocation.getConstellation();
