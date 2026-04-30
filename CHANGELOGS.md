@@ -3,8 +3,11 @@ Version 1.5.7
 **MagicBounty**
 - Fixed bounties that use existing_target_memkey (by Numan).
 - Fixed shiny paintjobs not getting added due to vanilla wonkiness.
+- Fixed bounty arrow pointing directly at the destination even when not specified to do so.
 - Accepted bounty intel is now marked as important.
 - Added hotkey (`T`) to accept a bounty.
+- Added the ability to specify item type with 'job_item_reward' beforehand with a $
+- Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).
@@ -13,11 +16,22 @@ Version 1.5.7
 - Removed perf impact of checking if there's a completed achievement to show a notification for. 
 - `ShipKillsAchievement` now auto-generates the description and tooltip (configurable).
 
+**MagicPaintjobs**
+- Fixed game crashing if paintjob sprite did not exist or was not accessable.
+- Paintjobs show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
+- Shiny paintjobs now have a shiny icon to indicate their status.
+- Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
+- Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
+- Fix paintjob not applying to ship modules in some cases.
+
 **MagicSubsystems**
 - Improved clarity of text (contributed by @Ruddygreat).
 
 **Other**
 - Added `List<String>.magicJoinToString` as a Kotlin extension method, which joins strings in a list using different separators based on the number of elements
+- Stop campaign trail from getting added to saves and duplicated.
+- Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
+- Added functionality to allow adding random memory to a FleetMemberAPI
 
 Version 1.5.6
 

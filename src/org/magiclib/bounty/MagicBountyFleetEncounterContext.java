@@ -178,7 +178,8 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                         continue;
                     }
                 } catch (Exception ex) {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a commodity", ex);
+                    if(!type.isEmpty())
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a commodity", ex);
                 }
             }
 
@@ -190,7 +191,8 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                         continue;
                     }
                 } catch (Exception ex) {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a weapon", ex);
+                    if(!type.isEmpty())
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a weapon", ex);
                 }
             }
 
@@ -202,7 +204,8 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                         continue;
                     }
                 } catch (Exception ex) {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a fighter LCP", ex);
+                    if(!type.isEmpty())
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a fighter LCP", ex);
                 }
             }
 
@@ -214,7 +217,8 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                         continue;
                     }
                 } catch (Exception ex) {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a hullmod", ex);
+                    if(!type.isEmpty())
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a hullmod", ex);
                 }
             }
 
@@ -231,14 +235,20 @@ public class MagicBountyFleetEncounterContext extends FleetEncounterContext {
                     SpecialItemSpecAPI specialItemSpec = Global.getSettings().getSpecialItemSpec(specialItemId);
                     if (specialItemSpec != null) {
                         loot.addSpecial(new SpecialItemData(specialItemId, data), count);
+                        continue;
                     } else {
-                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a special item", new NullPointerException());
+                        if(!type.isEmpty())
+                            Global.getLogger(MagicBountyFleetEncounterContext.class).warn(itemId + "loot is not a special item", new NullPointerException());
                     }
                 } catch (Exception ex) {
-                    Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, ex);
+                    if(!type.isEmpty())
+                        Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot: " + itemId, ex);
                 }
             }
 
+            if(type.isEmpty()) {
+                Global.getLogger(MagicBountyFleetEncounterContext.class).warn("Unable to add loot of id: '" + itemId + "'");
+            }
         }
     }
 }
