@@ -39,7 +39,7 @@ class MagicPaintjobHullMod : BaseHullMod() {
             for (fighter in wing.wingMembers) {
                 if ("MagicPaintjobApplied" in fighter.customData) continue
 
-                MagicPaintjobManager.getPaintjobsForHull(fighter.hullSpec.baseHullId).firstOrNull {
+                MagicPaintjobManager.getPaintjobsForHull(fighter.hullSpec).firstOrNull {
                     it.paintjobFamily?.equals(paintjob.paintjobFamily) == true
                 }?.let { MagicPaintjobManager.applyPaintjob(fighter, it) }
 

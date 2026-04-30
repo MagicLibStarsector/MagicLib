@@ -173,8 +173,8 @@ internal object MagicPaintjobRefitPanel {
                         if (selectorPlugin.paintjobSpec == null)
                             MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
                         else {
-                            val moduleHullID = (moduleVariant as ShipVariantAPI).hullSpec.baseHullId
-                            MagicPaintjobManager.getPaintjobsForHull(moduleHullID).firstOrNull {
+                            val moduleHull = (moduleVariant as ShipVariantAPI).hullSpec
+                            MagicPaintjobManager.getPaintjobsForHull(moduleHull).firstOrNull {
                                 it.paintjobFamily == selectorPlugin.paintjobSpec.paintjobFamily
                             }?.let {
                                 MagicPaintjobManager.applyPaintjob(moduleVariant, it)

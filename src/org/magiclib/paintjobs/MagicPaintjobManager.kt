@@ -377,10 +377,34 @@ object MagicPaintjobManager {
             weaponId in spec.weaponIds && (paintjobFamily?.let { it in spec.paintjobFamilies } ?: true)
         }
 
+    // May be made into a function later, for now is kept internal here
+    internal fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI =
+        when {
+            !this.isDefaultDHull -> this
+            else -> this.dParentHull
+        } ?: this
+
+    // May be made into a function later, for now is kept internal here
+    internal fun ShipHullSpecAPI.getEffectiveHull(): ShipHullSpecAPI {
+        val hull = this.getActualHull()
+        return if (hull.isCompatibleWithBase)
+            hull.baseHull ?: hull
+        else
+            hull
+    }
+
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> =
-        getPaintjobsForHull(hullSpec.baseHullId, includeShiny = includeShiny, includeHidden = includeHidden)
+    fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> {
+        val actualHullId = hullSpec.getActualHull().hullId
+        val effectiveHullId = hullSpec.getEffectiveHull().hullId
+
+        return paintjobsInner.values.filter { pj ->
+            (actualHullId in pj.hullIds || effectiveHullId in pj.hullIds) &&
+                    (includeShiny || !pj.isShiny) &&
+                    (includeHidden || !pj.isHidden)
+        }
+    }
 
     @JvmStatic
     @JvmOverloads
