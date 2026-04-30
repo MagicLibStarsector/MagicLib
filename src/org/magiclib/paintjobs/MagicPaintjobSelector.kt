@@ -197,8 +197,10 @@ internal object MagicPaintjobSelector {
 
         val clonedVariant = hullVariantSpec.clone()
         MagicPaintjobManager.removePaintjobFromShip(clonedVariant)
-        clonedVariant.moduleVariants?.values?.forEach { moduleVariant ->
-            MagicPaintjobManager.removePaintjobFromShip(moduleVariant as ShipVariantAPI)
+
+        (clonedVariant as ShipVariantAPI).stationModules?.keys?.forEach { moduleVariantID ->
+            val moduleVariant = (clonedVariant as ShipVariantAPI).getModuleVariant(moduleVariantID) ?: return@forEach
+            MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
         }
 
         val shipPreview = MagicPaintjobCombatRefitAdder.SHIP_PREVIEW_CLASS!!.getConstructorsMatching(numOfParams = 0).first().newInstance()

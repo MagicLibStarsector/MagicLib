@@ -168,7 +168,8 @@ internal object MagicPaintjobRefitPanel {
                         MagicPaintjobManager.applyPaintjob(baseVariant, selectorPlugin.paintjobSpec)
                     }
 
-                    baseVariant.moduleVariants?.values?.forEach { moduleVariant ->
+                    (baseVariant as ShipVariantAPI).stationModules?.keys?.forEach { moduleVariantID ->
+                        val moduleVariant = (baseVariant as ShipVariantAPI).getModuleVariant(moduleVariantID) ?: return@forEach
 
                         if (selectorPlugin.paintjobSpec == null)
                             MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
