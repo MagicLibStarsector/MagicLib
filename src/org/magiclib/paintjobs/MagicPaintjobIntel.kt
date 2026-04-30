@@ -61,7 +61,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     override fun createLargeDescriptionImpl(panel: CustomPanelAPI, width: Float, height: Float) {
         val opad = 10f
         val pad = 3f
-        val pjs = MagicPaintjobManager.getPaintjobs().toList()
+        val pjs = MagicPaintjobManager.getPaintjobs().toList().filter { !it.isHidden }
         val mainGridTooltip = panel.createUIElement(width, height, true)
         val baseUnit = opad
         val scaleMult = 5f
@@ -211,8 +211,13 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             val shipsThatPjMayApplyTo = Global.getSector().playerFleet.fleetData.membersListCopy
                 .filter { it.hullSpec.baseHullId in pj.hullIds }
-                // If the ship is wearing a permanent paintjob, don't show it in the list.
-                .filter { MagicPaintjobManager.getCurrentShipPaintjob(it)?.isPermanent != true }
+                // If the ship is wearing a permanent or hidden paintjob, don't show it in the list.
+                .filter {
+                    val curPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(it)
+                        if(curPaintjob?.isPermanent != true) false
+                        else if(curPaintjob.isHidden != true) false
+                        else true
+                }
 
             if (shipsThatPjMayApplyTo.any()) {
                 val count = shipsThatPjMayApplyTo.count()
@@ -405,8 +410,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }
 
             hoverElement.onClick { inputEvent ->
-                // If there are no paintjobs for this ship, or the paintjob is permanent, don't show the popup.
-                if (paintjobsForShip.none() || shipPaintjob?.isPermanent == true)
+                // If there are no paintjobs for this ship, or the paintjob is permanent or hidden, don't show the popup.
+                if (paintjobsForShip.none() || shipPaintjob?.isPermanent == true || shipPaintjob?.isHidden == true)
                     return@onClick
 
                 displayPaintjobsForShip()

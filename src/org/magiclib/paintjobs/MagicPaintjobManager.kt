@@ -49,6 +49,7 @@ object MagicPaintjobManager {
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
+    const val PJTAG_HIDDEN = "MagicLib_HiddenPJ"
 
 
     @JvmStatic
@@ -235,7 +236,11 @@ object MagicPaintjobManager {
                     } else if (spriteId.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
                         skip = true
-                    } else if (hullIds.none {
+                    } else if (runCatching { Global.getSettings().loadText(spriteId) }.getOrNull() == null) { // Check if file exists without loading the texture
+                        logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has missing or unreadable sprite file, skipping.")
+                        skip = true
+                    }
+                    else if (hullIds.none {
                             kotlin.runCatching { Global.getSettings().getHullSpec(it) }
                                 .getOrNull() != null
                         }) {
@@ -372,15 +377,17 @@ object MagicPaintjobManager {
 
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false): List<MagicPaintjobSpec> =
-        getPaintjobsForHull(hullSpec.baseHullId, includeShiny)
+    fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> =
+        getPaintjobsForHull(hullSpec.baseHullId, includeShiny = includeShiny, includeHidden = includeHidden)
 
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false): List<MagicPaintjobSpec> =
-        paintjobsInner
-            .filter { hullId in it.hullIds }
-            .let { if (includeShiny) it else it.filter { !it.isShiny } }
+    fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> =
+        paintjobsInner.filter {
+            hullId in it.hullIds &&
+                    (includeShiny || !it.isShiny) &&
+                    (includeHidden || !it.isHidden)
+        }
 
     @JvmStatic
     fun saveUnlockedPaintJobs() {
@@ -488,8 +495,8 @@ object MagicPaintjobManager {
         if (Global.getSector() == null) return
         removeIntel()
 
-        // Don't show if there aren't any.
-        if (getPaintjobs().isEmpty()) return
+        // Don't show if there aren't any. Hidden ones aren't shown by default
+        if (getPaintjobs().filter { !it.isHidden }.isEmpty()) return
 
         val intel = MagicPaintjobIntel()
         Global.getSector().intelManager.addIntel(intel, true)

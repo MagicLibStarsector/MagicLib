@@ -12,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpec
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.util.vector.Vector2f
+import org.lwjgl.input.Keyboard
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
 import org.magiclib.bounty.MagicBountyLoader.*
@@ -311,6 +312,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
 
         if (activeBountyLocal.stage == ActiveBounty.Stage.NotAccepted) {
             val acceptButton = actionTooltip.addButton(bountySpec.job_pick_option, null, rightPanelWidth, 24f, 0f)
+            acceptButton.setShortcut(Keyboard.KEY_T, true)
             rightPanelPlugin.addButton(acceptButton) {
                 acceptButton.isChecked = false
                 activeBountyLocal.let {
