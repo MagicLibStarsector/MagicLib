@@ -23,6 +23,7 @@ Version 1.5.7
 - Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
 - Fix paintjob not applying to ship modules in some cases.
+- Add vents color changing alongside the engines and shield file.
 
 **MagicSubsystems**
 - Improved clarity of text (contributed by @Ruddygreat).

@@ -5,7 +5,7 @@
   "engines":{
     "color":[0,0,0,0],
     "glowAlternateColor":[0,0,0,0],
-    "glowSizeMult": 1
+    "glowSizeMult": 1,
     # Not sure if contrails do anything on ships, except maybe Manuv. Jets
     "contrailColor":[0,0,0,0],
     "contrailSpawnDistMult":1,
@@ -16,5 +16,9 @@
     "ringColor":[0,0,0,0],
     "innerRotationRate":1,
     "ringRotationRate":1
+  },
+  "vents":{
+    "ventCoreColor":[0,0,0,0],
+    "ventFringeColor":[0,0,0,0]
   }
 }

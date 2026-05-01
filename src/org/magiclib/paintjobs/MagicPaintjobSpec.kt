@@ -17,6 +17,7 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var tags: List<String>?,
     var engineSpec: PaintjobEngineSpec?,
     var shieldSpec: PaintjobShieldSpec?,
+    var ventsSpec: PaintjobVentsSpec?,
     var paintjobFamily: String?
 ) {
     private val shiny = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
@@ -47,6 +48,11 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
         var ringColor: Color?,
         var innerRotationRate: Float?,
         var ringRotationRate: Float?,
+    )
+
+    data class PaintjobVentsSpec(
+        var ventCoreColor: Color?,
+        var ventFringeColor: Color?,
     )
 }
 

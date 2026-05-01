@@ -217,6 +217,19 @@ object MagicPaintjobManager {
                         }
                     }?.getOrNull()
 
+                    val ventsSpec = paintjobJson?.runCatching {
+                        getJSONObject("vents")?.let { ventsJson ->
+                            MagicPaintjobSpec.PaintjobVentsSpec(
+                                ventsJson.optColor("ventCoreColor", null),
+                                ventsJson.optColor("ventFringeColor", null),
+                            )
+                        }
+                    }?.onFailure { e ->
+                        if (!(e is JSONException && e.message?.contains("not found") == true)) {
+                            logger.warn("Unable to load vents JSON of $id paintjob", e)
+                        }
+                    }?.getOrNull()
+
                     var skip = false
                     for (paintjobSpec in newSpecs) {
                         if (paintjobSpec.id == id) {
@@ -272,6 +285,7 @@ object MagicPaintjobManager {
                                 tags = tags,
                                 engineSpec = engineSpec,
                                 shieldSpec = shieldSpec,
+                                ventsSpec = ventsSpec,
                                 paintjobFamily = paintjobFamily
                             )
                                 .also {
@@ -624,6 +638,11 @@ object MagicPaintjobManager {
                 spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
                 spec.glowSizeMult?.let { slot.glowSizeMult = it }
             }
+        }
+
+        paintjob.ventsSpec?.let { vents ->
+            vents.ventCoreColor?.let { combatShip.ventCoreColor = it }
+            vents.ventFringeColor?.let { combatShip.ventFringeColor = it }
         }
 
         for (weapon in combatShip.allWeapons) {
