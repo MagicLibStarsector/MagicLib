@@ -145,8 +145,8 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         val ui = sector.campaignUI
         if (!ui.isIdle())
             return
-        val engine = CampaignEngine.getInstance()
-        val tooltip = engine.tooltipManager
+        val engine = CampaignEngine.getInstance() ?: return
+        val tooltip = engine.invoke("getTooltipManager")
         val hoveredFleet = tooltip?.getFieldsMatching(type = CampaignEntity::class.java)?.getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
         if (hoveredFleet == null) {
             currentHoveredFleetID = null
