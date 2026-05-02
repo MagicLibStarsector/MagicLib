@@ -63,10 +63,17 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
             applyPaintJobsOnMap(state)
 
             applyPaintJobsOnTooltip(state, engine)
-        } catch (e: Exception) {
-            Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in combat", e)
-            errorOccured = true
+        } catch (e: NoSuchMethodError) {
+            handleError(e)
         }
+        catch (e: Exception) {
+            handleError(e)
+        }
+    }
+
+    private fun handleError(e: Throwable) {
+        Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in combat", e)
+        errorOccured = true
     }
 
     //private var centerTooltipHash: Int = 0

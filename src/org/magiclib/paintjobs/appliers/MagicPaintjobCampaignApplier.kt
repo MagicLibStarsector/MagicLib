@@ -33,10 +33,17 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
             applyToCommandTooltip()
             applyToInteractionDialog()
             applyToCampaignCircleFleets()
-        } catch (e: Exception) {
-            Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in the campaign", e)
-            errorOccured = true
+        } catch (e: NoSuchMethodError) {
+            handleError(e)
         }
+        catch (e: Exception) {
+            handleError(e)
+        }
+    }
+
+    private fun handleError(e: Throwable) {
+        Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in the campaign", e)
+        errorOccured = true
     }
 
     private var prevLocation: LocationAPI? = null
