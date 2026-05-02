@@ -8,6 +8,7 @@ Version 1.5.7
 - Added hotkey (`T`) to accept a bounty.
 - Added the ability to specify item type with 'job_item_reward' beforehand with a $
 - Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance
+- Fixed bounty intel not showing up in one of the lower faction intel tabs.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).

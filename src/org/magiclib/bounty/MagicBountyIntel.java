@@ -508,7 +508,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
         if (bounty == null) return Collections.emptySet();
 
         if (bounty.getGivingFaction() != null) {
-            tags.add(bounty.getGivingFaction().getDisplayName());
+            tags.add(bounty.getGivingFaction().getId());
         }
 
         return tags;
