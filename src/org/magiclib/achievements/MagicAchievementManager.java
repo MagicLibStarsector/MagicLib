@@ -342,7 +342,7 @@ public class MagicAchievementManager {
 
                 if (loadedAchievement == null) {
                     // If the achievement isn't in a loaded mod, load it as an "unloaded" achievement.
-                    logger.warn("Achievement " + specId + " doesn't exist in the current mod list.");
+                    //logger.warn("Achievement " + specId + " doesn't exist in the current mod list."); // Commented out to avoid log spam
                     loadedAchievement = new MagicUnloadedAchievement();
                 }
 
@@ -686,10 +686,10 @@ public class MagicAchievementManager {
                     achievementScriptsWithCombatRunError.add(achievement.getSpecId());
                     achievement.errorMessage = errorStr;
 
-                    // If dev mode, crash.
-                    if (Global.getSettings().isDevMode()) {
-                        throw e;
-                    }
+                    // If dev mode, crash. // Why?
+                    //if (Global.getSettings().isDevMode()) {
+                    //    throw e;
+                    //}
                 }
             }
         }

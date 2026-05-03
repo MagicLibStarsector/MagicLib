@@ -22,9 +22,10 @@ import org.magiclib.paintjobs.MagicPaintjobManager
 import java.awt.Color
 
 internal object MagicPaintjobApplierUtils {
-    val shinyIconColor = Color(255, 215, 0)
-    val shinyIconOpacity = 0.3f
     val shinyIconSprite = "graphics/ui/icons/32x_star_circle.png"
+    //val shinyIconSprite = "graphics/magic/icons/shiny_icon.png"
+    val shinyIconColor = Color(255, 255, 255)
+    val shinyIconOpacity = 1f
 
     fun getScreenPanel(): UIPanelAPI? {
         val state = AppDriver.getInstance().currentState
@@ -63,8 +64,11 @@ internal object MagicPaintjobApplierUtils {
             if (side != 0 && MagicPaintjobManager.getCurrentShipPaintjob(member)?.isShiny == true) {
                 val memberButton = shipList.invoke("getButtonForMember", member) as? ButtonAPI ?: return
                 if (memberButton.customData == null) { // Prevent multiple shiny icons from being applied to the same ship.
-                    val background = memberButton.parent?.addImage(shinyIconSprite, memberButton.width, memberButton.height)
-                    background?.position?.rightOfMid(memberButton, -memberButton.width)
+                    val extraSize = 8f
+                    val width = memberButton.width + extraSize
+                    val height = memberButton.height + extraSize
+                    val background = memberButton.parent?.addImage(shinyIconSprite, width, height)
+                    background?.position?.rightOfMid(memberButton, -width + extraSize / 2f)
                     background?.opacity = shinyIconOpacity
                     (background?.invoke("getSprite") as Sprite).color = shinyIconColor
                     memberButton.parent?.bringComponentToTop(memberButton)
@@ -133,6 +137,19 @@ internal object MagicPaintjobApplierUtils {
                 }
             }
         }
+
+        // Decoration Weapons
+        // In this context, weapon rendering is done in CampaignFleetMemberView.renderWeapons. There, it creates a new sprite and assigns a new texture from the WeaponSpec every frame. This is done from a FleetMember input.
+        // No editable sprite is stored anywhere. This makes it very very hard to apply a paintjob.
+        /*
+        member.hullSpec.builtInWeapons.forEach { weapon ->
+            val paintjobFamily = MagicPaintjobManager.getCurrentShipPaintjob(member)?.paintjobFamily ?: return@forEach
+
+            val weaponSpec = member.variant.getWeaponSpec(weapon.key)
+            val weaponPaintjobs = MagicPaintjobManager.getPaintjobsForWeapon(weaponSpec.weaponId, paintjobFamily)
+            val weaponPaintjob = weaponPaintjobs.getOrNull(0) ?: return@forEach
+        }
+        */
     }
 
     private fun makeNewSpriteToReplace(

@@ -9,6 +9,7 @@ Version 1.5.7
 - Added the ability to specify item type with 'job_item_reward' beforehand with a $
 - Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance
 - Fixed bounty intel not showing up in one of the lower faction intel tabs.
+- Bounties are kept in the intel bounty board if the player has previously been notified of them. This is to prevent confusion on why bounties may not appear in some situations as that isn't documented anywhere.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).
@@ -16,6 +17,9 @@ Version 1.5.7
 - Paintjob UI on refit screen now makes sounds.
 - Removed perf impact of checking if there's a completed achievement to show a notification for. 
 - `ShipKillsAchievement` now auto-generates the description and tooltip (configurable).
+- Fix possible 'ShipKillsAchievement' game crash.
+- Avoid showing achievements from removed mods.
+- Remove log spam when a mod which added achivements was removed.
 
 **MagicPaintjobs**
 - Fixed game crashing if paintjob sprite did not exist or was not accessable.

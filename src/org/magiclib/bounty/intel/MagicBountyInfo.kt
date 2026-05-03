@@ -195,27 +195,29 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             }
         }
 
-        //check if close enough to receive from an offering faction
-        val rangeToShowBounties = 10f
-        var withinRange = false
-        for (system in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {
-            for (market in Misc.getMarketsInLocation(system)) {
-                if (MagicCampaign.isAvailableAtMarket(
-                        market,
-                        bountySpec.trigger_market_id,
-                        bountySpec.trigger_marketFaction_any,
-                        bountySpec.trigger_marketFaction_alliedWith,
-                        bountySpec.trigger_marketFaction_none,
-                        bountySpec.trigger_marketFaction_enemyWith,
-                        bountySpec.trigger_market_minSize
-                    )
-                ) {
-                    withinRange = true
-                    break
+        //check if close enough to receive from an offering faction, only if it hasn't already been seen by the player
+        if(this.getBountyId() !in BountyBoardIntelPlugin.bountiesThatUserHasBeenNotifiedForV2) {
+            val rangeToShowBounties = 10f
+            var withinRange = false
+            for (system in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {
+                for (market in Misc.getMarketsInLocation(system)) {
+                    if (MagicCampaign.isAvailableAtMarket(
+                            market,
+                            bountySpec.trigger_market_id,
+                            bountySpec.trigger_marketFaction_any,
+                            bountySpec.trigger_marketFaction_alliedWith,
+                            bountySpec.trigger_marketFaction_none,
+                            bountySpec.trigger_marketFaction_enemyWith,
+                            bountySpec.trigger_market_minSize
+                        )
+                    ) {
+                        withinRange = true
+                        break
+                    }
                 }
             }
+            if (!withinRange) return false
         }
-        if (!withinRange) return false
 
         if (activeBounty == null) {
             MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)

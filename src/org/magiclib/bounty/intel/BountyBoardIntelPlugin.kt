@@ -21,6 +21,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     private var lastHeight: Float = 0f
 
     //    @Transient
+    @Deprecated("Use bountiesThatUserHasBeenNotifiedForV2 instead")
     private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
 
     /**
@@ -68,18 +69,20 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     }
 
     fun saveNotifiedBounties() {
-        Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedFor
+        Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedForV2
     }
 
     fun loadNotifiedBounties() {
         if (Global.getSector().persistentData.containsKey(NOTIFIED_BOUNTY_KEY)) {
-            bountiesThatUserHasBeenNotifiedFor =
+            bountiesThatUserHasBeenNotifiedForV2 =
                 Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>
+        } else {
+            bountiesThatUserHasBeenNotifiedForV2 = mutableSetOf()
         }
     }
 
     fun notifyUserThatBountyIsAvailable(bountyInfo: BountyInfo) {
-        bountiesThatUserHasBeenNotifiedFor.add(bountyInfo.getBountyId())
+        bountiesThatUserHasBeenNotifiedForV2.add(bountyInfo.getBountyId())
         saveNotifiedBounties()
 
         bountyInfo.notifiedUserThatBountyIsAvailable()
@@ -98,7 +101,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         if (interval.intervalElapsed()) {
             PROVIDERS
                 .flatMap { it.getBounties() }
-                .filter { !bountiesThatUserHasBeenNotifiedFor.contains(it.getBountyId()) }
+                .filter { !bountiesThatUserHasBeenNotifiedForV2.contains(it.getBountyId()) }
                 .firstOrNull { it.shouldShow() }
                 ?.let {
                     notifyUserThatBountyIsAvailable(it)
@@ -175,6 +178,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     }
 
     companion object {
+        var bountiesThatUserHasBeenNotifiedForV2 = mutableSetOf<String>()
+
         var lastSelectedBountyId: String? = null
         const val NOTIFIED_BOUNTY_KEY = "ml_notifiedBountyKeys"
         val PROVIDERS = mutableListOf<BountyBoardProvider>()

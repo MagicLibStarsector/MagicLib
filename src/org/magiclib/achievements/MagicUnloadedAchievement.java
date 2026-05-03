@@ -9,4 +9,8 @@ package org.magiclib.achievements;
  * Unloaded achievements can't be modified, but their state isn't lost. They're just frozen.
  */
 public class MagicUnloadedAchievement extends MagicAchievement {
+    @Override
+    public boolean shouldShowInIntel() {
+        return false;
+    }
 }

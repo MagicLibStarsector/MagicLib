@@ -54,7 +54,8 @@
     },
     "ui": {
       "ship_arrow": "graphics/warroom/ship_arrow.png",
-      "32x_star_circle": "graphics/ui/icons/32x_star_circle.png"
+      "32x_star_circle": "graphics/ui/icons/32x_star_circle.png",
+      "shiny_icon": "graphics/magic/icons/shiny_icon.png"
     },
     "icons": {
       "lock": "graphics/magic/icons/lockIcon.png"
