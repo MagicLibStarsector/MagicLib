@@ -686,10 +686,10 @@ public class MagicAchievementManager {
                     achievementScriptsWithCombatRunError.add(achievement.getSpecId());
                     achievement.errorMessage = errorStr;
 
-                    // If dev mode, crash. // Why?
-                    //if (Global.getSettings().isDevMode()) {
-                    //    throw e;
-                    //}
+                    // If dev mode, crash.
+                    if (Global.getSettings().isDevMode()) {
+                        throw e;
+                    }
                 }
             }
         }
