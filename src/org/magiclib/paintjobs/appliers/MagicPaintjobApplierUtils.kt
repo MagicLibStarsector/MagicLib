@@ -22,8 +22,8 @@ import org.magiclib.paintjobs.MagicPaintjobManager
 import java.awt.Color
 
 internal object MagicPaintjobApplierUtils {
-    val shinyIconSprite = "graphics/ui/icons/32x_star_circle.png"
-    //val shinyIconSprite = "graphics/magic/icons/shiny_icon.png"
+    //val shinyIconSprite = "graphics/ui/icons/32x_star_circle.png"
+    val shinyIconSprite = "graphics/magic/icons/shiny_icon.png"
     val shinyIconColor = Color(255, 255, 255)
     val shinyIconOpacity = 1f
 
@@ -51,7 +51,7 @@ internal object MagicPaintjobApplierUtils {
 
     fun applyPaintjobsToShipList(
         shipList: UIComponentAPI,
-        side: Int = 0
+        side: Int = 1
     ) {
         @Suppress("UNCHECKED_CAST")
         val members = shipList.invoke("getMembers") as? List<FleetMemberAPI> ?: return
