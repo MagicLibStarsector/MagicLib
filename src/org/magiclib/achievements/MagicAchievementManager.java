@@ -598,9 +598,9 @@ public class MagicAchievementManager {
                 achievement.errorMessage = errorStr;
 
                 // If dev mode, crash.
-                if (Global.getSettings().isDevMode()) {
-                    throw new RuntimeException("DevMode is on. Crashing instead of handling error.", e);
-                }
+                //if (Global.getSettings().isDevMode()) {
+                //    throw new RuntimeException("DevMode is on. Crashing instead of handling error.", e);
+                //}
             }
         }
 
@@ -687,9 +687,9 @@ public class MagicAchievementManager {
                     achievement.errorMessage = errorStr;
 
                     // If dev mode, crash.
-                    if (Global.getSettings().isDevMode()) {
-                        throw e;
-                    }
+                    //if (Global.getSettings().isDevMode()) {
+                    //    throw e;
+                    //}
                 }
             }
         }
