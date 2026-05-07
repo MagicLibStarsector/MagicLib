@@ -77,13 +77,7 @@ abstract class ShipKillsAchievement @JvmOverloads constructor(
         val ships = Global.getCombatEngine().ships
 
         for (ship in ships.filter { !it.isAlive && it.id !in killedShipIds }) {
-            val combatDamageListener = shipIdToListener[ship.id]
-            if (combatDamageListener == null) {
-                Global.getLogger(this.javaClass).warn("Ship '${ship.id}' failed to track for achievement '${this.specId}' from mod '${this.modName}")
-            } else {
-                val damageInfo = combatDamageListener.damageInfoPerShipId[ship.id]
-                processKill(damageInfo)
-            }
+            processKill(shipIdToListener[ship.id]!!.damageInfoPerShipId[ship.id])
             killedShipIds.add(ship.id)
         }
 
