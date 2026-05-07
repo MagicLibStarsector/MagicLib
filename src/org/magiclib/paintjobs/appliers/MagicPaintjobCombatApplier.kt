@@ -15,6 +15,8 @@ import com.fs.starfarer.combat.CombatFleetManager
 import com.fs.starfarer.combat.CombatState
 import com.fs.starfarer.combat.entities.Ship
 import com.fs.state.AppDriver
+import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
@@ -69,6 +71,7 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
         }
     }
 
+    private var prevForceUpdateShinyIcon = false
     //private var centerTooltipHash: Int = 0
     private fun applyPaintJobsOnTooltip(state: CombatState, engine: CombatEngine) {
         if (!state.isShowingDeploymentDialog // No need to run this code if the tooltip is not open
@@ -76,7 +79,7 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
         ) return
         // When a dialog is open in combat, combat is probably paused so performance isn't as needed. Members in dialog pickers can move around, especially in the fancy simulator dialog which may reset sprites. So run this function every frame if the dialog is open.
 
-        val centerTooltip = getScreenPanel()?.findChildWithMethod("fleetMemberClicked") ?: return
+        val centerTooltip = getScreenPanel()?.findChildWithMethod("fleetMemberClicked") as? UIPanelAPI ?: return
 
         /*
         val newHash = centerTooltip.hashCode()
@@ -93,8 +96,27 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
         val fleetList1 = innerPanel.getChildrenCopy().find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() } ?: return
         val fleetList2 = innerPanel.getChildrenCopy().findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() } ?: return
 
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList1)
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList2)
+        //val fleetList3 = centerTooltip.getFieldsMatching(type = fleetList1.javaClass).getOrNull(0)?.get(centerTooltip) as? UIPanelAPI
+        //val fleetList4 = centerTooltip.getFieldsMatching(type = fleetList1.javaClass).getOrNull(1)?.get(centerTooltip) as? UIPanelAPI
+
+        val forceUpdateShinyIcon = Keyboard.isKeyDown(Keyboard.KEY_RETURN) || Mouse.isButtonDown(0)
+
+        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList1,
+            showShinyIcon = true,
+            forceUpdateShinyIcon = forceUpdateShinyIcon || prevForceUpdateShinyIcon,
+            diffPositioning = true,
+        )
+        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList2,
+            showShinyIcon = true,
+            forceUpdateShinyIcon = forceUpdateShinyIcon || prevForceUpdateShinyIcon,
+            diffPositioning = true
+        )
+        //if(fleetList3 != null && fleetList3 !== fleetList1 && fleetList3 !== fleetList2)
+        //    MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList3, true, true)
+        //if(fleetList4 != null && fleetList4 !== fleetList1 && fleetList4 !== fleetList2 && fleetList4 !== fleetList3)
+        //    MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList4, true, true)
+
+        prevForceUpdateShinyIcon = forceUpdateShinyIcon
     }
 
     private val appliedPaintjobsOnMap = mutableSetOf<String>()

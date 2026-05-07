@@ -12,7 +12,6 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.campaign.CampaignEngine
 import com.fs.starfarer.campaign.CampaignEntity
 import com.fs.starfarer.ui.impl.StandardTooltipV2
-import com.fs.starfarer.ui.newui.FleetMemberRecoveryDialog
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.internalextensions.findChildWithMethod
@@ -85,7 +84,7 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         val innerPanel = centerTooltip?.invoke("getInnerPanel") as? UIPanelAPI ?: return
         val fleetList = innerPanel.findChildWithMethod("turnOffCRandHullBars") ?: return
 
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList, if (centerTooltip is FleetMemberRecoveryDialog) 1 else 0)
+        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList,true)//, if (centerTooltip is FleetMemberRecoveryDialog) 1 else 0)
     }
 
     private var lastOptionsHash: Int? = null
@@ -129,11 +128,11 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
 
         topRightPlayerFleet.forEach {
             if (it !is UIComponentAPI) return@forEach
-            MagicPaintjobApplierUtils.applyPaintjobsToShipList(it)
+            MagicPaintjobApplierUtils.applyPaintjobsToShipList(it, true)
         }
         topRightEnemyFleet.forEach {
             if (it !is UIComponentAPI) return@forEach
-            MagicPaintjobApplierUtils.applyPaintjobsToShipList(it, 1)
+            MagicPaintjobApplierUtils.applyPaintjobsToShipList(it, true)
         }
     }
 
@@ -182,6 +181,6 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         val shipList = (tooltipPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)?.findChildWithMethod("turnOffCRandHullBars")
             ?: return
 
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(shipList, 1)
+        MagicPaintjobApplierUtils.applyPaintjobsToShipList(shipList, true)
     }
 }

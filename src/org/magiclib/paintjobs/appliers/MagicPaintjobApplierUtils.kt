@@ -13,11 +13,9 @@ import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.get
 import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
-import org.magiclib.internalextensions.getChildrenCopy
-import org.magiclib.internalextensions.height
-import org.magiclib.internalextensions.parent
-import org.magiclib.internalextensions.width
+import org.magiclib.internalextensions.*
 import org.magiclib.paintjobs.MagicPaintjobManager
 import java.awt.Color
 
@@ -51,27 +49,56 @@ internal object MagicPaintjobApplierUtils {
 
     fun applyPaintjobsToShipList(
         shipList: UIComponentAPI,
-        side: Int = 1
+        showShinyIcon: Boolean = false,
+        forceUpdateShinyIcon: Boolean = false,
+        diffPositioning: Boolean = false,
     ) {
         @Suppress("UNCHECKED_CAST")
         val members = shipList.invoke("getMembers") as? List<FleetMemberAPI> ?: return
 
         val paintJobMembers = members.filter { member -> MagicPaintjobManager.hasPaintjob(member) }
 
-        paintJobMembers.forEach { member ->
-            val memberIcon = shipList.invoke("getIconForMember", member) ?: return
+        if(forceUpdateShinyIcon && members.isNotEmpty()) {
+            // Remove all shiny icons
+            val memberButton = shipList.invoke("getButtonForMember", members[0]) as? ButtonAPI ?: return
+            memberButton.parent?.getChildrenCopy()?.toList()?.forEach { child ->
+                if(child.getMethodsMatching(name = "isTexClamp").isNotEmpty()) {
+                    memberButton.parent?.removeComponent(child)
+                }
+            }
+        }
 
-            if (side != 0 && MagicPaintjobManager.getCurrentShipPaintjob(member)?.isShiny == true) {
+        paintJobMembers.forEach { member ->
+            val memberIcon = shipList.invoke("getIconForMember", member) ?: return@forEach
+
+            if (showShinyIcon && MagicPaintjobManager.getCurrentShipPaintjob(member)?.isShiny == true) {
                 val memberButton = shipList.invoke("getButtonForMember", member) as? ButtonAPI ?: return
-                if (memberButton.customData == null) { // Prevent multiple shiny icons from being applied to the same ship.
+                if (memberButton.customData == null || forceUpdateShinyIcon) { // Prevent multiple shiny icons from being applied to the same ship.
                     val extraSize = 8f
                     val width = memberButton.width + extraSize
                     val height = memberButton.height + extraSize
                     val background = memberButton.parent?.addImage(shinyIconSprite, width, height)
-                    background?.position?.rightOfMid(memberButton, -width + extraSize / 2f)
-                    background?.opacity = shinyIconOpacity
-                    (background?.invoke("getSprite") as Sprite).color = shinyIconColor
-                    memberButton.parent?.bringComponentToTop(memberButton)
+                    background?.let {
+                        if(!diffPositioning) {
+                            background.position?.rightOfMid(memberButton, -width + extraSize / 2f)
+                        } else {
+                            val pos = memberButton.position
+                            val x: Float
+                            val y: Float
+                            val parent = memberButton.parent ?: return@let
+
+                            //x = pos.x - (pos.width - extraSize) / 2f
+                            //y = parent.height - pos.y - height/2f
+
+                            x = pos.x - parent.x - extraSize/2f
+                            y = pos.y - parent.y - extraSize/2f
+
+                            it.position.inBL(x, y)
+                        }
+                        it.opacity = shinyIconOpacity
+                        (it.invoke("getSprite") as Sprite).color = shinyIconColor
+                    }
+                    memberButton.parent?.invoke("sendToBottomWithinItself", background)
                     memberButton.customData = "SIP" // Shiny Icon Applied
                 }
             }
