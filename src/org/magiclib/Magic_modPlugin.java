@@ -80,13 +80,14 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicPaintjobManager.onApplicationLoad();
 
-        String errorVariantID = Global.getSettings().getString("errorShipVariant");
-
-        if ("nebula_Standard".equals(errorVariantID)) { // If errorShipVariant is unmodified
+        if ("nebula_Standard".equals(Global.getSettings().getString("errorShipVariant"))) { // If errorShipVariant is unmodified
             if (Global.getSettings().doesVariantExist("magiclib_nebula_Error")) { // Assure custom variant exists
                 try { Global.getSettings().getSettingsJSON().put("errorShipVariant", "magiclib_nebula_Error"); } // Set new errorShipVariant
                 catch (JSONException ignored) {} // This isn't critical behavior, so no need to do anything if it did not work
             }
+        }
+        if(!Global.getSettings().doesVariantExist(Global.getSettings().getString("errorShipVariant"))) {
+            throw new RuntimeException("The errorShipVariant of ID '" + Global.getSettings().getString("errorShipVariant") + "' does not exist");
         }
 
         MagicSubsystemsManager.initialize();

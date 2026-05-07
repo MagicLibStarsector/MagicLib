@@ -76,6 +76,7 @@
 		"fleet_flagship_variant":"radiant_Standard",
 		"fleet_flagship_name":"Conqueror of the Stars",
 		"fleet_flagship_alwaysRecoverable":false,
+		#"ignore_missing_variants":true,
 		"fleet_preset_ships":{
 			"tempest_Attack":2,
 			#"asdf":1,

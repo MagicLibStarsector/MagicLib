@@ -203,12 +203,24 @@ public class MagicBountyLoader {
                 origin_faction = getString(bountyId, "fleet_faction");
             }
 
+            boolean ignore_missing_variants = getBoolean(bountyId, "ignore_missing_variants");
+
             //Random flagship variant:                
             String flagship = getString(bountyId, "fleet_flagship_variant");
             List<String> flagshipList = getStringList(bountyId, "fleet_flagship_variant");
-            if (flagshipList != null && !flagshipList.isEmpty()) {
-                int i = MathUtils.getRandomNumberInRange(0, flagshipList.size() - 1);
-                flagship = flagshipList.get(i);
+            if (!flagshipList.isEmpty()) {
+                List<String> validFlagships = flagshipList.stream()
+                        .filter(v -> Global.getSettings().doesVariantExist(v))
+                        .toList();
+
+                if (!validFlagships.isEmpty()) {
+                    int i = MathUtils.getRandomNumberInRange(0, validFlagships.size() - 1);
+                    flagship = validFlagships.get(i);
+                } else {
+                    // Won't work, but get a random non-existent variant anyway for showing the correct error message to the user.
+                    int i = MathUtils.getRandomNumberInRange(0, flagshipList.size() - 1);
+                    flagship = flagshipList.get(i);
+                }
             }
 
             //fixes for my own mistakes
@@ -277,7 +289,7 @@ public class MagicBountyLoader {
                     getInt(bountyId, "target_elite_skills", -1),
                     skillPref,
                     getIntMap(bountyId, "target_skills"),
-
+                    ignore_missing_variants,
                     getString(bountyId, "fleet_name"),
                     getString(bountyId, "fleet_faction"),
                     flagship,
@@ -521,25 +533,43 @@ public class MagicBountyLoader {
 
             //OTHER REQUIREMENT CHECKS
             if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
-                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null) {
+                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null && !this_bounty.ignore_missing_variants) {
                     //No flagship variant, invalidating the bounty
                     LOG.info(String.format("Missing fleet_flagship_variant from bounty %s. Bounty is INVALID!", bountyId));
                     return false;
                 }
 
-                if (Global.getSettings().getVariant(this_bounty.fleet_flagship_variant) == null && MagicCampaign.loadVariant(MagicVariables.VARIANT_PATH + this_bounty.fleet_flagship_variant + ".variant") == null) {
-                    //that flagship variant couldn't be found, invalidating the bounty
-                    LOG.info(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
-                    return false;
+                if (!variantExists(this_bounty.fleet_flagship_variant)) {
+                    if(this_bounty.ignore_missing_variants){
+                        // try to grab a preset ship as flagship
+                        String fallback = pickFallbackFlagshipAndRemove(this_bounty);
+                        if (fallback != null) {
+                            this_bounty.fleet_flagship_variant = fallback;
+                        } else {
+                            // fallback if none found
+                            this_bounty.fleet_flagship_variant = Global.getSettings().getString("errorShipVariant");
+                        }
+
+                    } else {
+                        //that flagship variant couldn't be found, invalidating the bounty
+                        LOG.info(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
+                        return false;
+                    }
                 }
 
                 if (this_bounty.fleet_preset_ships != null && !this_bounty.fleet_preset_ships.isEmpty()) {
                     //check all reinforcement variants
-                    for (String v : this_bounty.fleet_preset_ships.keySet()) {
-                        if (Global.getSettings().getVariant(v) == null && MagicCampaign.loadVariant(MagicVariables.VARIANT_PATH + v + ".variant") == null) {
-                            //that reinforcement variant couldn't be found, invalidating the bounty
-                            LOG.info(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
-                            return false;
+                    Iterator<String> iter = this_bounty.fleet_preset_ships.keySet().iterator();
+                    while (iter.hasNext()) {
+                        String v = iter.next();
+                        if (!variantExists(v)) {
+                            if(this_bounty.ignore_missing_variants) {
+                                iter.remove();
+                            } else {
+                                //that reinforcement variant couldn't be found, invalidating the bounty
+                                LOG.info(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
+                                return false;
+                            }
                         }
                     }
                 }
@@ -552,6 +582,34 @@ public class MagicBountyLoader {
 
         return true;
     }
+
+    // helper: finds a valid preset ship, returns it as a string, and removes it
+    private static String pickFallbackFlagshipAndRemove(MagicBountySpec this_bounty) {
+        if (this_bounty.fleet_preset_ships != null && !this_bounty.fleet_preset_ships.isEmpty()) {
+            Iterator<String> iter = this_bounty.fleet_preset_ships.keySet().iterator();
+            while (iter.hasNext()) {
+                String v = iter.next();
+                if (variantExists(v)) {
+                    iter.remove(); // remove from preset ships
+                    return v;
+                }
+            }
+        }
+        return null;
+    }
+
+    // helper: checks if a variant exists (local + load)
+    private static boolean variantExists(String v) {
+        if(Global.getSettings().getVariant(v) != null)
+            return true;
+        try {
+            Global.getSettings().loadJSON(v);
+        } catch (Exception e) {
+            return false;
+        }
+        return MagicCampaign.loadVariant(MagicVariables.VARIANT_PATH + v + ".variant") != null;
+    }
+
 
     /**
      * Loads a bounty list from modSettings.json while respecting their mod requirements
