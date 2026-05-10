@@ -13,6 +13,7 @@ import com.fs.starfarer.campaign.CampaignEngine
 import com.fs.starfarer.campaign.CampaignEntity
 import com.fs.starfarer.ui.impl.StandardTooltipV2
 import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.internalextensions.findChildWithMethod
 import org.magiclib.internalextensions.getChildrenCopy
@@ -70,9 +71,9 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
     private fun applyToInteractionDialogSelectCraft() {
         val sector = Global.getSector()
         val ui = sector.campaignUI
-        val visual = ui.currentInteractionDialog.visualPanel as? UIPanelAPI
+        val visual = ui.currentInteractionDialog.visualPanel as? UIPanelAPI ?: return
 
-        val centerTooltip = visual?.findChildWithMethod("fleetMemberClicked") as? UIPanelAPI
+        val centerTooltip = visual.findChildWithMethod("fleetMemberClicked") as? UIPanelAPI
 
         val centerTooltipHash = centerTooltip.hashCode()
         // Only try to replace sprites once every time the shown tooltip changes
@@ -94,20 +95,29 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         if (ui.currentInteractionDialog == null) return
 
         val battle = (ui.currentInteractionDialog?.plugin?.context as? FleetEncounterContext)?.battle
-        val interactionFleet = if (battle != null) {
+        /*val interactionFleet = if (battle != null) {
             battle.nonPlayerCombined
         } else {
             ui.currentInteractionDialog.interactionTarget as? CampaignFleetAPI
-        }
+        }*/
 
         // If no paintjobs in either fleet, do not continue
-        if (interactionFleet != null && interactionFleet.fleetData.membersListCopy.none { member -> MagicPaintjobManager.hasPaintjob(member) }
-            && sector.playerFleet.fleetData.membersListCopy.none { member -> MagicPaintjobManager.hasPaintjob(member) })
-            return
+        if (battle != null) {
+            if(battle.snapshotBothSides.all { fleet -> fleet.fleetData.membersListCopy.none { member -> MagicPaintjobManager.hasPaintjob(member) } })
+                return
+        } else {
+            val interactionFleet = ui.currentInteractionDialog.interactionTarget as? CampaignFleetAPI
+            val playerFleet = Global.getSector().playerFleet
+
+            if (playerFleet?.fleetData?.membersListCopy?.any { MagicPaintjobManager.hasPaintjob(it) } != true &&
+                interactionFleet?.fleetData?.membersListCopy?.any { MagicPaintjobManager.hasPaintjob(it) } != true
+            ) return
+        }
 
         applyToInteractionDialogSelectCraft()
 
-        val optionsHash = ui.currentInteractionDialog.optionPanel.savedOptionList
+        val optionList = ui.currentInteractionDialog?.optionPanel?.savedOptionList ?: return
+        val optionsHash = optionList
             .map { it.hashCode() }
             .hashCode()
 
@@ -118,11 +128,11 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         lastOptionsHash = optionsHash
 
 
-        val visual = ui.currentInteractionDialog.visualPanel as? UIPanelAPI
+        val visual = ui.currentInteractionDialog.visualPanel as? UIPanelAPI ?: return
 
-        val topRightPanel = visual?.getChildrenCopy()?.findLast { it.getFieldsMatching(type = FleetEncounterContextPlugin::class.java).isNotEmpty() } as? UIPanelAPI ?: return
+        val topRightPanel = visual.getChildrenCopy().findLast { it.getFieldsMatching(type = FleetEncounterContextPlugin::class.java).isNotEmpty() } as? UIPanelAPI ?: return
         val topRightFleetPanel = (topRightPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)
-            ?.getChildrenCopy()?.getOrNull(0) as? UIPanelAPI ?: return// Scroller
+            ?.getChildrenCopy()?.getOrNull(0) as? UIPanelAPI ?: return // Scroller
         val topRightPlayerFleet = (topRightFleetPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
         val topRightEnemyFleet = (topRightFleetPanel.getChildrenCopy().getOrNull(1) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
 
