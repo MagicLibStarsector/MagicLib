@@ -44,7 +44,7 @@ object MagicPaintjobManager {
 
     private val unlockedPaintjobsInner = mutableSetOf<String>()
     private val paintjobsInner = mutableMapOf<String, MagicPaintjobSpec>() //Paintjob ID -> Paintjob Spec
-    private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableListOf<String>()
+    private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableSetOf<String>()
     private val advanceIntervalUtil = IntervalUtil(1f, 1f)
 
     private val weaponPaintjobsInner = mutableMapOf<String, MagicWeaponPaintjobSpec>()
@@ -58,8 +58,8 @@ object MagicPaintjobManager {
     var isEnabled = true
 
     @JvmStatic
-    val unlockedPaintjobIds: List<String>
-        get() = unlockedPaintjobsInner.toList()
+    val unlockedPaintjobIds: Set<String>
+        get() = unlockedPaintjobsInner.toSet()
 
     @JvmStatic
     val unlockedPaintjobs: List<MagicPaintjobSpec>
@@ -125,6 +125,7 @@ object MagicPaintjobManager {
     @JvmStatic
     fun onGameLoad() {
         loadUnlockedPaintjobs()
+        markAsAlreadyNotifiedPlayerOfNewUnlock(unlockedPaintjobsInner)
         initIntel()
 
         val shinyAdder = MagicPaintjobShinyAdder()
@@ -463,8 +464,6 @@ object MagicPaintjobManager {
                 .getOrThrow()
 
             unlockedPaintjobsInner.addAll(unlockedPJsObj.getJSONArray(jsonObjectKey).toStringList())
-
-            markAsAlreadyNotifiedPlayerOfNewUnlock(unlockedPaintjobsInner)
         }
             .onFailure { logger.warn("Failed to load unlocked paintjobs.", it) }
     }
@@ -502,11 +501,15 @@ object MagicPaintjobManager {
         }
     }
 
+    private val pendingUnlockNotifications = mutableSetOf<String>()
+
     @JvmStatic
     fun unlockPaintjob(id: String) {
         if (getPaintjob(id)?.isUnlockable != true) return
 
-        unlockedPaintjobsInner.add(id)
+        if (unlockedPaintjobsInner.add(id))
+            pendingUnlockNotifications.add(id)
+
         saveUnlockedPaintJobs()
     }
 
@@ -520,6 +523,13 @@ object MagicPaintjobManager {
 
         unlockedPaintjobsInner.remove(id)
         saveUnlockedPaintJobs()
+    }
+
+    /**
+     * Returns true if the paintjob with the given ID is unlocked.
+     */
+    fun isPaintjobUnlocked(paintjobID: String): Boolean {
+        return unlockedPaintjobsInner.contains(paintjobID)
     }
 
     @JvmStatic
@@ -759,21 +769,24 @@ object MagicPaintjobManager {
             // Only notify intel if in campaign and not showing a dialog.
             // If in combat, the intel will be shown when the player returns to the campaign.
             if (Global.getCurrentState() == GameState.CAMPAIGN && Global.getSector().campaignUI.currentInteractionDialog == null) {
-                for (paintjob in getPaintjobs()) {
-                    if (paintjob.isUnlocked() && !completedPaintjobIdsThatUserHasBeenNotifiedFor.contains(paintjob.id)) {
-                        // Player has unlocked a new paintjob! Let's notify them.
+                for (id in pendingUnlockNotifications) {
+                    if(completedPaintjobIdsThatUserHasBeenNotifiedFor.contains(id))
+                        continue
 
-                        try {
-                            intel.tempPaintjobForIntelNotification = paintjob
-                            intel.sendUpdateIfPlayerHasIntel(null, false, false)
-                            intel.tempPaintjobForIntelNotification = null
-//                        MagicAchievementManager.playSoundEffect(paintjob)
-                            completedPaintjobIdsThatUserHasBeenNotifiedFor.add(paintjob.id)
-                        } catch (e: java.lang.Exception) {
-                            logger.w(ex = e, message = { "Unable to notify intel of paintjob " + paintjob.id })
-                        }
+                    val paintjob = paintjobsInner[id] ?: continue
+                    if (paintjob.isShiny || paintjob.isHidden) continue
+
+                    try {
+                        intel.tempPaintjobForIntelNotification = paintjob
+                        intel.sendUpdateIfPlayerHasIntel(null, false, false)
+                        intel.tempPaintjobForIntelNotification = null
+
+                        completedPaintjobIdsThatUserHasBeenNotifiedFor.add(id)
+                    } catch (e: Exception) {
+                        logger.w(ex = e, message = { "Unable to notify intel of paintjob " + paintjob.id })
                     }
                 }
+                pendingUnlockNotifications.clear()
             }
         }
     }
@@ -798,4 +811,4 @@ internal class MagicPaintjobRunner : EveryFrameScript {
     }
 }
 
-fun MagicPaintjobSpec.isUnlocked() = MagicPaintjobManager.unlockedPaintjobIds.contains(id)
+fun MagicPaintjobSpec.isUnlocked() = MagicPaintjobManager.isPaintjobUnlocked(id)
