@@ -83,9 +83,15 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         this.centerTooltipHash = centerTooltipHash
 
         val innerPanel = centerTooltip?.invoke("getInnerPanel") as? UIPanelAPI ?: return
-        val fleetList = innerPanel.findChildWithMethod("turnOffCRandHullBars") ?: return
 
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList,true)//, if (centerTooltip is FleetMemberRecoveryDialog) 1 else 0)
+        val fleetList1 = innerPanel.getChildrenCopy().find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+        val fleetList2 = innerPanel.getChildrenCopy().findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+
+        //, if (centerTooltip is FleetMemberRecoveryDialog) 1 else 0)
+        if(fleetList1 != null)
+            MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList1,true)
+        if(fleetList2 != null && fleetList2 !== fleetList1)
+            MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList2,true)
     }
 
     private var lastOptionsHash: Int? = null
@@ -103,7 +109,7 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
 
         // If no paintjobs in either fleet, do not continue
         if (battle != null) {
-            if(battle.snapshotBothSides.all { fleet -> fleet.fleetData.membersListCopy.none { member -> MagicPaintjobManager.hasPaintjob(member) } })
+            if(battle.snapshotBothSides.all { fleet -> fleet.fleetData.snapshot.none { member -> MagicPaintjobManager.hasPaintjob(member) } })
                 return
         } else {
             val interactionFleet = ui.currentInteractionDialog.interactionTarget as? CampaignFleetAPI

@@ -93,24 +93,26 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
         */
 
         val innerPanel = centerTooltip.invoke("getInnerPanel") as? UIPanelAPI ?: return
-        val fleetList1 = innerPanel.getChildrenCopy().find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() } ?: return
-        val fleetList2 = innerPanel.getChildrenCopy().findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() } ?: return
+        val fleetList1 = innerPanel.getChildrenCopy().find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+        val fleetList2 = innerPanel.getChildrenCopy().findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
 
         //val fleetList3 = centerTooltip.getFieldsMatching(type = fleetList1.javaClass).getOrNull(0)?.get(centerTooltip) as? UIPanelAPI
         //val fleetList4 = centerTooltip.getFieldsMatching(type = fleetList1.javaClass).getOrNull(1)?.get(centerTooltip) as? UIPanelAPI
 
         val forceUpdateShinyIcon = Keyboard.isKeyDown(Keyboard.KEY_RETURN) || Mouse.isButtonDown(0)
 
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList1,
-            showShinyIcon = true,
-            forceUpdateShinyIcon = forceUpdateShinyIcon || prevForceUpdateShinyIcon,
-            diffPositioning = true,
-        )
-        MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList2,
-            showShinyIcon = true,
-            forceUpdateShinyIcon = forceUpdateShinyIcon || prevForceUpdateShinyIcon,
-            diffPositioning = true
-        )
+        if(fleetList1 != null)
+            MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList1,
+                showShinyIcon = true,
+                forceUpdateShinyIcon = forceUpdateShinyIcon || prevForceUpdateShinyIcon,
+                diffPositioning = true,
+            )
+        if(fleetList2 != null && fleetList2 !== fleetList1)
+            MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList2,
+                showShinyIcon = true,
+                forceUpdateShinyIcon = forceUpdateShinyIcon || prevForceUpdateShinyIcon,
+                diffPositioning = true
+            )
         //if(fleetList3 != null && fleetList3 !== fleetList1 && fleetList3 !== fleetList2)
         //    MagicPaintjobApplierUtils.applyPaintjobsToShipList(fleetList3, true, true)
         //if(fleetList4 != null && fleetList4 !== fleetList1 && fleetList4 !== fleetList2 && fleetList4 !== fleetList3)
