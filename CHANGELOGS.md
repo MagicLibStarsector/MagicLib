@@ -23,6 +23,7 @@ Version 1.5.7
 - Remove log spam when a mod which added achivements was removed.
 
 **MagicPaintjobs**
+- Fix bad performance on the paintjob unlock notifier, and fix it to work properly again.
 - Fixed game crashing if paintjob sprite did not exist or was not accessable.
 - Paintjobs show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
 - Shiny paintjobs now have a shiny icon to indicate their status.
