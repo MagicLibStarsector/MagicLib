@@ -49,7 +49,7 @@ public class MagicAchievementManager {
     private Map<String, MagicAchievementSpec> achievementSpecs = new HashMap<>();
     @NotNull
     private final Map<String, MagicAchievement> achievements = new HashMap<>();
-    private final List<String> completedAchievementIdsThatUserHasBeenNotifiedFor = new ArrayList<>();
+    private final Set<String> completedAchievementIdsThatUserHasBeenNotifiedFor = new HashSet<>();
     private boolean areAchievementsEnabled = true;
 
     @NotNull
@@ -582,14 +582,14 @@ public class MagicAchievementManager {
 
         // Call the advance method on all achievements.
         for (MagicAchievement achievement : achievements.values()) {
-            if (achievementScriptsWithRunError.contains(achievement.getSpecId())) {
+            if (achievement.isComplete())
                 continue;
-            }
+
+            if (achievementScriptsWithRunError.contains(achievement.getSpecId()))
+                continue;
 
             try {
-                if (!achievement.isComplete()) {
-                    achievement.advanceInternal(amount);
-                }
+                achievement.advanceInternal(amount);
             } catch (Exception e) {
                 String errorStr =
                         String.format("Error running achievement '%s' from mod '%s'!", achievement.getSpecId(), achievement.getModName());
