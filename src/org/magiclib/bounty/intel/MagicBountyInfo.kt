@@ -1,5 +1,6 @@
 package org.magiclib.bounty.intel
 
+import com.fs.graphics.Sprite
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
@@ -13,12 +14,15 @@ import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.util.vector.Vector2f
 import org.lwjgl.input.Keyboard
+import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
 import org.magiclib.bounty.MagicBountyLoader.*
 import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
+import org.magiclib.internalextensions.addTooltip
+import org.magiclib.internalextensions.width
 import org.magiclib.kotlin.interpolateColor
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.kotlin.ucFirst
@@ -360,6 +364,20 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
 
         rightPanel.addUIElement(actionTooltip).inBL(0f, 0f)
         panelThatCanBeRemoved!!.addComponent(rightPanel).rightOfTop(leftPanel, 2f)
+
+        // Add source mod icon similar to how it works in the codex
+        val modInfoPanel = panelThatCanBeRemoved!!.createUIElement(18f, 18f, false)
+        modInfoPanel.addImage("graphics/ui/icons/codex_mod_info.png", 18f, 18f, 0f)
+        val image = modInfoPanel.prev
+        val sprite = image.getFieldsMatching(type = Sprite::class.java).getOrNull(0)?.get(image) as? Sprite
+        sprite?.color = Misc.getButtonTextColor()
+        modInfoPanel.addTooltip(image, TooltipMakerAPI.TooltipLocation.LEFT, 416f) { tooltip ->
+            val modID = activeBountyLocal.spec.source_mod_id
+            val modName = Global.getSettings().modManager.enabledModsCopy.find { it.id == modID }?.name ?: modID
+            val para = tooltip.addPara("Third party data provided by $modName", 0f, Misc.getGrayColor(), Misc.getButtonTextColor(), modName)
+        }
+        modInfoPanel.position.inTL(leftPanel.width + rightPanel.width,0f)
+        panelThatCanBeRemoved!!.addUIElement(modInfoPanel)
 
         holdingPanel!!.addComponent(panelThatCanBeRemoved)
     }

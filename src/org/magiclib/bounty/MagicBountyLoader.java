@@ -319,7 +319,8 @@ public class MagicBountyLoader {
                     getStringList(bountyId, "location_entities"),
                     getBoolean(bountyId, "location_prioritizeUnexplored"),
                     //getBoolean(bountyId, "location_defaultToAnySystem"),                    
-                    getBoolean(bountyId, "location_defaultToAnyEntity")
+                    getBoolean(bountyId, "location_defaultToAnyEntity"),
+                    getString(bountyId, "source_mod_id")
             );
 
             //add the bounty if it doesn't exist and hasn't been taken already or if the script is redoing the whole thing
@@ -710,7 +711,10 @@ public class MagicBountyLoader {
                 if (modJson.length() > 0) {
                     for (Iterator<String> iterator = modJson.keys(); iterator.hasNext(); ) {
                         String key = iterator.next();
-                        this_bounty_data.put(key, modJson.getJSONObject(key));
+
+                        var bountyJSON = modJson.getJSONObject(key);
+                        bountyJSON.put("source_mod_id", modSpec.getId());
+                        this_bounty_data.put(key, bountyJSON);
                     }
                 }
 

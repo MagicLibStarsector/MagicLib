@@ -319,6 +319,11 @@ public class MagicBountySpec {
      */
     public boolean location_defaultToAnyEntity;
 
+    /**
+     * mod id of the mod that created this bounty. This is automatically added by the bounty loader and thus does not need to be specified in the bounty's JSON.
+     */
+    public String source_mod_id;
+
     public MagicBountySpec(
             List<String> trigger_market_id,
             List<String> trigger_marketFaction_any,
@@ -400,7 +405,8 @@ public class MagicBountySpec {
             List<String> location_entities,
             boolean location_prioritizeUnexplored,
             //boolean location_defaultToAnySystem,
-            boolean location_defaultToAnyEntity
+            boolean location_defaultToAnyEntity,
+            String source_mod_id
     ) {
         this.trigger_market_id = trigger_market_id;
         this.trigger_marketFaction_any = trigger_marketFaction_any;
@@ -556,6 +562,7 @@ public class MagicBountySpec {
         this.location_prioritizeUnexplored = location_prioritizeUnexplored;
         //this.location_defaultToAnySystem = location_defaultToAnySystem;
         this.location_defaultToAnyEntity = location_defaultToAnyEntity;
+        this.source_mod_id = source_mod_id;
     }
 
     @Override
@@ -639,6 +646,7 @@ public class MagicBountySpec {
         sb.append(", \nlocation_entities=").append(location_entities);
         sb.append(", \nlocation_prioritizeUnexplored=").append(location_prioritizeUnexplored);
         sb.append(", \nlocation_defaultToAnyEntity=").append(location_defaultToAnyEntity);
+        sb.append(", \nsource_mod_id=").append(source_mod_id);
         sb.append('}');
         return sb.toString();
     }

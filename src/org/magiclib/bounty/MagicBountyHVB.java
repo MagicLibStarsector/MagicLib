@@ -5,6 +5,7 @@ package org.magiclib.bounty;
  */
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
@@ -24,7 +25,6 @@ import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicVariables;
 
-import java.io.IOException;
 import java.util.*;
 
 public class MagicBountyHVB {
@@ -57,7 +57,7 @@ public class MagicBountyHVB {
         }
 
         try {
-            JSONArray uniqueBountyDataJSON = Global.getSettings().getMergedSpreadsheetDataForMod("bounty_id", VAYRA_UNIQUE_BOUNTIES_FILE, MagicVariables.MAGICLIB_ID);
+            JSONArray uniqueBountyDataJSON = loadHVBData();
 
             int hvb = 0;
 
@@ -344,7 +344,9 @@ public class MagicBountyHVB {
                             //boolean location_defaultToAnySystem
                             //true,
                             //boolean location_defaultToAnyEntity
-                            true
+                            true,
+                            //String source_mod_id
+                            row.getString("source_mod_id")
 
                     );
 
@@ -367,9 +369,35 @@ public class MagicBountyHVB {
                     LOG.info("Successfully converted " + hvb + " HVBs");
                 }
             }
-        } catch (IOException | JSONException exception) {
+        } catch (JSONException exception) {
             LOG.warn("MagicLib - Failed to load HighValueBountyData! - ", exception);
         }
+    }
+
+    private static JSONArray loadHVBData() {
+
+        JSONArray this_bounty_data = new JSONArray();
+
+        for (final ModSpecAPI modSpec : Global.getSettings().getModManager().getEnabledModsCopy()) {
+            try {
+                JSONArray uniqueBountyDataJSON = Global.getSettings().loadCSV(VAYRA_UNIQUE_BOUNTIES_FILE, modSpec.getId());
+
+                for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
+                    JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
+                    row.put("source_mod_id", modSpec.getId());
+                    this_bounty_data.put(row);
+                }
+            } catch (final Exception ex) {
+                if (ex instanceof RuntimeException && ex.getMessage().contains("not found in")) {
+                    // Ignore exceptions caused by the mod not having bounties
+                    continue;
+                }
+
+                LOG.fatal(String.format("MagicBountyData was unable to read '%s' for mod %s", VAYRA_UNIQUE_BOUNTIES_FILE, modSpec.getId()), ex);
+            }
+        }
+
+        return this_bounty_data;
     }
 
 
