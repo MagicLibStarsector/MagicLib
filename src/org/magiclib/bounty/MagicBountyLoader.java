@@ -211,7 +211,7 @@ public class MagicBountyLoader {
             List<String> flagshipList = getStringList(bountyId, "fleet_flagship_variant");
             if (!flagshipList.isEmpty()) {
                 List<String> validFlagships = flagshipList.stream()
-                        .filter(v -> Global.getSettings().doesVariantExist(v))
+                        .filter(MagicBountyLoader::variantExists)
                         .toList();
 
                 if (!validFlagships.isEmpty()) {
