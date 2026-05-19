@@ -78,7 +78,11 @@
         "job_item_reward": { # Default: no item rewards. Lists special items that will be added to the post-battle loot. First value is the item id, second is the number to give the player.
             # Using the same syntax as Console Commands, blueprints may be added. ["fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"]
             "item_A":1,
-            "ship_bp shipId": 1
+            "ship_bp shipId": 1,
+            # For elements that share IDs, such as the shrouded special items which share the exact same ID as their hullmod counterparts, prepend the string with "$itemType" to specify the item type.
+            # Avaliable item types ["$commodity", "$weapon", "$fighter", "$hullmod", "$special"]
+            "$special shrouded_lens":1,
+            "$hullmod shrouded_mantle":1
         },
         "job_type":"assassination", # Default: assassination.
                 # assassination: required only to disable the flagship, may recover it.
@@ -160,7 +164,7 @@
         "fleet_name":"Fleet Name", # Default: no name.
         "fleet_faction": "ML_bounty", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
         # MagicLib includes a utility bounty faction that is forced to be neutral to everyone but the player under the id ["ML_bounty"].
-        "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]
+        "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]. If a list, variants that do not exist are automatically excluded.
         # Variant files that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
         "fleet_flagship_name":"Flagship", # Default: Random.
         "fleet_flagship_alwaysRecoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
@@ -169,6 +173,7 @@
             "ship_variant1":1,
             "ship_variant2":3,
         },
+        "ignore_missing_variants": false, # Default: false. If false, the bounty will FAIL TO LOAD when any listed variant (flagship or preset ships) is missing or invalid then log why it failed such as what was missing. If true, missing or invalid variants are skipped and the bounty will still generate with remaining valid ships regardless. It is not recommended to set this to true as it may lead to hidden issues in the future.
         "fleet_preset_autofit": true, # Default: false. Whether the preset ships will be autofitted. When false, the preset ships do not receive D-mods or S-mods from the quality override.
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
