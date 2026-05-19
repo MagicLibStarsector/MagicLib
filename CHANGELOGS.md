@@ -11,6 +11,7 @@ Version 1.5.7
 - Fixed bounty intel not showing up in one of the lower faction intel tabs.
 - Bounties are kept in the intel bounty board if the player has previously been notified of them. This is to prevent confusion on why bounties may not appear in some situations as that isn't documented anywhere.
 - Add ignore_missing_variants to bounty spec. This causes the bounty to ignore any missing variants instead of simply not working.
+- Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).

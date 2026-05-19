@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.FullName;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
+import com.fs.starfarer.api.impl.campaign.ids.Personalities;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -573,6 +574,17 @@ public class MagicBountyLoader {
                         }
                     }
                 }
+            }
+
+            if (this_bounty.target_personality != null
+                    && !this_bounty.target_personality.equals(Personalities.TIMID)
+                    && !this_bounty.target_personality.equals(Personalities.CAUTIOUS)
+                    && !this_bounty.target_personality.equals(Personalities.STEADY)
+                    && !this_bounty.target_personality.equals(Personalities.AGGRESSIVE)
+                    && !this_bounty.target_personality.equals(Personalities.RECKLESS)) {
+                LOG.info(String.format("target_personality '%s' from bounty '%s' was not %s, %s, %s, %s, or %s. Bounty is INVALID!", this_bounty.target_personality, bountyId,
+                        Personalities.TIMID, Personalities.CAUTIOUS, Personalities.STEADY, Personalities.AGGRESSIVE, Personalities.RECKLESS));
+                return false;
             }
         } catch (Exception e) {
             LOG.warn("Something went wrong when validating " + bountyId, e);
