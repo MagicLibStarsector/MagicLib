@@ -614,12 +614,14 @@ public class MagicBountyLoader {
     private static boolean variantExists(String v) {
         if(Global.getSettings().getVariant(v) != null)
             return true;
+
+        var path = MagicVariables.VARIANT_PATH + v + ".variant";
         try {
-            Global.getSettings().loadJSON(v);
-        } catch (Exception e) {
-            return false;
+            Global.getSettings().loadJSON(path);
+        } catch (Exception ignored) {
+            return false; // Avoids an error being logged in loadVariant
         }
-        return MagicCampaign.loadVariant(MagicVariables.VARIANT_PATH + v + ".variant") != null;
+        return MagicCampaign.loadVariant(path) != null;
     }
 
 
