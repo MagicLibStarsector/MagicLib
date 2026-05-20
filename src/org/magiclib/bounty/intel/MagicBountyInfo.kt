@@ -366,18 +366,29 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         panelThatCanBeRemoved!!.addComponent(rightPanel).rightOfTop(leftPanel, 2f)
 
         // Add source mod icon similar to how it works in the codex
-        val modInfoPanel = panelThatCanBeRemoved!!.createUIElement(18f, 18f, false)
-        modInfoPanel.addImage("graphics/ui/icons/codex_mod_info.png", 18f, 18f, 0f)
-        val image = modInfoPanel.prev
-        val sprite = image.getFieldsMatching(type = Sprite::class.java).getOrNull(0)?.get(image) as? Sprite
-        sprite?.color = Misc.getButtonTextColor()
-        modInfoPanel.addTooltip(image, TooltipMakerAPI.TooltipLocation.LEFT, 416f) { tooltip ->
-            val modID = activeBountyLocal.spec.source_mod_id
-            val modName = Global.getSettings().modManager.enabledModsCopy.find { it.id == modID }?.name ?: modID
-            val para = tooltip.addPara("Third party data provided by $modName", 0f, Misc.getGrayColor(), Misc.getButtonTextColor(), modName)
+        val modID = activeBountyLocal.spec.source_mod_id
+        if(modID != null) {
+            val modInfoPanel = panelThatCanBeRemoved!!.createUIElement(18f, 18f, false)
+            modInfoPanel.addImage("graphics/ui/icons/codex_mod_info.png", 18f, 18f, 0f)
+            val image = modInfoPanel.prev
+            val sprite = image.getFieldsMatching(type = Sprite::class.java).getOrNull(0)?.get(image) as? Sprite
+            sprite?.color = Misc.getButtonTextColor()
+            modInfoPanel.addTooltip(image, TooltipMakerAPI.TooltipLocation.LEFT, 416f) { tooltip ->
+                val sourceMod = Global.getSettings().modManager.enabledModsCopy.find { it.id == modID }
+                val modName = sourceMod?.name ?: modID
+
+                val highlightColor = sourceMod?.let { Misc.getDesignTypeColor(it.name) } ?: Misc.getButtonTextColor()
+                tooltip.addPara(
+                    "Third party data provided by $modName",
+                    0f,
+                    Misc.getGrayColor(),
+                    highlightColor,
+                    modName
+                )
+            }
+            modInfoPanel.position.inTL(leftPanel.width + rightPanel.width, 0f)
+            panelThatCanBeRemoved!!.addUIElement(modInfoPanel)
         }
-        modInfoPanel.position.inTL(leftPanel.width + rightPanel.width,0f)
-        panelThatCanBeRemoved!!.addUIElement(modInfoPanel)
 
         holdingPanel!!.addComponent(panelThatCanBeRemoved)
     }
