@@ -10,7 +10,7 @@ Version 1.5.7
 - Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance
 - Fixed bounty intel not showing up in one of the lower faction intel tabs.
 - Bounties are kept in the intel bounty board if the player has previously been notified of them. This is to prevent confusion on why bounties may not appear in some situations as that isn't documented anywhere.
-- Add ignore_missing_variants to bounty spec. This causes the bounty to ignore any missing variants instead of simply not working.
+- Add fleet_skip_missing_variants to bounty spec. This causes the bounty to skip any missing variants instead of failing.
 - Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
 - Add bounty item type to the rewards. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
 

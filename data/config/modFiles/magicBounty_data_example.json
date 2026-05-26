@@ -173,7 +173,7 @@
             "ship_variant1":1,
             "ship_variant2":3,
         },
-        "ignore_missing_variants": false, # Default: false. If false, the bounty will FAIL TO LOAD when any listed variant (flagship or preset ships) is missing or invalid then log why it failed such as what was missing. If true, missing or invalid variants are skipped and the bounty will still generate with remaining valid ships regardless. It is not recommended to set this to true as it may lead to hidden issues in the future.
+        "fleet_skip_missing_variants": false, # Default: false. If false, the bounty will FAIL TO LOAD when any listed variant (flagship or preset ships) is missing or invalid then log why it failed such as what was missing. If true, missing or invalid variants are skipped and the bounty will still generate with remaining valid ships regardless. It is not recommended to set this to true as it may lead to hidden issues in the future.
         "fleet_preset_autofit": true, # Default: false. Whether the preset ships will be autofitted. When false, the preset ships do not receive D-mods or S-mods from the quality override.
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.

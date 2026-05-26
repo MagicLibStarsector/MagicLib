@@ -204,7 +204,7 @@ public class MagicBountyLoader {
                 origin_faction = getString(bountyId, "fleet_faction");
             }
 
-            boolean ignore_missing_variants = getBoolean(bountyId, "ignore_missing_variants");
+            boolean fleet_skip_missing_variants = getBoolean(bountyId, "fleet_skip_missing_variants");
 
             //Random flagship variant:                
             String flagship = getString(bountyId, "fleet_flagship_variant");
@@ -290,7 +290,7 @@ public class MagicBountyLoader {
                     getInt(bountyId, "target_elite_skills", -1),
                     skillPref,
                     getIntMap(bountyId, "target_skills"),
-                    ignore_missing_variants,
+                    fleet_skip_missing_variants,
                     getString(bountyId, "fleet_name"),
                     getString(bountyId, "fleet_faction"),
                     flagship,
@@ -533,14 +533,14 @@ public class MagicBountyLoader {
 
             //OTHER REQUIREMENT CHECKS
             if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
-                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null && !this_bounty.ignore_missing_variants) {
+                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null && !this_bounty.fleet_skip_missing_variants) {
                     //No flagship variant, invalidating the bounty
                     LOG.warn(String.format("Missing fleet_flagship_variant from bounty %s. Bounty is INVALID!", bountyId));
                     return false;
                 }
 
                 if (!variantExists(this_bounty.fleet_flagship_variant)) {
-                    if(this_bounty.ignore_missing_variants){
+                    if(this_bounty.fleet_skip_missing_variants){
                         // try to grab a preset ship as flagship
                         String fallback = pickFallbackFlagshipAndRemove(this_bounty);
                         if (fallback != null) {
@@ -563,7 +563,7 @@ public class MagicBountyLoader {
                     while (iter.hasNext()) {
                         String v = iter.next();
                         if (!variantExists(v)) {
-                            if(this_bounty.ignore_missing_variants) {
+                            if(this_bounty.fleet_skip_missing_variants) {
                                 iter.remove();
                             } else {
                                 //that reinforcement variant couldn't be found, invalidating the bounty

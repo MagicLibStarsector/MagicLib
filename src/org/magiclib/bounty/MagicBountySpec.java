@@ -226,9 +226,9 @@ public class MagicBountySpec {
      */
     public String fleet_name;
     /**
-     * if true, the script will ignore any missing variants
+     * if true, the script will skip any missing variants
      */
-    public boolean ignore_missing_variants;
+    public boolean fleet_skip_missing_variants;
     /**
      * faction of the fleet once it is generated, but not necessarily the faction of the ships inside
      */
@@ -379,7 +379,7 @@ public class MagicBountySpec {
             int target_elite_skills,
             OfficerManagerEvent.SkillPickPreference target_skill_preference,
             Map<String, Integer> target_skills,
-            boolean ignore_missing_variants,
+            boolean fleet_skip_missing_variants,
             String fleet_name,
             String fleet_faction,
             String fleet_flagship_variant,
@@ -535,7 +535,7 @@ public class MagicBountySpec {
         this.target_elite_skills = target_elite_skills;
         this.target_skill_preference = target_skill_preference;
         this.target_skills = target_skills;
-        this.ignore_missing_variants = ignore_missing_variants;
+        this.fleet_skip_missing_variants = fleet_skip_missing_variants;
         this.fleet_name = fleet_name;
         this.fleet_faction = fleet_faction;
         this.fleet_flagship_variant = fleet_flagship_variant;
@@ -621,7 +621,7 @@ public class MagicBountySpec {
         sb.append(", \ntarget_elite_skills=").append(target_elite_skills);
         sb.append(", \ntarget_skill_preference=").append(target_skill_preference);
         sb.append(", \ntarget_skills=").append(target_skills);
-        sb.append(", \nignore_missing_variants=").append(ignore_missing_variants);
+        sb.append(", \nfleet_skip_missing_variants=").append(fleet_skip_missing_variants);
         sb.append(", \nfleet_name='").append(fleet_name).append('\'');
         sb.append(", \nfleet_faction='").append(fleet_faction).append('\'');
         sb.append(", \nfleet_flagship_variant='").append(fleet_flagship_variant).append('\'');
