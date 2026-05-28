@@ -161,8 +161,12 @@ public final class ActiveBounty {
             if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
                 FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
                 for (FactionAPI f : Global.getSector().getAllFactions()) {
-                    if (f != bountyFaction && f != Global.getSector().getPlayerFaction())
-                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                    if (f != bountyFaction) {
+                        if(f != Global.getSector().getPlayerFaction())
+                            f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                        else
+                            f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.HOSTILE);
+                    }
                 }
             }
         }
@@ -174,12 +178,21 @@ public final class ActiveBounty {
             getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
         }
 
+        var memory = getFleet().getMemoryWithoutUpdate();
         // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
-        // Otherwise, this would still allow ships to retreat.
+        // Otherwise, this would still allow ships to retreat in combat.
         // See https://fractalsoftworks.com/forum/index.php?topic=5061.msg294053#msg294053.
-        getFleet().getMemoryWithoutUpdate().set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
-        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
-        getFleet().getMemoryWithoutUpdate().set(spec.job_memKey, true);
+        memory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
+
+        // Prevent retreating in interaction dialog, no pursue battles
+        memory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, spec.fleet_no_retreat);
+
+        // Always pursue the player on the campaign layer.
+        memory.set(MemFlags.MEMORY_KEY_MAKE_ALWAYS_PURSUE, spec.fleet_always_pursue);
+        memory.set(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, spec.fleet_always_pursue);
+
+        memory.set("$MagicLib_Bounty_target_fleet", true);
+        memory.set(spec.job_memKey, true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);

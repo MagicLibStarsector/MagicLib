@@ -180,7 +180,8 @@
         "fleet_composition_faction": "pirates", # Default: bounty fleet faction. Used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
         "fleet_composition_quality": 1, # Default: 1, use 2 for no Dmods.
         "fleet_transponder": false, # Default: true.
-		"fleet_no_retreat": false, #Default: false.
+		"fleet_no_retreat": false, #Default: false. When true, members of this fleet will never retreat in the combat layer.
+		"fleet_always_pursue": false, #Default: false. When true, this fleet will always pursue the player in the campaign layer.
         "fleet_behavior": "PASSIVE", # Default:"GUARDED". The fleet's behavior on the campaign layer. Options: ["PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING"].
         "fleet_attitude":"DEFAULT", # Default: depends on faction hostility. Options are ["HOSTILE", "NEUTRAL", "DEFAULT"]. DEFAULT or null means it defaults to the faction's attitude towards you.
         # The musicSetId to use for the battle, defaults to no custom music.

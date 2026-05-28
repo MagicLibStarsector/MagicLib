@@ -307,6 +307,7 @@ public class MagicBountyLoader {
                     getFloat(bountyId, "fleet_composition_quality", 1),
                     getBoolean(bountyId, "fleet_transponder"),
                     getBoolean(bountyId, "fleet_no_retreat"),
+                    getBoolean(bountyId, "fleet_always_pursue"),
                     order,
                     getString(bountyId, "fleet_attitude"),
                     getString(bountyId, "fleet_musicSetId"),

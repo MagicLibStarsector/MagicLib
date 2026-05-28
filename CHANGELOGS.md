@@ -13,6 +13,8 @@ Version 1.5.7
 - Add fleet_skip_missing_variants to bounty spec. This causes the bounty to skip any missing variants instead of failing.
 - Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
 - Add bounty item type to the rewards. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
+- Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
+- Added "fleet_always_pursue" to make a campaign fleet always pursue the player.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).

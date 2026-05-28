@@ -267,6 +267,10 @@ public class MagicBountySpec {
      */
     public boolean fleet_no_retreat;
     /**
+     * default to false, makes fleet always pursue in campaign layer
+     */
+    public boolean fleet_always_pursue;
+    /**
      * PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED (campaign.FleetAssignment.orbit_aggressive)
      */
     public FleetAssignment fleet_behavior;
@@ -394,6 +398,7 @@ public class MagicBountySpec {
             float fleet_composition_quality,
             boolean fleet_transponder,
             boolean fleet_no_retreat,
+            boolean fleet_always_pursue,
             FleetAssignment fleet_behavior,
             String fleet_attitude,
             String fleet_musicSetId,
@@ -550,6 +555,7 @@ public class MagicBountySpec {
         this.fleet_composition_quality = fleet_composition_quality;
         this.fleet_transponder = fleet_transponder;
         this.fleet_no_retreat = fleet_no_retreat;
+        this.fleet_always_pursue = fleet_always_pursue;
         this.fleet_behavior = fleet_behavior;
         this.fleet_attitude = fleet_attitude_enum;
         this.fleet_musicSetId = fleet_musicSetId;
@@ -636,6 +642,7 @@ public class MagicBountySpec {
         sb.append(", \nfleet_composition_quality=").append(fleet_composition_quality);
         sb.append(", \nfleet_transponder=").append(fleet_transponder);
         sb.append(", \nfleet_no_retreat=").append(fleet_no_retreat);
+        sb.append(", \nfleet_always_pursue=").append(fleet_always_pursue);
         sb.append(", \nfleet_behavior=").append(fleet_behavior);
         sb.append(", \nfleet_musicSetId=").append(fleet_musicSetId);
         sb.append(", \nlocation_marketIDs=").append(location_marketIDs);
