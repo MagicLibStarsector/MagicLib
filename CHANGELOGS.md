@@ -15,6 +15,8 @@ Version 1.5.7
 - Add bounty item type to the rewards. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
 - Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
 - Added "fleet_always_pursue" to make a campaign fleet always pursue the player.
+- Bounty validation now warns
+- ML_bounty faction is now set as hostile to the player by default
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).
