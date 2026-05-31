@@ -1,6 +1,6 @@
-package org.magiclib.util.memberMemory
+package org.magiclib.util.membermemory
 
-import org.magiclib.util.memberMemory.MemberMemoryManager.getMemberMemoryStore
+import org.magiclib.util.membermemory.MemberMemoryManager.getMemberMemoryStore
 
 object MemberMemoryAccess {
     const val SECTOR_MEMBER_MEMORY_KEY = "\$ML_MemberMemoryStore"

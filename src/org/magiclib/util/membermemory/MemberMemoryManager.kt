@@ -1,10 +1,10 @@
-package org.magiclib.util.memberMemory
+package org.magiclib.util.membermemory
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CargoAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI
-import org.magiclib.util.memberMemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
+import org.magiclib.util.membermemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
 
 internal object MemberMemoryManager {
     fun getMemberMemoryStore(): MemberMemoryStore = getOrInitStore()

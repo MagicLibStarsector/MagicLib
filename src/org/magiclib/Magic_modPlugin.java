@@ -7,7 +7,7 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
-import org.magiclib.util.memberMemory.MemberMemoryManager;
+import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.achievements.TestingAchievementSpec;

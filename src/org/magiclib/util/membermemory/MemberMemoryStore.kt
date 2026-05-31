@@ -1,4 +1,4 @@
-package org.magiclib.util.memberMemory
+package org.magiclib.util.membermemory
 
 class MemberMemoryStore {
     // Member ID first, then the key

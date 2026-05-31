@@ -1,4 +1,4 @@
-package org.magiclib.util.memberMemory
+package org.magiclib.util.membermemory
 
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 
