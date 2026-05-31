@@ -7,18 +7,29 @@ import com.fs.starfarer.api.campaign.econ.SubmarketAPI
 import org.magiclib.util.membermemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
 
 internal object MemberMemoryManager {
-    fun getMemberMemoryStore(): MemberMemoryStore = getOrInitStore()
+
+    private var memberMemoryStore: MemberMemoryStore? = null
+    fun getMemberMemoryStore(): MemberMemoryStore {
+        return memberMemoryStore ?: getOrInitStore().also {
+            memberMemoryStore = it
+        }
+    }
 
     private fun getOrInitStore(): MemberMemoryStore {
-        val memory = Global.getSector().memoryWithoutUpdate
+        val memory = Global.getSector()?.memoryWithoutUpdate ?: return MemberMemoryStore()
 
-        return memory?.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
-            ?: MemberMemoryStore().also { memory?.set(SECTOR_MEMBER_MEMORY_KEY, it) }
+        return memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
+            ?: MemberMemoryStore().also { memory.set(SECTOR_MEMBER_MEMORY_KEY, it) }
+    }
+
+    @JvmStatic
+    fun onGameLoad() {
+        memberMemoryStore = getOrInitStore()
     }
 
     @JvmStatic
     fun beforeGameSave() {
-        val store = getOrInitStore()
+        val store = getMemberMemoryStore() ?: return
 
         if (!store.getMemberIDs().isEmpty()) {
             // This shouldn't ever crash, but if it did, beforeGameSave would be a terrible place for it to happen. So prevent it anyway.
