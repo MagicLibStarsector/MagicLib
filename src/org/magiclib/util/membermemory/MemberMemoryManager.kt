@@ -29,7 +29,7 @@ internal object MemberMemoryManager {
                 return
             }
 
-            store.unsetMembersNotInSet(mostMemberIDs)
+            store.syncMembers(mostMemberIDs)
         }
     }
 

@@ -7,10 +7,13 @@ object MemberMemoryAccess {
 
     /**
      * Member must be present in either an active fleet or in storage before game save, otherwise the memory related to it will be removed on game save as it is considered no longer existing.
+     *
+     * @param persistUntilSeen If true, the memory will be kept regardless until the member appears in an active fleet or storage for the first time.
      */
+    @JvmOverloads
     @JvmStatic
-    fun getMemberMemory(memberID: String): MutableMap<String, Any?> {
-        return getMemberMemoryStore().getMemberMemory(memberID)
+    fun getMemberMemory(memberID: String, persistUntilSeen: Boolean = false): MemberMemory {
+        return getMemberMemoryStore().getMemberMemory(memberID, persistUntilSeen)
     }
 
     @JvmStatic

@@ -8,6 +8,6 @@ object MemberMemoryExt {
      *
      * It is suggested to read the documentation on what this delegates to before using.
      */
-    fun FleetMemberAPI.getMemberMemory() =
-        MemberMemoryAccess.getMemberMemory(id)
+    fun FleetMemberAPI.getMemberMemory(persistUntilSeen: Boolean = false) =
+        MemberMemoryAccess.getMemberMemory(id, persistUntilSeen)
 }
