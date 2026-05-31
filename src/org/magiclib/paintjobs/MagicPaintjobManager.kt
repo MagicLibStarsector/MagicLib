@@ -402,8 +402,8 @@ object MagicPaintjobManager {
     internal fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI =
         when {
             !this.isDefaultDHull -> this
-            else -> this.dParentHull
-        } ?: this
+            else -> this.dParentHull ?: this
+        }
 
     // May be made into a function later, for now is kept internal here
     internal fun ShipHullSpecAPI.getEffectiveHull(): ShipHullSpecAPI {
