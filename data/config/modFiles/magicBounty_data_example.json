@@ -181,7 +181,11 @@
         "fleet_composition_quality": 1, # Default: 1, use 2 for no Dmods.
         "fleet_transponder": false, # Default: true.
 		"fleet_no_retreat": false, #Default: false. When true, members of this fleet will never retreat in the combat layer.
-		"fleet_always_pursue": false, #Default: false. When true, this fleet will always pursue the player in the campaign layer.
+		"fleet_memory_flags": [ # When the bounty is accepted, set the specified memory keys to true on this fleet’s MemoryAPI
+            "$noRepImpact", # No rep impact when fighting this fleet
+            "$noShipRecovery", # No recovering any ships from this fleet.
+            "$cfai_makeAlwaysPursue", "$cfai_makeAggressive", # These two flags cause this fleet to almost always chase the player fleet in the campaign layer reguardless of if the player fleet is bigger/has higher FP.
+		],
         "fleet_behavior": "PASSIVE", # Default:"GUARDED". The fleet's behavior on the campaign layer. Options: ["PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING"].
         "fleet_attitude":"DEFAULT", # Default: depends on faction hostility. Options are ["HOSTILE", "NEUTRAL", "DEFAULT"]. DEFAULT or null means it defaults to the faction's attitude towards you.
         # The musicSetId to use for the battle, defaults to no custom music.

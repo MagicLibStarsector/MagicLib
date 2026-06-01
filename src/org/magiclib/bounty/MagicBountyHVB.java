@@ -321,8 +321,8 @@ public class MagicBountyHVB {
                             false,
                             //boolean fleet_no_retreat,
                             true,
-                            //boolean fleet_always_pursue
-                            false,
+                            //List<String> fleet_memory_flags
+                            null,
                             //FleetAssignment fleet_behavior,
                             FleetAssignment.DEFEND_LOCATION,
                             // String fleet_behavior,

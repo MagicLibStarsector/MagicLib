@@ -187,9 +187,13 @@ public final class ActiveBounty {
         // Prevent retreating in interaction dialog, no pursue battles
         memory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, spec.fleet_no_retreat);
 
-        // Always pursue the player on the campaign layer.
-        memory.set(MemFlags.MEMORY_KEY_MAKE_ALWAYS_PURSUE, spec.fleet_always_pursue);
-        memory.set(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, spec.fleet_always_pursue);
+        if(spec.fleet_memory_flags != null) {
+            for (String memoryKey : spec.fleet_memory_flags) {
+                if (!memoryKey.startsWith("$"))
+                    memoryKey = "$" + memoryKey;
+                memory.set(memoryKey, true);
+            }
+        }
 
         memory.set("$MagicLib_Bounty_target_fleet", true);
         memory.set(spec.job_memKey, true);

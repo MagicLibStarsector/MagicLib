@@ -14,9 +14,9 @@ Version 1.5.7
 - Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
 - Add bounty item type to the rewards. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
 - Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
-- Added "fleet_always_pursue" to make a campaign fleet always pursue the player.
 - Bounty validation now warns
 - ML_bounty faction is now set as hostile to the player by default
+- Added 'fleet_memory_flags' to add true memory keys to the bounty fleet.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).
