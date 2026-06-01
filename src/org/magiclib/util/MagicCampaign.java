@@ -149,7 +149,30 @@ public class MagicCampaign {
             } catch (JSONException ignored) {
             }
 
-            variant = Global.getSettings().createEmptyVariant(variantId, Global.getSettings().getHullSpec(hullId));
+            // This code avoids using createEmptyVariant() because it does not initialize ship modules.
+            // Instead, it clones the _Hull variant so that any expected modules are present, even if empty.
+            //
+            // One issue this avoids can appear when loading variant files with missing or improperly defined modules:
+            // createEmptyVariant() may result in no modules being present at all,
+            // whereas cloning the _Hull variant creates the expected modules, if empty.
+
+            var hullSpec = Global.getSettings().getHullSpec(hullId);
+            var hullHullVariantId = hullSpec.getHullId() + "_Hull";
+
+            if(Global.getSettings().doesVariantExist(hullHullVariantId)) {
+                variant = Global.getSettings().getVariant(hullHullVariantId).clone();
+                variant.setHullVariantId(variantId);
+            }
+
+            if(variant == null) {
+                // Fallback to createEmptyVariant anyway if the _Hull variant did not exist for some reason.
+                log.warn("Hull variant not found for hull '" + hullId + "' and variant id '" + variantId + "'. Falling back to createEmptyVariant");
+                variant = Global.getSettings().createEmptyVariant(variantId, hullSpec);
+            }
+
+            int numBuiltIn = variant.getFittedWings().size();
+
+
             variant.setVariantDisplayName(displayName);
             variant.setNumFluxCapacitors(fluxCapacitors);
             variant.setNumFluxVents(fluxVents);
@@ -213,7 +236,6 @@ public class MagicCampaign {
                 variant.addWeaponGroup(weaponGroupSpec);
             }
             if (wings != null) {
-                int numBuiltIn = Global.getSettings().getVariant(variant.getHullSpec().getHullId() + "_Hull").getFittedWings().size();
                 for (int w = 0; w < wings.length(); w++) {
                     variant.setWingId(numBuiltIn + w, wings.getString(w));
                 }
