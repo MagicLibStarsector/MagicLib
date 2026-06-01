@@ -82,6 +82,7 @@
         "fleet_composition_quality": 1,
         "fleet_transponder": false,
 		"fleet_no_retreat": false,
+		"fleet_memory_flags": [],
         "fleet_behavior": "PASSIVE",
         "fleet_attitude": null,
         "fleet_musicSetId": null,
