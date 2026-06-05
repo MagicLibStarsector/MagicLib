@@ -61,11 +61,26 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
         val memberID: String
     )
 
-    private fun MemoryAPI.getShinyAppliedTo(): ShinyAppliedTo? =
-        if (contains(SHINY_APPLIED_FLEET_KEY)) get(SHINY_APPLIED_FLEET_KEY) as? ShinyAppliedTo else null
+    private fun MemoryAPI.getShinyAppliedTo(): ShinyAppliedTo? {
+        if (!contains(SHINY_APPLIED_FLEET_KEY)) return null
+
+        val value = get(SHINY_APPLIED_FLEET_KEY)
+
+        return when (value) {
+            is List<*> -> {
+                val paintjobID = value.getOrNull(0) as? String
+                val memberID = value.getOrNull(1) as? String
+                if (paintjobID != null && memberID != null)
+                    ShinyAppliedTo(paintjobID, memberID)
+                else null
+            }
+            is ShinyAppliedTo -> value // This is for backwards compatibility. This can be freely removed on version 0.98.5a and greater.
+            else -> null
+        }
+    }
 
     private fun MemoryAPI.setShinyAppliedTo(paintjobID: String, memberID: String) {
-        set(SHINY_APPLIED_FLEET_KEY, ShinyAppliedTo(paintjobID, memberID))
+        set(SHINY_APPLIED_FLEET_KEY, listOf(paintjobID, memberID))
     }
 
     fun checkAndApplyShiniesToAllFleetsInPlayerLocation(
