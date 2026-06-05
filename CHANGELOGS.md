@@ -17,6 +17,7 @@ Version 1.5.7
 - Bounty validation now warns
 - ML_bounty faction is now set as hostile to the player by default
 - Added 'fleet_memory_flags' to add true memory keys to the bounty fleet.
+- Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).
@@ -46,6 +47,7 @@ Version 1.5.7
 - Stop campaign trail from getting added to saves and duplicated.
 - Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
 - Added functionality to allow adding random memory to a FleetMemberAPI
+- loadVariant now tries to create a clone of the _Hull variant of the input hullid instead of using createEmptyVariant() if possible. This is intended to fix issues with missing modules by having them be created by default.
 
 Version 1.5.6
 
