@@ -453,6 +453,8 @@ public final class MagicBountyCoordinator {
             fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORES_OTHER_FLEETS, true);
             fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_DO_NOT_IGNORE_PLAYER, true);
 
+            fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS, true);
+
             // Set fleet to max CR
             for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
                 member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
