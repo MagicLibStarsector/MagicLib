@@ -1,5 +1,6 @@
 package org.magiclib.util.membermemory
 
+import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import org.magiclib.util.membermemory.MemberMemoryManager.getMemberMemoryStore
 
 object MemberMemoryAccess {
@@ -12,7 +13,7 @@ object MemberMemoryAccess {
      */
     @JvmOverloads
     @JvmStatic
-    fun getMemberMemory(memberID: String, persistUntilSeen: Boolean = false): MemberMemory {
+    fun getMemberMemory(memberID: String, persistUntilSeen: Boolean = false): MemoryAPI {
         return getMemberMemoryStore().getMemberMemory(memberID, persistUntilSeen)
     }
 

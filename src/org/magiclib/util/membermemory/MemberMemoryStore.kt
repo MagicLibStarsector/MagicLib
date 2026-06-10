@@ -1,8 +1,14 @@
 package org.magiclib.util.membermemory
 
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.rules.MemoryAPI
+
 class MemberMemoryStore {
     // Member ID -> MemberMemory
+    @Deprecated("TODO: remove on 0.98.5a")
     private val members: MutableMap<String, MemberMemory> = mutableMapOf()
+
+    private val membersMap: MutableMap<String, MemoryAPI> = mutableMapOf()
 
     fun set(memberID: String, key: String, value: Any?) {
         getMemberMemory(memberID).set(key, value)
@@ -13,26 +19,27 @@ class MemberMemoryStore {
     }
 
     fun containsKey(memberID: String, key: String): Boolean {
-        return members[memberID]?.containsKey(key) == true
+        return membersMap[memberID]?.contains(key) == true
     }
 
     fun unsetKey(memberID: String, key: String) {
-        members[memberID]?.unset(key)
+        membersMap[memberID]?.unset(key)
     }
 
     fun getMemberIDs(): Set<String> {
-        return members.keys
+        return membersMap.keys
     }
 
     fun unsetMemberMemory(memberID: String) {
-        members.remove(memberID)
+        membersMap.remove(memberID)
     }
 
     @JvmOverloads
-    fun getMemberMemory(memberID: String, persistUntilSeen: Boolean = false): MemberMemory {
-        return members.getOrPut(memberID) {
-            MemberMemory().apply {
-                this.persistUntilSeen = persistUntilSeen
+    fun getMemberMemory(memberID: String, persistUntilSeen: Boolean = false): MemoryAPI {
+        return membersMap.getOrPut(memberID) {
+            Global.getFactory().createMemory().apply {
+                if(persistUntilSeen)
+                    this.set("\$ML_persistUntilSeen", true)
             }
         }
     }
@@ -44,17 +51,18 @@ class MemberMemoryStore {
      * - Removes absent members unless persistUntilSeen is true
      */
     fun syncMembers(memberIDs: Set<String>) {
-        val iterator = members.entries.iterator()
+        val iterator = membersMap.entries.iterator()
 
         while (iterator.hasNext()) {
             val (memberID, memory) = iterator.next()
 
             val isPresent = memberID in memberIDs
+            val persistUntilSeen = memory.contains("\$ML_persistUntilSeen")
 
             if (isPresent) {
-                if (memory.persistUntilSeen)
-                    memory.persistUntilSeen = false
-            } else if (!memory.persistUntilSeen) {
+                if (persistUntilSeen)
+                    memory.unset("\$ML_persistUntilSeen")
+            } else if (!persistUntilSeen) {
                 iterator.remove()
             }
         }

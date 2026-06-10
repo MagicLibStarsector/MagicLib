@@ -1,5 +1,6 @@
 package org.magiclib.util.membermemory
 
+@Deprecated("TODO: remove on 0.98.5a")
 class MemberMemory {
     private val data: MutableMap<String, Any?> = mutableMapOf()
     var persistUntilSeen: Boolean = false
