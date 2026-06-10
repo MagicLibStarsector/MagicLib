@@ -1,23 +1,47 @@
+Version 1.5.8
+
+**MagicBounty**
+- Bounties are now kept in the intel bounty board if the player has previously been notified of them, as opposed to the previous behavior of disappearing if out of comms range. This is to prevent confusion on why bounties may not appear in some situations as that isn't documented anywhere.
+- Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance.
+- Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
+- Fixed bounty arrow pointing directly at the destination even when not specified to do so.
+- Fixed bounty intel not showing up in one of the lower faction intel tabs and instead duplicating a intel tab above.
+- Added 'fleet_skip_missing_variants' to bounty spec. This causes the bounty to skip any missing variants instead of failing.
+- Added 'fleet_memory_flags' to the bounty spec to add true memory keys to the bounty fleet.
+- Added the ability to specify item type with 'job_item_reward' beforehand with a $ in the bounty spec. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
+- Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
+- Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
+- Bounty validation now warns
+- The ML_bounty faction is now set as hostile to the player by default.
+
+**MagicAchievements**
+- Fix possible 'ShipKillsAchievement' game crash.
+- Avoid log spam when a mod which added achivements was removed.
+
+**MagicPaintjobs**
+- Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
+- Shiny paintjobs now have a shiny icon to indicate their status.
+- Fix bad performance in some situations.
+- Fix the paintjob unlock notifier, as it didn't appear to be working.
+- Fix the game crashing if paintjob sprite did not exist or was not accessable, often occuring when opening the paintjob intel entry.
+- Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
+- Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
+- Fix paintjob not applying to ship modules in some cases.
+- Add vents color changing alongside the engines and shield file.
+
+**Other**
+- Stop a new campaign trail being added to the save file on every game load. Campaign trails are no longer serialized to the save game.
+- Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
+- Added functionality to allow adding random memory to a FleetMemberAPI
+- loadVariant now tries to clone the _Hull variant using the hull ID instead of createEmptyVariant() where possible. This makes loadVariant create empty module slots by default; it is intended to fix issues where expected modules were missing due to misconfigured .variant files.
+
 Version 1.5.7
 
 **MagicBounty**
 - Fixed bounties that use existing_target_memkey (by Numan).
 - Fixed shiny paintjobs not getting added due to vanilla wonkiness.
-- Fixed bounty arrow pointing directly at the destination even when not specified to do so.
 - Accepted bounty intel is now marked as important.
 - Added hotkey (`T`) to accept a bounty.
-- Added the ability to specify item type with 'job_item_reward' beforehand with a $
-- Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance
-- Fixed bounty intel not showing up in one of the lower faction intel tabs.
-- Bounties are kept in the intel bounty board if the player has previously been notified of them. This is to prevent confusion on why bounties may not appear in some situations as that isn't documented anywhere.
-- Add fleet_skip_missing_variants to bounty spec. This causes the bounty to skip any missing variants instead of failing.
-- Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
-- Add bounty item type to the rewards. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
-- Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
-- Bounty validation now warns
-- ML_bounty faction is now set as hostile to the player by default
-- Added 'fleet_memory_flags' to add true memory keys to the bounty fleet.
-- Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation.
 
 **MagicAchievements**
 - Increased "shiny" paintjob spawn rate to 1 in 25 (was 1 in 50).
@@ -25,29 +49,12 @@ Version 1.5.7
 - Paintjob UI on refit screen now makes sounds.
 - Removed perf impact of checking if there's a completed achievement to show a notification for. 
 - `ShipKillsAchievement` now auto-generates the description and tooltip (configurable).
-- Fix possible 'ShipKillsAchievement' game crash.
-- Avoid showing achievements from removed mods.
-- Remove log spam when a mod which added achivements was removed.
-
-**MagicPaintjobs**
-- Fix bad performance on the paintjob unlock notifier, and fix it to work properly again.
-- Fixed game crashing if paintjob sprite did not exist or was not accessable.
-- Paintjobs show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
-- Shiny paintjobs now have a shiny icon to indicate their status.
-- Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
-- Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
-- Fix paintjob not applying to ship modules in some cases.
-- Add vents color changing alongside the engines and shield file.
 
 **MagicSubsystems**
 - Improved clarity of text (contributed by @Ruddygreat).
 
 **Other**
 - Added `List<String>.magicJoinToString` as a Kotlin extension method, which joins strings in a list using different separators based on the number of elements
-- Stop campaign trail from getting added to saves and duplicated.
-- Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
-- Added functionality to allow adding random memory to a FleetMemberAPI
-- loadVariant now tries to create a clone of the _Hull variant of the input hullid instead of using createEmptyVariant() if possible. This is intended to fix issues with missing modules by having them be created by default.
 
 Version 1.5.6
 
