@@ -20,11 +20,28 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var ventsSpec: PaintjobVentsSpec?,
     var paintjobFamily: String?
 ) {
-    private val shiny = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
+    private var shiny = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
+    /**
+     * Override if this paintjob is shiny or not with the input value.
+     *
+     * Loses effect on game restart
+     */
+    fun setShiny(value: Boolean) {
+        shiny = value
+    }
     val isShiny: Boolean
         get() = shiny
 
-    private val permanent = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
+    private var permanent = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
+    /**
+     * Override if this paintjob is permanent or not with the input value.
+     *
+     * Loses effect on game restart
+     */
+    fun setPermanent(value: Boolean) {
+        permanent = value
+    }
+
     val isPermanent: Boolean
         get() = permanent
 
@@ -32,7 +49,16 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     val isHidden: Boolean
         get() = hidden
 
-    val isUnlockable = !isShiny && !isHidden
+    var _isUnlockable = false
+    /**
+     * Make this paintjob unlockable regardless of if this is not normally unlockable.
+     *
+     * Loses effect on game restart
+     */
+    fun setIsUnlockable(value: Boolean) {
+        _isUnlockable = value
+    }
+    val isUnlockable = _isUnlockable || (!isShiny && !isHidden)
 
     data class PaintjobEngineSpec(
         var color: Color?,
