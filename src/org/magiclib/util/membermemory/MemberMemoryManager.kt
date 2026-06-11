@@ -18,8 +18,16 @@ internal object MemberMemoryManager {
     private fun getOrInitStore(): MemberMemoryStore {
         val memory = Global.getSector()?.memoryWithoutUpdate ?: return MemberMemoryStore()
 
-        return memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
+        var memberStore = memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
             ?: MemberMemoryStore().also { memory.set(SECTOR_MEMBER_MEMORY_KEY, it) }
+
+        // TODO: Should be safe to remove on 0.98.5a
+        if(runCatching { memberStore.getMemberIDs() }.getOrNull() == null ) {
+            Global.getLogger(this.javaClass).warn("MemberMemoryStore had a null variable, creating new instance")
+            memberStore = MemberMemoryStore()
+            memory.set(SECTOR_MEMBER_MEMORY_KEY, memberStore)
+        }
+        return memberStore
     }
 
     @JvmStatic
@@ -29,18 +37,15 @@ internal object MemberMemoryManager {
 
     @JvmStatic
     fun beforeGameSave() {
-        val store = getMemberMemoryStore() ?: return
-
-        if (!store.getMemberIDs().isEmpty()) {
-            // This shouldn't ever crash, but if it did, beforeGameSave would be a terrible place for it to happen. So prevent it anyway.
-            val mostMemberIDs = try {
-                getMostMemberIDs()
-            } catch (e: Exception) {
-                Global.getLogger(this.javaClass).error("Failed to get member IDs", e)
-                return
+        // This shouldn't ever crash, but if it did, beforeGameSave would be a terrible place for it to happen. So prevent it anyway.
+        try {
+            val store = getMemberMemoryStore()
+            if (!store.getMemberIDs().isEmpty()) {
+                val mostMemberIDs = getMostMemberIDs()
+                store.syncMembers(mostMemberIDs)
             }
-
-            store.syncMembers(mostMemberIDs)
+        } catch (e: Exception) {
+            Global.getLogger(this.javaClass).error("Failed to sync member memory", e)
         }
     }
 
