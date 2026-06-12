@@ -9,6 +9,7 @@ Version 1.5.8
 - Added 'fleet_skip_missing_variants' to bounty spec. This causes the bounty to skip any missing variants instead of failing.
 - Added 'fleet_memory_flags' to the bounty spec to add true memory keys to the bounty fleet.
 - Added the ability to specify item type with 'job_item_reward' beforehand with a $ in the bounty spec. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
+- Added `drawHUDStatusBar` overload that takes a `Vector2f`.
 - Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
 - Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
 - Bounty validation now warns

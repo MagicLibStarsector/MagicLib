@@ -14,8 +14,8 @@ import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.util.ui.StatusBarData;
 
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -674,21 +674,39 @@ public class MagicUI {
     }
 
     /**
-     * Draw a status bar next to the player ship on the top left corner of the hud
-     * Can write two bits of text on its left side
+     * Draw a status bar next to the player ship on the top left corner of the hud.
+     * Can write two bits of text on its left side.
      *
      * @param ship        Player ship.
-     * @param fill        Filling level of the bar. 0 to 1
+     * @param fill        Filling level of the bar. 0 to 1.
      * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
      * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
      * @param secondfill  Wider filling like the soft/hard-flux. 0 to 1.
-     * @param bottext     Write a text just on the left of the bar. Example: 'flux'. Set to null to ignore
-     * @param toptext     Write a text just above the bar. Example: 'player' or 'target'. Set to null to ignore
+     * @param bottext     Write a text just on the left of the bar. Example: 'flux'. Set to null to ignore.
+     * @param toptext     Write a text just above the bar. Example: 'player' or 'target'. Set to null to ignore.
      * @param offset      Offsets the bar a few pixels upward.
      *                    Can be used for example to display the targeted enemy special status bar.
      */
     public static void drawHUDStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill, String bottext, String toptext, boolean offset) {
         Vector2f pos = ship.getLocation();
+        drawHUDStatusBar(ship, fill, innerColor, borderColor, secondfill, bottext, toptext, offset, pos);
+    }
+
+    /**
+     * Draw a status bar at a specified world position on the HUD.
+     * Can write two bits of text on its left side.
+     *
+     * @param ship        Player ship.
+     * @param fill        Filling level of the bar. 0 to 1.
+     * @param innerColor  Color of the bar. If null, the vanilla green UI color will be used.
+     * @param borderColor Color of the border. If null, the vanilla green UI color will be used.
+     * @param secondfill  Wider filling like the soft/hard-flux. 0 to 1.
+     * @param bottext     Write a text just on the left of the bar. Example: 'flux'. Set to null to ignore.
+     * @param toptext     Write a text just above the bar. Example: 'player' or 'target'. Set to null to ignore.
+     * @param offset      Offsets the bar a few pixels upward.
+     * @param position    World-space position to draw the bar at.
+     */
+    public static void drawHUDStatusBar(ShipAPI ship, float fill, Color innerColor, Color borderColor, float secondfill, String bottext, String toptext, boolean offset, Vector2f position) {
         CombatEngineAPI engine = Global.getCombatEngine();
         if (engine == null || engine.getViewport() == null) {
             return;
@@ -700,7 +718,7 @@ public class MagicUI {
             return;
         }
 
-        Vector2f pos2 = new Vector2f((int) Global.getCombatEngine().getViewport().convertWorldXtoScreenX(pos.getX()), (int) Global.getCombatEngine().getViewport().convertWorldYtoScreenY(pos.getY()));
+        Vector2f pos2 = new Vector2f((int) Global.getCombatEngine().getViewport().convertWorldXtoScreenX(position.getX()), (int) Global.getCombatEngine().getViewport().convertWorldYtoScreenY(position.getY()));
         if (offset) {
             pos2.translate(0f, 16f);
         }
