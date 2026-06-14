@@ -77,7 +77,7 @@ abstract class ShipKillsAchievement @JvmOverloads constructor(
         val ships = Global.getCombatEngine().ships
 
         for (ship in ships.filter { !it.isAlive && it.id !in killedShipIds }) {
-            processKill(shipIdToListener[ship.id]!!.damageInfoPerShipId[ship.id])
+            processKill(shipIdToListener[ship.id]?.damageInfoPerShipId[ship.id])
             killedShipIds.add(ship.id)
         }
 
