@@ -4,6 +4,7 @@ import com.fs.starfarer.api.ui.*
 import org.magiclib.bounty.ui.ButtonHandler
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.lists.ListUIPanelPlugin
+import org.magiclib.internalextensions.height
 import org.magiclib.util.MagicTxt
 
 abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAPI) :
@@ -24,8 +25,9 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         val outerPanelLocal = outerPanel ?: parentPanel.createCustomPanel(panelWidth, panelHeight, this)
         outerPanel = outerPanelLocal
 
-        sortersForItems.forEach { it.loadFromPersistentData(members) }
         var validMembers = members.filter { shouldMakePanelForItem(it) }
+        sortersForItems.forEach { it.loadFromPersistentData(validMembers) }
+
         lastMembers = validMembers
         //validMembers = sortMembers(validMembers)
         validMembers = validMembers.sortedBy { it.getSortIndex() }
@@ -50,12 +52,12 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         val listHeight = panelHeight - buttonHeight - 22f
         val holdingPanel = outerPanelLocal.createCustomPanel(panelWidth, listHeight, null)
         innerPanel = holdingPanel
-
+        
         val scrollerTooltip: TooltipMakerAPI = holdingPanel.createUIElement(panelWidth, listHeight, true)
         val scrollingPanel: CustomPanelAPI =
-            holdingPanel.createCustomPanel(panelWidth, getListHeight(validMembers.size) + buttonHeight + 22f, null)
+            holdingPanel.createCustomPanel(panelWidth, 0f, null) // Height is assigned later
         val tooltip: TooltipMakerAPI =
-            scrollingPanel.createUIElement(panelWidth, getListHeight(validMembers.size) + buttonHeight + 22f, false)
+            scrollingPanel.createUIElement(panelWidth, 0f, false) // Height is assigned later
 
         var lastItem: UIPanelAPI? = null
         validMembers
@@ -64,6 +66,11 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
             .forEach { (item, rowPlugin) ->
                 lastItem = placeItem(tooltip, rowPlugin!!, lastItem)
             }
+
+        // Auto-size height
+        tooltip.heightSoFar += buttonHeight + 22f
+        scrollingPanel.height = tooltip.heightSoFar
+        tooltip.height = tooltip.heightSoFar
 
         scrollingPanel.addUIElement(tooltip).inTL(0f, 0f)
         scrollerTooltip.addCustom(scrollingPanel, 0f).position.inTL(0f, 0f)
