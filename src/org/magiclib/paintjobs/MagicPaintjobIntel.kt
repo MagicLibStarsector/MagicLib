@@ -325,8 +325,12 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec, includeShiny = false)
             val shipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship)
 
-            val spriteName = ship.spriteOverride ?: shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
-            Global.getSettings().loadTexture(spriteName)
+            val spriteName = // ship.spriteOverride ?: // Note that spriteOverride may return an empty string instead of null, can cause issues if not handled.
+                shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
+
+            if(shipPaintjob != null)
+                Global.getSettings().loadTexture(spriteName)
+
             val shipThumbnailPanel = row.createCustomPanel(imageSize, imageSize, null)
             val shipThumbnailUnderlay = shipThumbnailPanel.createUIElement(imageSize, imageSize, false)
             val shipThumbnailOverlay = shipThumbnailPanel.createUIElement(cellTooltip.widthSoFar, 22f, false)
@@ -690,6 +694,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         ) { pjCellTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
             val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(ship)?.id == paintjob?.id
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
+            if(paintjob != null)
+                Global.getSettings().loadTexture(spriteName)
             val isUnlocked = paintjob == null || MagicPaintjobManager.unlockedPaintjobIds.contains(paintjob.id)
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
@@ -706,7 +712,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     setAlignment(Alignment.MID)
                 }
             val title = cellUnderlay.prev
-            Global.getSettings().loadTexture(spriteName)
 
             cellUnderlay.addImage(
                 spriteName, imageSize, imageSize, opad

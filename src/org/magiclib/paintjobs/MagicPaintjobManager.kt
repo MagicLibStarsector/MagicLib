@@ -258,7 +258,7 @@ object MagicPaintjobManager {
                     } else if (spriteId.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
                         skip = true
-                    } else if (runCatching { Global.getSettings().loadText(spriteId) }.getOrNull() == null) { // Check if file exists without loading the texture
+                    } else if (runCatching { Global.getSettings().loadText(spriteId) }.getOrNull().isNullOrBlank()) { // Check if file exists without loading the texture
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has missing or unreadable sprite file, skipping.")
                         skip = true
                     }
