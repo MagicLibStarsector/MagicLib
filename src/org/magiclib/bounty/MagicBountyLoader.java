@@ -617,9 +617,9 @@ public class MagicBountyLoader {
 
         var path = MagicVariables.VARIANT_PATH + v + ".variant";
         try {
-            Global.getSettings().loadJSON(path);
+            Global.getSettings().loadText(path); // Check if file exists
         } catch (Exception ignored) {
-            return false; // Avoids an error being logged in loadVariant
+            return false; // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
         }
         return MagicCampaign.loadVariant(path) != null;
     }
