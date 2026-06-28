@@ -27,11 +27,12 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
 
     private lateinit var defaultProbabilityForModID: Map<String, Int>
 
-    private var isDoneInternal = false
-    override fun isDone() = isDoneInternal
+    override fun isDone() = false
     override fun runWhilePaused() = false
 
     private val interval = IntervalUtil(2f, 3f)
+
+    var init = false
 
     override fun advance(amount: Float) {
         interval.advance(amount)
@@ -42,13 +43,32 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
         val allShinyPaintjobs =
             MagicPaintjobManager.getPaintjobs(includeShiny = true).filter { it.isShiny }
 
-        // If no shiny paintjobs exist, no point in this script.
+        // If no shiny paintjobs exist, do nothing
         if (allShinyPaintjobs.isEmpty()) {
-            isDoneInternal = true
             return
         }
 
+        if(!init) {
+            init = true
+
+            setupDefaultProbabilityForMods()
+        }
+
         checkAndApplyShiniesToAllFleetsInPlayerLocation(allShinyPaintjobs)
+    }
+
+    private fun setupDefaultProbabilityForMods() {
+        val settings = Global.getSettings()
+        if (!::defaultProbabilityForModID.isInitialized) {
+            defaultProbabilityForModID =
+                Global.getSettings().modManager.enabledModsCopy.map { it.id }.associateWith { mod ->
+                    runCatching {
+                        settings
+                            .loadJSON("data/config/paintjobs/shiny_settings.json", mod)
+                            .optInt("probability", defaultProbability)
+                    }.getOrDefault(defaultProbability)
+                }
+        }
     }
 
     data class ShipEntry(
@@ -147,8 +167,6 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
                 return if (prob <= 0) 0f else 1f / prob.toFloat()
             }
 
-            setupDefaultProbabilityForMods(allShinyPaintjobs)
-
             // Build weights
             val modWeights = modsToPaintjobs.keys.associateWith { modId ->
                 weightFromProbability(defaultProbabilityForModID[modId] ?: defaultProbability)
@@ -183,23 +201,6 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
             val chosenPaintjob = shipPaintjobs[pjRng.nextInt(shipPaintjobs.size)]
 
             applyShinyPaintjob(fleet, chosenShip, chosenPaintjob)
-        }
-    }
-
-    private fun setupDefaultProbabilityForMods(allShinyPaintjobs: List<MagicPaintjobSpec>) {
-        val settings = Global.getSettings()
-        if (!::defaultProbabilityForModID.isInitialized) {
-            defaultProbabilityForModID = allShinyPaintjobs
-                .asSequence()
-                .map { it.modId }
-                .distinct()
-                .associateWith { modId ->
-                    runCatching {
-                        settings
-                            .loadJSON("data/config/paintjobs/shiny_settings.json", modId)
-                            .optInt("probability", defaultProbability)
-                    }.getOrDefault(defaultProbability)
-                }
         }
     }
 
