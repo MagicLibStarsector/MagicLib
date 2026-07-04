@@ -32,6 +32,7 @@ Version 1.5.8
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
 - Fix paintjob not applying to ship modules in some cases.
 - Add vents color changing alongside the engines and shield file.
+- Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
 
 **Other**
 - Stop a new campaign trail being added to the save file on every game load. Campaign trails are no longer serialized to the save game.

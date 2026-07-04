@@ -74,10 +74,12 @@ object MagicPaintjobManager {
      */
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobs(includeShiny: Boolean = false, includeHidden: Boolean = false): Set<MagicPaintjobSpec> {
+    fun getPaintjobs(includeShiny: Boolean = false, includeHidden: Boolean = false, includeModules: Boolean = true, includeWings: Boolean = true): Set<MagicPaintjobSpec> {
         return paintjobsInner.values.filter {
             (includeShiny || !it.isShiny) &&
-                    (includeHidden || !it.isHidden)
+                    (includeHidden || !it.isHidden) &&
+                    (includeModules || !it.isModuleHull) &&
+                    (includeWings || !it.isFighterHull)
         }.toSet()
     }
 
@@ -245,6 +247,8 @@ object MagicPaintjobManager {
                         }
                     }
 
+                    val validHullIds = hullIds.filter { runCatching { Global.getSettings().getHullSpec(it) }.getOrNull() != null }
+
                     if (id.isBlank()) {
                         // Just a blank row, no need to warn.
 //                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
@@ -262,10 +266,8 @@ object MagicPaintjobManager {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has missing or unreadable sprite file, skipping.")
                         skip = true
                     }
-                    else if (hullIds.none {
-                            kotlin.runCatching { Global.getSettings().getHullSpec(it) }
-                                .getOrNull() != null
-                        }) {
+
+                    if (!skip && validHullIds.isEmpty()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no valid hullIds, skipping.")
                         skip = true
                     }
@@ -276,8 +278,8 @@ object MagicPaintjobManager {
                                 modId = mod.id,
                                 modName = mod.name,
                                 id = id,
-                                hullId = hullIds.first(),
-                                hullIds = hullIds,
+                                hullId = validHullIds.first(),
+                                hullIds = validHullIds,
                                 name = name,
                                 unlockedAutomatically = unlockedAutomatically,
                                 description = description,

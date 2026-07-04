@@ -1,5 +1,8 @@
 package org.magiclib.paintjobs
 
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.combat.ShipAPI.HullSize
+import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import java.awt.Color
 
 data class MagicPaintjobSpec @JvmOverloads constructor(
@@ -20,6 +23,23 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var ventsSpec: PaintjobVentsSpec?,
     var paintjobFamily: String?
 ) {
+
+    /**
+     * Is this paintjob for a hull-module?
+     */
+    val isModuleHull: Boolean
+    /**
+     * Is this paintjob for a fighter hull
+     */
+    val isFighterHull: Boolean
+
+    init {
+        val spec = Global.getSettings().getHullSpec(hullIds.first())
+
+        isModuleHull = spec.hints.contains(ShipHullSpecAPI.ShipTypeHints.MODULE)
+        isFighterHull = spec.hullSize == HullSize.FIGHTER
+    }
+
     private var shiny = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
     /**
      * Override if this paintjob is shiny or not with the input value.
