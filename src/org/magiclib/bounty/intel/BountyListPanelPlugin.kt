@@ -55,9 +55,9 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
     }
 
     override fun layoutPanels(members: List<BountyInfo>): CustomPanelAPI {
-        finalItem = members.maxByOrNull { it.getSortIndex() }
-
         val outerPanelLocal = super.layoutPanels(members)
+
+        finalItem = members.maxByOrNull { it.getSortIndex() }
 
         this.addListener {
             selectedItem = it

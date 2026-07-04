@@ -100,6 +100,7 @@ public final class ActiveBounty {
     private @Nullable String rewardFaction;
     private boolean isDespawning = false, hasNoIntel = false;
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
+    private boolean droppedInBountyBoard = false;
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -137,6 +138,8 @@ public final class ActiveBounty {
      * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
      */
     public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardCredits, @Nullable Float rewardReputation, @Nullable String rewardFaction) {
+        this.setDroppedInBountyBoard(false);
+
         this.rewardCredits = rewardCredits;
         this.rewardReputation = rewardReputation;
         this.rewardFaction = rewardFaction;
@@ -364,6 +367,14 @@ public final class ActiveBounty {
     void endIntelWithoutPlayerInvolvement() {
         stage = Stage.EndedWithoutPlayerInvolvement;
         endIntel();
+    }
+
+    public boolean isDroppedInBountyBoard() {
+        return droppedInBountyBoard;
+    }
+
+    public void setDroppedInBountyBoard(boolean value) {
+        droppedInBountyBoard = value;
     }
 
     private void runRuleScript(String scriptRuleId) {

@@ -15,6 +15,7 @@ Version 1.5.8
 - Bounty validation now warns
 - The ML_bounty faction is now set as hostile to the player by default.
 - The MagicLib_ResetBounty command now properly resets the input bounty, reloading it from the magicBounty_data.json file.
+- Drop/Raise button to sort the specified bounty to the bottom or top of the list.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.

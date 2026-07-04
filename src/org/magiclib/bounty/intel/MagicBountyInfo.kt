@@ -11,10 +11,12 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.procgen.Constellation
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
 import com.fs.starfarer.api.ui.*
+import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.Misc
-import org.lwjgl.util.vector.Vector2f
 import org.lwjgl.input.Keyboard
+import org.lwjgl.util.vector.Vector2f
 import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.TooltipHelper
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
 import org.magiclib.bounty.MagicBountyLoader.*
@@ -31,7 +33,6 @@ import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.ceil
 import kotlin.math.roundToInt
-import kotlin.text.isEmpty
 
 open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpec) : BountyInfo {
     val activeBounty: ActiveBounty?
@@ -317,7 +318,9 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val actionTooltip = rightPanel.createUIElement(rightPanelWidth, 32f, false)
 
         if (activeBountyLocal.stage == ActiveBounty.Stage.NotAccepted) {
-            val acceptButton = actionTooltip.addButton(bountySpec.job_pick_option, null, rightPanelWidth, 24f, 0f)
+            val sortWidth = 64f
+            val sortPad = 8f
+            val acceptButton = actionTooltip.addButton(bountySpec.job_pick_option, null, rightPanelWidth - sortWidth - sortPad, 24f, 0f)
             acceptButton.setShortcut(Keyboard.KEY_T, true)
             rightPanelPlugin.addButton(acceptButton) {
                 acceptButton.isChecked = false
@@ -331,6 +334,18 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                 }
                 BountyBoardIntelPlugin.refreshPanel(this)
             }
+
+            val soFar = actionTooltip.heightSoFar
+            val sortButton = actionTooltip.addButton(if(!activeBountyLocal.isDroppedInBountyBoard) MagicTxt.getString("mb_drop") else MagicTxt.getString("mb_raise"), null, sortWidth, 24f, 0f)
+            actionTooltip.heightSoFar = soFar
+            sortButton.position.rightOfMid(acceptButton, sortPad)
+            actionTooltip.addTooltipToPrevious(TooltipHelper(if(!activeBountyLocal.isDroppedInBountyBoard) MagicTxt.getString("mb_drop_tooltip") else MagicTxt.getString("mb_raise_tooltip"), 350f, ""),TooltipLocation.ABOVE)
+            rightPanelPlugin.addButton(sortButton) {
+                sortButton.isChecked = false
+                activeBountyLocal.isDroppedInBountyBoard = !activeBountyLocal.isDroppedInBountyBoard
+                BountyBoardIntelPlugin.refreshPanel(this)
+            }
+
         } else if (activeBountyLocal.stage == ActiveBounty.Stage.Accepted) {
 
             //Add plot course button if there is a clear destination

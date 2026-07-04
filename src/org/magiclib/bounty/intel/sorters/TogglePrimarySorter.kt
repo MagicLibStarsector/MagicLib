@@ -192,6 +192,18 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             moveToBottom.forEach { it.setCustomPanelColor(Color(255, 0, 0, 102)) }
         }
 
+        val (keep, moveToBottom) = sorted.partition { entry ->
+            val bounty = (entry as? MagicBountyInfo)?.activeBounty
+                ?: return@partition true
+
+            !bounty.isDroppedInBountyBoard
+        }
+
+        sorted.clear()
+        sorted.addAll(keep)
+        sorted.addAll(moveToBottom)
+        moveToBottom.forEach { it.setCustomPanelColor(Color(180, 180, 180, 102)) }
+
         // Assign sortIndexOffset
         sorted.forEachIndexed { index, item ->
             item.setSortIndexOffset(index)

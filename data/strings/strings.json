@@ -269,6 +269,10 @@
 
     "mb_intel_offeredBy": "Faction: %s",
     "mb_plot_course": "Plot course",
+    "mb_drop": "Drop",
+    "mb_drop_tooltip": "Drop this bounty to bottom of the bounty board",
+    "mb_raise": "Raise",
+    "mb_raise_tooltip": "Raise this bounty from the bottom of the bounty board",
     "mb_filters": "Filters",
     "mb_confirm": "Confirm",
     "mb_filters_Location_Distance": "Filter by distance to target",
