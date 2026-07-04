@@ -24,6 +24,7 @@ import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
 
 import java.awt.*;
+import java.util.UUID;
 
 /**
  * Master ModPlugin for MagicLib. Handles all the loading of data and scripts.
@@ -131,6 +132,10 @@ public class Magic_modPlugin extends BaseModPlugin {
         //Add industry item wrangler
         SectorAPI sector = Global.getSector();
         if (sector != null) {
+            sector.addTransientScript(new MagicModVersionTracker());
+            if (!sector.getPersistentData().containsKey("ml_uniqueSaveId"))
+                sector.getPersistentData().put("ml_uniqueSaveId", sector.getSeedString() + "_" + UUID.randomUUID());
+
             sector.addTransientScript(new MagicPaintjobCampaignRefitAdder());
             sector.addTransientScript(new MagicPaintjobCampaignApplier());
             sector.addTransientListener(new MagicIndustryItemWrangler());
