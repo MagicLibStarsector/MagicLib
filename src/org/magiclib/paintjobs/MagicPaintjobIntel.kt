@@ -192,7 +192,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         return createGrid(
             createFromThisPanel, width, height, cellHeight, cellWidth, padding, pjs
         ) { pjCellTooltip, row, pj, _, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
-            val isUnlocked = MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
+            val isUnlocked = pj.isUnlockable && MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
             val cellUnderlay = cellPanel.createUIElement(cellWidth, cellHeight, false)
@@ -205,7 +205,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             addPaintjobHoverTooltipIfNeeded(pj, cellPanel, pjCellTooltip)
 
-            if (!isUnlocked) {
+            if(pj.isShiny){
+                val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
+                cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
+                cellOverlay.addPara(MagicTxt.getString("ml_mp_shiny_simple"), Color(255,215,0).darker(), pad).position.setXAlignOffset(12f)
+            } else if (!isUnlocked) {
                 val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
                 cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
                 cellOverlay.addPara(MagicTxt.getString("ml_mp_locked"), Misc.getNegativeHighlightColor(), pad)
