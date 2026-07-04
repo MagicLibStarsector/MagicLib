@@ -162,6 +162,7 @@ public class MagicCampaign {
             if(Global.getSettings().doesVariantExist(hullHullVariantId)) {
                 variant = Global.getSettings().getVariant(hullHullVariantId).clone();
                 variant.setHullVariantId(variantId);
+                variant.setSource(null);
             }
 
             if(variant == null) {
