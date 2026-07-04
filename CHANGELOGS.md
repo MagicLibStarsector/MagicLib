@@ -16,6 +16,7 @@ Version 1.5.8
 - The ML_bounty faction is now set as hostile to the player by default.
 - The MagicLib_ResetBounty command now properly resets the input bounty, reloading it from the magicBounty_data.json file.
 - Drop/Raise button to sort the specified bounty to the bottom or top of the list.
+- The intel list now updates when accepting a bounty from the bounty board.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.

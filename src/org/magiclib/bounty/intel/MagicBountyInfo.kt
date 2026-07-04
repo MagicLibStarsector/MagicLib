@@ -2,6 +2,9 @@ package org.magiclib.bounty.intel
 
 import com.fs.graphics.Sprite
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignUIAPI
+import com.fs.starfarer.api.campaign.CoreUIAPI
+import com.fs.starfarer.api.campaign.CoreUITabId
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
@@ -13,9 +16,11 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpec
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.Misc
+import com.fs.state.AppDriver
 import org.lwjgl.input.Keyboard
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.TooltipHelper
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
@@ -333,6 +338,35 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                     )
                 }
                 BountyBoardIntelPlugin.refreshPanel(this)
+                // Update intel list to account for new bounty intel entry.
+                try {
+                    // These functions should probably be moved somewhere else, but I don't know where else to put them at the moment.
+                    fun getCoreUI(): CoreUIAPI? {
+                        val state = AppDriver.getInstance().currentState
+                        if (state is CampaignUIAPI) {
+                            return (state.currentInteractionDialog?.let { dialog ->
+                                dialog.invoke("getCoreUI") as? CoreUIAPI
+                            } ?: state.invoke("getCore") as? CoreUIAPI)
+                        }
+                        return null
+                    }
+                    fun getCurrentTab(): UIPanelAPI? {
+                        return getCoreUI()?.invoke("getCurrentTab") as? UIPanelAPI
+                    }
+                    fun getIntelTab(): UIPanelAPI? {
+                        return if (Global.getSector()?.campaignUI?.currentCoreTab != CoreUITabId.INTEL)
+                            null
+                        else
+                            getCurrentTab()
+                    }
+                    fun getIntelUI(): IntelUIAPI? {
+                        return getIntelTab()?.invoke("getEventsPanel") as? IntelUIAPI
+                    }
+                    val intelUI = getIntelUI()
+                    intelUI?.updateIntelList(true)
+                } catch (e: Exception) {
+                    Global.getLogger(this.javaClass).warn("Failed to update intel list", e)
+                }
             }
 
             val soFar = actionTooltip.heightSoFar
