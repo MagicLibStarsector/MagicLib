@@ -14,6 +14,7 @@ Version 1.5.8
 - Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
 - Bounty validation now warns
 - The ML_bounty faction is now set as hostile to the player by default.
+- The MagicLib_ResetBounty command now properly resets the input bounty, reloading it from the magicBounty_data.json file.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.

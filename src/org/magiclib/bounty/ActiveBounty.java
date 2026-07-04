@@ -358,6 +358,14 @@ public final class ActiveBounty {
         }
     }
 
+    /**
+     * Call endIntel after setting the stage to Stage.EndedWithoutPlayerInvolvement
+     */
+    void endIntelWithoutPlayerInvolvement() {
+        stage = Stage.EndedWithoutPlayerInvolvement;
+        endIntel();
+    }
+
     private void runRuleScript(String scriptRuleId) {
         InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
 //        boolean didCreateDialog = false;

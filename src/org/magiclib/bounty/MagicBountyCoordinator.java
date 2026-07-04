@@ -507,19 +507,21 @@ public final class MagicBountyCoordinator {
 
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                 Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
-            }
-
-            MagicBountyIntel intel = activeBounty.getIntel();
-
-            if (intel != null) {
-                intel.endImmediately();
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_expired");
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_succeeded");
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_failed");
             }
 
             if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 activeBounty.despawn();
             }
-            activeBounty.endIntel();
+            activeBounty.endIntelWithoutPlayerInvolvement();
+
+            MagicBountyIntel intel = activeBounty.getIntel();
+            if (intel != null) {
+                intel.endImmediately();
+            }
 
             // With the intel expired, move bounty to Completed list.
             cleanUpBounties();
@@ -533,6 +535,9 @@ public final class MagicBountyCoordinator {
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                     Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey);
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_expired");
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_succeeded");
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_failed");
                 }
             } else {
                 throw new RuntimeException(String.format("Couldn't find %s.", bountyKey));
