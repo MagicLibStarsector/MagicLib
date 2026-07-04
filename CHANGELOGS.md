@@ -40,6 +40,7 @@ Version 1.5.8
 - Added functionality to allow adding random memory to a FleetMemberAPI
 - loadVariant now tries to clone the _Hull variant using the hull ID instead of createEmptyVariant() where possible. This makes loadVariant create empty module slots by default; it is intended to fix issues where expected modules were missing due to misconfigured .variant files.
 - Added MagicModVersionTracker which adds mod versions to `sector.getPersistentData()["ml_modVersions"]` after onGameLoad. This allows other mod developers to see the 'last' mod versions in onGameLoad and handle version migration behavior as desired.
+- Fix modSettings.json 'subsystemInfoKey'
 
 Version 1.5.7
 

@@ -144,7 +144,7 @@ object MagicSubsystemsManager {
             widgetOffsetY = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetY") ?: 0
             infoAlphaFadeout = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_infoTextFadeout") ?: 0
         } else {
-            infoHotkey = MagicSettings.getInteger("MagicLib", "subsystemInfoKey") ?: 23
+            infoHotkey = MagicSettings.getString("MagicLib", "subsystemInfoKey")?.let { Keyboard.getKeyIndex(it) } ?: 23
             hotkeyList = MagicSettings.getList("MagicLib", "subsystemKeys")
                 .map { Keyboard.getKeyIndex(it) }
                 .filter { it != 0 }
