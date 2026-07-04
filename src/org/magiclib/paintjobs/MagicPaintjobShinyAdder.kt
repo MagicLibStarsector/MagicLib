@@ -32,8 +32,6 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
 
     private val interval = IntervalUtil(2f, 3f)
 
-    var init = false
-
     override fun advance(amount: Float) {
         interval.advance(amount)
         if (!interval.intervalElapsed()) return
@@ -48,20 +46,14 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
             return
         }
 
-        if(!init) {
-            init = true
-
-            setupDefaultProbabilityForMods()
-        }
-
         checkAndApplyShiniesToAllFleetsInPlayerLocation(allShinyPaintjobs)
     }
 
     private fun setupDefaultProbabilityForMods() {
-        val settings = Global.getSettings()
         if (!::defaultProbabilityForModID.isInitialized) {
+            val settings = Global.getSettings()
             defaultProbabilityForModID =
-                Global.getSettings().modManager.enabledModsCopy.map { it.id }.associateWith { mod ->
+                settings.modManager.enabledModsCopy.map { it.id }.associateWith { mod ->
                     runCatching {
                         settings
                             .loadJSON("data/config/paintjobs/shiny_settings.json", mod)
@@ -108,6 +100,8 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
             MagicPaintjobManager.getPaintjobs(includeShiny = true).filter { it.isShiny }
     ) {
         if (!MagicPaintjobManager.isEnabled) return
+
+        setupDefaultProbabilityForMods()
 
         val location = Global.getSector().playerFleet.containingLocation ?: return
 
