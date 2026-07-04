@@ -20,7 +20,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     @Transient
     private var lastHeight: Float = 0f
 
-    //    @Transient
+    //TODO: Remove on 0.98.5a
+    @Transient
     @Deprecated("Use bountiesThatUserHasBeenNotifiedForV2 instead")
     private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
 
