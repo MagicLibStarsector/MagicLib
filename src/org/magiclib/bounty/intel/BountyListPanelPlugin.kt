@@ -43,7 +43,9 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
     override fun shouldMakePanelForItem(item: BountyInfo): Boolean {
         // Check `shouldShow` first because it doesn't ONLY check that,
         // it also creates the ActiveBounty if it doesn't exist and should be shown.
-        return item.shouldShow() || item.shouldAlwaysShow()
+        //return item.shouldShow() || item.shouldAlwaysShow()
+        // This is now done in BountyBoardIntelPlugin
+        return true
     }
 
     override fun createPanelForItem(tooltip: TooltipMakerAPI, item: BountyInfo): ListItemUIPanelPlugin<BountyInfo> {

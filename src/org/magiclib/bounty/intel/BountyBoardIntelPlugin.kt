@@ -119,6 +119,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
         val availableBounties: MutableList<BountyInfo> = PROVIDERS
             .flatMap { it.getBounties() }
+            .filter { it.shouldShow() || it.shouldAlwaysShow() }
             .toMutableList()
 
         val bountyListPanel = bountyList.layoutPanels(availableBounties)
