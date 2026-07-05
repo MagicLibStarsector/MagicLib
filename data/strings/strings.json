@@ -289,7 +289,7 @@
     "mb_sort_DropNonHostilesTooltip": "Non-hostile bounty targets located in systems with a size 4 or larger friendly market are moved to the bottom of the list and highlighted red.\n\nEngaging these targets would likely start a war with their faction.",
 
 
-    "mb_intelTutorial": "Select a bounty on the left to see more information.\nFilter the list by clicking \"Filters\" at the top of the list.\nIf the job terms are acceptable, click Accept in the bottom-right of the info panel.",
+    "mb_intelTutorial": "Select a bounty on the left to see more information.\nSort the list by clicking \"Sort\" at the top of the list.\nIf the job terms are acceptable, click Accept in the bottom-right of the info panel.",
 
     # MagicAchievements
     "ml_ma_grantAchievement": "Grant",
