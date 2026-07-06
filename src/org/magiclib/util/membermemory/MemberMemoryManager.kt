@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CargoAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI
+import com.fs.starfarer.campaign.fleet.FleetData
 import org.magiclib.util.membermemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
 
 internal object MemberMemoryManager {
@@ -65,16 +66,24 @@ internal object MemberMemoryManager {
         val fleetMembers = listOf(
             locations.flatMap { it.fleets }.map { it.fleetData }, // Ships in active fleets.
             storages.mapNotNull { it.mothballedShips },  // Ships in storage.
-        ).flatten().flatMap { it.membersListCopy }
-
-        val ids = fleetMembers.map { it.id }
+        ).flatten().flatMap { (it as FleetData).membersNoSync } // Avoid making a copy, avoid syncing members. Syncing stats is unnecessary as we only want the id anyway. It is done this way for performance reasons.
 
         // While there shouldn't be duplicates in normal circumstances, let's check just in case. If any duplicates exist, it's usually fault of a mod.
-        if (ids.groupingBy { it }.eachCount().any { it.value > 1 }) {
+        val ids = HashSet<String>(fleetMembers.size)
+        var hasDuplicates = false
+
+        for (member in fleetMembers) {
+            val id = member?.id ?: continue
+            if (!ids.add(id)) {
+                hasDuplicates = true
+            }
+        }
+
+        if (hasDuplicates) {
             duplicateLocationReporter() // Report where duplicates member IDs are into the log.
         }
 
-        return ids.toSet()
+        return ids
     }
 
     private fun duplicateLocationReporter() {
