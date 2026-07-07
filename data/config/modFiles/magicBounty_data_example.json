@@ -169,11 +169,16 @@
         "fleet_flagship_name":"Flagship", # Default: Random.
         "fleet_flagship_alwaysRecoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
         "fleet_flagship_autofit": false, # Default: false. Whether the flagship will be autofitted. When false, the Flagship does not receive D-mods or S-mods from the quality override.
-		"fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
-            "ship_variant1":1,
-            "ship_variant2":3,
-        },
-        "fleet_skip_missing_variants": false, # Default: false. If false, the bounty will FAIL TO LOAD when any listed variant (flagship or preset ships) is missing or invalid then log why it failed such as what was missing. If true, missing or invalid variants are skipped and the bounty will still generate with remaining valid ships regardless. It is not recommended to set this to true as it may lead to hidden issues in the future.
+		"fleet_preset_ships": [ # Default: no presets. Defines fixed ship variants used to generate the fleet.
+            ["ship_variant1", 1], # Format: [variant_id, count]. Count defaults to 1 if omitted.
+            ["ship_variant2", 3],
+            ["ship_variant3"], # Adds one copy of this variant.
+            ["ship_variant4", "ship_variant5", "ship_variant6"], # Multiple variants: randomly picks one valid variant from the list. Missing variants are ignored.
+            ["$first_valid", "ship_variant7", "ship_variant8", "ship_variant9"], # Adding "$first_valid": Use the first valid variant instead of randomly selecting. Useful when you want a priority order among possible variants.
+            ["fake_variant"], # If none of the listed variants exist, the bounty will fail to load.
+            ["$optional", "fake_variant"], # Adding "$optional": Allows no ship to be selected if all variants are invalid, preventing a load failure.
+            ["$first_valid $optional", "fake_variant"], # Equivalent to combining "$first_valid" and "$optional".
+        ],
         "fleet_preset_autofit": true, # Default: false. Whether the preset ships will be autofitted. When false, the preset ships do not receive D-mods or S-mods from the quality override.
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.

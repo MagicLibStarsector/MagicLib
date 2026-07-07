@@ -291,8 +291,6 @@ public class MagicBountyHVB {
                             OfficerManagerEvent.SkillPickPreference.GENERIC,
                             //Map <String,Integer> target_skills,
                             null,
-                            //boolean fleet_skip_missing_variants,
-                            false,
                             //String fleet_name,
                             row.getString("fleetName"),
                             //String fleet_faction,

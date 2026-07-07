@@ -52,15 +52,11 @@ public class MagicBountyLoader {
     }
 
     public static MagicBountySpec getBountyData(String id) {
-        if (BOUNTIES.containsKey(id)) {
-            return BOUNTIES.get(id);
-        } else return null;
+        return BOUNTIES.getOrDefault(id, null);
     }
 
     public static void deleteBountyData(String id) {
-        if (BOUNTIES.containsKey(id)) {
-            BOUNTIES.remove(id);
-        }
+        BOUNTIES.remove(id);
     }
 
     public static void clearBountyData() {
@@ -204,25 +200,53 @@ public class MagicBountyLoader {
                 origin_faction = getString(bountyId, "fleet_faction");
             }
 
-            boolean fleet_skip_missing_variants = getBoolean(bountyId, "fleet_skip_missing_variants");
 
-            //Random flagship variant:                
-            String flagship = getString(bountyId, "fleet_flagship_variant");
-            List<String> flagshipList = getStringList(bountyId, "fleet_flagship_variant");
-            if (!flagshipList.isEmpty()) {
-                List<String> validFlagships = flagshipList.stream()
-                        .filter(MagicBountyLoader::variantExists)
-                        .toList();
+            JSONObject reqSettings;
 
-                if (!validFlagships.isEmpty()) {
-                    int i = MathUtils.getRandomNumberInRange(0, validFlagships.size() - 1);
-                    flagship = validFlagships.get(i);
-                } else {
-                    // Won't work, but get a random non-existent variant anyway for showing the correct error message to the user.
-                    int i = MathUtils.getRandomNumberInRange(0, flagshipList.size() - 1);
-                    flagship = flagshipList.get(i);
+            try {
+                reqSettings = bounty_data.getJSONObject(bountyId);
+            } catch (JSONException ex) {
+                LOG.warn("No config found for bounty: " + bountyId);
+                continue;
+            }
+
+            JSONArray flagshipArray = reqSettings.optJSONArray("fleet_flagship_variant");
+            String flagship;
+            if(flagshipArray == null) {
+                flagship = reqSettings.optString("fleet_flagship_variant", null);
+            } else {
+                var flagshipPair = MagicBountyLoaderKT.loadShipArray(flagshipArray);
+                if(flagshipPair == null)
+                    continue;
+                flagship = flagshipPair.getFirst();
+            }
+
+            Map<String, Integer> fleet_preset_ships = null;
+
+            var fleet_preset_ships_object = reqSettings.optJSONObject("fleet_preset_ships");
+            if(fleet_preset_ships_object != null) {
+                fleet_preset_ships = MagicBountyLoaderKT.loadShipMap(fleet_preset_ships_object);
+                if(fleet_preset_ships == null)
+                    continue;
+            } else {
+                var fleet_preset_ships_array = reqSettings.optJSONArray("fleet_preset_ships");
+                if(fleet_preset_ships_array != null) {
+                    fleet_preset_ships = MagicBountyLoaderKT.loadShipMap(fleet_preset_ships_array);
+                    if(fleet_preset_ships == null)
+                        continue;
                 }
             }
+
+            // Flagship didn't load due to no valid flagship existing and $optional being set
+            if(flagship != null && flagship.isEmpty() && fleet_preset_ships != null && !fleet_preset_ships.isEmpty()) {
+                flagship = fleet_preset_ships.keySet().iterator().next();
+                fleet_preset_ships.remove(flagship);
+            }
+            if(flagship != null && flagship.isEmpty()) {
+                LOG.warn("No valid flagship available. fleet_preset_ships is empty and as such no variant can be used as a flagship from there. Bounty is INVALID");
+                continue;
+            }
+
 
             //fixes for my own mistakes
             // Wisp: fixes for Tart's mistakes :P
@@ -290,7 +314,6 @@ public class MagicBountyLoader {
                     getInt(bountyId, "target_elite_skills", -1),
                     skillPref,
                     getIntMap(bountyId, "target_skills"),
-                    fleet_skip_missing_variants,
                     getString(bountyId, "fleet_name"),
                     getString(bountyId, "fleet_faction"),
                     flagship,
@@ -299,7 +322,7 @@ public class MagicBountyLoader {
                     // If either is true, the flagship is always recoverable.
                     getBoolean(bountyId, "fleet_flagship_recoverable") || getBoolean(bountyId, "fleet_flagship_alwaysRecoverable"),
                     getBoolean(bountyId, "fleet_flagship_autofit"),
-                    getIntMap(bountyId, "fleet_preset_ships"),
+                    fleet_preset_ships,
                     getBoolean(bountyId, "fleet_preset_autofit"),
                     getFloat(bountyId, "fleet_scaling_multiplier"),
                     minSize,
@@ -534,43 +557,25 @@ public class MagicBountyLoader {
 
             //OTHER REQUIREMENT CHECKS
             if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
-                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null && !this_bounty.fleet_skip_missing_variants) {
+                if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null) {
                     //No flagship variant, invalidating the bounty
                     LOG.warn(String.format("Missing fleet_flagship_variant from bounty %s. Bounty is INVALID!", bountyId));
                     return false;
                 }
 
-                if (!variantExists(this_bounty.fleet_flagship_variant)) {
-                    if(this_bounty.fleet_skip_missing_variants){
-                        // try to grab a preset ship as flagship
-                        String fallback = pickFallbackFlagshipAndRemove(this_bounty);
-                        if (fallback != null) {
-                            this_bounty.fleet_flagship_variant = fallback;
-                        } else {
-                            // fallback if none found
-                            this_bounty.fleet_flagship_variant = Global.getSettings().getString("errorShipVariant");
-                        }
-
-                    } else {
-                        //that flagship variant couldn't be found, invalidating the bounty
-                        LOG.warn(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
-                        return false;
-                    }
+                if (!magicVariantExists(this_bounty.fleet_flagship_variant)) {
+                    //that flagship variant couldn't be found, invalidating the bounty
+                    LOG.warn(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
+                    return false;
                 }
 
                 if (this_bounty.fleet_preset_ships != null && !this_bounty.fleet_preset_ships.isEmpty()) {
                     //check all reinforcement variants
-                    Iterator<String> iter = this_bounty.fleet_preset_ships.keySet().iterator();
-                    while (iter.hasNext()) {
-                        String v = iter.next();
-                        if (!variantExists(v)) {
-                            if(this_bounty.fleet_skip_missing_variants) {
-                                iter.remove();
-                            } else {
-                                //that reinforcement variant couldn't be found, invalidating the bounty
-                                LOG.warn(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
-                                return false;
-                            }
+                    for (String v : this_bounty.fleet_preset_ships.keySet()) {
+                        if (!magicVariantExists(v)) {
+                            //that reinforcement variant couldn't be found, invalidating the bounty
+                            LOG.warn(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
+                            return false;
                         }
                     }
                 }
@@ -601,7 +606,7 @@ public class MagicBountyLoader {
             Iterator<String> iter = this_bounty.fleet_preset_ships.keySet().iterator();
             while (iter.hasNext()) {
                 String v = iter.next();
-                if (variantExists(v)) {
+                if (magicVariantExists(v)) {
                     iter.remove(); // remove from preset ships
                     return v;
                 }
@@ -611,7 +616,7 @@ public class MagicBountyLoader {
     }
 
     // helper: checks if a variant exists (local + load)
-    private static boolean variantExists(String v) {
+    public static boolean magicVariantExists(String v) {
         if(Global.getSettings().getVariant(v) != null)
             return true;
 

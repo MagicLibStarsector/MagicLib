@@ -74,7 +74,7 @@
         "fleet_flagship_name":"",
         "fleet_flagship_alwaysRecoverable": true,
         "fleet_flagship_autofit": false,
-        "fleet_preset_ships": {"variant":1,},
+        "fleet_preset_ships": [["variant"],],
         "fleet_preset_autofit": false,
         "fleet_scaling_multiplier": 0,
         "fleet_min_FP": 0,
