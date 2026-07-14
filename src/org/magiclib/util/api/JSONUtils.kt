@@ -45,4 +45,42 @@ object JSONUtils {
 
         return list
     }
+
+    @JvmStatic
+    fun mapToJson(map: Map<*, *>): JSONObject {
+        val json = JSONObject()
+
+        for ((key, value) in map) {
+            val stringKey = key?.toString() ?: continue
+
+            json.put(
+                stringKey, when (value) {
+                    null -> JSONObject.NULL
+                    is Map<*, *> -> mapToJson(value)
+                    is List<*> -> listToJson(value)
+                    else -> value
+                }
+            )
+        }
+
+        return json
+    }
+
+    @JvmStatic
+    fun listToJson(list: List<*>): JSONArray {
+        val array = JSONArray()
+
+        for (value in list) {
+            array.put(
+                when (value) {
+                    null -> JSONObject.NULL
+                    is Map<*, *> -> mapToJson(value)
+                    is List<*> -> listToJson(value)
+                    else -> value
+                }
+            )
+        }
+
+        return array
+    }
 }

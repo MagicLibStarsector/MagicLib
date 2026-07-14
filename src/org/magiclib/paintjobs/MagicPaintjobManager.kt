@@ -31,6 +31,10 @@ import org.magiclib.kotlin.toStringList
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
+import org.magiclib.util.api.kotlin.HullExt.getActualHull
+import org.magiclib.util.api.kotlin.HullExt.getActualHullId
+import org.magiclib.util.api.kotlin.HullExt.getEffectiveHull
+import org.magiclib.util.api.kotlin.HullExt.getEffectiveHullId
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
@@ -400,27 +404,11 @@ object MagicPaintjobManager {
             weaponId in spec.weaponIds && (paintjobFamily?.let { it in spec.paintjobFamilies } ?: true)
         }
 
-    // May be made into a function later, for now is kept internal here
-    internal fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI =
-        when {
-            !this.isDefaultDHull -> this
-            else -> this.dParentHull ?: this
-        }
-
-    // May be made into a function later, for now is kept internal here
-    internal fun ShipHullSpecAPI.getEffectiveHull(): ShipHullSpecAPI {
-        val hull = this.getActualHull()
-        return if (hull.isCompatibleWithBase)
-            hull.baseHull ?: hull
-        else
-            hull
-    }
-
     @JvmStatic
     @JvmOverloads
     fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> {
-        val actualHullId = hullSpec.getActualHull().hullId
-        val effectiveHullId = hullSpec.getEffectiveHull().hullId
+        val actualHullId = hullSpec.getActualHullId()
+        val effectiveHullId = hullSpec.getEffectiveHullId()
 
         return paintjobsInner.values.filter { pj ->
             (actualHullId in pj.hullIds || effectiveHullId in pj.hullIds) &&

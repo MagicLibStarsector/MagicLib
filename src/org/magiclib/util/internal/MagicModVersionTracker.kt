@@ -1,4 +1,4 @@
-package org.magiclib.util
+package org.magiclib.util.internal
 
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global

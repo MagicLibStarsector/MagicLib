@@ -3,6 +3,7 @@
 package org.magiclib.kotlin
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.SettingsAPI
 import com.fs.starfarer.api.campaign.CampaignClockAPI
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.RepLevel
@@ -156,3 +157,25 @@ fun ClosedFloatingPointRange<Float>.random(): Float =
 
 fun CampaignClockAPI.elapsedDaysSinceGameStart(): Float =
     Global.getSector().clock.getElapsedDaysSince(-55661245698000L);
+
+fun SettingsAPI.getErrorVariantID(): String =
+    this.getString("errorShipVariant")
+
+/**
+ * Checks if a file exists in `/data`.
+ *
+ * @param filename The path to the file.
+ * @param modID The mod ID of the mod to check. If null, checks all available sources.
+ * @return `true` if the file exists and can be loaded, `false` otherwise.
+ */
+fun SettingsAPI.doesFileExist(
+    filename: String,
+    modID: String? = null,
+): Boolean {
+    return try {
+        modID?.let { loadText(filename, it) } ?: loadText(filename)
+        true
+    } catch (_: Exception) {
+        false
+    }
+}

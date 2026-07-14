@@ -8,6 +8,8 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
+import org.magiclib.util.internal.MagicModVersionTracker;
+import org.magiclib.util.internal.ShipSkinSourceMod;
 import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
@@ -29,6 +31,7 @@ import java.util.UUID;
 /**
  * Master ModPlugin for MagicLib. Handles all the loading of data and scripts.
  */
+@SuppressWarnings("deprecation")
 public class Magic_modPlugin extends BaseModPlugin {
 
     ////////////////////////////////////////
@@ -51,6 +54,11 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
 
+        if (!MagicLookup.INSTANCE.isSetup())
+            MagicLookup.INSTANCE.setup$MagicLib();
+
+        //if (fixShipSkinSourceMod) // TODO, make setting
+        ShipSkinSourceMod.INSTANCE.setShipSkinSourceMods();
 
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
         if (Global.getSettings().isDevMode()) {
