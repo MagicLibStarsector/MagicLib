@@ -730,7 +730,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
 
         } else {
             targetInfoTooltip.setButtonFontOrbitron20Bold()
-            targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 3f, Color.RED).position.inTMid(2f)
+            targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 5f, Color.RED)
         }
 
         activeBounty?.let {
