@@ -31,10 +31,8 @@ import org.magiclib.kotlin.toStringList
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
-import org.magiclib.util.api.kotlin.HullExt.getActualHull
-import org.magiclib.util.api.kotlin.HullExt.getActualHullId
-import org.magiclib.util.api.kotlin.HullExt.getEffectiveHull
-import org.magiclib.util.api.kotlin.HullExt.getEffectiveHullId
+import org.magiclib.util.api.kotlin.getActualHullId
+import org.magiclib.util.api.kotlin.getEffectiveHullId
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)

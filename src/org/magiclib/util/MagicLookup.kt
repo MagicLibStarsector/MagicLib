@@ -9,10 +9,9 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.loading.WeaponSpecAPI
-import org.magiclib.util.api.kotlin.HullExt.getActualHullId
-import org.magiclib.util.api.kotlin.HullExt.getEffectiveHullId
-import org.magiclib.util.api.kotlin.VariantExt.removeModFull
-
+import org.magiclib.util.api.kotlin.getActualHullId
+import org.magiclib.util.api.kotlin.getEffectiveHullId
+import org.magiclib.util.api.kotlin.removeModFull
 
 object MagicLookup {
     init {

@@ -8,8 +8,8 @@ import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.kotlin.getErrorVariantID
 import org.magiclib.util.MagicLookup
-import org.magiclib.util.api.kotlin.HullExt.getActualHullId
-import org.magiclib.util.api.kotlin.HullExt.getEffectiveHullId
+import org.magiclib.util.api.kotlin.getActualHullId
+import org.magiclib.util.api.kotlin.getEffectiveHullId
 
 object HullUtils
 {
