@@ -12,6 +12,7 @@ import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.internalextensions.addTooltip
 import org.magiclib.internalextensions.height
+import org.magiclib.internalextensions.setSize
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.util.MagicTxt
 import java.awt.Color
@@ -62,7 +63,8 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         var currentOrderSelected: ButtonAPI? = null
 
         orderTogglesData.forEachIndexed { index, (label, order) ->
-            val checkbox = toggleGroupTooltip.addCheckbox(20f, 16f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 4f)
+            val checkbox = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 0f)
+            checkbox.setSize(Global.getSettings().computeStringWidth(label, "graphics/fonts/insignia15LTaa.fnt") + checkbox.height + 4f, checkbox.height)
 
             // Check the current order by default
             if (orderBy == order) {
@@ -93,7 +95,9 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         var currentSelected: ButtonAPI? = null
 
         togglesData.forEachIndexed { index, (label, method) ->
-            val checkbox = toggleGroupTooltip.addCheckbox(20f, 16f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 4f)
+            val checkbox = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 0f)
+            checkbox.setSize(Global.getSettings().computeStringWidth(label, "graphics/fonts/insignia15LTaa.fnt") + checkbox.height + 4f, checkbox.height)
+
             if (sortBy == method) {
                 checkbox.isChecked = true
                 currentSelected = checkbox
@@ -109,8 +113,10 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             }
         }
 
+        val label = MagicTxt.getString("mb_sort_DropNonHostiles")
+        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, sorterPanel.height - toggleGroupTooltip.heightSoFar - 16f - 8f)
+        nonEnemyToBottomButton.setSize(Global.getSettings().computeStringWidth(label, "graphics/fonts/insignia15LTaa.fnt") + nonEnemyToBottomButton.height + 4f, nonEnemyToBottomButton.height)
 
-        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, MagicTxt.getString("mb_sort_DropNonHostiles"), null, ButtonAPI.UICheckboxSize.SMALL, sorterPanel.height - toggleGroupTooltip.heightSoFar - 16f - 6f)
         toggleGroupTooltip.addTooltip(nonEnemyToBottomButton, TooltipMakerAPI.TooltipLocation.BELOW, 600f) {
             it.addPara(MagicTxt.getString("mb_sort_DropNonHostilesTooltip"), 0f)
         }
