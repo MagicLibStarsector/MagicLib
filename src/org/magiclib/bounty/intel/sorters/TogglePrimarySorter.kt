@@ -11,6 +11,7 @@ import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.internalextensions.addTooltip
+import org.magiclib.internalextensions.height
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.util.MagicTxt
 import java.awt.Color
@@ -109,7 +110,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         }
 
 
-        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, MagicTxt.getString("mb_sort_DropNonHostiles"), null, ButtonAPI.UICheckboxSize.SMALL, toggleGroupTooltip.heightSoFar - toggleGroupTooltip.position.height - 16f - 4f)
+        val nonEnemyToBottomButton = toggleGroupTooltip.addCheckbox(20f, 16f, MagicTxt.getString("mb_sort_DropNonHostiles"), null, ButtonAPI.UICheckboxSize.SMALL, sorterPanel.height - toggleGroupTooltip.heightSoFar - 16f - 6f)
         toggleGroupTooltip.addTooltip(nonEnemyToBottomButton, TooltipMakerAPI.TooltipLocation.BELOW, 600f) {
             it.addPara(MagicTxt.getString("mb_sort_DropNonHostilesTooltip"), 0f)
         }
