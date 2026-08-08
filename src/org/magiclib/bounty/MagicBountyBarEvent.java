@@ -121,7 +121,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(
                                     MagicBountyCoordinator.getInstance().getPreScalingCreditRewardMultiplier(),
                                     MagicBountyCoordinator.getInstance().getPostScalingCreditRewardMultiplier()),
-                            bounty.job_reputation_reward, bounty.job_forFaction);
+                            bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);

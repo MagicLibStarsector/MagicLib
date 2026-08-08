@@ -64,7 +64,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun getBountyPayout(): Int {
-        return activeBounty?.calculateCreditReward()?.toInt() ?: bountySpec.job_credit_reward
+        return (activeBounty?.rewardCredits?.toInt() ?: activeBounty?.calculateCreditReward())?.toInt() ?: bountySpec.job_credit_reward
     }
 
     override fun getJobIcon(): String {
@@ -332,7 +332,6 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
                 activeBountyLocal.let {
                     it.acceptBounty(
                         Global.getSector().playerFleet,
-                        it.calculateCreditReward(),
                         it.spec.job_reputation_reward,
                         it.spec.job_forFaction
                     )
@@ -751,7 +750,6 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         activeBounty?.let {
             it.acceptBounty(
                 Global.getSector().playerFleet,
-                it.calculateCreditReward(),
                 it.spec.job_reputation_reward,
                 it.spec.job_forFaction
             )

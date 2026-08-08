@@ -127,6 +127,11 @@ public final class ActiveBounty {
         for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
             this.initialBountyFleetPoints += member.getFleetPointCost();
         }
+
+        this.rewardCredits = this.calculateCreditReward(
+                MagicBountyCoordinator.getInstance().getPreScalingCreditRewardMultiplier(),
+                MagicBountyCoordinator.getInstance().getPostScalingCreditRewardMultiplier()
+        );
     }
 
     /**
@@ -135,12 +140,10 @@ public final class ActiveBounty {
      * <br>- Adds Intel to the Intel Manager.
      *
      * @param bountySource  From where the bounty was accepted from.
-     * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
      */
-    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardCredits, @Nullable Float rewardReputation, @Nullable String rewardFaction) {
+    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardReputation, @Nullable String rewardFaction) {
         this.setDroppedInBountyBoard(false);
 
-        this.rewardCredits = rewardCredits;
         this.rewardReputation = rewardReputation;
         this.rewardFaction = rewardFaction;
         acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
