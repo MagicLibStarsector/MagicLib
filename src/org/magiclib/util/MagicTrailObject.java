@@ -1,5 +1,6 @@
 package org.magiclib.util;
 
+import com.fs.starfarer.api.Global;
 import org.lazywizard.lazylib.FastTrig;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -101,6 +102,13 @@ public class MagicTrailObject {
         //If our spent lifetime is higher than our total lifetime, set it to our total lifetime
         if (spentLifetime > getTotalLifetime()) {
             spentLifetime = getTotalLifetime();
+        }
+
+        //If our spent lifetime is lower than 0, set it to our total lifetime to remove this
+        if (spentLifetime < 0) {
+            Global.getLogger(this.getClass()).warn("Spent lifetime went below 0, setting to total lifetime\nspentLifetime = " + spentLifetime + "\namount = " + amount + "\ntotalLifetime = " + getTotalLifetime());
+            spentLifetime = getTotalLifetime();
+            return;
         }
 
         //Calculates our "pulse" size, depending on pulse count, width and lifetime
