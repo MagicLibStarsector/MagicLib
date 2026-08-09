@@ -9,7 +9,6 @@ import com.thoughtworks.xstream.XStream;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
 import org.magiclib.util.internal.MagicModVersionTracker;
-import org.magiclib.util.internal.ShipSkinSourceMod;
 import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
@@ -56,9 +55,6 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         if (!MagicLookup.INSTANCE.isSetup())
             MagicLookup.INSTANCE.setup$MagicLib();
-
-        //if (fixShipSkinSourceMod) // TODO, make setting
-        ShipSkinSourceMod.INSTANCE.setShipSkinSourceMods();
 
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
         if (Global.getSettings().isDevMode()) {

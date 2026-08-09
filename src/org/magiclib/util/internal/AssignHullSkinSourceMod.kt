@@ -7,9 +7,9 @@ import org.magiclib.kotlin.doesFileExist
 import org.magiclib.util.api.kotlin.getActualHullId
 import org.magiclib.util.api.kotlin.isSkin
 
-internal object ShipSkinSourceMod {
-    fun setShipSkinSourceMods() {
-        Global.getLogger(this.javaClass).info("Setting modded ship skin source mods (if present)...")
+internal object AssignHullSkinSourceMod {
+    fun assignHullSkinSourceMods() {
+        Global.getLogger(this.javaClass).info("Assigning modded hull skin source mods (if present)...")
         var count = 0
         val allHullSpecs = Global.getSettings().allShipHullSpecs
         allHullSpecs.forEach { hull ->
@@ -17,18 +17,18 @@ internal object ShipSkinSourceMod {
                 val sourceMod = getSourceModFromSkin(hull.getActualHullId())
                 if (sourceMod != null) {
                     hull.getFieldsMatching(type = ModSpecAPI::class.java).getOrNull(0)?.set(hull, sourceMod)
-                    Global.getLogger(this.javaClass).info("Set modded ship skin source mod for ${hull.hullId} to modID ${sourceMod.id}.")
+                    Global.getLogger(this.javaClass).info("Assigning modded hull skin source mod for ${hull.hullId} to modID ${sourceMod.id}.")
                     count++
                 } else if (hull.shipFilePath.startsWith("data/hulls/") // Base game skins typically have a full file path. Mod skins starts with "data/hulls/"
                     ) {
                     // This is not a base-game hull, yet no sourceMod was found.
-                    Global.getLogger(this.javaClass).info("Could not set the modded ship skin source mod for ${hull.hullId} at path ${hull.shipFilePath}. Make sure the skinId and file name are equal.")
+                    Global.getLogger(this.javaClass).info("Could not assign the modded hull skin source mod for ${hull.hullId} at path ${hull.shipFilePath}. Make sure the skinId and file name are equal.")
                 }
             }
         }
 
         if (count > 0)
-            Global.getLogger(this.javaClass).info("Set modded ship skins source mods for $count hulls.")
+            Global.getLogger(this.javaClass).info("Set modded hull skins source mods for $count hulls.")
         else
             Global.getLogger(this.javaClass).info("None present, no changes made.")
     }

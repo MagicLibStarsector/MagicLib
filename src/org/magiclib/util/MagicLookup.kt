@@ -9,9 +9,11 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.loading.WeaponSpecAPI
+import org.magiclib.LunaWrapper
 import org.magiclib.util.api.kotlin.getActualHullId
 import org.magiclib.util.api.kotlin.getEffectiveHullId
 import org.magiclib.util.api.kotlin.removeModFull
+import org.magiclib.util.internal.AssignHullSkinSourceMod.assignHullSkinSourceMods
 
 object MagicLookup {
     init {
@@ -67,10 +69,22 @@ object MagicLookup {
 
         allVariants = settings.allVariantIds.mapNotNull { runCatching { settings.getVariant(it) }.getOrNull() }
 
-        // TODO, add setting
-        //if (FBSettings.cleanGameVariantsForRemovedElements && !init) {
+
+        var removeMissing: Boolean
+        var assignSource: Boolean
+        if (Global.getSettings().modManager.isModEnabled("lunalib")) {
+            removeMissing = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_RemoveMissingVariantElements") ?: true
+            assignSource = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_AssignMissingSourceMods") ?: true
+        } else {
+            removeMissing = true
+            assignSource = true
+        }
+
+        if(removeMissing)
             cleanVariantsForRemovedElements(allVariants)
-        //}
+        if(assignSource)
+            assignHullSkinSourceMods()
+
 
         hullIDToVariant = allVariants.groupBy { it.hullSpec.hullId }
         effectiveHullIDToVariant = allVariants.groupBy { it.hullSpec.getEffectiveHullId() }
