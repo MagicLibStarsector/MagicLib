@@ -17,6 +17,7 @@ Version 1.5.8
 - The MagicLib_ResetBounty command now properly resets the input bounty, reloading it from the magicBounty_data.json file.
 - Drop/Raise button to sort the specified bounty to the bottom or top of the list.
 - The intel list now updates when accepting a bounty from the bounty board.
+- Reward credits are set only on bounty creation, they can no longer change depending on the fleet size of the bounty and/or player outside of when they are first created.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.
@@ -43,6 +44,7 @@ Version 1.5.8
 - Fix modSettings.json 'subsystemInfoKey'
 - Added 'Remove Missing Variant Elements' which removes all missing weapons/wings/hull-mods from variants on game launch. Typically from remove mods. This fixes some niche issues including saved mission variants causing missions to crash.
 - Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.
+- Added a large portion of methods and extensions from the 0.98 Starsector mod FleetBuilder.
 
 Version 1.5.7
 
