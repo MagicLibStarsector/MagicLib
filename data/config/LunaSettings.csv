@@ -37,9 +37,9 @@ Example:
 This will prevent saved mission variants from causing the mission to fail to load due to lacking the mod the mission variant was saved with.
 It may also prevent game crashes in rare examples.",,,
 
-magiclib_AssignMissingSourceMods,Assign Missing Source Mods on Ship Skins,Boolean,true,,"Fixes various issues where a source mod would be expected but is not present.
+magiclib_AssignMissingSourceMods,Assign Missing Source Mods on Ship Skins,Boolean,true,,"Fixes various issues where a source mod would be expected but are not present.
 By default, ship skins (e.g., Sunder XIV from Ship/Weapon Pack) do not have a source mod assigned.
-This option assigns the appropriate source mod to each hull skin where relevant on application launch.
+This option assigns the appropriate source mod to each hull skin where relevant.
 Changes to this setting will only take effect after game restart.
 
 Example:
