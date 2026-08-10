@@ -39,7 +39,7 @@ It may also prevent game crashes in rare examples.",,,
 
 magiclib_AssignMissingSourceMods,Assign Missing Source Mods on Ship Skins,Boolean,true,,"Fixes various issues where a source mod would be expected but is not present.
 By default, ship skins (e.g., Sunder XIV from Ship/Weapon Pack) do not have a source mod assigned.
-This option assigns the appropriate source mod to each hull skin where relevant.
+This option assigns the appropriate source mod to each hull skin where relevant on application launch.
 Changes to this setting will only take effect after game restart.
 
 Example:
