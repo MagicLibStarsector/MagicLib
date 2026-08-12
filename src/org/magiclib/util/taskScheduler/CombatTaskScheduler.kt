@@ -8,6 +8,24 @@ import com.fs.starfarer.api.input.InputEventAPI
 import org.magiclib.util.taskScheduler.TaskSchedulerUtils.safeRun
 import java.util.*
 
+/**
+ * A task scheduler for timed, recurring, and event-driven actions in combat.
+ *
+ * Example Java Usage:
+ * ```java
+ * CombatTaskScheduler.performLater(0L, false, handle -> {
+ *     Global.getLogger(this.getClass()).warn("TEST");
+ * });
+ * ```
+ * Example Kotlin Usage:
+ * ```kotlin
+ * CombatTaskScheduler.performLater(0L, false) { handle ->
+ *     Global.getLogger(this::class.java).warn("TEST")
+ * }
+ * ```
+ *
+ * @author S-Numan
+ */
 class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
     companion object {
@@ -23,13 +41,13 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          * Does not persist between battles
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
             val engine = inst.engine ?: return handle
 
             val task = TimedTask(
-                action = { action(handle) },
+                action = { action.run(handle) },
                 time =
                     if (systemTime) System.nanoTime() + delay * 1_000_000L
                     else (engine.getTotalElapsedTime(false) * 1000).toLong() + delay,
@@ -55,13 +73,13 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          * Does not persist between battles
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
             val engine = inst.engine ?: return handle
 
             val task = TimedTask(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 time =
                     if (systemTime) System.nanoTime() + interval * 1_000_000L
                     else (engine.getTotalElapsedTime(false) * 1000).toLong() + interval,
@@ -88,11 +106,11 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          */
         @JvmStatic
         @JvmOverloads
-        fun performOnUnpause(repeat: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performOnUnpause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
 
             val task = Task(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 repeat = repeat,
                 handle = handle
             )
@@ -115,11 +133,11 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          */
         @JvmStatic
         @JvmOverloads
-        fun performOnPlayerBattleStart(repeat: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performOnPlayerBattleStart(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
 
             val task = Task(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 repeat = repeat,
                 handle = handle
             )

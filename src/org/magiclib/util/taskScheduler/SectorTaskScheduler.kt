@@ -6,7 +6,24 @@ import com.fs.starfarer.api.campaign.CampaignClockAPI
 import org.magiclib.util.taskScheduler.TaskSchedulerUtils.safeRun
 import java.util.*
 
-
+/**
+ * A task scheduler for timed, recurring, and event-driven actions in the sector.
+ *
+ * Example Java Usage:
+ * ```java
+ * SectorTaskScheduler.performLater(0L, false, handle -> {
+ *     Global.getLogger(this.getClass()).warn("TEST");
+ * });
+ * ```
+ * Example Kotlin Usage:
+ * ```kotlin
+ * SectorTaskScheduler.performLater(0L, false) { handle ->
+ *     Global.getLogger(this::class.java).warn("TEST")
+ * }
+ * ```
+ *
+ * @author S-Numan
+ */
 class SectorTaskScheduler : EveryFrameScript {
 
     companion object {
@@ -37,12 +54,12 @@ class SectorTaskScheduler : EveryFrameScript {
          * Does not persist in save file, re-register every session if needed.
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
 
             val task = TimedTask(
-                action = { action(handle) },
+                action = { action.run(handle) },
                 time =
                     if (systemTime) System.nanoTime() + delay * 1_000_000L
                     else Global.getSector().clock.timestamp + realMsToClockMs(delay),
@@ -69,14 +86,14 @@ class SectorTaskScheduler : EveryFrameScript {
          * Does not persist in save file, re-register every session if needed.
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
 
             val convertedInterval = if (systemTime) interval * 1_000_000L else realMsToClockMs(interval)
 
             val task = TimedTask(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 time =
                     if (systemTime) System.nanoTime() + convertedInterval
                     else Global.getSector().clock.timestamp + convertedInterval,
@@ -103,11 +120,11 @@ class SectorTaskScheduler : EveryFrameScript {
          */
         @JvmStatic
         @JvmOverloads
-        fun performOnUnpause(repeat: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performOnUnpause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
 
             val task = Task(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 repeat = repeat,
                 handle = handle
             )
@@ -128,11 +145,11 @@ class SectorTaskScheduler : EveryFrameScript {
          */
         @JvmStatic
         @JvmOverloads
-        fun performAfterPlayerBattle(repeat: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performAfterPlayerBattle(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
 
             val task = Task(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 repeat = repeat,
                 handle = handle
             )
@@ -156,11 +173,11 @@ class SectorTaskScheduler : EveryFrameScript {
          */
         @JvmStatic
         @JvmOverloads
-        fun performAfterSectorExit(repeat: Boolean = false, action: (TaskHandle) -> Unit): TaskHandle {
+        fun performAfterSectorExit(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
 
             val task = Task(
-                action = { action(handle) }, // inject handle into lambda
+                action = { action.run(handle) }, // inject handle into lambda
                 repeat = repeat,
                 handle = handle
             )
