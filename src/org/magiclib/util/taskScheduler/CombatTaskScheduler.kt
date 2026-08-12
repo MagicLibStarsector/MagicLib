@@ -40,6 +40,9 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          *
          * Does not persist between battles
          */
+        // TODO: try out @IntroducedAt on systemTime for performLater and performEvery (both sector and combat)
+        //  to avoid needing to use @JvmOverloads as that would create more functions than I like.
+        //  I could manually make a separate function, but not only would that be more needless code, it would also require duplicating the documentation as well.
         @JvmStatic
         fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
