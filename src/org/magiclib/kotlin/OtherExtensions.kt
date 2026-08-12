@@ -106,7 +106,7 @@ fun ShipAPI.getAbsoluteAngleToAnotherShip(otherShip: ShipAPI): Float {
  *
  * Contributed by rksharkz.
  *
- * @return the ship's forward vector, similar to [com.fs.starfarer.api.util.Misc.getUnitVectorAtDegreeAngle] used with the ship's [ShipAPI.getFacing]
+ * @return the ship's forward vector, similar to [com.fs.starfarer.api.util.Misc.getUnitVectorAtDegreeAngle] used with the ship's [getFacing]
  * @since 1.4.6
  */
 fun ShipAPI.getForwardVector(): Vector2f {

@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector2f
 import java.util.*
 
 /**
- * Vanilla method: [com.fs.starfarer.api.impl.campaign.procgen.themes.MiscellaneousThemeGenerator.getRemnantStations]
+ * Vanilla method: [MiscellaneousThemeGenerator.getRemnantStations]
  * @since 1.3.0
  */
 fun SectorAPI.getRemnantStations(includeDamaged: Boolean, onlyDamaged: Boolean) =
@@ -112,7 +112,7 @@ fun StarSystemAPI.getInnerRadius() = MiscellaneousThemeGenerator.getInnerRadius(
 
 /**
  * Call on the center entity.
- * Vanilla method: [com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator.findGaps]
+ * Vanilla method: [BaseThemeGenerator.findGaps]
  *
  * @since 1.3.0
  */
