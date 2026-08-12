@@ -44,7 +44,10 @@ Version 1.5.8
 - Fix modSettings.json 'subsystemInfoKey'
 - Added 'Remove Missing Variant Elements' which removes all missing weapons/wings/hull-mods from variants on game launch. Typically from remove mods. This fixes some niche issues including saved mission variants causing missions to crash.
 - Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.
-- Added a large portion of methods and extensions from the 0.98 Starsector mod FleetBuilder.
+- Moved a large amount of code from the 0.98 Starsector mod FleetBuilder into MagicLib.
+  * See util.api for all of the new extensions and functions added.
+  * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat. 
+  
 
 Version 1.5.7
 
