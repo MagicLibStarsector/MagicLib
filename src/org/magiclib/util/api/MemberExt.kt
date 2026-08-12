@@ -1,4 +1,6 @@
-package org.magiclib.util.api.kotlin
+@file:JvmName("MemberUtils")
+
+package org.magiclib.util.api
 
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI

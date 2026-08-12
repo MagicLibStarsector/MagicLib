@@ -1,13 +1,15 @@
-package org.magiclib.util.api.kotlin
+@file:JvmName("VariantUtils")
+
+package org.magiclib.util.api
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
+import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.loading.WeaponSpecAPI
 import org.magiclib.util.MagicLookup
-import org.magiclib.util.api.VariantUtils
 
 /**
  * Delegate to [ShipHullSpecAPI.getActualHull]
@@ -27,22 +29,42 @@ fun ShipVariantAPI.getActualHullId(): String =
  * Any slots with null variants are filtered out. Use [getModulesAllowNull] if you want to include null variants.
  *
  * The map key is the module slot ID, and the value is the corresponding [ShipVariantAPI] for that module.
- *
- * This delegates to [VariantUtils.getModules]
  */
 fun ShipVariantAPI.getModules(): Map<String, ShipVariantAPI> {
-    return VariantUtils.getModules(this)
-}
+    // stationModules: weapon slot id -> original variant id
+    val modules = this.stationModules
+        ?.mapNotNull { (slot, _) ->
+            if (this.hullSpec.getWeaponSlot(slot)?.weaponType != WeaponAPI.WeaponType.STATION_MODULE) {
+                Global.getLogger(this.javaClass).warn("Slot '$slot' of variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
+                return@mapNotNull null
+            }
+            val variant: ShipVariantAPI? = this.getModuleVariant(slot)
+            variant?.let { slot to it }
+        }
+        ?.toMap() // converts the list of pairs back into a Map
+        ?: emptyMap()
 
+    return modules
+}
 /**
  * Returns a map of all modules attached to this variant.
  *
  * The map key is the module slot ID, and the value is the corresponding [ShipVariantAPI] for that module.
- *
- * This delegates to [VariantUtils.getModulesAllowNull]
  */
 fun ShipVariantAPI.getModulesAllowNull(): Map<String, ShipVariantAPI?> {
-    return VariantUtils.getModulesAllowNull(this)
+    val modules = this.stationModules
+        ?.mapNotNull { (slot, _) ->
+            if (this.hullSpec.getWeaponSlot(slot)?.weaponType != WeaponAPI.WeaponType.STATION_MODULE) {
+                Global.getLogger(this.javaClass).warn("Slot '$slot' of variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
+                return@mapNotNull null
+            }
+            val variant: ShipVariantAPI? = this.getModuleVariant(slot)
+            slot to variant
+        }
+        ?.toMap()
+        ?: emptyMap()
+
+    return modules
 }
 
 /**
@@ -86,6 +108,7 @@ fun ShipVariantAPI.getNonBuiltInWeapons(): Map<String, WeaponSpecAPI> {
  *
  * @param modId The ID of the mod to be removed.
  */
+@JvmOverloads
 fun ShipVariantAPI.removeModFull(modId: String, removeBuiltIns: Boolean = false) {
     sModdedBuiltIns.remove(modId)
     removePermaMod(modId)

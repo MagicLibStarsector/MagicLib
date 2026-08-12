@@ -4,8 +4,8 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.ModSpecAPI
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.kotlin.doesFileExist
-import org.magiclib.util.api.kotlin.getActualHullId
-import org.magiclib.util.api.kotlin.isSkin
+import org.magiclib.util.api.getActualHullId
+import org.magiclib.util.api.isSkin
 
 internal object AssignHullSkinSourceMod {
     fun assignHullSkinSourceMods() {

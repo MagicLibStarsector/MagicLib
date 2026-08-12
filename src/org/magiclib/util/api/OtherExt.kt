@@ -1,12 +1,13 @@
-package org.magiclib.util.api.kotlin
+@file:JvmName("OtherUtils")
+
+package org.magiclib.util.api
 
 import com.fs.starfarer.api.SettingsAPI
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
-import org.magiclib.util.api.HullUtils
 
 /**
- * Delegates to [HullUtils.createHullVariant].
+ * Delegates to [ShipHullSpecAPI.createHullVariant].
  */
 fun SettingsAPI.createHullVariant(hull: ShipHullSpecAPI): ShipVariantAPI =
-    HullUtils.createHullVariant(hull)
+    hull.createHullVariant()

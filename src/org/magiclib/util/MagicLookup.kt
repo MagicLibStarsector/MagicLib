@@ -10,9 +10,9 @@ import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.loading.WeaponSpecAPI
 import org.magiclib.LunaWrapper
-import org.magiclib.util.api.kotlin.getActualHullId
-import org.magiclib.util.api.kotlin.getEffectiveHullId
-import org.magiclib.util.api.kotlin.removeModFull
+import org.magiclib.util.api.getActualHullId
+import org.magiclib.util.api.getEffectiveHullId
+import org.magiclib.util.api.removeModFull
 import org.magiclib.util.internal.AssignHullSkinSourceMod.assignHullSkinSourceMods
 
 object MagicLookup {
