@@ -23,6 +23,7 @@ import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
+import org.magiclib.util.taskScheduler.SectorTaskScheduler;
 
 import java.awt.*;
 import java.util.UUID;
@@ -188,6 +189,11 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicPaintjobManager.onGameLoad();
 
         MemberMemoryManager.onGameLoad();
+
+        var sectorTaskScheduler = new SectorTaskScheduler();
+        assert sector != null;
+        sector.addTransientScript(sectorTaskScheduler);
+        SectorTaskScheduler.Companion.setActive$MagicLib(sectorTaskScheduler);
     }
 
     @Override
