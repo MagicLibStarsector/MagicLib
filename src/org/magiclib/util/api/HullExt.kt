@@ -88,10 +88,11 @@ fun ShipHullSpecAPI.getEffectiveHullId(): String =
  * @return The actual hull spec.
  */
 fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI {
-    return when {
+    return this.dParentHull ?: this
+    /*return when {
         !this.hullId.endsWith(Misc.D_HULL_SUFFIX) -> this
         else -> this.dParentHull ?: this
-    }
+    }*/
 }
 
 /**
