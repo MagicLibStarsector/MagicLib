@@ -6,7 +6,6 @@ Version 1.5.8
 - Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
 - Fixed bounty arrow pointing directly at the destination even when not specified to do so.
 - Fixed bounty intel not showing up in one of the lower faction intel tabs and instead duplicating a intel tab above.
-- Added 'fleet_skip_missing_variants' to bounty spec. This causes the bounty to skip any missing variants instead of failing.
 - Added 'fleet_memory_flags' to the bounty spec to add true memory keys to the bounty fleet.
 - Added the ability to specify item type with 'job_item_reward' beforehand with a $ in the bounty spec. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
 - Added `drawHUDStatusBar` overload that takes a `Vector2f`.
@@ -31,6 +30,8 @@ Version 1.5.8
 - Fix the game crashing if paintjob sprite did not exist or was not accessable, often occuring when opening the paintjob intel entry.
 - Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
+  * This stops hull skins which are not compatible with the base hull from receiving the base hull's paintjobs.
+  * If this is undesired behavior; either add another hull id to your paintjob in the .csv, or tag your hull skin with 'ML_ForceBasePaintjobs'.
 - Fix paintjob not applying to ship modules in some cases.
 - Add vents color changing alongside the engines and shield file.
 - Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
@@ -46,7 +47,7 @@ Version 1.5.8
 - Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.
 - Moved a large amount of code from the 0.98 Starsector mod FleetBuilder into MagicLib.
   * See util.api for all of the new extensions and functions added.
-  * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat. 
+  * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat.
   
 
 Version 1.5.7
