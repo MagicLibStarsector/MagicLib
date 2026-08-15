@@ -20,7 +20,6 @@ import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.optFloat
 import org.lazywizard.lazylib.ext.logging.w
 import org.magiclib.LunaWrapper
-import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.Magic_modPlugin
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getFieldsMatching
@@ -31,8 +30,10 @@ import org.magiclib.kotlin.toStringList
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
-import org.magiclib.util.api.getActualHullId
+import org.magiclib.util.api.getActualHull
+import org.magiclib.util.api.getEffectiveHull
 import org.magiclib.util.api.getEffectiveHullId
+import org.magiclib.util.api.isSkin
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
@@ -399,13 +400,19 @@ object MagicPaintjobManager {
     @JvmStatic
     @JvmOverloads
     fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> {
-        val actualHullId = hullSpec.getActualHullId()
-        val effectiveHullId = hullSpec.getEffectiveHullId()
+        val actualHull = hullSpec.getActualHull()
+        val actualHullId = actualHull.hullId
+
+        // If a hull skin has the tag 'ML_ForceBasePaintjobs', always give it the base hull's paintjobs even if it isn't compatible with the base hull.
+        val effectiveHullId = if (actualHull.isSkin() && actualHull.hasTag("ML_ForceBasePaintjobs"))
+            actualHull.baseHull?.hullId ?: actualHull.getEffectiveHullId()
+        else
+            actualHull.getEffectiveHull()
 
         return paintjobsInner.values.filter { pj ->
-            (actualHullId in pj.hullIds || effectiveHullId in pj.hullIds) &&
-                    (includeShiny || !pj.isShiny) &&
-                    (includeHidden || !pj.isHidden)
+            (includeShiny || !pj.isShiny) &&
+                    (includeHidden || !pj.isHidden) &&
+                    (actualHullId in pj.hullIds || (effectiveHullId != actualHullId && effectiveHullId in pj.hullIds))
         }
     }
 
@@ -413,9 +420,9 @@ object MagicPaintjobManager {
     @JvmOverloads
     fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> =
         paintjobsInner.values.filter {
-            hullId in it.hullIds &&
-                    (includeShiny || !it.isShiny) &&
-                    (includeHidden || !it.isHidden)
+            (includeShiny || !it.isShiny) &&
+                    (includeHidden || !it.isHidden) &&
+                    (hullId in it.hullIds)
         }
 
     @JvmStatic
