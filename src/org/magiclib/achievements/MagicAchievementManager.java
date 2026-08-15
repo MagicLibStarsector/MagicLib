@@ -91,17 +91,14 @@ public class MagicAchievementManager {
         // Set up LunaLib settings.
         if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
             // Add settings listener.
-            LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
-                @Override
-                public void settingsChanged(@NotNull String settings) {
-                    Boolean lunaAreAchievementsEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
+            LunaWrapper.addSettingsListener(settings -> {
+                Boolean lunaAreAchievementsEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements");
 
-                    if (lunaAreAchievementsEnabled != null) {
-                        areAchievementsEnabled = lunaAreAchievementsEnabled;
+                if (lunaAreAchievementsEnabled != null) {
+                    areAchievementsEnabled = lunaAreAchievementsEnabled;
 
-                        boolean isGameLoading = Global.getCurrentState() == GameState.CAMPAIGN;
-                        setAchievementsEnabled(areAchievementsEnabled, isGameLoading);
-                    }
+                    boolean isGameLoading = Global.getCurrentState() == GameState.CAMPAIGN;
+                    setAchievementsEnabled(areAchievementsEnabled, isGameLoading);
                 }
             });
 

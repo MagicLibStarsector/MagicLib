@@ -95,28 +95,22 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun onApplicationLoad() {
-        // Set up LunaLib settings.
-        if (Global.getSettings().modManager.isModEnabled("lunalib")) {
-            isEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
+        // Add LunaLib settings listener.
+        LunaWrapper.addSettingsListener(MagicVariables.MAGICLIB_ID) { modID ->
+            val lunaIsEnabled =
+                LunaWrapper.getBoolean(modID, "magiclib_enablePaintjobs") ?: true
 
-            // Add settings listener.
-            LunaWrapper.addSettingsListener(object : LunaWrapperSettingsListener {
-                override fun settingsChanged(modID: String) {
-                    val lunaIsEnabled =
-                        LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
-
-                    if (isEnabled != lunaIsEnabled) {
-                        isEnabled = lunaIsEnabled
-                        if (isEnabled) {
-                            onGameLoad()
-                            initIntel()
-                        } else {
-                            removeIntel()
-                        }
-                    }
+            if (isEnabled != lunaIsEnabled) {
+                isEnabled = lunaIsEnabled
+                if (isEnabled) {
+                    onGameLoad()
+                    initIntel()
+                } else {
+                    removeIntel()
                 }
-            })
+            }
         }
+
 
         val (paintjobSpecs, weaponPaintjobSpecs) = loadPaintjobs()
 
@@ -781,7 +775,7 @@ object MagicPaintjobManager {
 
     private fun removeIntel() {
         if (Global.getSector() == null) return
-        val intelManager = Global.getSector().intelManager
+        val intelManager = Global.getSector().intelManager ?: return
         while (intelManager.hasIntelOfClass(MagicPaintjobIntel::class.java)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicPaintjobIntel::class.java))
         }

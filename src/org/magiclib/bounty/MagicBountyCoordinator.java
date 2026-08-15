@@ -67,18 +67,14 @@ public final class MagicBountyCoordinator {
 
         initIntel();
 
-        if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
-            LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
-                @Override
-                public void settingsChanged(@NotNull String s) {
-                    DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
 
-                    if (DEADLINES_ENABLED == null) {
-                        DEADLINES_ENABLED = false;
-                    }
-                }
-            });
-        }
+        LunaWrapper.addSettingsListener(s -> {
+            DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
+
+            if (DEADLINES_ENABLED == null) {
+                DEADLINES_ENABLED = false;
+            }
+        });
     }
 
     @Nullable
