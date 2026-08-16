@@ -17,6 +17,7 @@ Version 1.5.8
 - Drop/Raise button to sort the specified bounty to the bottom or top of the list.
 - The intel list now updates when accepting a bounty from the bounty board.
 - Reward credits are set only on bounty creation, they can no longer change depending on the fleet size of the bounty and/or player outside of when they are first created.
+- Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.
@@ -43,11 +44,13 @@ Version 1.5.8
 - loadVariant now tries to clone the _Hull variant using the hull ID instead of createEmptyVariant() where possible. This makes loadVariant create empty module slots by default; it is intended to fix issues where expected modules were missing due to misconfigured .variant files.
 - Added MagicModVersionTracker which adds mod versions to `sector.getPersistentData()["ml_modVersions"]` after onGameLoad. This allows other mod developers to see the 'last' mod versions in onGameLoad and handle version migration behavior as desired.
 - Fix modSettings.json 'subsystemInfoKey'
-- Added 'Remove Missing Variant Elements' which removes all missing weapons/wings/hull-mods from variants on game launch. Typically from remove mods. This fixes some niche issues including saved mission variants causing missions to crash.
-- Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.
+- Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
+- Removed compilation dependency on Vayra's Sector.
 - Moved a large amount of code from the 0.98 Starsector mod FleetBuilder into MagicLib.
   * See util.api for all of the new extensions and functions added.
   * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat.
+  * Added 'Remove Missing Variant Elements' which removes all missing weapons/wings/hull-mods from variants on game launch. Typically from remove mods. This fixes some niche issues including saved mission variants causing missions to crash.
+  * Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.
   
 
 Version 1.5.7
