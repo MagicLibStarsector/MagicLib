@@ -403,11 +403,15 @@ object MagicPaintjobManager {
         val actualHull = hullSpec.getActualHull()
         val actualHullId = actualHull.hullId
 
-        // If a hull skin has the tag 'ML_ForceBasePaintjobs', always give it the base hull's paintjobs even if it isn't compatible with the base hull.
-        val effectiveHullId = if (actualHull.isSkin() && actualHull.hasTag("ML_ForceBasePaintjobs"))
-            actualHull.baseHull?.hullId ?: actualHull.getEffectiveHullId()
-        else
-            actualHull.getEffectiveHull()
+        val effectiveHullId = if (!actualHull.isSkin()) {
+            actualHull.getEffectiveHullId()
+        } else when { // This is a hull skin
+            actualHull.hasTag("ML_NoBasePaintjobs") -> // If a hull skin has the tag 'ML_NoBasePaintjobs', don't give it the base hull's paintjobs ever.
+                actualHullId
+            actualHull.hasTag("ML_ForceBasePaintjobs") -> // If a hull skin has the tag 'ML_ForceBasePaintjobs', always give it the base hull's paintjobs even if it isn't compatible with the base hull.
+                actualHull.baseHull?.hullId ?: actualHull.getEffectiveHullId()
+            else -> actualHull.getEffectiveHullId()
+        }
 
         return paintjobsInner.values.filter { pj ->
             (includeShiny || !pj.isShiny) &&
