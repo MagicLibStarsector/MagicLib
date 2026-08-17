@@ -142,10 +142,14 @@ public class Magic_modPlugin extends BaseModPlugin {
                 sector.getPersistentData().put("ml_uniqueSaveId", sector.getSeedString() + "_" + UUID.randomUUID());
 
             sector.addTransientScript(new MagicPaintjobCampaignRefitAdder());
-            sector.addTransientScript(new MagicPaintjobCampaignApplier());
+
+            var paintjobCampaignApplier = new MagicPaintjobCampaignApplier();
+            sector.addTransientScript(paintjobCampaignApplier);
+            sector.getListenerManager().addListener(paintjobCampaignApplier, true);
+
             sector.addTransientListener(new MagicIndustryItemWrangler());
-            magicCampaignTrailPlugin = new MagicCampaignTrailPlugin();
-            sector.addTransientScript(magicCampaignTrailPlugin);
+
+            sector.addTransientScript(new MagicCampaignTrailPlugin());
         }
 
         MagicVariables.checkBountySystems();

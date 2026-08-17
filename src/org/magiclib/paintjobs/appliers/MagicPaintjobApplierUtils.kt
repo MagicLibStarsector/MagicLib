@@ -5,10 +5,14 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignUIAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.fleet.FleetMemberViewAPI
 import com.fs.starfarer.api.ui.ButtonAPI
 import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
+import com.fs.starfarer.campaign.fleet.CampaignShipEngineGlow
+import com.fs.starfarer.campaign.fleet.FleetMember
 import com.fs.starfarer.loading.specs.HullVariantSpec
+import com.fs.starfarer.util.ColorShifter
 import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.get
@@ -17,6 +21,7 @@ import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.internalextensions.*
 import org.magiclib.paintjobs.MagicPaintjobManager
+import org.magiclib.util.api.getModules
 import java.awt.Color
 
 internal object MagicPaintjobApplierUtils {
@@ -107,38 +112,60 @@ internal object MagicPaintjobApplierUtils {
         }
     }
 
-    fun changeIconSprite(member: FleetMemberAPI, memberIcon: Any) {
+    /**
+     * By default, no logic happens if no paint-job is present. This causes issues when removing a paint-job as the paint-job will stay. Enable forceClear in that situation to get it to work anyway.
+     *
+     * forceClear is not enabled by default for optimization reasons.
+     */
+    fun changeIconSprite(member: FleetMemberAPI, memberIcon: Any, forceClear: Boolean = false) {
 
         // Variant
 
         val variantPaintJobSpec = MagicPaintjobManager.getCurrentShipPaintjob(member.variant)
 
-        if (variantPaintJobSpec != null) {
+        if (variantPaintJobSpec != null || forceClear) {
             val spriteFields = memberIcon.getFieldsMatching(type = Sprite::class.java)
             val variantSpriteField = spriteFields.firstOrNull { field ->
                 val sprite = field.get(memberIcon) as? Sprite ?: return@firstOrNull false
-                sprite.getFieldsMatching(name = "textureId").getOrNull(0)?.get(sprite) == member.hullSpec.spriteName
+                (sprite.getFieldsMatching(name = "textureId").getOrNull(0)?.get(sprite) as? String)?.contains("/ships/") == true
             }
             //val spriteDirect = memberIcon.getMethodsMatching(returnType = Sprite::class.java).firstOrNull()?.invoke(memberIcon) as? Sprite
 
             if (variantSpriteField != null)
-                makeNewSpriteToReplace(variantPaintJobSpec.spriteId, variantSpriteField, memberIcon)
+                makeNewSpriteToReplace(variantPaintJobSpec?.spriteId ?: member.hullSpec.spriteName, variantSpriteField, memberIcon)
+
+            if(memberIcon is FleetMemberViewAPI) {
+                if(variantPaintJobSpec != null) {
+                    variantPaintJobSpec.engineSpec?.let { spec ->
+                        spec.contrailColor?.let {
+                            (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
+                        }
+                        spec.color?.let {
+                            (memberIcon.get(name = "engineColor") as ColorShifter).base = it
+                            (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
+                        }
+                    }
+                } else {
+                    val spec = CampaignShipEngineGlow(member as FleetMember, 1f)
+                    spec.contrailColor?.let {
+                        (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
+                    }
+                    spec.color?.let {
+                        (memberIcon.get(name = "engineColor") as ColorShifter).base = it
+                        (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
+                    }
+                }
+            }
         }
 
         // Variant Modules
 
-        val modules = member.variant.stationModules
-            ?.mapNotNull { (slot, _) ->
-                val variant: ShipVariantAPI? = member.variant.getModuleVariant(slot)
-                variant?.let { slot to it }
-            }
-            ?.toMap() // converts the list of pairs back into a Map
-            ?: emptyMap()
+        val modules = member.variant.getModules()
 
         val modulePaintJobSpecs = modules.mapNotNull { (_, module) ->
             MagicPaintjobManager.getCurrentShipPaintjob(module)
         }
-        if (modulePaintJobSpecs.isNotEmpty()) {
+        if (modulePaintJobSpecs.isNotEmpty() || forceClear) {
 
             // Array should be a list of elements which each contain a Sprite, HullVariantSpec, and something obfuscated which seems to contain details on where the module is on its host variant.
             fun isModuleList(list: List<*>): Boolean {
@@ -156,10 +183,10 @@ internal object MagicPaintjobApplierUtils {
                 val variant = it?.get(type = HullVariantSpec::class.java) as? ShipVariantAPI
                 if (variant != null) {
                     val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(variant)
-                    if (paintjob != null) {
+                    if (paintjob != null || forceClear) {
                         val spriteField = it.getFieldsMatching(type = Sprite::class.java).getOrNull(0)
                         if (spriteField != null)
-                            makeNewSpriteToReplace(paintjob.spriteId, spriteField, it)
+                            makeNewSpriteToReplace(paintjob?.spriteId ?: member.hullSpec.spriteName, spriteField, it)
                     }
                 }
             }
@@ -198,6 +225,8 @@ internal object MagicPaintjobApplierUtils {
         newSprite.texWidth = spriteToReplace.texWidth
         newSprite.texHeight = spriteToReplace.texHeight
         newSprite.alphaMult = spriteToReplace.alphaMult
+        newSprite.centerX = spriteToReplace.centerX
+        newSprite.centerY = spriteToReplace.centerY
 
         onField.set(onInstance, newSprite)
     }

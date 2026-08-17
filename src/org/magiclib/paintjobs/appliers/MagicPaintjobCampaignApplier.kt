@@ -6,6 +6,9 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetEncounterContextPlugin
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.listeners.RefitScreenListener
+import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
 import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
@@ -20,7 +23,7 @@ import org.magiclib.internalextensions.getChildrenCopy
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.paintjobs.appliers.MagicPaintjobApplierUtils.isIdle
 
-internal class MagicPaintjobCampaignApplier : EveryFrameScript {
+internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListener {
     var errorOccured = false
 
     override fun isDone(): Boolean = false
@@ -40,7 +43,7 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
     }
 
     private var prevLocation: LocationAPI? = null
-    private var fleetsApplied = mutableSetOf<String>()
+    private val fleetsApplied = mutableSetOf<String>()
     private fun applyToCampaignCircleFleets() {
         val curLocation = Global.getSector().currentLocation
         if (curLocation !== prevLocation) { // If location change
@@ -50,9 +53,11 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         }
 
         curLocation.fleets.forEach { fleet ->
-            if (!fleet.isVisibleToPlayerFleet)
-                return@forEach
             if (fleet.id in fleetsApplied)
+                return@forEach
+            val isPlayerFleet = fleet.isPlayerFleet
+            if (!isPlayerFleet // Player fleet is always visible
+                && !fleet.isVisibleToPlayerFleet) // Somewhat expensive method
                 return@forEach
 
             val views = fleet.views ?: return@forEach
@@ -61,10 +66,24 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
             views.filterNotNull().forEach { view ->
                 val member = view.member ?: return@forEach
 
-                MagicPaintjobApplierUtils.changeIconSprite(member, view)
+                MagicPaintjobApplierUtils.changeIconSprite(member, view, isPlayerFleet) // Always force clear player fleet
             }
+
+            fleet.updateFleetView()
+            //val fleetView = fleet.invoke("getFleetView") as? CampaignFleetView
+            //fleetView?.clear()
+
             fleetsApplied.add(fleet.id)
         }
+    }
+
+    override fun reportFleetMemberVariantSaved(
+        member: FleetMemberAPI?,
+        dockedAt: MarketAPI?
+    ) {
+        if (!MagicPaintjobManager.isEnabled) return
+        val fleet = member?.fleetData?.fleet ?: return
+        fleetsApplied.remove(fleet.id)
     }
 
     private var centerTooltipHash: Int = 0
@@ -161,8 +180,9 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript {
         if (!ui.isIdle())
             return
         val engine = CampaignEngine.getInstance() ?: return
-        val tooltip = engine.invoke("getTooltipManager")
-        val hoveredFleet = tooltip?.getFieldsMatching(type = CampaignEntity::class.java)?.getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
+        val tooltip = engine.tooltipManager ?: return
+        engine.tooltipManager
+        val hoveredFleet = tooltip.getFieldsMatching(type = CampaignEntity::class.java).getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
         if (hoveredFleet == null) {
             currentHoveredFleetID = null
             visibilityLevelToPlayerFleet = SectorEntityToken.VisibilityLevel.NONE
