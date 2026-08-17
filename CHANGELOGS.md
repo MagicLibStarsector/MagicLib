@@ -33,6 +33,7 @@ Version 1.5.8
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
   * This stops hull skins which are not compatible with the base hull from receiving the base hull's paintjobs.
   * If this is undesired behavior; either add another hull id to your paintjob in the .csv, or tag your hull skin with 'ML_ForceBasePaintjobs'.
+  * You can also tag the relevant hull skin with 'ML_NoBasePaintjobs' to forbid paintjobs from being appliable from the base-hull.
 - Fix paintjob not applying to ship modules in some cases.
 - Add vents color changing alongside the engines and shield file.
 - Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
