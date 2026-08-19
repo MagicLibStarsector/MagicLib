@@ -8,6 +8,7 @@ import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
+import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.WeaponSpecAPI
 import org.magiclib.util.MagicLookup
 
@@ -99,6 +100,42 @@ fun ShipVariantAPI.getNonBuiltInWeapons(): Map<String, WeaponSpecAPI> {
         weapons[slot] = weapon
     }
     return weapons
+}
+
+/**
+ * Returns all fitted wings on this variant.
+ *
+ * The map key is the wing index, and the value is the [FighterWingSpecAPI]
+ * of the wing installed in that slot.
+ */
+fun ShipVariantAPI.getFittedWingSpecs(): Map<Int, FighterWingSpecAPI> {
+    val wings = mutableMapOf<Int, FighterWingSpecAPI>()
+    this.wings.forEachIndexed { index, wingId ->
+        if(wingId.isNullOrEmpty()) return@forEachIndexed
+        val wing = MagicLookup.getFighterWingSpec(wingId) ?: return@forEachIndexed
+        wings[index] = wing
+    }
+    return wings
+}
+
+/**
+ * Returns all non-built-in wings on this variant.
+ *
+ * This only excludes built in wings
+ *
+ * The map key is the wing index, and the value is the [FighterWingSpecAPI]
+ * of the wing installed in that slot.
+ */
+fun ShipVariantAPI.getNonBuiltInWingSpecs(): Map<Int, FighterWingSpecAPI> {
+    val wings = mutableMapOf<Int, FighterWingSpecAPI>()
+    val builtInWingCount = this.hullSpec.builtInWings.size
+    this.wings.forEachIndexed { index, wingId ->
+        if(index < builtInWingCount) return@forEachIndexed
+        if(wingId.isNullOrEmpty()) return@forEachIndexed
+        val wing = MagicLookup.getFighterWingSpec(wingId) ?: return@forEachIndexed
+        wings[index] = wing
+    }
+    return wings
 }
 
 /**

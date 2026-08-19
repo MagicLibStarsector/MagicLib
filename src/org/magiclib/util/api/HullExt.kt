@@ -7,11 +7,43 @@ import com.fs.starfarer.api.combat.ShipAPI.HullSize
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.combat.WeaponAPI
+import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.VariantSource
-import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.api.loading.WeaponSpecAPI
 import org.magiclib.kotlin.getErrorVariantID
 import org.magiclib.util.MagicLookup
 
+
+/**
+ * Returns all built in wings on this hull.
+ *
+ * The map key is the wing index, and the value is the [FighterWingSpecAPI]
+ * of the wing installed in that slot.
+ */
+fun ShipHullSpecAPI.getBuiltInWingSpecs(): Map<Int, FighterWingSpecAPI> {
+    val wings = mutableMapOf<Int, FighterWingSpecAPI>()
+    this.builtInWings.forEachIndexed { index, wingId ->
+        if(wingId.isNullOrEmpty()) return@forEachIndexed
+        val wing = MagicLookup.getFighterWingSpec(wingId) ?: return@forEachIndexed
+        wings[index] = wing
+    }
+    return wings
+}
+
+/**
+ * Returns all built-in weapons on this hull.
+ *
+ * The map key is the weapon slot ID, and the value is the [WeaponSpecAPI]
+ * of the weapon installed in that slot.
+ */
+fun ShipHullSpecAPI.getBuiltInWeaponSpecs(): Map<String, WeaponSpecAPI> {
+    val weapons = mutableMapOf<String, WeaponSpecAPI>()
+    this.builtInWeapons.forEach { (slot, weaponId) ->
+        val weapon = MagicLookup.getWeaponSpec(weaponId) ?: return@forEach
+        weapons[slot] = weapon
+    }
+    return weapons
+}
 
 /**
  * Returns true if the hull is a module.
