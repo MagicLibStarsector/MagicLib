@@ -68,6 +68,9 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
         } catch (e: Exception) {
             Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in combat", e)
             errorOccured = true
+        } catch (e: NoSuchMethodError) {
+            Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in combat", e)
+            errorOccured = true
         }
     }
 

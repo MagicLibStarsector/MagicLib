@@ -125,10 +125,13 @@ internal object MagicPaintjobApplierUtils {
 
         if (variantPaintJobSpec != null || forceClear) {
             val spriteFields = memberIcon.getFieldsMatching(type = Sprite::class.java)
-            val variantSpriteField = spriteFields.firstOrNull { field ->
+            val hullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(member.hullSpec, includeShiny = true, includeHidden = true)
+            var variantSpriteField = spriteFields.firstOrNull { field ->
                 val sprite = field.get(memberIcon) as? Sprite ?: return@firstOrNull false
-                (sprite.getFieldsMatching(name = "textureId").getOrNull(0)?.get(sprite) as? String)?.contains("/ships/") == true
+                val textureId = (sprite.getFieldsMatching(name = "textureId").getOrNull(0)?.get(sprite) as? String) ?: return@firstOrNull false
+                textureId == member.hullSpec.spriteName || hullPaintjobs.any { it.spriteId == textureId }
             }
+
             //val spriteDirect = memberIcon.getMethodsMatching(returnType = Sprite::class.java).firstOrNull()?.invoke(memberIcon) as? Sprite
 
             if (variantSpriteField != null)

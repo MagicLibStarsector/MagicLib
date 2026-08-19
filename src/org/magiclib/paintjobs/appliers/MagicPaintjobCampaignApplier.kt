@@ -39,6 +39,9 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
         } catch (e: Exception) {
             Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in the campaign", e)
             errorOccured = true
+        } catch (e: NoSuchMethodError) {
+            Global.getLogger(this::class.java).error("Error when trying to apply paintjobs in the campaign", e)
+            errorOccured = true
         }
     }
 
@@ -180,8 +183,8 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
         if (!ui.isIdle())
             return
         val engine = CampaignEngine.getInstance() ?: return
-        val tooltip = engine.tooltipManager ?: return
-        engine.tooltipManager
+        val tooltip = engine.invoke("getTooltipManager") ?: return
+
         val hoveredFleet = tooltip.getFieldsMatching(type = CampaignEntity::class.java).getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
         if (hoveredFleet == null) {
             currentHoveredFleetID = null
