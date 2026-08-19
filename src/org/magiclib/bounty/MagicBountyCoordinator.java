@@ -451,6 +451,9 @@ public final class MagicBountyCoordinator {
 
             fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS, true);
 
+            if(spec.fleet_musicSetId != null && !spec.fleet_musicSetId.isEmpty())
+                fleet.getMemoryWithoutUpdate().set("$combatMusicSetId", "music_combat_before_custom"); // Set default ambiance music before deployment. This will be overridden by the custom music after combat has unpaused.
+
             // Set fleet to max CR
             for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
                 member.getRepairTracker().setCR(member.getRepairTracker().getMaxCR());
