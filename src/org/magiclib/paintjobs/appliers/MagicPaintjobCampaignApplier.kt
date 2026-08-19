@@ -183,7 +183,7 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
         if (!ui.isIdle())
             return
         val engine = CampaignEngine.getInstance() ?: return
-        val tooltip = engine.invoke("getTooltipManager") ?: return
+        val tooltip = engine.invoke("getTooltipManager") ?: return // Do not use .tooltipManager, CampaignEngine does not exist on the same path between machines and will give a NoMethodFound exception.
 
         val hoveredFleet = tooltip.getFieldsMatching(type = CampaignEntity::class.java).getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
         if (hoveredFleet == null) {
