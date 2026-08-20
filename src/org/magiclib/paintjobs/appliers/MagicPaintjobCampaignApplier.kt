@@ -15,6 +15,7 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.campaign.CampaignEngine
 import com.fs.starfarer.campaign.CampaignEntity
 import com.fs.starfarer.ui.impl.StandardTooltipV2
+import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
@@ -25,12 +26,21 @@ import org.magiclib.paintjobs.appliers.MagicPaintjobApplierUtils.isIdle
 
 internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListener {
     var errorOccured = false
+    var init = false
+    var tooltipManager: Any? = null
+    var tooltipManagerEntityField: ReflectionUtils.ReflectedField? = null
 
     override fun isDone(): Boolean = false
     override fun runWhilePaused(): Boolean = true
     override fun advance(amount: Float) {
         if (!MagicPaintjobManager.isEnabled) return // return if not enabled
         if (errorOccured) return
+
+        if(!init) {
+            tooltipManager = Global.getSector().invoke("getTooltipManager") // Do not use .tooltipManager, CampaignEngine does not exist on the same path between machines and will give a NoMethodFound exception.
+            tooltipManagerEntityField = tooltipManager?.getFieldsMatching(type = CampaignEntity::class.java)?.getOrNull(0)
+            init = true
+        }
 
         try {
             applyToCommandTooltip()
@@ -182,10 +192,11 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
         val ui = sector.campaignUI
         if (!ui.isIdle())
             return
-        val engine = CampaignEngine.getInstance() ?: return
-        val tooltip = engine.invoke("getTooltipManager") ?: return // Do not use .tooltipManager, CampaignEngine does not exist on the same path between machines and will give a NoMethodFound exception.
 
-        val hoveredFleet = tooltip.getFieldsMatching(type = CampaignEntity::class.java).getOrNull(0)?.get(tooltip) as? CampaignFleetAPI
+        if(tooltipManager == null)
+            return
+
+        val hoveredFleet = tooltipManagerEntityField?.get(tooltipManager) as? CampaignFleetAPI
         if (hoveredFleet == null) {
             currentHoveredFleetID = null
             visibilityLevelToPlayerFleet = SectorEntityToken.VisibilityLevel.NONE
@@ -215,7 +226,7 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
         if (paintJobMembers.isEmpty())
             return
 
-        val tooltipPanel = tooltip.getFieldsMatching(type = StandardTooltipV2::class.java).getOrNull(0)?.get(tooltip) as? UIPanelAPI
+        val tooltipPanel = tooltipManager!!.getFieldsMatching(type = StandardTooltipV2::class.java).getOrNull(0)?.get(tooltipManager) as? UIPanelAPI
             ?: return
         val shipList = (tooltipPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)?.findChildWithMethod("turnOffCRandHullBars")
             ?: return

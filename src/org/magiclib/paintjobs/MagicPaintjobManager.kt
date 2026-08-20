@@ -31,7 +31,6 @@ import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
 import org.magiclib.util.api.getActualHull
-import org.magiclib.util.api.getEffectiveHull
 import org.magiclib.util.api.getEffectiveHullId
 import org.magiclib.util.api.isSkin
 
@@ -463,9 +462,7 @@ object MagicPaintjobManager {
 
     private fun markAsAlreadyNotifiedPlayerOfNewUnlock(paintjobs: Set<String>) {
         completedPaintjobIdsThatUserHasBeenNotifiedFor.clear()
-        for (paintjobId in paintjobs) {
-            completedPaintjobIdsThatUserHasBeenNotifiedFor.add(paintjobId)
-        }
+        completedPaintjobIdsThatUserHasBeenNotifiedFor.addAll(paintjobs)
     }
 
     /**
@@ -622,14 +619,7 @@ object MagicPaintjobManager {
             ShaderLib.overrideShipTexture(combatShip, spriteId)
         }
 
-        combatShip.shield?.let { shield ->
-            paintjob.shieldSpec?.let { spec ->
-                spec.innerColor?.let { shield.innerColor = it }
-                spec.ringColor?.let { shield.ringColor = it }
-                spec.innerRotationRate?.let { shield.innerRotationRate = it }
-                spec.ringRotationRate?.let { shield.ringRotationRate = it }
-            }
-        }
+        applyPaintjobToShield(combatShip, paintjob)
 
         combatShip.engineController?.shipEngines?.forEach { shipEngine ->
             val slot = shipEngine.engineSlot
@@ -651,6 +641,23 @@ object MagicPaintjobManager {
         for (weapon in combatShip.allWeapons) {
             getPaintjobsForWeapon(weapon.spec.weaponId, paintjob.paintjobFamily).forEach { weaponPaintjob ->
                 applyWeaponPaintjob(weapon, weaponPaintjob)
+            }
+        }
+    }
+
+    /**
+     * Kept separate from [applyPaintjob] for optimization reasons, as the ShipAPI shield tends to reset and needs to be re-applied every frame.
+     */
+    internal fun applyPaintjobToShield(
+        combatShip: ShipAPI,
+        paintjob: MagicPaintjobSpec
+    ) {
+        combatShip.shield?.let { shield ->
+            paintjob.shieldSpec?.let { spec ->
+                spec.innerColor?.let { shield.innerColor = it }
+                spec.ringColor?.let { shield.ringColor = it }
+                spec.innerRotationRate?.let { shield.innerRotationRate = it }
+                spec.ringRotationRate?.let { shield.ringRotationRate = it }
             }
         }
     }
@@ -720,15 +727,20 @@ object MagicPaintjobManager {
     @JvmStatic
     fun getCurrentShipPaintjob(variant: ShipVariantAPI): MagicPaintjobSpec? {
         val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
-        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX)
 
         // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
-        if (!variant.hasHullMod(MagicPaintjobHullMod.ID)
-            || paintjobId == null) { // If the tag is removed but the hull-mod isn't (probably a developer mistake?*) Remove the hull-mod.
-            removePaintjobFromShip(variant)
+        if (!variant.hasHullMod(MagicPaintjobHullMod.ID)) {
+            if(pjTag != null)
+                removePaintjobFromShip(variant)
+            return null
+        }
+        else if(pjTag == null) { // If the tag is removed but the hull-mod isn't (probably a developer mistake?) Remove the hull-mod.
+            Global.getLogger(this::class.java).warn("Paintjob tag is missing from variant ${variant.hullVariantId} despite having paintjob hull-mod")
+            variant.removePermaMod(MagicPaintjobHullMod.ID)
             return null
         }
 
+        val paintjobId = pjTag.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX)
         return getPaintjob(paintjobId)
     }
 

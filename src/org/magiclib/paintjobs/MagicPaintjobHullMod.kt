@@ -47,11 +47,15 @@ class MagicPaintjobHullMod : BaseHullMod() {
             }
         }
 
-
         // If the paintjob sets engines, delay until the engines exist
         if (ship.engineController.shipEngines.isNotEmpty() || paintjob.engineSpec == null) {
-            // Apply each frame because of shields.
-            MagicPaintjobManager.applyPaintjob(ship, paintjob)
+            if("MagicPaintjobApplied" !in ship.customData) {
+                MagicPaintjobManager.applyPaintjob(ship, paintjob)
+                ship.setCustomData("MagicPaintjobApplied", true)
+            } else {
+                // Apply each frame because of shields. (Shields can reset and thus need to be applied each frame)
+                MagicPaintjobManager.applyPaintjobToShield(ship, paintjob)
+            }
         }
     }
 

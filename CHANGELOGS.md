@@ -26,7 +26,8 @@ Version 1.5.8
 **MagicPaintjobs**
 - Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
 - Shiny paintjobs now have a shiny icon to indicate their status.
-- Fix bad performance in some situations.
+- Improve CPU performance in campaign.
+- Improve CPU performance in combat.
 - Fix the paintjob unlock notifier, as it didn't appear to be working.
 - Fix the game crashing if paintjob sprite did not exist or was not accessable, often occuring when opening the paintjob intel entry.
 - Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
