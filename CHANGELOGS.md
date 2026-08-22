@@ -18,6 +18,7 @@ Version 1.5.8
 - The intel list now updates when accepting a bounty from the bounty board.
 - Reward credits are set only on bounty creation, they can no longer change depending on the fleet size of the bounty and/or player outside of when they are first created.
 - Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
+- Force base-game ambient battle music before combat is unpaused when fighting against a bounty with 'fleet_musicSetId' set. This fixes the bad music transitions from modded music tracks to bounty music tracks.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.
