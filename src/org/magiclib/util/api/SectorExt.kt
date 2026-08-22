@@ -6,6 +6,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignUIAPI
 import com.fs.starfarer.api.campaign.CargoAPI
 import com.fs.starfarer.api.campaign.CoreUITabId
+import com.fs.starfarer.api.campaign.SectorAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI
@@ -30,32 +31,31 @@ fun CampaignUIAPI.getActualCurrentTab(): CoreUITabId? {
 }
 
 
-
 /**
  * Returns all entities across all locations in the sector.
  */
-fun getSectorEntities(): List<SectorEntityToken> {
-    val sector = Global.getSector() ?: return emptyList()
-
-    return sector.allLocations
+fun SectorAPI.getAllEntities(): List<SectorEntityToken> {
+    return this.allLocations
         .flatMap { it.allEntities }
 }
 
 /**
  * Returns all unique markets in the sector.
  *
- * Markets are collected from all [getSectorEntities] and deduplicated by market ID.
+ * Markets are filtered from [getAllEntities] and deduplicated by market ID.
  *
  * This function can be expensive. Avoid calling it frequently.
  */
-fun getSectorMarkets(): List<MarketAPI> {
-    return getMarkets(getSectorEntities())
+fun SectorAPI.getMarkets(): List<MarketAPI> {
+    return this.getMarkets(this.getAllEntities())
 }
 
 /**
- * Returns markets from a precomputed entity list.
+ * Returns all unique markets in an entity list.
+ *
+ * Markets are deduplicated by market ID.
  */
-fun getMarkets(entities: List<SectorEntityToken>): List<MarketAPI> {
+fun SectorAPI.getMarkets(entities: List<SectorEntityToken>): List<MarketAPI> {
     return entities
         .mapNotNull { it.market }
         .distinctBy { it.id }
@@ -64,18 +64,20 @@ fun getMarkets(entities: List<SectorEntityToken>): List<MarketAPI> {
 /**
  * Returns all unique submarkets in the sector.
  *
- * Submarkets are collected from all [getMarkets] and deduplicated by reference.
+ * Submarkets are filtered from [getMarkets] and deduplicated by reference.
  *
  * This function can be expensive. Avoid calling it frequently.
  */
-fun getSectorSubmarkets(): List<SubmarketAPI> {
-    return getSubmarkets(getSectorMarkets())
+fun SectorAPI.getSubmarkets(): List<SubmarketAPI> {
+    return this.getSubmarkets(this.getMarkets())
 }
 
 /**
- * Returns submarkets from a precomputed market list.
+ * Returns all unique submarkets in a market list.
+ *
+ * Submarkets are deduplicated by reference.
  */
-fun getSubmarkets(markets: List<MarketAPI>): List<SubmarketAPI> {
+fun SectorAPI.getSubmarkets(markets: List<MarketAPI>): List<SubmarketAPI> {
     return markets
         .flatMap { it.submarketsCopy }
         .distinctBy { it }
@@ -84,18 +86,20 @@ fun getSubmarkets(markets: List<MarketAPI>): List<SubmarketAPI> {
 /**
  * Returns all unique cargo instances from sector submarkets.
  *
- * Cargo is collected from all [getSubmarkets] and deduplicated by reference.
+ * Cargo instances are filtered from [getSubmarkets] and deduplicated by reference.
  *
  * This function can be expensive. Avoid calling it frequently.
  */
-fun getCargoFromSectorSubmarkets(): List<CargoAPI> {
-    return getCargoFromSubmarkets(getSectorSubmarkets())
+fun SectorAPI.getCargoFromSubmarkets(): List<CargoAPI> {
+    return this.getCargoFromSubmarkets(this.getSubmarkets())
 }
 
 /**
- * Returns cargo from a precomputed submarket list.
+ * Returns all unique cargo instances from a submarket list.
+ *
+ * Cargo instances are deduplicated by reference.
  */
-fun getCargoFromSubmarkets(submarkets: List<SubmarketAPI>): List<CargoAPI> {
+fun SectorAPI.getCargoFromSubmarkets(submarkets: List<SubmarketAPI>): List<CargoAPI> {
     return submarkets
         .mapNotNull { it.cargo }
         .distinctBy { it }
