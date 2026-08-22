@@ -1,6 +1,6 @@
 {
   "id": "MagicLib",
-  "name": "MagicLib",
+  "name": " MagicLib",
   "author": "Modding Community: Dark.Revenant, LazyWizard, Nicke, Originem, Rubi, Schaf-Unschaf, Snrasha, Tartiflette, Wisp, Wyvern...",
   "utility": "false",
   # Using the long version format lets the game correctly compare major/minor/patch versions.
