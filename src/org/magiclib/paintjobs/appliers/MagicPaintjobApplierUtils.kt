@@ -19,7 +19,12 @@ import org.magiclib.ReflectionUtils.get
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
-import org.magiclib.internalextensions.*
+import org.magiclib.kotlin.internal.getChildrenCopy
+import org.magiclib.kotlin.internal.height
+import org.magiclib.kotlin.internal.parent
+import org.magiclib.kotlin.internal.width
+import org.magiclib.kotlin.internal.x
+import org.magiclib.kotlin.internal.y
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.util.api.getModules
 import java.awt.Color

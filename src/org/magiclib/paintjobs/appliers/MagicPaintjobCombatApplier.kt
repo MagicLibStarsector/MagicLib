@@ -20,8 +20,8 @@ import org.lwjgl.input.Mouse
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
-import org.magiclib.internalextensions.findChildWithMethod
-import org.magiclib.internalextensions.getChildrenCopy
+import org.magiclib.kotlin.internal.findChildWithMethod
+import org.magiclib.kotlin.internal.getChildrenCopy
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.paintjobs.appliers.MagicPaintjobApplierUtils.getScreenPanel
 import java.awt.Color

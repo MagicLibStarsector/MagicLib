@@ -7,7 +7,7 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.campaign.CampaignState
 import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils
-import org.magiclib.internalextensions.*
+import org.magiclib.kotlin.internal.findChildWithMethod
 
 internal class MagicPaintjobCampaignRefitAdder : EveryFrameScript {
     override fun isDone(): Boolean {

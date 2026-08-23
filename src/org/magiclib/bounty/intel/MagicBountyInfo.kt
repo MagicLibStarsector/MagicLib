@@ -28,8 +28,8 @@ import org.magiclib.bounty.MagicBountyLoader.*
 import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
-import org.magiclib.internalextensions.addTooltip
-import org.magiclib.internalextensions.width
+import org.magiclib.kotlin.internal.addTooltip
+import org.magiclib.kotlin.internal.width
 import org.magiclib.kotlin.interpolateColor
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.kotlin.ucFirst
@@ -421,7 +421,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             val image = modInfoPanel.prev
             val sprite = image.getFieldsMatching(type = Sprite::class.java).getOrNull(0)?.get(image) as? Sprite
             sprite?.color = Misc.getButtonTextColor()
-            modInfoPanel.addTooltip(image, TooltipMakerAPI.TooltipLocation.LEFT, 416f) { tooltip ->
+            modInfoPanel.addTooltip(image, TooltipLocation.LEFT, 416f) { tooltip ->
                 val sourceMod = Global.getSettings().modManager.enabledModsCopy.find { it.id == modID }
                 val modName = sourceMod?.name ?: modID
 

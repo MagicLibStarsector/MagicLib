@@ -4,7 +4,7 @@ import com.fs.starfarer.api.ui.*
 import org.magiclib.bounty.ui.ButtonHandler
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.lists.ListUIPanelPlugin
-import org.magiclib.internalextensions.height
+import org.magiclib.kotlin.internal.height
 import org.magiclib.util.MagicTxt
 
 abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAPI) :

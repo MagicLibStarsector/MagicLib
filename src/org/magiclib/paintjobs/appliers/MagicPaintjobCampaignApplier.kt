@@ -12,15 +12,14 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
 import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
-import com.fs.starfarer.campaign.CampaignEngine
 import com.fs.starfarer.campaign.CampaignEntity
 import com.fs.starfarer.ui.impl.StandardTooltipV2
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
-import org.magiclib.internalextensions.findChildWithMethod
-import org.magiclib.internalextensions.getChildrenCopy
+import org.magiclib.kotlin.internal.findChildWithMethod
+import org.magiclib.kotlin.internal.getChildrenCopy
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.paintjobs.appliers.MagicPaintjobApplierUtils.isIdle
 

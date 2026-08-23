@@ -8,7 +8,8 @@ import com.fs.starfarer.title.TitleScreenState
 import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getConstructorsMatching
-import org.magiclib.internalextensions.*
+import org.magiclib.kotlin.internal.findChildWithMethod
+import org.magiclib.kotlin.internal.getChildrenCopy
 
 class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
     companion object {

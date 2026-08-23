@@ -13,8 +13,14 @@ import com.fs.starfarer.loading.specs.HullVariantSpec
 import org.lwjgl.opengl.GL11
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getConstructorsMatching
-import org.magiclib.internalextensions.*
 import org.magiclib.kotlin.*
+import org.magiclib.kotlin.internal.bottom
+import org.magiclib.kotlin.internal.centerX
+import org.magiclib.kotlin.internal.left
+import org.magiclib.kotlin.internal.right
+import org.magiclib.kotlin.internal.setSize
+import org.magiclib.kotlin.internal.top
+import org.magiclib.kotlin.internal.width
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.max
