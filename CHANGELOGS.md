@@ -19,6 +19,8 @@ Version 1.5.8
 - Reward credits are set only on bounty creation, they can no longer change depending on the fleet size of the bounty and/or player outside of when they are first created.
 - Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
 - Force base-game ambient battle music before combat is unpaused when fighting against a bounty with 'fleet_musicSetId' set. This fixes the bad music transitions from modded music tracks to bounty music tracks.
+- Enable deadlines by default, provided the mod-maker configured deadlines in their bounty.
+- Stop bounties on deadline end if in the same location as it like the base-game does.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.
@@ -50,6 +52,7 @@ Version 1.5.8
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
 - Removed compilation dependency on Vayra's Sector.
 - Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
+- Fix MagicAnim smoothToRange, smoothReturnToRange, and arbitrarySmooth. (Reported by Ayreos)
 - Moved a large amount of code from the 0.98 Starsector mod FleetBuilder into MagicLib.
   * Added 'Remove Missing Variant Elements' which removes all missing weapons/wings/hull-mods from variants on game launch. Typically from remove mods. This fixes some niche issues including saved mission variants causing missions to crash.
   * Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.

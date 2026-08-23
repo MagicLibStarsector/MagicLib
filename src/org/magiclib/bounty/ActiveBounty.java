@@ -421,14 +421,18 @@ public final class ActiveBounty {
     }
 
     /**
-     * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
+     * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted. 1f if the deadline is less than 1f and the bounty fleet is in the current location.
      */
     public @NotNull Float getDaysRemainingToComplete() {
         if (!MagicBountyCoordinator.getInstance().getDeadlinesEnabled())
             return Float.POSITIVE_INFINITY;
 
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {
-            return Math.max(0, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
+            float remaining = Math.max(0, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
+            if(remaining < 1f && getFleet().isInCurrentLocation())
+                return 1f;
+            else
+                return remaining;
         } else {
             return Float.POSITIVE_INFINITY;
         }

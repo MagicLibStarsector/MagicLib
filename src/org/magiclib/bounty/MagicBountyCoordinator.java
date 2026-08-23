@@ -42,7 +42,7 @@ public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
     private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
-    private static Boolean DEADLINES_ENABLED = false;
+    private static Boolean DEADLINES_ENABLED = true;
     private static final String isIntelImportantMemKey = "$magiclib_isBountyIntelImportant";
 
     @NotNull
@@ -72,7 +72,7 @@ public final class MagicBountyCoordinator {
             DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
 
             if (DEADLINES_ENABLED == null) {
-                DEADLINES_ENABLED = false;
+                DEADLINES_ENABLED = true;
             }
         });
     }
