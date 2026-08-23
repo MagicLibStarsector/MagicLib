@@ -180,6 +180,8 @@ public class MagicBountyHVB {
                     }
 
                     MagicBountySpec this_bounty = new MagicBountySpec(
+                            //String id,
+                            bountyId,
                             //List <String> trigger_market_id,
                             new ArrayList<String>(),
                             //List <String> trigger_marketFaction_any,

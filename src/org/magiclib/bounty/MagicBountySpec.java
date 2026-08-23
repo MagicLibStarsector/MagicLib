@@ -15,6 +15,12 @@ import java.util.Map;
  */
 public class MagicBountySpec {
 
+    /**
+     * The id of the bounty as specified in the json file.
+     */
+    @NotNull
+    public String id;
+
     /*
      * trigger parameters
      * ALL OPTIONAL
@@ -325,6 +331,7 @@ public class MagicBountySpec {
     public String source_mod_id;
 
     public MagicBountySpec(
+            String id,
             List<String> trigger_market_id,
             List<String> trigger_marketFaction_any,
             boolean trigger_marketFaction_alliedWith,
@@ -408,6 +415,7 @@ public class MagicBountySpec {
             boolean location_defaultToAnyEntity,
             String source_mod_id
     ) {
+        this.id = id;
         this.trigger_market_id = trigger_market_id;
         this.trigger_marketFaction_any = trigger_marketFaction_any;
         this.trigger_marketFaction_alliedWith = trigger_marketFaction_alliedWith;
@@ -568,7 +576,8 @@ public class MagicBountySpec {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MagicBountySpec{");
-        sb.append("\ntrigger_market_id=").append(trigger_market_id);
+        sb.append("\nid=").append(id);
+        sb.append(", \ntrigger_market_id=").append(trigger_market_id);
         sb.append(", \ntrigger_marketFaction_any=").append(trigger_marketFaction_any);
         sb.append(", \ntrigger_marketFaction_alliedWith=").append(trigger_marketFaction_alliedWith);
         sb.append(", \ntrigger_marketFaction_none=").append(trigger_marketFaction_none);

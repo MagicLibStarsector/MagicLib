@@ -36,6 +36,8 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.campaign.MagicCaptainBuilder;
 import org.magiclib.campaign.MagicFleetBuilder;
+import org.magiclib.kotlin.MagicKotlinExtKt;
+import org.magiclib.util.api.HullUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,6 +142,12 @@ public class MagicCampaign {
                 sMods = obj.getJSONArray("sMods");
             } catch (JSONException ignored) {
             }
+            JSONArray sModdedBuiltIns = null;
+            try {
+                sModdedBuiltIns = obj.getJSONArray("sModdedBuiltIns");
+            } catch (JSONException ignored) {
+            }
+
             //float quality = (float) obj.getDouble("quality"); not used/available in API
             String variantId = obj.getString("variantId");
             JSONArray weaponGroups = obj.getJSONArray("weaponGroups");
@@ -149,27 +157,10 @@ public class MagicCampaign {
             } catch (JSONException ignored) {
             }
 
-            // This code avoids using createEmptyVariant() because it does not initialize ship modules.
-            // Instead, it clones the _Hull variant so that any expected modules are present, even if empty.
-            //
-            // One issue this avoids can appear when loading variant files with missing or improperly defined modules:
-            // createEmptyVariant() may result in no modules being present at all,
-            // whereas cloning the _Hull variant creates the expected modules, if empty.
-
             var hullSpec = Global.getSettings().getHullSpec(hullId);
-            var hullHullVariantId = hullSpec.getHullId() + "_Hull";
 
-            if(Global.getSettings().doesVariantExist(hullHullVariantId)) {
-                variant = Global.getSettings().getVariant(hullHullVariantId).clone();
-                variant.setHullVariantId(variantId);
-                variant.setSource(null);
-            }
-
-            if(variant == null) {
-                // Fallback to createEmptyVariant anyway if the _Hull variant did not exist for some reason.
-                log.warn("Hull variant not found for hull '" + hullId + "' and variant id '" + variantId + "'. Falling back to createEmptyVariant");
-                variant = Global.getSettings().createEmptyVariant(variantId, hullSpec);
-            }
+            variant = HullUtils.createHullVariant(hullSpec);
+            variant.setHullVariantId(variantId);
 
             int numBuiltIn = variant.getFittedWings().size();
 
@@ -178,24 +169,7 @@ public class MagicCampaign {
             variant.setNumFluxCapacitors(fluxCapacitors);
             variant.setNumFluxVents(fluxVents);
             variant.setGoalVariant(goalVariant);
-            // todo: check if order matters
-            if (sMods != null) {
-                for (int k = 0; k < sMods.length(); k++) {
-                    String sModId = sMods.getString(k);
-                    variant.addPermaMod(sModId, true);
-//                    variant.addPermaMod(sModId);
-                    variant.addMod(sModId);
-                }
-            }
-            if (permaMods != null) {
-                for (int j = 0; j < permaMods.length(); j++) {
-                    String permaModId = permaMods.getString(j);
-                    variant.addPermaMod(permaModId);
-                    if (!variant.getHullMods().contains(permaModId)) {
-                        variant.addMod(permaModId);
-                    }
-                }
-            }
+
             if (hullMods != null) {
                 for (int i = 0; i < hullMods.length(); i++) {
                     String hullModId = hullMods.getString(i);
@@ -204,21 +178,58 @@ public class MagicCampaign {
                     }
                 }
             }
+            if (permaMods != null) {
+                for (int j = 0; j < permaMods.length(); j++) {
+                    String permaModId = permaMods.getString(j);
+                    variant.addPermaMod(permaModId, false);
+                }
+            }
+            if (sMods != null) {
+                for (int k = 0; k < sMods.length(); k++) {
+                    String sModId = sMods.getString(k);
+                    variant.addPermaMod(sModId, true);
+                }
+            }
+            if(sModdedBuiltIns != null) {
+                for (int k = 0; k < sModdedBuiltIns.length(); k++) {
+                    String sModBuiltInId = sModdedBuiltIns.getString(k);
+                    variant.getSModdedBuiltIns().add(sModBuiltInId);
+                }
+            }
+
             if (modules != null) {
                 for (int m = 0; m < modules.length(); m++) {
                     JSONObject module = modules.getJSONObject(m);
-                    // todo this is a very inefficient way to do it (obj length always == 1)
-                    //  but I don't want to deal with Iterators
+                    // this is a very inefficient way to do it (obj length always == 1)
+                    // but I don't want to deal with Iterators
                     JSONArray slots = module.names();
                     for (int s = 0; s < slots.length(); s++) {
                         String slotId = slots.getString(s);
                         String moduleVariantId = module.getString(slotId);
-                        //todo *** Given moduleVariantId instead of path, create ShipVariantAPI using loadVariant() ***
-                        variant.setModuleVariant(slotId, Global.getSettings().getVariant(moduleVariantId));
+
+                        var moduleVariant = Global.getSettings().getVariant(moduleVariantId);
+                        if (moduleVariant == null) {
+                            int lastSlash = path.lastIndexOf("/");
+                            String modulePath = (lastSlash >= 0 ? path.substring(0, lastSlash + 1) : "") + moduleVariantId + ".variant";
+
+                            if (MagicKotlinExtKt.doesFileExist(Global.getSettings(), modulePath)) {
+                                moduleVariant = loadVariant(modulePath);
+                                if (moduleVariant != null) {
+                                    variant.setModuleVariant(slotId, moduleVariant);
+                                } else {
+                                    Global.getLogger(MagicCampaign.class).error("Failed to load module variant from " + modulePath);
+                                }
+                            } else {
+                                Global.getLogger(MagicCampaign.class).error("Module variant " + moduleVariantId + " not found");
+                            }
+                        } else {
+                            moduleVariant.setSource(null);
+                            variant.setModuleVariant(slotId, moduleVariant.clone());
+                        }
                     }
                 }
             }
-            // todo maybe you can do something better with variant.getNonBuiltInWeaponSlots()?
+
             for (int wg = 0; wg < weaponGroups.length(); wg++) {
                 WeaponGroupSpec weaponGroupSpec = new WeaponGroupSpec(WeaponGroupType.LINKED);
                 JSONObject weaponGroup = weaponGroups.getJSONObject(wg);
@@ -226,14 +237,18 @@ public class MagicCampaign {
                 String mode = weaponGroup.getString("mode");
                 JSONObject weapons = weaponGroup.getJSONObject("weapons");
                 JSONArray slots = weapons.names();
-                for (int s = 0; s < slots.length(); s++) {
-                    String slotId = slots.getString(s);
-                    String weaponId = weapons.getString(slotId);
-                    variant.addWeapon(slotId, weaponId);
-                    weaponGroupSpec.addSlot(slotId);
+                if(slots != null) {
+                    for (int s = 0; s < slots.length(); s++) {
+                        String slotId = slots.getString(s);
+                        String weaponId = weapons.getString(slotId);
+                        variant.addWeapon(slotId, weaponId);
+                        weaponGroupSpec.addSlot(slotId);
+                    }
                 }
                 weaponGroupSpec.setAutofireOnByDefault(autofire);
                 weaponGroupSpec.setType(WeaponGroupType.valueOf(mode));
+
+                //if(!weaponGroupSpec.getSlots().isEmpty())
                 variant.addWeaponGroup(weaponGroupSpec);
             }
             if (wings != null) {

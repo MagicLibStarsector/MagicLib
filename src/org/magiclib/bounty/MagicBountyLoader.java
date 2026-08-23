@@ -17,6 +17,7 @@ import org.lazywizard.lazylib.MathUtils;
 import org.magiclib.Magic_modPlugin;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
+import org.magiclib.kotlin.MagicKotlinExtKt;
 import org.magiclib.util.*;
 
 import java.util.*;
@@ -257,6 +258,7 @@ public class MagicBountyLoader {
             Integer minSize = getInt(bountyId, "fleet_min_FP", getInt(bountyId, "fleet_min_DP"));
 
             MagicBountySpec this_bounty = new MagicBountySpec(
+                    bountyId,
                     getStringList(bountyId, "trigger_market_id"),
                     getStringList(bountyId, "trigger_marketFaction_any"),
                     getBoolean(bountyId, "trigger_marketFaction_alliedWith"),
@@ -616,17 +618,16 @@ public class MagicBountyLoader {
     }
 
     // helper: checks if a variant exists (local + load)
-    public static boolean magicVariantExists(String v) {
-        if(Global.getSettings().getVariant(v) != null)
+    public static boolean magicVariantExists(String variant) {
+        if(Global.getSettings().getVariant(variant) != null)
             return true;
 
-        var path = MagicVariables.VARIANT_PATH + v + ".variant";
-        try {
-            Global.getSettings().loadText(path); // Check if file exists
-        } catch (Exception ignored) {
-            return false; // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
+        var path = MagicVariables.VARIANT_PATH + variant + ".variant";
+        if(MagicKotlinExtKt.doesFileExist(Global.getSettings(), path)) { // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
+            return MagicCampaign.loadVariant(path) != null;
         }
-        return MagicCampaign.loadVariant(path) != null;
+
+        return false;
     }
 
 

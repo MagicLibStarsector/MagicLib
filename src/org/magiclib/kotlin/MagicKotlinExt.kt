@@ -168,6 +168,7 @@ fun SettingsAPI.getErrorVariantID(): String =
  * @param modID The mod ID of the mod to check. If null, checks all available sources.
  * @return `true` if the file exists and can be loaded, `false` otherwise.
  */
+@JvmOverloads
 fun SettingsAPI.doesFileExist(
     filename: String,
     modID: String? = null,
