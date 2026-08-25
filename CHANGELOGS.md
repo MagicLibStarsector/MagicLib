@@ -51,6 +51,7 @@ Version 1.5.8
 - Added MagicModVersionTracker which adds mod versions to `sector.getPersistentData()["ml_modVersions"]` after onGameLoad. This allows other mod developers to see the 'last' mod versions in onGameLoad and handle version migration behavior as desired.
 - Fix modSettings.json 'subsystemInfoKey'
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
+- MagicLib now builds using Gradle.
 - Removed compilation dependency on Vayra's Sector.
 - Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
 - Fix MagicAnim smoothToRange, smoothReturnToRange, and arbitrarySmooth. (Reported by Ayreos)
