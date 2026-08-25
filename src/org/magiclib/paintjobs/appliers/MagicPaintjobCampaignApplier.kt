@@ -72,8 +72,13 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
                 && !fleet.isVisibleToPlayerFleet) // Somewhat expensive method
                 return@forEach
 
-            val views = fleet.views ?: return@forEach
+            var views = fleet.views ?: return@forEach
             if (views.isEmpty()) return@forEach
+
+            if(views.any { !fleet.fleetData.membersListCopy.contains(it.member) }) { // If views have not updated yet for new ships in fleet
+                fleet.updateFleetView()
+                views = fleet.views ?: return@forEach
+            }
 
             views.filterNotNull().forEach { view ->
                 val member = view.member ?: return@forEach

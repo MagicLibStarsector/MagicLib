@@ -131,20 +131,37 @@ internal object MagicPaintjobApplierUtils {
         if (variantPaintJobSpec != null || forceClear) {
             val spriteFields = memberIcon.getFieldsMatching(type = Sprite::class.java)
             val hullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(member.hullSpec, includeShiny = true, includeHidden = true)
-            var variantSpriteField = spriteFields.firstOrNull { field ->
-                val sprite = field.get(memberIcon) as? Sprite ?: return@firstOrNull false
-                val textureId = (sprite.getFieldsMatching(name = "textureId").getOrNull(0)?.get(sprite) as? String) ?: return@firstOrNull false
-                textureId == member.hullSpec.spriteName || hullPaintjobs.any { it.spriteId == textureId }
-            }
 
+            val variantSpriteMatch = spriteFields.firstNotNullOfOrNull { field ->
+                val sprite = field.get(memberIcon) as? Sprite ?: return@firstNotNullOfOrNull null
+                val textureId = sprite.getFieldsMatching(name = "textureId").firstOrNull()?.get(sprite) as? String ?: return@firstNotNullOfOrNull null
+                val isMatch = textureId == member.hullSpec.spriteName || hullPaintjobs.any { it.spriteId == textureId }
+                if (isMatch) field to textureId else null
+            }
             //val spriteDirect = memberIcon.getMethodsMatching(returnType = Sprite::class.java).firstOrNull()?.invoke(memberIcon) as? Sprite
 
-            if (variantSpriteField != null)
-                makeNewSpriteToReplace(variantPaintJobSpec?.spriteId ?: member.hullSpec.spriteName, variantSpriteField, memberIcon)
+            val variantSpriteField = variantSpriteMatch?.first
+            val variantSpriteName = variantSpriteMatch?.second
 
-            if(memberIcon is FleetMemberViewAPI) {
-                if(variantPaintJobSpec != null) {
-                    variantPaintJobSpec.engineSpec?.let { spec ->
+            if((variantPaintJobSpec != null && variantSpriteName != variantPaintJobSpec.spriteId) // Paint-job is present and sprite is not the correct one.
+                || (variantPaintJobSpec == null && variantSpriteName != member.hullSpec.spriteName)) { // Or paint-job is not present and sprite is not the correct one.
+
+                if (variantSpriteField != null)
+                    makeNewSpriteToReplace(variantPaintJobSpec?.spriteId ?: member.hullSpec.spriteName, variantSpriteField, memberIcon)
+
+                if (memberIcon is FleetMemberViewAPI) {
+                    if (variantPaintJobSpec != null) {
+                        variantPaintJobSpec.engineSpec?.let { spec ->
+                            spec.contrailColor?.let {
+                                (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
+                            }
+                            spec.color?.let {
+                                (memberIcon.get(name = "engineColor") as ColorShifter).base = it
+                                (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
+                            }
+                        }
+                    } else {
+                        val spec = CampaignShipEngineGlow(member as FleetMember, 1f)
                         spec.contrailColor?.let {
                             (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
                         }
@@ -152,15 +169,6 @@ internal object MagicPaintjobApplierUtils {
                             (memberIcon.get(name = "engineColor") as ColorShifter).base = it
                             (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
                         }
-                    }
-                } else {
-                    val spec = CampaignShipEngineGlow(member as FleetMember, 1f)
-                    spec.contrailColor?.let {
-                        (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
-                    }
-                    spec.color?.let {
-                        (memberIcon.get(name = "engineColor") as ColorShifter).base = it
-                        (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
                     }
                 }
             }
@@ -181,20 +189,35 @@ internal object MagicPaintjobApplierUtils {
                 return first.getFieldsMatching(type = HullVariantSpec::class.java).isNotEmpty()
             }
 
-            val moduleList = memberIcon
+            val iconModuleList = memberIcon
                 .getFieldsMatching(type = List::class.java)
                 .asSequence()
                 .mapNotNull { field -> field.get(memberIcon) as? List<*> }
                 .firstOrNull(::isModuleList)
 
-            moduleList?.forEach {
-                val variant = it?.get(type = HullVariantSpec::class.java) as? ShipVariantAPI
-                if (variant != null) {
+            iconModuleList?.forEach { iconModule ->
+                if(iconModule == null) return@forEach
+
+                val iconModuleFields = iconModule.getFieldsMatching()
+                val iconVariant = iconModule.get(type = HullVariantSpec::class.java) as? ShipVariantAPI
+                if (iconVariant != null) {
+                    val slotField = iconModuleFields.find { it.type != HullVariantSpec::class.java && it.type != Sprite::class.java } ?: return@forEach
+                    val slot = slotField.get(iconModule)?.get(type = String::class.java)
+
+                    val variant = modules[slot] ?: return@forEach
+
                     val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(variant)
                     if (paintjob != null || forceClear) {
-                        val spriteField = it.getFieldsMatching(type = Sprite::class.java).getOrNull(0)
-                        if (spriteField != null)
-                            makeNewSpriteToReplace(paintjob?.spriteId ?: member.hullSpec.spriteName, spriteField, it)
+                        val spriteField = iconModule.getFieldsMatching(type = Sprite::class.java).getOrNull(0)
+                        if (spriteField != null) {
+                            val sprite = spriteField.get(iconModule) as? Sprite ?: return@forEach
+                            val variantSpriteName = sprite.getFieldsMatching(name = "textureId").firstOrNull()?.get(sprite) as? String ?: return@forEach
+
+                            if((paintjob != null && variantSpriteName != paintjob.spriteId) // Paint-job is present and sprite is not the correct one.
+                                || (paintjob == null && variantSpriteName != variant.hullSpec.spriteName)) { // Or paint-job is not present and sprite is not the correct one.
+                                makeNewSpriteToReplace(paintjob?.spriteId ?: variant.hullSpec.spriteName, spriteField, iconModule) // Apply new spritef
+                            }
+                        }
                     }
                 }
             }
