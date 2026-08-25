@@ -20,7 +20,8 @@ Version 1.5.8
 - Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
 - Force base-game ambient battle music before combat is unpaused when fighting against a bounty with 'fleet_musicSetId' set. This fixes the bad music transitions from modded music tracks to bounty music tracks.
 - Enable deadlines by default, provided the mod-maker configured deadlines in their bounty.
-- Stop bounties on deadline end if in the same location as it like the base-game does.
+- Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
+- Fix magicBounty_variants from failing to properly load modules onto bounty variants in some circumstances. Modules can now also be placed in magicBounty_variants
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.
