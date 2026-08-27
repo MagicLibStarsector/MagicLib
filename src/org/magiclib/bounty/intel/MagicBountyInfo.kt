@@ -596,7 +596,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val deadline = bountySpec.job_deadline
         if(deadline > 0 && MagicBountyCoordinator.getInstance().deadlinesEnabled) {
             textTooltip.addPara(
-                "This bounty expires $deadline days after acceptance", // TODO, externalize string
+                MagicTxt.getString("mb_descDeadline").format(deadline),
                 2f,
                 Misc.getHighlightColor(),
                 deadline.toString()

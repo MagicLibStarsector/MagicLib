@@ -161,6 +161,7 @@
     "mb_descLocation": "Location: %s",
     "mb_descLocationUnknown": "LOCATION UNKNOWN",
     "mb_descAnonymousReward": "This bounty posting is offering a %s reward.",
+    "mb_descDeadline": "This bounty expires %s days after acceptance",
     "mb_descFactionReward": "The posting is offered by %s, who %s offering a %s reward.",
     "mb_descFactionNoReward": "The posting is offered by %s, who %s offering no reward.",
     "mb_descRewarded": "%s credits received",
