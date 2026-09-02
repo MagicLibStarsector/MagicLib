@@ -107,7 +107,7 @@ abstract class ListUIPanelPlugin<T>(protected var parentPanel: CustomPanelAPI) :
         clickables.clear()
     }
 
-    protected open fun shouldMakePanelForItem(item: T): Boolean {
+    open fun shouldMakePanelForItem(item: T): Boolean {
         return true
     }
 

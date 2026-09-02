@@ -265,6 +265,12 @@ public class MagicBountyHVB {
                             "$HVB_" + bountyId,
                             //String job_conclusion_script,
                             null,
+                            //String job_auto_accept
+                            null,
+                            //String job_repeatable
+                            null,
+                            //boolean show_in_bounty_board
+                            true,
                             //String existing_target_memkey;
                             null,
                             // target_importantPersonId

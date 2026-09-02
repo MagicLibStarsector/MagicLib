@@ -175,6 +175,30 @@ public class MagicBountySpec {
      */
     public String job_conclusion_script;
     /**
+     * optional, Control when this job is accepted
+     * null: Default behavior. Accepted on player choice.
+     * "always": Always accept when bounty can show.
+     * "personal": Bounty accepts automatically in similar fashion to vanilla. A 25% chance once per day (~25%), no more than the maximum magic personal bounty count.
+     * "seen": Accepts automatically when the bounty is seen by the player fleet. Otherwise, remains unaccepted. Note, this will automatically place the bounty fleet into the campaign upon being possible to be shown to the player.
+     */
+    @Nullable
+    public String job_auto_accept;
+    /**
+     * optional, Control whether this job should be repeatable even after it ends.
+     * null: Default behavior. If this bounty is completed, expires, or is dismissed at any time. This bounty can never be taken again.
+     * "always": This bounty can be infinitely repeated even after being destroyed or despawned for any reason.
+     * "if_expired": This bounty only repeats if the bounty end reason is 'ExpiredAfterAccepting' or 'ExpiredWithoutAccepting'
+     */
+    @Nullable
+    public String job_repeatable;
+
+    /**
+     * Whether this job should be visible to the player in the bounty board.
+     * Default: true
+     */
+    public boolean show_in_bounty_board;
+
+    /**
      * existing fleet
      * if non empty, the bounty will be placed on the existing fleet with that memkey. OVERRIDES EVERYTHING AFTER!
      */
@@ -372,6 +396,9 @@ public class MagicBountySpec {
             String job_pick_script,
             String job_memKey,
             String job_conclusion_script,
+            String job_auto_accept,
+            String job_repeatable,
+            boolean show_in_bounty_board,
             String existing_target_memkey,
             String target_importantPersonId,
             String target_first_name,
@@ -529,6 +556,9 @@ public class MagicBountySpec {
         this.job_pick_script = job_pick_script;
         this.job_memKey = job_memKey;
         this.job_conclusion_script = job_conclusion_script;
+        this.job_auto_accept = job_auto_accept;
+        this.job_repeatable = job_repeatable;
+        this.show_in_bounty_board = show_in_bounty_board;
         this.existing_target_memkey = existing_target_memkey;
         this.target_importantPersonId = target_importantPersonId;
         this.target_first_name = target_first_name;
@@ -617,6 +647,9 @@ public class MagicBountySpec {
         sb.append(", \njob_pick_script='").append(job_pick_script).append('\'');
         sb.append(", \njob_memKey='").append(job_memKey).append('\'');
         sb.append(", \njob_conclusion_script='").append(job_conclusion_script).append('\'');
+        sb.append(", \njob_auto_accept='").append(job_auto_accept).append('\'');
+        sb.append(", \njob_repeatable='").append(job_repeatable).append('\'');
+        sb.append(", \nshow_in_bounty_board=").append(show_in_bounty_board);
         sb.append(", \nexisting_target_memkey='").append(existing_target_memkey).append('\'');
         sb.append(", \ntarget_first_name='").append(target_first_name).append('\'');
         sb.append(", \ntarget_last_name='").append(target_last_name).append('\'');

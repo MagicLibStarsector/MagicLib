@@ -47,8 +47,6 @@
 			# removes all the bounties that are not taken before reloading them upon a save load
 		"bounty_offersAtSizeThree":1,
 			# default to 1 job offer at size 3 and under, 2 at size 4, 3 at size 5 and up
-        "bounty_boardRefreshTimePerMarketInDays": 90,
-			# how often a given market will offer new bounties
 		"bounty_neutralisationThreshold": 0.66,
 			# how much of a target fleet must be disabled for a sucessful "Neutralization" mission
 

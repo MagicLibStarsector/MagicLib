@@ -206,7 +206,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         }
 
         //check if close enough to receive from an offering faction, only if it hasn't already been seen by the player
-        if(this.getBountyId() !in BountyBoardIntelPlugin.bountiesThatUserHasBeenNotifiedForV2) {
+        if(!BountyBoardIntelPlugin.hasNotifiedBounty(this.getBountyId()) &&
+            (bountySpec.trigger_market_id.isNotEmpty() || bountySpec.trigger_marketFaction_any.isNotEmpty() || bountySpec.trigger_marketFaction_none.isNotEmpty())) {
             val rangeToShowBounties = 10f
             var withinRange = false
             for (system in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {

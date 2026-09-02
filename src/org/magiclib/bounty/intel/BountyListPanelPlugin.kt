@@ -7,6 +7,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.opengl.GL11
+import org.magiclib.bounty.MagicBountyCoordinator
 import org.magiclib.bounty.intel.sorters.TogglePrimarySorter
 import org.magiclib.bounty.ui.BaseUIPanelPlugin
 import org.magiclib.bounty.ui.lists.ListItemUIPanelPlugin
@@ -41,11 +42,8 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
     }
 
     override fun shouldMakePanelForItem(item: BountyInfo): Boolean {
-        // Check `shouldShow` first because it doesn't ONLY check that,
-        // it also creates the ActiveBounty if it doesn't exist and should be shown.
-        //return item.shouldShow() || item.shouldAlwaysShow()
-        // This is now done in BountyBoardIntelPlugin
-        return true
+        val activeBounty = MagicBountyCoordinator.getInstance().getActiveBounty(item.getBountyId()) ?: return true
+        return activeBounty.spec.show_in_bounty_board
     }
 
     override fun createPanelForItem(tooltip: TooltipMakerAPI, item: BountyInfo): ListItemUIPanelPlugin<BountyInfo> {

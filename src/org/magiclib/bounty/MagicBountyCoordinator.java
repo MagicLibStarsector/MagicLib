@@ -121,9 +121,6 @@ public final class MagicBountyCoordinator {
     private final static String COMPLETED_BOUNTIES_MEMORY_KEY = "$MagicBounties_completed_keys";
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
-    // Default 90
-    private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
-            MagicSettings.getInteger(MagicVariables.MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
     /**
      * The multiplier to apply BEFORE any other scaling is applied.
@@ -165,26 +162,46 @@ public final class MagicBountyCoordinator {
     private void cleanUpBounties() {
         for (Iterator<Map.Entry<String, ActiveBounty>> iterator = activeBountiesByKey.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, ActiveBounty> entry = iterator.next();
-            long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - entry.getValue().getBountyCreatedTimestamp());
+            var activeBounty = entry.getValue();
 
-            // Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
-            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted && getDeadlinesEnabled()) {
+            /*
+            long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - activeBounty.getBountyCreatedTimestamp());
+            long daysSinceAccepted = timestampSinceBountyCreated / MILLIS_PER_DAY;
+
+            int tempVariableDaysUntilExpire = 90; // temp: get from bounty config like from below when setup
+            //activeBounty.getSpec().job_expire_time // Example
+
+            // Clear out old bounties that were never accepted after daysUntilExpire days.
+            if (tempVariableDaysUntilExpire != -1 && daysSinceAccepted >= tempVariableDaysUntilExpire && activeBounty.getStage() == ActiveBounty.Stage.NotAccepted) {
                 LOG.info(
                         String.format("Removing expired bounty '%s' (not accepted after %d days), \"%s\"",
                                 entry.getKey(),
-                                timestampSinceBountyCreated / MILLIS_PER_DAY,
-                                entry.getValue().getSpec().job_name));
-                entry.getValue().endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
+                                daysSinceAccepted,
+                                activeBounty.getSpec().job_name));
+                activeBounty.endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
+                //BountyBoardIntelPlugin.Companion.removeNotifiedBounty(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
                 try {
                     iterator.remove();
                 } catch (Exception e) {
                     LOG.warn("Error removing bounty " + entry.getKey(), e);
                 }
-            } else if (entry.getValue().getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
-                    && entry.getValue().getIntel() == null) {
+            } else */
+            if (activeBounty.getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
+                    && activeBounty.getIntel() == null) {
                 // Remove bounties that have completed and the intel has timed out.
                 iterator.remove();
-                getCompletedBounties().add(entry.getKey());
+
+                String isRepeatable = activeBounty.getSpec().job_repeatable;
+                if(isRepeatable == null) {
+                    getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
+                } else if(isRepeatable.equals("always")) {
+                    BountyBoardIntelPlugin.Companion.removeNotifiedBounty(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                } else if(isRepeatable.equals("if_expired")) {
+                    if(activeBounty.getStage() == ActiveBounty.Stage.ExpiredAfterAccepting || activeBounty.getStage() == ActiveBounty.Stage.ExpiredWithoutAccepting)
+                        BountyBoardIntelPlugin.Companion.removeNotifiedBounty(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                    else
+                        getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
+                }
             }
         }
     }
@@ -399,8 +416,7 @@ public final class MagicBountyCoordinator {
             PersonAPI captain = spec.target_importantPersonId != null
                     ? Global.getSector().getImportantPeople().getPerson(spec.target_importantPersonId)
                     : MagicCampaign.createCaptainBuilder(MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction))
-                    // because apparently putting null in the json shows up as "null", a string...
-                    .setIsAI(spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"))
+                    .setIsAI(spec.target_aiCoreId != null)
                     .setAICoreType(spec.target_aiCoreId)
                     .setFirstName(MagicTxt.nullStringIfEmpty(spec.target_first_name))
                     .setLastName(MagicTxt.nullStringIfEmpty(spec.target_last_name))
@@ -464,6 +480,22 @@ public final class MagicBountyCoordinator {
 
         getActiveBounties().put(bountyKey, newBounty);
         configureBountyListeners();
+
+        String auto_accept = spec.job_auto_accept;
+        if(auto_accept != null) {
+            if(auto_accept.equals("always")) {
+                newBounty.acceptBounty(
+                        Global.getSector().getPlayerFleet(),
+                        spec.job_reputation_reward,
+                        spec.job_forFaction
+                );
+            } else if(auto_accept.equals("seen") && !fleet.hasScriptOfClass(MagicBountyFleetListener.class)) {
+                newBounty.loadFleetIntoCampaign();
+                newBounty.acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
+                fleet.addScript(new MagicBountyFleetListener(newBounty));
+            }
+        }
+
         return newBounty;
     }
 
@@ -474,20 +506,37 @@ public final class MagicBountyCoordinator {
         Collection<ActiveBounty> bounties = getActiveBounties().values();
 
         for (ActiveBounty bounty : bounties) {
-            boolean doesBountyHaveListener = false;
+            boolean doesBountyHaveBattleListener = false;
 
             for (FleetEventListener eventListener : bounty.getFleet().getEventListeners()) {
                 if (eventListener instanceof MagicBountyBattleListener) {
-                    doesBountyHaveListener = true;
+                    doesBountyHaveBattleListener = true;
                     // Attempt to add this bounty key if it doesn't already exist, along with the already present one. This lets multiple bounties target the same fleet.
                     ((MagicBountyBattleListener) eventListener).addBountyKey(bounty.getKey());
-                    break;
                 }
             }
 
-            if (!doesBountyHaveListener) {
+            if (!doesBountyHaveBattleListener)
                 bounty.getFleet().addEventListener(new MagicBountyBattleListener(bounty.getKey()));
-            }
+        }
+    }
+
+    /**
+     * Ends an active bounty and removes the bounty from the active bounties map. Additionally removes this bounty from the completed bounty list, and removes that this bounty has been notified to the player. The bounty must be active for this to function.
+     * <p>
+     * Example Reason: `new ActiveBounty.BountyResult.ExpiredWithoutAccepting()`
+     *
+     * @param bountyKey The key of the bounty to remove.
+     * @param reason The reason for removing the bounty.
+     */
+    private void removeBounty(@NotNull String bountyKey, @NotNull ActiveBounty.BountyResult reason) {
+        ActiveBounty activeBounty = getActiveBounty(bountyKey);
+        if (activeBounty != null) {
+            if(activeBounty.getStage().ordinal() < ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()) // Bounty has not finished in any way?
+                activeBounty.endBounty(reason); // Call the end method
+            getActiveBounties().remove(bountyKey); // Remove active bounty
+            getCompletedBounties().remove(bountyKey); // Allow bounty to be created again.
+            BountyBoardIntelPlugin.Companion.removeNotifiedBounty(bountyKey); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
         }
     }
 
@@ -505,7 +554,7 @@ public final class MagicBountyCoordinator {
             MagicBountySpec spec = activeBounty.getSpec();
 
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey);
                 Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_expired");
                 Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_succeeded");
                 Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_failed");
@@ -526,10 +575,16 @@ public final class MagicBountyCoordinator {
             cleanUpBounties();
             // Then remove it from the list.
             getCompletedBounties().remove(bountyKey);
+            // Then remove the player being notified of it.
+            BountyBoardIntelPlugin.Companion.removeNotifiedBounty(bountyKey);
             // Then reload.
             MagicBountyLoader.loadBountiesFromJSON(false);
         } else {
             MagicBountySpec spec = MagicBountyLoader.BOUNTIES.get(bountyKey);
+            if(spec == null) {
+                MagicBountyLoader.loadBountiesFromJSON(false);
+                spec = MagicBountyLoader.BOUNTIES.get(bountyKey);
+            }
 
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {

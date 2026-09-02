@@ -78,7 +78,7 @@ public final class ActiveBounty {
     /**
      * The timestamp of when the player accepted the bounty, if they have done so.
      **/
-    private @Nullable Long acceptedBountyTimestamp;
+    public @Nullable Long acceptedBountyTimestamp;
 
     /**
      * The result of the bounty, if there has been a terminus.
@@ -101,6 +101,8 @@ public final class ActiveBounty {
     private boolean isDespawning = false, hasNoIntel = false;
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
     private boolean droppedInBountyBoard = false;
+
+    private boolean fleetSpawnedIn = false;
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -146,10 +148,44 @@ public final class ActiveBounty {
 
         this.rewardReputation = rewardReputation;
         this.rewardFaction = rewardFaction;
-        acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
+        if(acceptedBountyTimestamp == null)
+            acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
         this.bountySource = bountySource;
 
+        if(!fleetSpawnedIn)
+            loadFleetIntoCampaign();
+
+        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
+        List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
+        MagicBountyIntel intelForBounty = null;
+
+        // Intel shouldn't already exist since we're just accepting it now, but just in case.
+        for (IntelInfoPlugin bounty : existingMagicIntel) {
+            if (((MagicBountyIntel) bounty).bountyKey.equals(this.bountyKey)) {
+                intelForBounty = (MagicBountyIntel) bounty;
+            }
+        }
+
+        if (intelForBounty == null) {
+            intelForBounty = new MagicBountyIntel(bountyKey);
+            intelManager.addIntel(intelForBounty);
+            intelForBounty.setImportant(true);
+        }
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+            Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
+        }
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null) {
+            runRuleScript(spec.job_pick_script);
+        }
+    }
+
+    /**
+     * Spawns the bounty fleet into the campaign. This is called in acceptBounty, but may be called preemptively if desired.
+     */
+    public void loadFleetIntoCampaign() {
         //CHECK IF THE FLEET EXIST
         if (getFleet().getCurrentAssignment() == null) {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
@@ -204,30 +240,7 @@ public final class ActiveBounty {
         memory.set("$MagicLib_Bounty_target_fleet", true);
         memory.set(spec.job_memKey, true);
 
-        IntelManagerAPI intelManager = Global.getSector().getIntelManager();
-        List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
-        MagicBountyIntel intelForBounty = null;
-
-        // Intel shouldn't already exist since we're just accepting it now, but just in case.
-        for (IntelInfoPlugin bounty : existingMagicIntel) {
-            if (((MagicBountyIntel) bounty).bountyKey.equals(this.bountyKey)) {
-                intelForBounty = (MagicBountyIntel) bounty;
-            }
-        }
-
-        if (intelForBounty == null) {
-            intelForBounty = new MagicBountyIntel(bountyKey);
-            intelManager.addIntel(intelForBounty);
-            intelForBounty.setImportant(true);
-        }
-
-        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-            Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
-        }
-
-        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null) {
-            runRuleScript(spec.job_pick_script);
-        }
+        fleetSpawnedIn = true;
     }
 
     /**
@@ -323,11 +336,11 @@ public final class ActiveBounty {
 
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
-                //Do not despawn bounties placed on existing fleets if it simply expired
-                despawn();
-            }
             endIntel();
+        }
+        if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
+            //Do not despawn bounties placed on existing fleets if it simply expired
+            despawn();
         }
     }
 

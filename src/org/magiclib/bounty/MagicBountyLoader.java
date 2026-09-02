@@ -301,7 +301,11 @@ public class MagicBountyLoader {
                     memKey,
                     getString(bountyId, "job_conclusion_script"),
 
-                    getString(bountyId, "existing_target_memkey", null),
+                    getString(bountyId, "job_auto_accept"),
+                    getString(bountyId, "job_repeatable"),
+                    getBooleanDefaultTrue(bountyId, "show_in_bounty_board"),
+
+                    getString(bountyId, "existing_target_memkey"),
 
                     getString(bountyId, "target_importantPersonId"),
                     getString(bountyId, "target_first_name"),
@@ -802,7 +806,11 @@ public class MagicBountyLoader {
         try {
             JSONObject reqSettings = bounty_data.getJSONObject(bountyId);
             if (reqSettings.has(key)) {
-                value = reqSettings.getString(key);
+                Object output = reqSettings.get(key);
+                if(output == JSONObject.NULL)
+                    return value;
+
+                value = output.toString();
             }
         } catch (JSONException ex) {
         }

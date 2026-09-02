@@ -46,6 +46,10 @@
         #"job_pick_script": "data.script.script",
         #"job_memKey":"$key",
         #"job_conclusion_script":"data.script.script",
+
+        #"job_auto_accept": null,
+        #"job_repeatable": null,
+        #"show_in_bounty_board": true,
         
 		#"existing_target_memkey":"$memKey",
 
