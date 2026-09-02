@@ -255,8 +255,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
     companion object {
         // These constant values should instead be a setting somewhere that can be modified by other mods.
-        internal const val MIN_MAGIC_PERSONAL_BOUNTIES = 1
-        internal const val MAX_MAGIC_PERSONAL_BOUNTIES = 2
+        var MIN_MAGIC_PERSONAL_BOUNTIES = 1
+        var MAX_MAGIC_PERSONAL_BOUNTIES = 2
         private const val CURR_MAX_PERSONAL_BOUNTIES_KEY = "\$ML_currMaxPersonalBounties"
 
         private val bountiesThatUserHasBeenNotifiedForV2 = mutableSetOf<String>()
