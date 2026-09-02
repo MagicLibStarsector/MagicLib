@@ -2,7 +2,9 @@ package org.magiclib.bounty
 
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import org.magiclib.bounty.ActiveBounty.BountyResult.ExpiredWithoutAccepting
+import java.beans.Visibility
 
 /**
  * Accepts bounty upon becoming visible to player fleet
@@ -20,6 +22,9 @@ class MagicBountyFleetListener(val bounty: ActiveBounty): EveryFrameScript {
         }
         if(!bounty.fleet.isInCurrentLocation) return
         if(!bounty.fleet.isVisibleToPlayerFleet) return
+        if(bounty.fleet.visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.COMPOSITION_DETAILS
+            && bounty.fleet.visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS)
+            return
         if(bounty.stage == ActiveBounty.Stage.NotAccepted) {
             bounty.acceptBounty(
                 Global.getSector().playerFleet,
