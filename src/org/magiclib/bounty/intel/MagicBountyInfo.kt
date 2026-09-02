@@ -64,7 +64,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun getBountyPayout(): Int {
-        return (activeBounty?.rewardCredits?.toInt() ?: activeBounty?.calculateCreditReward())?.toInt() ?: bountySpec.job_credit_reward
+        return (activeBounty?.rewardCredits ?: activeBounty?.calculateCreditReward())?.toInt() ?: bountySpec.job_credit_reward
     }
 
     override fun getJobIcon(): String {
@@ -232,6 +232,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
 
         if (activeBounty == null) {
             MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
+        }
+        if(activeBounty == null) {
+            // Log for this should occur inside createActiveBounty
+            return false
         }
 
         return true

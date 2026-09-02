@@ -282,8 +282,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedForV2
         }
         private fun loadNotifiedBounties() {
+            bountiesThatUserHasBeenNotifiedForV2.clear()
             if (Global.getSector().persistentData.containsKey(NOTIFIED_BOUNTY_KEY)) {
-                bountiesThatUserHasBeenNotifiedForV2.clear()
                 bountiesThatUserHasBeenNotifiedForV2.addAll(Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>)
             }
         }

@@ -23,7 +23,7 @@ Version 1.5.8
 - Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
 - Fix magicBounty_variants from failing to properly load modules onto bounty variants in some circumstances. Modules can now also be placed in magicBounty_variants
 - Added 'job_auto_accept', 'job_repeatable', and 'show_in_bounty_board' to bounty spec. See 'magicBounty_data_example.json' for more details
-  * job_auto_accept controls when a bounty is accepted. This can cause the bounty to be always accepted on show, be accepted on occasion with a max amount like vanilla personal bounties, or only accepted upon the fleet being seen by the player.
+  * job_auto_accept controls when a bounty is accepted. This can cause the bounty to always be accepted when it is avaliable, be accepted upon the fleet being seen by the player, or be accepted on occasion with a max amount like vanilla personal bounties.
   * job_repeatable controls whether this job should be repeatable even after it ends. This can be set to always be repeatable, or only repeatable if the bounty expired.
   * show_in_bounty_board controls if this bounty should show in the bounty board.
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.

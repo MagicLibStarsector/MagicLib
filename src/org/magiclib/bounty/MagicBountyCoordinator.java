@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.magiclib.LunaWrapper;
-import org.magiclib.LunaWrapperSettingsListener;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.util.MagicCampaign;
@@ -359,7 +358,7 @@ public final class MagicBountyCoordinator {
         String key = BOUNTIES_SEED_KEY;
 
         if (!memoryWithoutUpdate.contains(key) && memoryWithoutUpdate.getLong(key) != 0L) {
-            memoryWithoutUpdate.set(key, Misc.genRandomSeed(), 30f);
+            memoryWithoutUpdate.set(key, Misc.genRandomSeed(), 30f); // If the seed doesn't exist, getLong would always return 0L and thus this code would never be reachable right? Figure this out later.
         }
 
         return Objects.hash(memoryWithoutUpdate.getLong(key) + marketAPI.getId());
