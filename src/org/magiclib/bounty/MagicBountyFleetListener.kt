@@ -18,10 +18,10 @@ class MagicBountyFleetListener(val bounty: ActiveBounty): EveryFrameScript {
             if (bounty.stage == ActiveBounty.Stage.NotAccepted) bounty.endBounty(ExpiredWithoutAccepting())
             //else bounty.endBounty(ExpiredAfterAccepting())
         }
-        if(!bounty.fleet.isInCurrentLocation) return
         if(!bounty.fleet.isVisibleToPlayerFleet) return
-        if(bounty.fleet.visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.COMPOSITION_DETAILS
-            && bounty.fleet.visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS)
+        val visibilityLevelToPlayerFleet = bounty.fleet.visibilityLevelToPlayerFleet
+        if(visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.COMPOSITION_DETAILS
+            && visibilityLevelToPlayerFleet != SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS)
             return
 
         if(bounty.stage == ActiveBounty.Stage.NotAccepted) {
