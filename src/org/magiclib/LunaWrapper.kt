@@ -18,7 +18,7 @@ object LunaWrapper {
      */
     @JvmStatic
     fun addSettingsListener(listener: LunaWrapperSettingsListener) {
-        if (Global.getSettings().modManager.isModEnabled("lunalib"))
+        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
             return
 
         LunaSettings.addSettingsListener(object : lunalib.lunaSettings.LunaSettingsListener {
