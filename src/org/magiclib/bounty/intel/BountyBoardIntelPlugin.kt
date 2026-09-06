@@ -113,9 +113,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
         bountyInfo.notifiedUserThatBountyIsAvailable()
 
-        if(bountyInfo is MagicBountyInfo) {
-            if(bountyInfo.bountySpec.job_auto_accept != null) return
-
+        if(bountyInfo.getBountySpec()?.job_auto_accept != null) {
             this.tempBountyInfo = bountyInfo
             this.sendUpdateIfPlayerHasIntel(null, false, false)
             this.tempBountyInfo = null
@@ -131,8 +129,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         fun getPersonalBounties(): List<BountyInfo> =
             PROVIDERS.flatMap { it.getBounties() }
                 .filter { it.shouldShow() }
-                .filter { (it as MagicBountyInfo).bountySpec.job_auto_accept == "personal" }
-        fun getActiveCount(personalBounties: List<BountyInfo>) = personalBounties.count { (it as MagicBountyInfo).activeBounty!!.stage == ActiveBounty.Stage.Accepted }
+                .filter { it.getBountySpec()?.job_auto_accept == "personal" }
+        fun getActiveCount(personalBounties: List<BountyInfo>) = personalBounties.count { it.getActiveBounty()!!.stage == ActiveBounty.Stage.Accepted }
 
         // Only reconsider the cap while we're not already sitting above it, then mostly nudge by +/-1 and occasionally reroll entirely.
         if (personalBountyMaxUpdateInterval.intervalElapsed()) {
@@ -155,12 +153,12 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             val activeCount = getActiveCount(personalBounties)
 
             if (activeCount < currMaxPersonalBounties) {
-                val personalBountiesFree = personalBounties.filter { (it as MagicBountyInfo).activeBounty!!.stage == ActiveBounty.Stage.NotAccepted }
+                val personalBountiesFree = personalBounties.filter { it.getActiveBounty()!!.stage == ActiveBounty.Stage.NotAccepted }
                 personalBountiesFree.randomOrNull()?.let {
-                    (it as MagicBountyInfo).activeBounty!!.acceptBounty(
+                    it.getActiveBounty()!!.acceptBounty(
                         Global.getSector().playerFleet,
-                        it.bountySpec.job_reputation_reward,
-                        it.bountySpec.job_forFaction
+                        it.getBountySpec()!!.job_reputation_reward,
+                        it.getBountySpec()!!.job_forFaction
                     )
                     notifyUserThatBountyIsAvailable(it)
                 }

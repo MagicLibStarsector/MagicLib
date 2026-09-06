@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpecial
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import org.magiclib.bounty.ActiveBounty
+import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.bounty.ui.lists.sorted.SortableParam
 import org.magiclib.util.MagicTxt
@@ -21,6 +22,9 @@ interface BountyInfo : Sortable<BountyInfo> {
     fun getJobIcon(): String?
     fun getLocationIfBountyIsActive(): LocationAPI?
     fun getPlayerKnownDistanceIfBountyIsActive(): Float?
+
+    fun getActiveBounty(): ActiveBounty?
+    fun getBountySpec(): MagicBountySpec?
 
     fun getCustomPanelColor(): Color?
     fun setCustomPanelColor(value: Color?)

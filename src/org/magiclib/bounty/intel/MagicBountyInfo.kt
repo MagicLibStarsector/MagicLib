@@ -39,9 +39,7 @@ import java.awt.Color
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpec) : BountyInfo {
-    val activeBounty: ActiveBounty?
-        get() = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
+open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicBountySpec) : BountyInfo {
     var holdingPanel: CustomPanelAPI? = null
     var panelThatCanBeRemoved: CustomPanelAPI? = null
 
@@ -64,24 +62,24 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun getBountyPayout(): Int {
-        return (activeBounty?.rewardCredits ?: activeBounty?.calculateCreditReward())?.toInt() ?: bountySpec.job_credit_reward
+        return (getActiveBounty()?.rewardCredits ?: getActiveBounty()?.calculateCreditReward())?.toInt() ?: bountySpec.job_credit_reward
     }
 
     override fun getJobIcon(): String {
         if (bountySpec.job_show_captain) {
-            return activeBounty?.fleet?.commander?.portraitSprite ?: bountySpec.target_portrait
+            return getActiveBounty()?.fleet?.commander?.portraitSprite ?: bountySpec.target_portrait
             ?: "graphics/portraits/portrait_generic_grayscale.png"
         }
         return "graphics/portraits/portrait_generic_grayscale.png"
     }
 
     override fun getLocationIfBountyIsActive(): LocationAPI? {
-        return activeBounty?.fleetSpawnLocation?.containingLocation
+        return getActiveBounty()?.fleetSpawnLocation?.containingLocation
     }
 
     override fun getPlayerKnownDistanceIfBountyIsActive(): Float? {
         getLocationIfBountyIsActive() ?: return null
-        val bounty = activeBounty ?: return null
+        val bounty = getActiveBounty() ?: return null
         val playerFleet = Global.getSector().playerFleet
 
         return when (bountySpec.job_show_distance) {
@@ -100,6 +98,9 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         }
     }
 
+    override fun getActiveBounty(): ActiveBounty? = MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey)
+    override fun getBountySpec(): MagicBountySpec? = bountySpec
+
     private var sortIndexOffset: Int = 0
     override fun getSortIndexOffset(): Int = sortIndexOffset
     override fun setSortIndexOffset(value: Int) {
@@ -107,7 +108,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun getSortIndex(): Int {
-        val baseIndex = when (activeBounty?.stage) {
+        val baseIndex = when (getActiveBounty()?.stage) {
             ActiveBounty.Stage.Accepted -> 0
             ActiveBounty.Stage.NotAccepted -> 100000
             ActiveBounty.Stage.Succeeded -> 300000
@@ -127,15 +128,15 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun notifiedUserThatBountyIsAvailable() {
-        activeBounty ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
+        getActiveBounty() ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
     }
 
     override fun addNotificationBulletpoints(info: TooltipMakerAPI) {
-        activeBounty?.givingFaction?.let {
+        getActiveBounty()?.givingFaction?.let {
             info.addPara(
                 MagicTxt.getString("mb_intel_offeredBy").format(it.displayName),
                 2f,
-                activeBounty!!.givingFactionTextColor,
+                getActiveBounty()!!.givingFactionTextColor,
                 it.displayName
             )
         }
@@ -148,7 +149,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     override fun shouldAlwaysShow(): Boolean {
-        return activeBounty?.stage == ActiveBounty.Stage.Accepted
+        return getActiveBounty()?.stage == ActiveBounty.Stage.Accepted
     }
 
     /**
@@ -156,8 +157,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
      * If it should be, creates it if it doesn't exist.
      */
     override fun shouldShow(): Boolean {
-        if (activeBounty != null) {
-            when (activeBounty!!.stage) {
+        if (getActiveBounty() != null) {
+            when (getActiveBounty()!!.stage) {
                 ActiveBounty.Stage.Accepted -> return true
                 ActiveBounty.Stage.Succeeded -> return false
                 ActiveBounty.Stage.ExpiredAfterAccepting -> return false
@@ -230,10 +231,10 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             if (!withinRange) return false
         }
 
-        if (activeBounty == null) {
+        if (getActiveBounty() == null) {
             MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
         }
-        if(activeBounty == null) {
+        if(getActiveBounty() == null) {
             // Log for this should occur inside createActiveBounty
             return false
         }
@@ -273,7 +274,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         )
         tooltip.addImageWithText(2f)
 
-        val activeBountyLocal: ActiveBounty = activeBounty
+        val activeBountyLocal: ActiveBounty = getActiveBounty()
             ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
             ?: return
 
@@ -307,7 +308,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
 
         val width = width - 16f
         val height = height - 16f
-        val activeBountyLocal: ActiveBounty = activeBounty
+        val activeBountyLocal: ActiveBounty = getActiveBounty()
             ?: MagicBountyCoordinator.getInstance().createActiveBounty(bountyKey, bountySpec)
             ?: return
 
@@ -450,24 +451,24 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val textTooltip = panel.createUIElement(width, height, true)
         val bountyFactionId = "ML_bounty"
 
-        if (activeBounty?.stage == ActiveBounty.Stage.Accepted) {
+        if (getActiveBounty()?.stage == ActiveBounty.Stage.Accepted) {
             textTooltip.addPara(MagicTxt.getString("mb_descAccepted"), Misc.getHighlightColor(), 0f)
             textTooltip.addSpacer(12f)
         }
 
         bountySpec.job_description?.split("\n")
             ?.map {
-                MagicTxt.MagicDisplayableText(MagicBountyUtilsInternal.replaceStringVariables(activeBounty, it))
+                MagicTxt.MagicDisplayableText(MagicBountyUtilsInternal.replaceStringVariables(getActiveBounty(), it))
             }
             ?.forEach { bountyText ->
                 textTooltip.addPara(bountyText.format, 3f, Misc.getHighlightColor(), *bountyText.highlights)
             }
         textTooltip.addSpacer(10f)
 
-        if (activeBounty?.spec?.job_show_type == true) {
-            val bounty = activeBounty!!
+        if (getActiveBounty()?.spec?.job_show_type == true) {
+            val bounty = getActiveBounty()!!
 
-            when (activeBounty?.spec?.job_type) {
+            when (getActiveBounty()?.spec?.job_type) {
                 JobType.Assassination -> if (bounty.targetFaction == null || bounty.targetFaction?.id == bountyFactionId) {
                     textTooltip.addPara(
                         MagicTxt.getString("mb_intelType"),
@@ -569,8 +570,8 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             }
         }
 
-        val reward = activeBounty?.rewardCredits ?: activeBounty?.calculateCreditReward()
-        val givingFaction = activeBounty?.givingFaction
+        val reward = getActiveBounty()?.rewardCredits ?: getActiveBounty()?.calculateCreditReward()
+        val givingFaction = getActiveBounty()?.givingFaction
         if (reward != null && givingFaction != null) {
             val rewardText = Misc.getDGSCredits(reward)
             textTooltip.addPara(
@@ -617,7 +618,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
         val targetInfoTooltip = panel.createUIElement(width, height, true)
         val childPanelWidth = width - 16f
 
-        val bounty = activeBounty!!
+        val bounty = getActiveBounty()!!
 
         if (bountySpec.job_type == JobType.Assassination && bountySpec.job_show_captain) {
             val portrait = targetInfoTooltip.beginImageWithText(getJobIcon(), 64f)
@@ -747,7 +748,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
             targetInfoTooltip.addPara(MagicTxt.getString("mb_descLocationUnknown"), 5f, Color.RED)
         }
 
-        activeBounty?.let {
+        getActiveBounty()?.let {
             showFleet(targetInfoTooltip, childPanelWidth, it)
 
             if (it.spec.job_show_captain) {
@@ -762,7 +763,7 @@ open class MagicBountyInfo(val bountyKey: String, val bountySpec: MagicBountySpe
     }
 
     fun acceptBounty() {
-        activeBounty?.let {
+        getActiveBounty()?.let {
             it.acceptBounty(
                 Global.getSector().playerFleet,
                 it.spec.job_reputation_reward,

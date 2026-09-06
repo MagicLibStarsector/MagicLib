@@ -6,14 +6,13 @@ import com.fs.starfarer.api.ui.ButtonAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import org.magiclib.bounty.intel.BountyInfo
-import org.magiclib.bounty.intel.MagicBountyInfo
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
+import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.internal.addTooltip
 import org.magiclib.kotlin.internal.height
 import org.magiclib.kotlin.internal.setSize
-import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 
@@ -159,7 +158,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
                 items.sortedBy { it.getPlayerKnownDistanceIfBountyIsActive() ?: Float.MAX_VALUE }
 
             SortingMethod.FIRSTCREATED ->
-                items.sortedBy { (it as? MagicBountyInfo)?.activeBounty?.bountyCreatedTimestamp }.reversed()
+                items.sortedBy { it.getActiveBounty()?.bountyCreatedTimestamp }.reversed()
 
             SortingMethod.ALPHABETICAL ->
                 items.sortedBy { it.getBountyName() }
@@ -176,7 +175,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
             val playerFaction = sector.playerFaction
 
             val (keep, moveToBottom) = sorted.partition { entry ->
-                val bounty = (entry as? MagicBountyInfo)?.activeBounty
+                val bounty = entry.getActiveBounty()
                     ?: return@partition true
 
                 val faction = bounty.targetFaction ?: return@partition true
@@ -200,7 +199,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         }
 
         val (keep, moveToBottom) = sorted.partition { entry ->
-            val bounty = (entry as? MagicBountyInfo)?.activeBounty
+            val bounty = entry.getActiveBounty()
                 ?: return@partition true
 
             !bounty.isDroppedInBountyBoard
