@@ -113,11 +113,11 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
         bountyInfo.notifiedUserThatBountyIsAvailable()
 
-        if(bountyInfo.getBountySpec()?.job_auto_accept != null) {
-            this.tempBountyInfo = bountyInfo
-            this.sendUpdateIfPlayerHasIntel(null, false, false)
-            this.tempBountyInfo = null
-        }
+        if(bountyInfo.getBountySpec()?.job_auto_accept != null) // If the bounty is auto accepted in any way, avoid showing a notification.
+            return
+        this.tempBountyInfo = bountyInfo
+        this.sendUpdateIfPlayerHasIntel(null, false, false)
+        this.tempBountyInfo = null
     }
 
     override fun advance(amount: Float) {
