@@ -56,7 +56,7 @@
       "job_pick_script": "magiclib_test_bounty_completed",
       "job_conclusion_script": "magiclib_test_bounty_completed",
 
-      "job_auto_accept": "personal",
+      #"job_auto_accept": "personal",
       "job_repeatable": "always",
       "show_in_bounty_board": true,
 
