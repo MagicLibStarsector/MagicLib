@@ -76,6 +76,20 @@ val javaVersion = 17
 val isLibrary = true
 
 
+//Community API Docs. Note that downloading the community api docs requires git to be installed on your system.
+//If the community api docs at https://github.com/StarsectorCommunityApiDocs/CommunityApiDocs should be setup and used for documentation.
+val useCommunityApiDocs = true
+
+//Where the source files of the community api docs are checked out.
+//If this is set to null, it defaults to a spot under build/ (disposable, doesn't need to be gitignored separately, and Gradle is free to fully own its lifecycle there)
+//Point this elsewhere (e.g. a path you manage yourself) and set communityApiDocsAutoUpdate = false if you'd rather manage it by hand.
+val communityApiDocsPath = null
+
+//Where to clone the community api docs from.
+val communityApiDocsRepoUrl = "https://github.com/StarsectorCommunityApiDocs/CommunityApiDocs.git"
+
+//Set to false to stop Gradle from ever touching the network for this; it will just use whatever (if anything) is already sitting at communityApiDocsPath.
+val communityApiDocsAutoUpdate = true
 
 
 
@@ -105,6 +119,10 @@ gradle.extra["libsFolder"] = libsFolder
 gradle.extra["devResolution"] = devResolution
 gradle.extra["javaVersion"] = javaVersion
 gradle.extra["isLibrary"] = isLibrary
+gradle.extra["useCommunityApiDocs"] = useCommunityApiDocs
+gradle.extra["communityApiDocsRepoUrl"] = communityApiDocsRepoUrl
+gradle.extra["communityApiDocsAutoUpdate"] = communityApiDocsAutoUpdate
+gradle.extra["communityApiDocsPath"] = communityApiDocsPath
 
 
 
