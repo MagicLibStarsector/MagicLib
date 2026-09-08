@@ -19,16 +19,16 @@ class ExplosionOcclusionRaycast: DamageTakenModifier {
         const val EXPLOSION_RAYCAST_MAPS = "explosion_raycast"
         const val OCCLUSION_MODIFIER = "occlusion_modifier"
         const val DELETE_TIME = "delete_time"
+        const val IGNORE_OCCULSION = "ignore_occlusion"
         const val NUM_RAYCASTS = 36;
     }
 
     override fun modifyDamageTaken(param: Any?, target: CombatEntityAPI, damage: DamageAPI, point: Vector2f, shieldHit: Boolean): String? {
         if (param !is DamagingProjectileAPI) return null
         val ship = target as? ShipAPI ?: return null
-        val parent = if (ship.parentStation == null) ship else ship.parentStation
+        val parent = ship.parentStation ?: ship
         if(parent.customData[EXPLOSION_RAYCAST_MAPS] == null)
             parent.setCustomData(EXPLOSION_RAYCAST_MAPS, mutableMapOf<DamagingProjectileAPI, Map<String, Float>>())
-
 
         if (param is DamagingExplosion || param is MissileAPI){
             @Suppress("UNCHECKED_CAST")
@@ -64,7 +64,7 @@ class ExplosionOcclusionRaycast: DamageTakenModifier {
 
         val radius = projectile.explosionSpecIfExplosion?.radius ?: (projectile as MissileAPI).spec.explosionRadius
 
-        val potentialOcclusions = (parent.childModulesCopy + listOf(parent)).toMutableList()
+        val potentialOcclusions = (parent.childModulesCopy.filterNot { it.hasTag(IGNORE_OCCULSION) } + listOf(parent)).toMutableList()
         potentialOcclusions.retainAll {
             val maxDistance = radius + Misc.getTargetingRadius(projectile.location, it, false)
             Misc.getDistanceSq(it.location, projectile.location) < maxDistance*maxDistance

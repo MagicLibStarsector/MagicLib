@@ -46,11 +46,12 @@ class PaperdollUIPanelAdder: BaseEveryFrameCombatPlugin() {
 
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
         val engine = Global.getCombatEngine() ?: return
-        if(engine.playerShip == null || !engine.playerShip.isShipWithModules || !engine.playerShip.hullSpec.hasTag(TAG_ID))
-            return
-        val state = AppDriver.getInstance().currentState
-        if (state !is CombatState)
-            return
+        val playerShip =  engine.playerShip ?: return
+        if(!playerShip.isShipWithModules) return
+        val runWithAll = playerShip.hullSpec.hasTag(TAG_ID)
+        if(!runWithAll && playerShip.childModulesCopy.none { it.hullSpec.hasTag(TAG_ID) }) return
+
+        val state = AppDriver.getInstance().currentState as? CombatState ?: return
         val shipInfo = state.invoke("getShipInfo") as UIPanelAPI
 
         val uiElements = shipInfo.getChildrenCopy()
@@ -74,6 +75,7 @@ class PaperdollUIPanelAdder: BaseEveryFrameCombatPlugin() {
 
                 for(module in ship.childModulesCopy){
                     if (module.hitpoints <= 0f) continue
+                    if(!runWithAll && !module.hullSpec.hasTag(TAG_ID)) continue
 
                     val moduleSprite = module.spriteAPI
                     val moduleOffset = Vector2f(moduleSprite.centerX - moduleSprite.width/2, moduleSprite.centerY - moduleSprite.height/2).rotate(module.facing - 90f)

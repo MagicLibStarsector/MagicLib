@@ -12,8 +12,12 @@ import com.fs.starfarer.api.combat.listeners.HullDamageAboutToBeTakenListener
 import org.lwjgl.util.vector.Vector2f
 
 /**
- * Hullmod that makes armor modules act like armor, not separate targets, and fixes
+ * A hull-mod that makes armor modules act like armor, not separate targets, and fixes
  * explosions bypassing modular armor via occlusion raycasting.
+ *
+ * If this hull-mod is applied to a hull with modules, it will be applied to all modules present on that hull.
+ *
+ * If this hull-mod is applied to a module, it will only function on that specific module.
  */
 class ArmorParent: BaseHullMod() {
     companion object {
@@ -29,9 +33,18 @@ class ArmorParent: BaseHullMod() {
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
-        if(ship.childModulesCopy.isEmpty() || ship.hasTag(MODULE_LISTENERS_ADDED)) return
+        if((ship.childModulesCopy.isEmpty() && ship.parentStation == null) || ship.hasTag(MODULE_LISTENERS_ADDED)) return
+
         ship.addTag(MODULE_LISTENERS_ADDED)
-        ship.childModulesCopy.forEach { module ->
+
+        ship.parentStation?.let { parent -> // Apply to parent if module
+            if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
+                parent.childModulesCopy.forEach { it.addTag(ExplosionOcclusionRaycast.IGNORE_OCCULSION) }
+                parent.addListener(ExplosionOcclusionRaycast())
+            }
+            ship.removeTag(ExplosionOcclusionRaycast.IGNORE_OCCULSION)
+            if (!ship.hasListenerOfClass(ArmorModuleChild::class.java)) ship.addListener(ArmorModuleChild(ship))
+        } ?: ship.childModulesCopy.forEach { module -> // Apply to children if parent
             if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
             if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast())
         }
