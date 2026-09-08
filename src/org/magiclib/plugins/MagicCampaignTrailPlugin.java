@@ -530,6 +530,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     /**
      * @deprecated Use {@link #addTrailMemberSimple(SectorEntityToken, float, SpriteAPI, Vector2f, float, float, float, float, Color, float, float, boolean, Vector2f)} instead.
      */
+    @Deprecated
     public static void AddTrailMemberSimple(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float speed, float angle, float startSize, float endSize, Color color,
                                             float opacity, float duration, boolean additive, Vector2f offsetVelocity) {
         addTrailMemberSimple(linkedEntity, ID, sprite, position, speed, angle, startSize, endSize, color, opacity, duration, additive, offsetVelocity);
@@ -538,6 +539,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     /**
      * @deprecated Use {@link addTrailMemberAnimated(SectorEntityToken, float, SpriteAPI, Vector2f, float, float, float, float, float, float, float, Color, Color, float, float, float, float, int, int, float, float, Vector2f, boolean, LocationAPI)} instead.
      */
+    @Deprecated
     public static void AddTrailMemberAnimated(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                               float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                               float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,
@@ -549,6 +551,7 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     /**
      * @deprecated Use {@link addTrailMemberAdvanced(SectorEntityToken, float, SpriteAPI, Vector2f, float, float, float, float, float, float, float, Color, Color, float, float, float, float, int, int, float, float, Vector2f, boolean, LocationAPI)} instead.
      */
+    @Deprecated
     public static void AddTrailMemberAdvanced(SectorEntityToken linkedEntity, float ID, SpriteAPI sprite, Vector2f position, float startSpeed, float endSpeed, float angle,
                                               float startAngularVelocity, float endAngularVelocity, float startSize, float endSize, Color startColor, Color endColor, float opacity,
                                               float inDuration, float mainDuration, float outDuration, int blendModeSRC, int blendModeDEST, float textureLoopLength, float textureScrollSpeed,

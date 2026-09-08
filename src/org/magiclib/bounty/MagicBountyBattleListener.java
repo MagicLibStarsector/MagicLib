@@ -32,13 +32,9 @@ public final class MagicBountyBattleListener implements FleetEventListener {
     private String bountyKey;
 
     public MagicBountyBattleListener(@NotNull Set<String> bountyKeys) {
-        this.bountyKeys = bountyKeys;
+        this.bountyKeys = new HashSet<>(bountyKeys);
     }
 
-    /**
-     * Use `MagicBountyBattleListener(Set<String> bountyKeys)` instead.
-     */
-    @Deprecated
     public MagicBountyBattleListener(@NotNull String bountyKey) {
         this.bountyKeys = new HashSet<>();
         this.bountyKeys.add(bountyKey);

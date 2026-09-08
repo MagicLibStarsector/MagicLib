@@ -89,7 +89,9 @@ public class MagicBountyLoader {
 
         int x = 0;
         //time to sort that stuff
-        for (Iterator<String> iterator = bounty_data.keys(); iterator.hasNext(); ) {
+        @SuppressWarnings("unchecked")
+        Iterator<String> iterator = bounty_data.keys();
+        while (iterator.hasNext()) {
             String bountyId = iterator.next();
 
             if (bountyId.isEmpty()) continue;
@@ -152,17 +154,12 @@ public class MagicBountyLoader {
             }
 
             String target_skill_pref = getString(bountyId, "target_skill_preference");
-            SkillPickPreference skillPref = SkillPickPreference.GENERIC;
+            SkillPickPreference skillPref = SkillPickPreference.ANY;
             if (target_skill_pref != null && !target_skill_pref.isEmpty()) {
-                switch (target_skill_pref) {
-                    case "CARRIER": {
-                        skillPref = SkillPickPreference.CARRIER;
-                        break;
-                    }
-                    case "PHASE": {
-                        skillPref = SkillPickPreference.PHASE;
-                        break;
-                    }
+                try {
+                    skillPref = SkillPickPreference.valueOf(target_skill_pref);
+                } catch (IllegalArgumentException e) {
+                    LOG.warn("Invalid skill preference: " + target_skill_pref);
                 }
             }
 
@@ -374,7 +371,7 @@ public class MagicBountyLoader {
         try {
             for (String className : MagicSettings.getList(MagicVariables.MAGICLIB_ID, "bountyProviders")) {
                 BountyBoardIntelPlugin.Companion.addProvider((BountyBoardProvider)
-                        Global.getSettings().getScriptClassLoader().loadClass(className).newInstance());
+                        Global.getSettings().getScriptClassLoader().loadClass(className).getDeclaredConstructor().newInstance());
             }
         } catch (Throwable ex) {
             throw new RuntimeException(ex);
@@ -717,7 +714,9 @@ public class MagicBountyLoader {
                 JSONObject modJson = Global.getSettings().loadJSON(jsonPath, modSpec.getId());
 
                 if (modJson.length() > 0) {
-                    for (Iterator<String> iterator = modJson.keys(); iterator.hasNext(); ) {
+                    @SuppressWarnings("unchecked")
+                    Iterator<String> iterator = modJson.keys();
+                    while(iterator.hasNext()) {
                         String key = iterator.next();
 
                         var bountyJSON = modJson.getJSONObject(key);

@@ -47,9 +47,6 @@ import org.magiclib.util.MagicMisc;
 import java.util.*;
 
 import static com.fs.starfarer.api.util.Misc.MAX_OFFICER_LEVEL;
-import static data.scripts.util.MagicTxt.nullStringIfEmpty;
-import static data.scripts.util.MagicVariables.MAGICLIB_ID;
-import static data.scripts.util.MagicVariables.verbose;
 
 @Deprecated
 public class MagicCampaign {
@@ -82,6 +79,7 @@ public class MagicCampaign {
      * @param assignmentTarget     where the fleet will go to execute its order, it will not spawn if NULL
      * @deprecated Please move to MagicCampaign.createFleetBuilder() when possible. The logic is unchanged.
      */
+    @Deprecated
     public static CampaignFleetAPI createFleet(
             @Nullable String fleetName,
             @Nullable String fleetFaction,
@@ -122,6 +120,7 @@ public class MagicCampaign {
      *                             The name of the variant files must match the ID of the variant.
      * @deprecated Please move to MagicCampaign.createFleetBuilder() when possible. The logic is unchanged.
      */
+    @Deprecated
     public static CampaignFleetAPI createFleet(
             @Nullable String fleetName,
             @Nullable String fleetFaction,
@@ -162,7 +161,7 @@ public class MagicCampaign {
             }
         }
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.info(" ");
             log.info("SPAWNING " + fleetName);
             log.info(" ");
@@ -172,7 +171,7 @@ public class MagicCampaign {
         String type = FleetTypes.PERSON_BOUNTY_FLEET;
         if (fleetType != null && !fleetType.equals("")) {
             type = fleetType;
-        } else if (verbose) {
+        } else if (MagicVariables.verbose) {
             log.info("No fleet type defined, defaulting to bounty fleet.");
         }
 
@@ -180,14 +179,14 @@ public class MagicCampaign {
 
         if (reinforcementFaction != null) {
             extraShipsFaction = reinforcementFaction;
-        } else if (verbose) {
+        } else if (MagicVariables.verbose) {
             log.info("No reinforcement faction defined, defaulting to fleet faction.");
         }
 
         SectorEntityToken location = assignmentTarget;
         if (spawnLocation != null) {
             location = spawnLocation;
-        } else if (verbose) {
+        } else if (MagicVariables.verbose) {
             log.info("No spawn location defined, defaulting to assignment target.");
         }
 
@@ -195,7 +194,7 @@ public class MagicCampaign {
 
         if (assignment != null) {
             order = assignment;
-        } else if (verbose) {
+        } else if (MagicVariables.verbose) {
             log.info("No assignment defined, defaulting to aggressive orbit.");
         }
 
@@ -203,7 +202,7 @@ public class MagicCampaign {
 
         if (qualityOverride != null && qualityOverride >= -1) {
             quality = qualityOverride;
-        } else if (verbose) {
+        } else if (MagicVariables.verbose) {
             log.info("No quality override defined, defaulting to highest quality.");
         }
 
@@ -211,7 +210,7 @@ public class MagicCampaign {
         CampaignFleetAPI newFleet = FleetFactoryV3.createEmptyFleet(extraShipsFaction, type, null);
 
         // ADDING FLAGSHIP
-        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, verbose);
+        FleetMemberAPI flagship = generateShip(flagshipVariant, variantsPath, flagshipAutofit, MagicVariables.verbose);
 
         if (flagship == null) {
             log.warn("Warning during " + fleetName + " generation." +
@@ -223,7 +222,7 @@ public class MagicCampaign {
 
         // ADDING PRESET SHIPS IF REQUIRED
         if (supportFleet != null && !supportFleet.isEmpty()) {
-            List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, supportAutofit, verbose);
+            List<FleetMemberAPI> support = generatePresetShips(supportFleet, variantsPath, supportAutofit, MagicVariables.verbose);
             for (FleetMemberAPI m : support) {
                 newFleet.getFleetData().addFleetMember(m);
                 MagicVariables.presetShipIdsOfLastCreatedFleet.add(m.getId());
@@ -234,7 +233,7 @@ public class MagicCampaign {
 
         // ADDING PROCGEN SHIPS IF REQUIRED
         if (minFP > 0) {
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 if (minFP < coreFP) {
                     log.info("Preset FP: " + coreFP + ", requested FP: " + minFP + ". No reinforcements required.");
                 } else {
@@ -249,7 +248,7 @@ public class MagicCampaign {
                     if (reinforcements.getInflater() != null) {
                         newFleet.setInflater(reinforcements.getInflater());
                     }
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.info("Fleet quality set to " + newFleet.getInflater().getQuality());
                     }
 
@@ -260,7 +259,7 @@ public class MagicCampaign {
                             for (FleetMemberAPI m : membersInPriorityOrder) {
                                 m.setCaptain(null);
                                 newFleet.getFleetData().addFleetMember(m);
-                                if (verbose) {
+                                if (MagicVariables.verbose) {
                                     log.info("adding " + m.getHullId());
                                 }
                             }
@@ -317,7 +316,7 @@ public class MagicCampaign {
         newFleet.getFleetData().setFlagship(flagship);
 
         // I swear those sneaky officers are messing up the flagship tags
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.warn("Fleet flagship is " + newFleet.getFlagship().getHullId());
             for (FleetMemberAPI m : newFleet.getMembersWithFightersCopy()) {
                 if (m.isFlagship()) {
@@ -329,13 +328,13 @@ public class MagicCampaign {
             if (m == flagship) {
                 if (!m.isFlagship()) {
                     m.setFlagship(true);
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.warn("Adding flagship tag to " + m.getHullId());
                     }
                 }
             } else if (m.isFlagship()) {
                 m.setFlagship(false);
-                if (verbose) {
+                if (MagicVariables.verbose) {
                     log.warn("Removing flagship tag from " + m.getHullId());
                 }
             }
@@ -345,19 +344,19 @@ public class MagicCampaign {
         if (captain != null) {
             newFleet.getFlagship().setCaptain(captain);
             newFleet.setCommander(flagship.getCaptain());
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 log.warn("Assigning " + captain.getNameString() + " to the Flagship");
             }
         } else {
             newFleet.getFlagship().setCaptain(newFleet.getCommander());
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 log.warn("Moving random commander to the Flagship");
             }
         }
 
         // apply skills to the fleet
         FleetFactoryV3.addCommanderSkills(newFleet.getCommander(), newFleet, fleetParams, new Random());
-        if (verbose) {
+        if (MagicVariables.verbose) {
             int admiral = 0;
             int elite = 0;
 
@@ -403,7 +402,7 @@ public class MagicCampaign {
                         location,
                         isImportant,
                         transponderOn,
-                        verbose
+                        MagicVariables.verbose
                 );
             } else {
                 spawnFleet(
@@ -413,12 +412,12 @@ public class MagicCampaign {
                         assignmentTarget,
                         isImportant,
                         transponderOn,
-                        verbose
+                        MagicVariables.verbose
                 );
             }
         }
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.warn(fleetName + " creation completed.");
         }
 
@@ -453,6 +452,7 @@ public class MagicCampaign {
      * @param skillLevels         Map <skill, level> Optional skills from campaign.ids.Skills and their appropriate levels, OVERRIDES ALL RANDOM SKILLS PREVIOUSLY PICKED
      * @deprecated Please switch to {@code MagicCampaign.createCaptainBuilder("factionId")}
      */
+    @Deprecated
     public static PersonAPI createCaptain(
             boolean isAI,
             @Nullable String AICoreType,
@@ -535,13 +535,13 @@ public class MagicCampaign {
             person.getName().setLast(lastName);
         }
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.info(" ");
             log.info(" Creating captain " + person.getNameString());
             log.info(" ");
         }
 
-        if (nullStringIfEmpty(portraitId) != null) {
+        if (MagicTxt.nullStringIfEmpty(portraitId) != null) {
             if (portraitId.startsWith("graphics")) {
                 if (Global.getSettings().getSprite(portraitId) != null) {
                     person.setPortraitSprite(portraitId);
@@ -557,20 +557,20 @@ public class MagicCampaign {
             }
         }
 
-        if (nullStringIfEmpty(personality) != null) {
+        if (MagicTxt.nullStringIfEmpty(personality) != null) {
             person.setPersonality(personality);
         }
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.info("     They are " + person.getPersonalityAPI().getDisplayName());
         }
 
-        if (nullStringIfEmpty(rankId) != null) {
+        if (MagicTxt.nullStringIfEmpty(rankId) != null) {
             person.setRankId(rankId);
         } else {
             person.setRankId(Ranks.SPACE_COMMANDER);
         }
 
-        if (nullStringIfEmpty(postId) != null) {
+        if (MagicTxt.nullStringIfEmpty(postId) != null) {
             person.setPostId(postId);
         } else {
             person.setPostId(Ranks.POST_FLEET_COMMANDER);
@@ -578,7 +578,7 @@ public class MagicCampaign {
 
         //reset and reatribute skills if needed
         if (skillLevels != null && !skillLevels.isEmpty()) {
-            if (verbose) {
+            if (MagicVariables.verbose) {
 
                 //reset
                 for (SkillLevelAPI skill : person.getStats().getSkillsCopy()) {
@@ -632,7 +632,7 @@ public class MagicCampaign {
                 */
             }
             person.getStats().refreshCharacterStatsEffects();
-        } else if (verbose) {
+        } else if (MagicVariables.verbose) {
             // list assigned random skills
             log.info("     " + "level: " + person.getStats().getLevel());
             for (MutableCharacterStatsAPI.SkillLevelAPI skill : person.getStats().getSkillsCopy()) {
@@ -1221,6 +1221,7 @@ public class MagicCampaign {
      * @param orbitDays       orbit period
      * @deprecated Renamed to `addJumpPoint`.
      */
+    @Deprecated
     public static SectorEntityToken createJumpPoint(
             String id,
             String name,
@@ -1441,7 +1442,7 @@ public class MagicCampaign {
             int market_minSize
     ) {
 
-        List<String> marketBlacklist = MagicSettings.getList(MAGICLIB_ID, "bounty_market_blacklist");
+        List<String> marketBlacklist = MagicSettings.getList(MagicVariables.MAGICLIB_ID, "bounty_market_blacklist");
 
         if (marketBlacklist.contains(market.getId())) {
             return false;
@@ -1469,7 +1470,7 @@ public class MagicCampaign {
             for (String f : marketFaction_none) {
                 //skip non existing factions
                 if (Global.getSector().getFaction(f) == null) {
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
                     }
                     continue;
@@ -1490,7 +1491,7 @@ public class MagicCampaign {
             for (String f : marketFaction_any) {
                 //skip non existing factions
                 if (Global.getSector().getFaction(f) == null) {
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
                     }
                     continue;
@@ -1535,7 +1536,7 @@ public class MagicCampaign {
 //            float effectiveFP = playerFleet.getEffectiveStrength();
             float effectiveFP = playerFleet.getFleetPoints();
             if (min_fleet_size > effectiveFP) {
-                if (verbose) {
+                if (MagicVariables.verbose) {
                     log.info(String.format("Requirement not met: min fleet size of %s requested, currently %s.", min_fleet_size, effectiveFP));
                 }
                 return false;
@@ -1548,7 +1549,7 @@ public class MagicCampaign {
             for (String f : playerRelationship_atLeast.keySet()) {
                 //skip non existing factions
                 if (Global.getSector().getFaction(f) == null) {
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
                     }
                     continue;
@@ -1566,7 +1567,7 @@ public class MagicCampaign {
             for (String f : playerRelationship_atMost.keySet()) {
                 //skip non existing factions
                 if (Global.getSector().getFaction(f) == null) {
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.warn(String.format("Unable to find faction %s.", f), new RuntimeException());
                     }
                     continue;
@@ -1579,7 +1580,7 @@ public class MagicCampaign {
         }
 
         if (!relation || !hostility) {
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 if (!relation && playerRelationship_atLeast != null && !playerRelationship_atLeast.isEmpty())
                     log.info(String.format("Requirement not met: Relationship too low with %s ", playerRelationship_atLeast.keySet()));
                 if (!hostility && playerRelationship_atMost != null && !playerRelationship_atMost.isEmpty())
@@ -1593,14 +1594,14 @@ public class MagicCampaign {
             for (String f : memKeys_all.keySet()) {
                 //check if the memKey exists 
                 if (!Global.getSector().getMemoryWithoutUpdate().getKeys().contains(f)) {
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.info(String.format("Requirement not met: memKeys_all %s key not fount.", f));
                     }
                     return false;
                 }
                 //check if it has the proper value
                 if (memKeys_all.get(f) != Global.getSector().getMemoryWithoutUpdate().getBoolean(f)) {
-                    if (verbose) {
+                    if (MagicVariables.verbose) {
                         log.info(String.format("Requirement not met: memKeys_all %s key is not %s.", f, memKeys_all.get(f)));
                     }
                     return false;
@@ -1613,7 +1614,7 @@ public class MagicCampaign {
             for (Map.Entry<String, Boolean> entry : memKeys_none.entrySet()) {
                 if (Global.getSector().getMemoryWithoutUpdate().contains(entry.getKey())) {
                     if (Global.getSector().getMemoryWithoutUpdate().getBoolean(entry.getKey()) == entry.getValue()) {
-                        if (verbose) {
+                        if (MagicVariables.verbose) {
                             log.info(String.format("Requirement not met: memKeys_none %s value %s is present.", entry.getKey(), entry.getValue()));
                         }
                         return false;
@@ -1634,7 +1635,7 @@ public class MagicCampaign {
                 }
             }
             //the loop has not been exited therefore some key is missing
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 log.info(String.format("Requirement not met: none of the memKeys_any is present with the proper value: %s ", memKeys_any.keySet()));
             }
             return false;
@@ -1661,27 +1662,27 @@ public class MagicCampaign {
         float playerEffectiveStrength = 0f;
         float enemyEffectiveStrength = 0f;
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.info("\n");
             log.info("PLAYER strength");
         }
 
         for (FleetMemberAPI m : playerFleet.getFleetData().getMembersListCopy()) {
             float strength = EffectiveFleetMemberStrength(m);
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 log.info(m.getHullId() + " strength = " + strength);
             }
             playerEffectiveStrength += strength;
         }
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.info("Effective player strength = " + playerEffectiveStrength + "\n");
             log.info("ENEMY strength");
         }
 
         for (FleetMemberAPI m : enemyFleet.getFleetData().getMembersListCopy()) {
             float strength = EffectiveFleetMemberStrength(m);
-            if (verbose) {
+            if (MagicVariables.verbose) {
                 log.info(m.getHullId() + " strength = " + strength);
             }
             enemyEffectiveStrength += strength;
@@ -1689,7 +1690,7 @@ public class MagicCampaign {
 
         float relativeStrength = playerEffectiveStrength / enemyEffectiveStrength;
 
-        if (verbose) {
+        if (MagicVariables.verbose) {
             log.info("Effective enemy strength = " + enemyEffectiveStrength + "\n");
             log.info("Relative strength = " + relativeStrength);
         }

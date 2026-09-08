@@ -30,6 +30,8 @@ import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
  *
  * <img src="https://static.wikia.nocookie.net/starfarergame/images/4/4d/MagicFakeBeam_spawnFakeBeam.gif/revision/latest?cb=20181024094938" />
  */
+
+@SuppressWarnings("deprecation")
 public class MagicFakeBeam {
 
     /////////////////////////////////////////

@@ -24,7 +24,7 @@ public class MagicTxt {
     }
 
     public static String getString(String id, String... args) {
-        return String.format(Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id), args);
+        return String.format(Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id), (Object[]) args);
     }
 
     /**

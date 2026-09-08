@@ -257,7 +257,9 @@ public class MagicAchievement {
             JSONObject memJson = jsonObject.optJSONObject("memory");
 
             if (memJson != null) {
-                for (Iterator<String> it = memJson.keys(); it.hasNext(); ) {
+                @SuppressWarnings("unchecked")
+                Iterator<String> it = memJson.keys();
+                while (it.hasNext()) {
                     String key = it.next();
                     memory.put(key, memJson.get(key));
                 }
@@ -567,6 +569,7 @@ public class MagicAchievement {
      * @deprecated Use {@link #getAchievementMemory()} instead.
      * The method has been renamed to avoid confusion with the vanilla MemoryAPI, which is not persisted outside of saves.
      */
+    @Deprecated
     public @NotNull Map<String, Object> getMemory() {
         if (Global.getSector() == null) return memory;
 

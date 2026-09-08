@@ -132,10 +132,12 @@ internal var UIComponentAPI.yAlignOffset: Float
     set(yOffset) { this.position.setYAlignOffset(yOffset) }
 
 internal fun UIPanelAPI.getChildrenCopy(): List<UIComponentAPI> {
+    @Suppress("UNCHECKED_CAST")
     return invoke(this, "getChildrenCopy") as List<UIComponentAPI>
 }
 
 internal fun UIPanelAPI.getChildrenNonCopy(): List<UIComponentAPI> {
+    @Suppress("UNCHECKED_CAST")
     return invoke(this, "getChildrenNonCopy") as List<UIComponentAPI>
 }
 

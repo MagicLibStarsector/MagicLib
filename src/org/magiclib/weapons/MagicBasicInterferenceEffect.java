@@ -22,7 +22,7 @@ public class MagicBasicInterferenceEffect implements EveryFrameWeaponEffectPlugi
             runOnce = true;
             //only affect non built-in
             if (weapon.getShip().getOriginalOwner() < 0 && !weapon.getSlot().isBuiltIn()) {
-                MagicInterference.ApplyInterference(weapon.getShip().getVariant());
+                MagicInterference.applyInterference(weapon.getShip().getVariant());
             }
         }
     }

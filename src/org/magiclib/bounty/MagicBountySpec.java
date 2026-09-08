@@ -244,7 +244,7 @@ public class MagicBountySpec {
      */
     public int target_elite_skills;
     /**
-     * GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
+     * ANY from OfficerManagerEvent.SkillPickPreference
      */
     public OfficerManagerEvent.SkillPickPreference target_skill_preference;
     /**

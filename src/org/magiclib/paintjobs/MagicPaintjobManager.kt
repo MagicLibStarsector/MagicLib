@@ -676,6 +676,7 @@ object MagicPaintjobManager {
         val weaponSprites = weapon.getFieldsMatching(type = Sprite::class.java).mapNotNull { field ->
             field.get(weapon) as Sprite?
         } + weapon.getFieldsMatching(type = Array<Sprite>::class.java).mapNotNull { field ->
+            @Suppress("UNCHECKED_CAST")
             field.get(weapon) as Array<Sprite>?
         }.flatMap {
             it.toList()

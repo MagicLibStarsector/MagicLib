@@ -27,6 +27,7 @@ Version 1.5.8
   * job_repeatable controls whether this job should be repeatable even after it ends. This can be set to always be repeatable, or only repeatable if the bounty expired.
   * show_in_bounty_board controls if this bounty should show in the bounty board.
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.
+- fix the bounty file option 'target_skill_preference'. It was previously not working.
 
 **MagicAchievements**
 - Fix possible 'ShipKillsAchievement' game crash.
@@ -57,6 +58,7 @@ Version 1.5.8
 - Fix modSettings.json 'subsystemInfoKey'
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
 - MagicLib now builds using Gradle.
+- Cleared up all compilation warnings.
 - Removed compilation dependency on Vayra's Sector.
 - Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
 - Fix MagicAnim smoothToRange, smoothReturnToRange, and arbitrarySmooth. (Reported by Ayreos)

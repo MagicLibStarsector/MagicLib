@@ -222,6 +222,7 @@ internal object MagicPaintjobSelector {
 
         // if the paintjob exists, replace the sprites
         basePaintjobSpec?.let { paintjob ->
+            @Suppress("UNCHECKED_CAST")
             for(ship in ReflectionUtils.get(shipPreview, name = MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!) as Array<ShipAPI>){
                 MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec).firstOrNull {
                     it.paintjobFamily?.equals(paintjob.paintjobFamily) == true || it.id == paintjob.id

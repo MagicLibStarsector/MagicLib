@@ -84,8 +84,8 @@ object MagicSubsystemsManager {
      */
     @JvmStatic
     private fun getSubsystemMapForShip(ship: ShipAPI): MutableMap<Class<out MagicSubsystem>, MagicSubsystem>? {
+        @Suppress("UNCHECKED_CAST")
         return ship.customData[CUSTOM_DATA_KEY] as? MutableMap<Class<out MagicSubsystem>, MagicSubsystem>?
-            ?: return null
     }
 
     @JvmStatic

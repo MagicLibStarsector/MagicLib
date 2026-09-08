@@ -25,6 +25,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.Misc.FleetFilter
 import org.json.JSONObject
+import org.lwjgl.util.vector.Vector
 import org.lwjgl.util.vector.Vector2f
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
@@ -278,7 +279,8 @@ inline fun Vector2f.getAngleInDegrees(to: Vector2f) = Misc.getAngleInDegrees(thi
 /**
  * @since 0.46.0
  */
-inline fun Vector2f.normalise() = Misc.normalise(this)
+//inline fun Vector2f.normalise() = Misc.normalise(this)
+//This extension is shadowed by a member: 'fun normalise(): Vector!' defined in 'org.lwjgl.util.vector.Vector'
 
 /**
  * MagicLib: Normalizes an angle given in degrees.

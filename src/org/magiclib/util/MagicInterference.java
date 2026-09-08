@@ -28,16 +28,6 @@ public class MagicInterference {
      * @param shipVariant Variant of the ship affected by the interference debuff
      */
     public static void applyInterference(ShipVariantAPI shipVariant) {
-        ApplyInterference(shipVariant);
-    }
-
-    /**
-     * Reduces a ship's passive dissipation if more than one weapon causing interferences is installed. The strength of the effect has a quadratic growth with the number of such weapons installed.
-     *
-     * @param shipVariant Variant of the ship affected by the interference debuff
-     * @deprecated use applyInterference instead (follows proper naming convention)
-     */
-    public static void ApplyInterference(ShipVariantAPI shipVariant) {
         //get interference data
         if (RATES.isEmpty() || Global.getSettings().isDevMode()) {
             loadInterference();
@@ -50,6 +40,17 @@ public class MagicInterference {
         } else if (shipVariant.getHullMods().contains(INTERFERENCE_HULLMOD)) {
             shipVariant.getHullMods().remove(INTERFERENCE_HULLMOD);
         }
+    }
+
+    /**
+     * Reduces a ship's passive dissipation if more than one weapon causing interferences is installed. The strength of the effect has a quadratic growth with the number of such weapons installed.
+     *
+     * @param shipVariant Variant of the ship affected by the interference debuff
+     * @deprecated use applyInterference instead (follows proper naming convention)
+     */
+    @Deprecated
+    public static void ApplyInterference(ShipVariantAPI shipVariant) {
+        applyInterference(shipVariant);
     }
 
 

@@ -31,6 +31,7 @@ class ExplosionOcclusionRaycast: DamageTakenModifier {
 
 
         if (param is DamagingExplosion || param is MissileAPI){
+            @Suppress("UNCHECKED_CAST")
             val explosionMaps = parent.customData[EXPLOSION_RAYCAST_MAPS] as MutableMap<DamagingProjectileAPI, Map<String, Float>>
             val explosionMap = explosionMaps.firstNotNullOfOrNull { (dp, em) ->
                 if (dp === param) em
@@ -48,6 +49,7 @@ class ExplosionOcclusionRaycast: DamageTakenModifier {
     fun generateExplosionRayhitMap(projectile: DamagingProjectileAPI, damage: DamageAPI, parent: ShipAPI): Map<String, Float>{
         if (projectile !is DamagingExplosion && projectile !is MissileAPI) return mapOf() // should never happen
 
+        @Suppress("UNCHECKED_CAST")
         val explosionMaps = parent.customData[EXPLOSION_RAYCAST_MAPS] as MutableMap<DamagingProjectileAPI, Map<String, Float>>
         if (projectile in explosionMaps) return explosionMaps[projectile]!! // should also never happen, just in case
 

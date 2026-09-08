@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI
 
 class MemberMemoryStore {
     // Member ID -> MemberMemory
+    @Suppress("DEPRECATION")
     @Deprecated("TODO: remove on 0.98.5a")
     private val members: MutableMap<String, MemberMemory> = mutableMapOf()
 

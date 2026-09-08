@@ -282,6 +282,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         private fun loadNotifiedBounties() {
             bountiesThatUserHasBeenNotifiedForV2.clear()
             if (Global.getSector().persistentData.containsKey(NOTIFIED_BOUNTY_KEY)) {
+                @Suppress("UNCHECKED_CAST")
                 bountiesThatUserHasBeenNotifiedForV2.addAll(Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>)
             }
         }

@@ -296,7 +296,7 @@ public class MagicBountyHVB {
                             //int target_elite_skills,
                             -1,
                             //SkillPickPreference target_skill_preference,
-                            OfficerManagerEvent.SkillPickPreference.GENERIC,
+                            OfficerManagerEvent.SkillPickPreference.ANY,
                             //Map <String,Integer> target_skills,
                             null,
                             //String fleet_name,
@@ -435,12 +435,12 @@ public class MagicBountyHVB {
         for (MutableCharacterStatsAPI.SkillLevelAPI skill : knownSkills) {
             String skillName = skill.getSkill().getId();
             switch (skillName) {
-                case Skills.WEAPON_DRILLS:
+                /*case Skills.WEAPON_DRILLS:
                     picker.add(MagicTxt.getString("mb_hvb_skillWD"));
                     break;
                 case Skills.AUXILIARY_SUPPORT:
                     picker.add(MagicTxt.getString("mb_hvb_skillAS"));
-                    break;
+                    break;*/
                 case Skills.COORDINATED_MANEUVERS:
                     picker.add(MagicTxt.getString("mb_hvb_skillCM"));
                     break;
