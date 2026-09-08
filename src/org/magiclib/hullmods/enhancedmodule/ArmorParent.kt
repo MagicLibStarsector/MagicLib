@@ -9,7 +9,6 @@ import com.fs.starfarer.api.combat.listeners.AdvanceableListener
 import com.fs.starfarer.api.combat.listeners.ApplyDamageResultAPI
 import com.fs.starfarer.api.combat.listeners.DamageListener
 import com.fs.starfarer.api.combat.listeners.HullDamageAboutToBeTakenListener
-import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import org.lwjgl.util.vector.Vector2f
 
 /**
@@ -35,22 +34,23 @@ class ArmorParent: BaseHullMod() {
         ship.addTag(MODULE_LISTENERS_ADDED)
 
         ship.parentStation?.let { parent -> // Apply to parent if module
+            if (!ship.hasListenerOfClass(ArmorModuleChild::class.java)) ship.addListener(ArmorModuleChild(ship))
+
             if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
-                parent.addListener(ExplosionOcclusionRaycast(parent))
+                parent.addListener(ExplosionOcclusionRaycast())
 
                 parent.childModulesCopy.forEach {
-                    if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast(it))
+                    if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
+                    if (!it.hullSpec.isBuiltInMod(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.NO_BLOCK_OCCLUSION)
                 }
             }
-
-            if (!ship.hasListenerOfClass(ArmorModuleChild::class.java)) ship.addListener(ArmorModuleChild(ship))
         }
         if(ship.childModulesCopy.isNotEmpty()) {
-            if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast(ship))
+            if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast())
 
             ship.childModulesCopy.forEach { module -> // Apply to children if parent
                 if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
-                if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast(ship))
+                if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast())
             }
         }
     }
