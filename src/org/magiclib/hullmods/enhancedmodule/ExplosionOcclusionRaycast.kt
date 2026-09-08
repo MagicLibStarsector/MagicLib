@@ -3,6 +3,7 @@ package org.magiclib.hullmods.enhancedmodule
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.combat.listeners.DamageTakenModifier
+import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.combat.entities.DamagingExplosion
 import org.lazywizard.lazylib.CollisionUtils
@@ -14,12 +15,12 @@ import kotlin.collections.iterator
 import kotlin.math.max
 import kotlin.math.min
 
-class ExplosionOcclusionRaycast: DamageTakenModifier {
+class ExplosionOcclusionRaycast(private val owner: ShipAPI): DamageTakenModifier {
     companion object {
         const val EXPLOSION_RAYCAST_MAPS = "explosion_raycast"
         const val OCCLUSION_MODIFIER = "occlusion_modifier"
         const val DELETE_TIME = "delete_time"
-        const val IGNORE_OCCULSION = "ignore_occlusion"
+        //const val IGNORE_OCCULSION = "ignore_occlusion"
         const val NUM_RAYCASTS = 36;
     }
 
@@ -64,7 +65,8 @@ class ExplosionOcclusionRaycast: DamageTakenModifier {
 
         val radius = projectile.explosionSpecIfExplosion?.radius ?: (projectile as MissileAPI).spec.explosionRadius
 
-        val potentialOcclusions = (parent.childModulesCopy.filterNot { it.hasTag(IGNORE_OCCULSION) } + listOf(parent)).toMutableList()
+        val potentialOcclusions = ((parent.childModulesCopy + listOf(parent))
+                ).toMutableList()
         potentialOcclusions.retainAll {
             val maxDistance = radius + Misc.getTargetingRadius(projectile.location, it, false)
             Misc.getDistanceSq(it.location, projectile.location) < maxDistance*maxDistance

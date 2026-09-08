@@ -9,6 +9,7 @@ import com.fs.starfarer.api.combat.listeners.AdvanceableListener
 import com.fs.starfarer.api.combat.listeners.ApplyDamageResultAPI
 import com.fs.starfarer.api.combat.listeners.DamageListener
 import com.fs.starfarer.api.combat.listeners.HullDamageAboutToBeTakenListener
+import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import org.lwjgl.util.vector.Vector2f
 
 /**
@@ -29,7 +30,7 @@ class ArmorParent: BaseHullMod() {
     }
 
     override fun applyEffectsAfterShipCreation(ship: ShipAPI, id: String?) {
-        if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast())
+        if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast(ship))
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
@@ -38,15 +39,21 @@ class ArmorParent: BaseHullMod() {
         ship.addTag(MODULE_LISTENERS_ADDED)
 
         ship.parentStation?.let { parent -> // Apply to parent if module
-            if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
-                parent.childModulesCopy.forEach { it.addTag(ExplosionOcclusionRaycast.IGNORE_OCCULSION) }
-                parent.addListener(ExplosionOcclusionRaycast())
+            if (!parent.hasTag(MODULE_LISTENERS_ADDED)) {
+                parent.addTag(MODULE_LISTENERS_ADDED)
+
+                /*parent.childModulesCopy.forEach {
+                    if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
+                }*/
+
+                if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) parent.addListener(ExplosionOcclusionRaycast(parent))
             }
-            ship.removeTag(ExplosionOcclusionRaycast.IGNORE_OCCULSION)
+
             if (!ship.hasListenerOfClass(ArmorModuleChild::class.java)) ship.addListener(ArmorModuleChild(ship))
+            //if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast(ship))
         } ?: ship.childModulesCopy.forEach { module -> // Apply to children if parent
             if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
-            if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast())
+            if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast(ship))
         }
     }
 
