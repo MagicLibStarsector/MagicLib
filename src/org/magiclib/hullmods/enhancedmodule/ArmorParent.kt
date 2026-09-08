@@ -29,31 +29,29 @@ class ArmorParent: BaseHullMod() {
         const val HULL_MOD_ID = "ML_enhancedArmorParent"
     }
 
-    override fun applyEffectsAfterShipCreation(ship: ShipAPI, id: String?) {
-        if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast(ship))
-    }
-
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
         if((ship.childModulesCopy.isEmpty() && ship.parentStation == null) || ship.hasTag(MODULE_LISTENERS_ADDED)) return
 
         ship.addTag(MODULE_LISTENERS_ADDED)
 
         ship.parentStation?.let { parent -> // Apply to parent if module
-            if (!parent.hasTag(MODULE_LISTENERS_ADDED)) {
-                parent.addTag(MODULE_LISTENERS_ADDED)
+            if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
+                parent.addListener(ExplosionOcclusionRaycast(parent))
 
-                /*parent.childModulesCopy.forEach {
-                    if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
-                }*/
-
-                if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) parent.addListener(ExplosionOcclusionRaycast(parent))
+                parent.childModulesCopy.forEach {
+                    if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast(it))
+                }
             }
 
             if (!ship.hasListenerOfClass(ArmorModuleChild::class.java)) ship.addListener(ArmorModuleChild(ship))
-            //if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast(ship))
-        } ?: ship.childModulesCopy.forEach { module -> // Apply to children if parent
-            if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
-            if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast(ship))
+        }
+        if(ship.childModulesCopy.isNotEmpty()) {
+            if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast(ship))
+
+            ship.childModulesCopy.forEach { module -> // Apply to children if parent
+                if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
+                if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast(ship))
+            }
         }
     }
 

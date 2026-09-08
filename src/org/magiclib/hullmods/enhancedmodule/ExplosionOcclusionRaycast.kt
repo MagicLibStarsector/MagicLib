@@ -9,6 +9,7 @@ import com.fs.starfarer.combat.entities.DamagingExplosion
 import org.lazywizard.lazylib.CollisionUtils
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.hullmods.enhancedmodule.ArmorParent.ArmorModuleChild
 import org.magiclib.util.internal.MiscellaneousUtil.damageAfterArmor
 import org.magiclib.util.internal.MiscellaneousUtil.isCloseTo
 import kotlin.collections.iterator
@@ -27,6 +28,7 @@ class ExplosionOcclusionRaycast(private val owner: ShipAPI): DamageTakenModifier
     override fun modifyDamageTaken(param: Any?, target: CombatEntityAPI, damage: DamageAPI, point: Vector2f, shieldHit: Boolean): String? {
         if (param !is DamagingProjectileAPI) return null
         val ship = target as? ShipAPI ?: return null
+
         val parent = ship.parentStation ?: ship
         if(parent.customData[EXPLOSION_RAYCAST_MAPS] == null)
             parent.setCustomData(EXPLOSION_RAYCAST_MAPS, mutableMapOf<DamagingProjectileAPI, Map<String, Float>>())
@@ -65,8 +67,7 @@ class ExplosionOcclusionRaycast(private val owner: ShipAPI): DamageTakenModifier
 
         val radius = projectile.explosionSpecIfExplosion?.radius ?: (projectile as MissileAPI).spec.explosionRadius
 
-        val potentialOcclusions = ((parent.childModulesCopy + listOf(parent))
-                ).toMutableList()
+        val potentialOcclusions = ((parent.childModulesCopy + listOf(parent))).toMutableList()
         potentialOcclusions.retainAll {
             val maxDistance = radius + Misc.getTargetingRadius(projectile.location, it, false)
             Misc.getDistanceSq(it.location, projectile.location) < maxDistance*maxDistance
@@ -85,7 +86,7 @@ class ExplosionOcclusionRaycast(private val owner: ShipAPI): DamageTakenModifier
         val rayEndpoints = MathUtils.getPointsAlongCircumference(projectile.location, radius, NUM_RAYCASTS, 0f);
 
         var totalRayHits = 0
-        for (endpoint in rayEndpoints){
+        for (endpoint in rayEndpoints) {
             var closestTarget: ShipAPI? = null
             var targetDistanceSq = Float.POSITIVE_INFINITY
             for (potentialOcclusion in potentialOcclusions) { // for each ray loop past all occlusions
