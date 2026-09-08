@@ -391,16 +391,26 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
             val dis = activeBountyLocal.spec.job_show_distance
             if(dis != ShowDistance.Distance && dis != ShowDistance.None// && dis != ShowDistance.Vague
                 ) {
+                val constellation: Constellation? = activeBountyLocal.fleet.constellation
 
                 var location: SectorEntityToken? = null
                 if(dis == ShowDistance.Exact || dis == ShowDistance.System) {
                     val system = activeBountyLocal.fleet.containingLocation as? StarSystemAPI
-                    if(system != null)
+                    if(system != null) {
                         location = Misc.getDistressJumpPoint(system)
-                } else {
-                    val constellation = activeBountyLocal.fleet.constellation
-                    if(constellation != null)
+                    }
+                    if(location == null && constellation != null) { // If location is still null, maybe there isn't a jump point? Point at the constellation instead.
                         location = createConstellationCenterToken(constellation)
+                    }
+                } else {
+                    if(constellation != null) {
+                        location = createConstellationCenterToken(constellation)
+                    } else {
+                        // If the constellation is null, point directly at the system. This usually occurs when the bounty is inside the core worlds and thus isn't considered in any constellation.
+                        val system = activeBountyLocal.fleet.containingLocation as? StarSystemAPI
+                        if(system != null)
+                            location = Misc.getDistressJumpPoint(system)
+                    }
                 }
 
                 if(location != null) {
