@@ -415,7 +415,7 @@ public class MagicAchievementManager {
                     throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
                 }
 
-                MagicAchievement magicAchievement = (MagicAchievement) commandClass.getDeclaredConstructor().newInstance();
+                @SuppressWarnings("deprecation") MagicAchievement magicAchievement = (MagicAchievement) commandClass.newInstance();
                 magicAchievement.spec = spec;
                 newAchievementsById.put(spec.getId(), magicAchievement);
                 logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + script + ".");
