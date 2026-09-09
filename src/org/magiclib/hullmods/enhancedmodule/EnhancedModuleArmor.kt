@@ -19,13 +19,13 @@ import org.lwjgl.util.vector.Vector2f
  *
  * If this hull-mod is applied to a module, it will only function on that specific module.
  */
-class ArmorParent: BaseHullMod() {
+class EnhancedModuleArmor: BaseHullMod() {
     companion object {
         const val MODULE_DEAD = "module_dead"
         const val MODULE_HULKED = "module_hulked"
         const val MODULE_LISTENERS_ADDED = "module_listeners_added"
 
-        const val HULL_MOD_ID = "ML_enhancedArmorParent"
+        const val HULL_MOD_ID = "ML_enhancedModuleArmor"
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
