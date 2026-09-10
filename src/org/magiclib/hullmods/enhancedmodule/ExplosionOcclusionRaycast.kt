@@ -24,6 +24,8 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
     }
 
     override fun modifyDamageTaken(param: Any?, target: CombatEntityAPI, damage: DamageAPI, point: Vector2f, shieldHit: Boolean): String? {
+        if (shieldHit) return null // Shields are not accounted for in raycasts, so hits may incorrectly pass through to blocking modules behind them. Thus, ignore shield hits.
+
         if (param !is DamagingProjectileAPI) return null
         val ship = target as? ShipAPI ?: return null
 
