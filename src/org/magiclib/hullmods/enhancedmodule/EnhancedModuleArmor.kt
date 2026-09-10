@@ -9,6 +9,7 @@ import com.fs.starfarer.api.combat.listeners.AdvanceableListener
 import com.fs.starfarer.api.combat.listeners.ApplyDamageResultAPI
 import com.fs.starfarer.api.combat.listeners.DamageListener
 import com.fs.starfarer.api.combat.listeners.HullDamageAboutToBeTakenListener
+import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import org.lwjgl.util.vector.Vector2f
 
 /**
@@ -38,15 +39,17 @@ class EnhancedModuleArmor: BaseHullMod() {
 
             if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
                 parent.addListener(ExplosionOcclusionRaycast())
+                if(parent.variant.hasHullMod(HullMods.VASTBULK)) parent.addTag(ExplosionOcclusionRaycast.NO_BLOCK_OCCLUSION)
 
                 parent.childModulesCopy.forEach {
                     if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
-                    if (!it.hullSpec.isBuiltInMod(HULL_MOD_ID) && !it.variant.hullMods.contains(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.NO_BLOCK_OCCLUSION)
+                    if (!it.hullSpec.isBuiltInMod(HULL_MOD_ID) && !it.variant.hasHullMod(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.NO_BLOCK_OCCLUSION)
                 }
             }
         }
         if(ship.childModulesCopy.isNotEmpty()) {
             if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast())
+            if(ship.variant.hasHullMod(HullMods.VASTBULK)) ship.addTag(ExplosionOcclusionRaycast.NO_BLOCK_OCCLUSION)
 
             ship.childModulesCopy.forEach { module -> // Apply to children if parent
                 if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))

@@ -58,14 +58,18 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
 
         val currentTime = Global.getCombatEngine().getTotalElapsedTime(false)
         // remove all stale values
-        explosionMaps.entries.retainAll { (_, em) -> em[DELETE_TIME]!! < currentTime }
+        explosionMaps.entries.retainAll { (_, em) -> em[DELETE_TIME]!! >= currentTime }
 
         // make new entry
         val explosionMap = mutableMapOf<String, Float>()
         explosionMaps[projectile] = explosionMap
         explosionMap[DELETE_TIME] = currentTime + 0.1f
 
-        val radius = projectile.explosionSpecIfExplosion?.radius ?: (projectile as MissileAPI).spec.explosionRadius
+        val radius = when (projectile) {
+            is DamagingExplosion -> projectile.explosionSpecIfExplosion?.radius ?: 0f
+            is MissileAPI -> projectile.spec.explosionRadius
+            else -> 0f
+        }
 
         val allInRange = (parent.childModulesCopy + listOf(parent)).filter {
             val maxDistance = radius + Misc.getTargetingRadius(projectile.location, it, false)
@@ -80,7 +84,7 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         }
 
         val (blockingModules, nonBlockingModules) = allInRange.partition {
-            it === parent || !it.hasTag(NO_BLOCK_OCCLUSION)
+            !it.hasTag(NO_BLOCK_OCCLUSION)
         }
 
         val rayEndpoints = MathUtils.getPointsAlongCircumference(projectile.location, radius, NUM_RAYCASTS, 0f)
