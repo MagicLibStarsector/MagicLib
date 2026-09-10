@@ -259,25 +259,26 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
         private val bountiesThatUserHasBeenNotifiedForV2 = mutableSetOf<String>()
         val bountiesThatUserHasBeenNotifiedFor: Set<String>
-            get() = bountiesThatUserHasBeenNotifiedForV2
+            get() = bountiesThatUserHasBeenNotifiedForV2.toSet()
         fun hasNotifiedBounty(bountyID: String): Boolean =
             bountiesThatUserHasBeenNotifiedForV2.contains(bountyID)
         /**
          * Removes the bounty from the list of bounties that have been notified to the user.
          */
         fun removeNotifiedBounty(bountyID: String) {
-            bountiesThatUserHasBeenNotifiedForV2.remove(bountyID)
-            saveNotifiedBounties()
+            if(bountiesThatUserHasBeenNotifiedForV2.remove(bountyID))
+                saveNotifiedBounties()
         }
         /**
-         * Adds the bounty to the list of bounties that have been notified to the user. This does not notify the user with a message, it only adds it to the list as if it did.
+         * Adds the bounty to the list of bounties that have been notified to the user.
+         * This does not notify the user with a message, it only adds it to the list as if it did.
          */
         fun addNotifiedBounty(bountyID: String) {
-            bountiesThatUserHasBeenNotifiedForV2.add(bountyID)
-            saveNotifiedBounties()
+            if(bountiesThatUserHasBeenNotifiedForV2.add(bountyID))
+                saveNotifiedBounties()
         }
         private fun saveNotifiedBounties() {
-            Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedForV2
+            Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedForV2.toSet()
         }
         private fun loadNotifiedBounties() {
             bountiesThatUserHasBeenNotifiedForV2.clear()
