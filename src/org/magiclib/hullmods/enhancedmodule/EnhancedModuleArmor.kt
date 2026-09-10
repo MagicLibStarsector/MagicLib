@@ -39,27 +39,28 @@ class EnhancedModuleArmor: BaseHullMod() {
 
             if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
                 parent.addListener(ExplosionOcclusionRaycast())
-                if(parent.variant.hasHullMod(HullMods.VASTBULK)) parent.addTag(ExplosionOcclusionRaycast.NO_OCCLUSION)
-                else parent.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                if (parent.variant.hasHullMod(HullMods.VASTBULK))
+                    parent.addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
+                else
+                    parent.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
 
                 parent.childModulesCopy.forEach {
                     if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
 
                     if (!it.variant.hasHullMod(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
-                    if (it.variant.hasHullMod(HullMods.VASTBULK)) it.addTag(ExplosionOcclusionRaycast.NO_OCCLUSION)
                 }
             }
         }
         if(ship.childModulesCopy.isNotEmpty()) {
             if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast())
-            if(ship.variant.hasHullMod(HullMods.VASTBULK)) ship.addTag(ExplosionOcclusionRaycast.NO_OCCLUSION)
-            else ship.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+            if (ship.variant.hasHullMod(HullMods.VASTBULK))
+                ship.addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
+            else
+                ship.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
 
             ship.childModulesCopy.forEach { module -> // Apply to children if parent
                 if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
                 if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast())
-
-                if (module.variant.hasHullMod(HullMods.VASTBULK)) module.addTag(ExplosionOcclusionRaycast.NO_OCCLUSION)
             }
         }
     }

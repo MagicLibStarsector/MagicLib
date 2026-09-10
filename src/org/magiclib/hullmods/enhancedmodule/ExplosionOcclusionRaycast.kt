@@ -19,8 +19,12 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         const val EXPLOSION_RAYCAST_MAPS = "explosion_raycast"
         const val OCCLUSION_MODIFIER = "occlusion_modifier"
         const val DELETE_TIME = "delete_time"
-        const val PASS_THROUGH_OCCLUSION = "pass_through_occlusion"
+        const val PASS_THROUGH_OCCLUSION = "pass_through_occlusion" // Allow raycast to pass through and apply damage through this module
+            // This is intended for use on non armor modules which you want explosions to pass through. Like the base-game, except damage is reduced depending on how much of the module is hit in comparison to other modules.
+        const val DEDUCT_FIRST_HIT_RAYCAST = "deduct_first_hit_raycast" // If raycast hit this module first, deduct 1 from the total ray hits to preserve the correct damage amount for other modules as if this module was not hit.
+            // This is intended for use on modules that take 0 damage, such as station vast bulk modules. As to not 'waste' damage on modules that don't take damage anyway.
         const val NO_OCCLUSION = "no_occlusion" // Damage is always 1f, no raycasts are performed, raycasts cannot see this. This is simply excluded.
+            // Base-game behavior, completely ignore occlusion logic.
         const val NUM_RAYCASTS = 36;
     }
 
@@ -89,42 +93,41 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
             return explosionMap
         }
 
-        val (blockingModules, passthroughModules) = allInRange.partition {
-            !it.hasTag(PASS_THROUGH_OCCLUSION)
-        }
+        // Modules that stop a ray outright. Everything else still takes a hit when a ray crosses it,
+        // but lets that ray continue on to whatever's behind it.
+        val blockingModules = allInRange.filterNot { it.hasTag(PASS_THROUGH_OCCLUSION) }.toSet()
 
         val rayEndpoints = MathUtils.getPointsAlongCircumference(projectile.location, radius, NUM_RAYCASTS, 0f)
 
-        // For each ray, find the closest blocking/parent occluder (if any) and how far away it hit -
-        // that's the distance a IGNORE_OCCLUSION module has to beat to count as exposed on that ray.
-        val rayBlockDistSq = FloatArray(NUM_RAYCASTS) { Float.POSITIVE_INFINITY }
         val hitsMap = mutableMapOf<ShipAPI, Int>()
         var totalRayHits = 0
 
-        if (blockingModules.isNotEmpty()) {
-            for (i in rayEndpoints.indices) {
-                val endpoint = rayEndpoints[i]
-                var closestTarget: ShipAPI? = null
-                var closestDistSq = Float.POSITIVE_INFINITY
-                for (module in blockingModules) {  // for each ray loop past all blocking occlusions
+        for (endpoint in rayEndpoints) {
+            // every module this ray crosses, nearest first
+            val collisions = allInRange
+                .mapNotNull { module ->
                     val pointOnBounds = CollisionUtils.getCollisionPoint(projectile.location, endpoint, module)
-                    if (pointOnBounds != null) {
-                        val occlusionDistanceSq = Misc.getDistanceSq(projectile.location, pointOnBounds)
-                        if (occlusionDistanceSq < closestDistSq) { // check the distance, if its shorter remember it
-                            closestTarget = module
-                            closestDistSq = occlusionDistanceSq
-                        }
-                    }
+                    pointOnBounds?.let { module to Misc.getDistanceSq(projectile.location, it) }
                 }
-                rayBlockDistSq[i] = closestDistSq
-                if (closestTarget != null) {
-                    totalRayHits++
-                    hitsMap[closestTarget] = hitsMap.getOrDefault(closestTarget, 0) + 1
-                }
+                .sortedBy { it.second }
+
+            if (collisions.isEmpty()) continue
+
+            totalRayHits++
+
+            for ((index, pair) in collisions.withIndex()) {
+                val module = pair.first
+
+                hitsMap[module] = hitsMap.getOrDefault(module, 0) + 1 // Hit!
+                if(index == 0 && module.hasTag(DEDUCT_FIRST_HIT_RAYCAST)) totalRayHits--
+                if (module in blockingModules) break // blocked here, ray goes no further
+                // else: pass-through module took a hit, but the ray keeps traveling
             }
         }
 
-        // resolve how much damage each blocking module / the parent hull itself takes
+        // Task: overkill damage should affect modules too, not just the parent.
+
+        // resolve how much damage each hit module / the parent hull itself takes
         if (hitsMap.size == 1) {
             explosionMap[hitsMap.keys.first().id] = 1f
         } else if (hitsMap.isNotEmpty()) {
@@ -144,26 +147,6 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
             val parentDamageMult = if (parent !in hitsMap) 0f
             else min(1f, max(hitsMap[parent]!! / totalRayHits.toFloat(), hitsMap[parent]!! / (NUM_RAYCASTS/2).toFloat()))
             explosionMap[parent.id] = min(((projectile.damageAmount * parentDamageMult) + overkillDamage) / projectile.damageAmount, 1f)
-        }
-
-        // Non-blocking modules never occlude anything,
-        // but they can still be shielded by a blocker that's closer to the explosion than they are on a given ray.
-        for (module in passthroughModules) {
-            var reachableRays = 0
-            var unobstructedRays = 0
-            for ((rayIndex, endpoint) in rayEndpoints.withIndex()) {
-                val pointOnBounds = CollisionUtils.getCollisionPoint(projectile.location, endpoint, module) ?: continue
-                reachableRays++
-                if (Misc.getDistanceSq(projectile.location, pointOnBounds) < rayBlockDistSq[rayIndex]) unobstructedRays++
-            }
-
-            if (reachableRays == 0) {
-                explosionMap[module.id] = 0f // no comparison to make here
-                continue
-            }
-
-            val rayBudget = totalRayHits + reachableRays // Tally amount of reached rays across blocking and un-blocking modules
-            explosionMap[module.id] = unobstructedRays / rayBudget.toFloat()
         }
 
         return explosionMap
