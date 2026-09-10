@@ -19,7 +19,8 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         const val EXPLOSION_RAYCAST_MAPS = "explosion_raycast"
         const val OCCLUSION_MODIFIER = "occlusion_modifier"
         const val DELETE_TIME = "delete_time"
-        const val NO_BLOCK_OCCLUSION = "no_block_occlusion"
+        const val PASS_THROUGH_OCCLUSION = "pass_through_occlusion"
+        const val NO_OCCLUSION = "no_occlusion" // Damage is always 1f, no raycasts are performed, raycasts cannot see this. This is simply excluded.
         const val NUM_RAYCASTS = 36;
     }
 
@@ -72,8 +73,13 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         }
 
         val allInRange = (parent.childModulesCopy + listOf(parent)).filter {
-            val maxDistance = radius + Misc.getTargetingRadius(projectile.location, it, false)
-            Misc.getDistanceSq(it.location, projectile.location) < maxDistance*maxDistance
+            if(it.hasTag(NO_OCCLUSION)) {
+                explosionMap[it.id] = 1f
+                false
+            } else {
+                val maxDistance = radius + Misc.getTargetingRadius(projectile.location, it, false)
+                Misc.getDistanceSq(it.location, projectile.location) < maxDistance * maxDistance
+            }
         }
 
         // easy cases
@@ -83,8 +89,8 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
             return explosionMap
         }
 
-        val (blockingModules, nonBlockingModules) = allInRange.partition {
-            !it.hasTag(NO_BLOCK_OCCLUSION)
+        val (blockingModules, passthroughModules) = allInRange.partition {
+            !it.hasTag(PASS_THROUGH_OCCLUSION)
         }
 
         val rayEndpoints = MathUtils.getPointsAlongCircumference(projectile.location, radius, NUM_RAYCASTS, 0f)
@@ -110,8 +116,8 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
                         }
                     }
                 }
+                rayBlockDistSq[i] = closestDistSq
                 if (closestTarget != null) {
-                    rayBlockDistSq[i] = closestDistSq
                     totalRayHits++
                     hitsMap[closestTarget] = hitsMap.getOrDefault(closestTarget, 0) + 1
                 }
@@ -122,6 +128,7 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         if (hitsMap.size == 1) {
             explosionMap[hitsMap.keys.first().id] = 1f
         } else if (hitsMap.isNotEmpty()) {
+            // Note: this implementation does not account for overkill damage for any other module than the parent.
             var overkillDamage = 0f
             for ((occlusion, rayHits) in hitsMap) {
                 if (occlusion === parent) continue // special case the parent
@@ -139,18 +146,24 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
             explosionMap[parent.id] = min(((projectile.damageAmount * parentDamageMult) + overkillDamage) / projectile.damageAmount, 1f)
         }
 
-        // resolve non-blocking modules: exposed on at least one ray (nothing blocking closer) means
-        // full, unmodified damage; fully covered on every ray means a blocking occluder is completely blocking this explosion from reaching it.
-        for (module in nonBlockingModules) {
-            var exposed = false
-            for (i in rayEndpoints.indices) {
-                val pointOnBounds = CollisionUtils.getCollisionPoint(projectile.location, rayEndpoints[i], module)
-                if (pointOnBounds != null && Misc.getDistanceSq(projectile.location, pointOnBounds) < rayBlockDistSq[i]) {
-                    exposed = true
-                    break
-                }
+        // Non-blocking modules never occlude anything,
+        // but they can still be shielded by a blocker that's closer to the explosion than they are on a given ray.
+        for (module in passthroughModules) {
+            var reachableRays = 0
+            var unobstructedRays = 0
+            for ((rayIndex, endpoint) in rayEndpoints.withIndex()) {
+                val pointOnBounds = CollisionUtils.getCollisionPoint(projectile.location, endpoint, module) ?: continue
+                reachableRays++
+                if (Misc.getDistanceSq(projectile.location, pointOnBounds) < rayBlockDistSq[rayIndex]) unobstructedRays++
             }
-            explosionMap[module.id] = if (exposed) 1f else 0f
+
+            if (reachableRays == 0) {
+                explosionMap[module.id] = 0f // no comparison to make here
+                continue
+            }
+
+            val rayBudget = totalRayHits + reachableRays // Tally amount of reached rays across blocking and un-blocking modules
+            explosionMap[module.id] = unobstructedRays / rayBudget.toFloat()
         }
 
         return explosionMap
