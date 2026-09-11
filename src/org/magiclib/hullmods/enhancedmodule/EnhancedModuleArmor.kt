@@ -47,7 +47,8 @@ class EnhancedModuleArmor: BaseHullMod() {
                 parent.childModulesCopy.forEach {
                     if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
 
-                    if (!it.variant.hasHullMod(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                    if (it.variant.hasHullMod(HullMods.VASTBULK)) it.addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
+                    else if (!it.variant.hasHullMod(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
                 }
             }
         }
