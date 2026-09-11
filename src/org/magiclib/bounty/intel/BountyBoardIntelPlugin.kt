@@ -24,7 +24,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
     //TODO: Remove on 0.98.5a
     @Transient
-    @Deprecated("Use bountiesThatUserHasBeenNotifiedForV2 instead")
+    @Deprecated("Use userNotifiedBountyIds instead")
     private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
 
     /** One day between bounty board refreshes. */
@@ -109,7 +109,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     }
 
     fun notifyUserThatBountyIsAvailable(bountyInfo: BountyInfo) {
-        addNotifiedBounty(bountyInfo.getBountyId())
+        userNotifiedBountyIds.add(bountyInfo.getBountyId())
 
         bountyInfo.notifiedUserThatBountyIsAvailable()
 
@@ -174,7 +174,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
         PROVIDERS
             .flatMap { it.getBounties() }
-            .filter { !bountiesThatUserHasBeenNotifiedForV2.contains(it.getBountyId()) }
+            .filter { !userNotifiedBountyIds.contains(it.getBountyId()) }
             .firstOrNull { it.shouldShow() }
             ?.let {
                 notifyUserThatBountyIsAvailable(it)
@@ -257,34 +257,15 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         var MAX_MAGIC_PERSONAL_BOUNTIES = 2
         private const val CURR_MAX_PERSONAL_BOUNTIES_KEY = "\$ML_currMaxPersonalBounties"
 
-        private val bountiesThatUserHasBeenNotifiedForV2 = mutableSetOf<String>()
-        val bountiesThatUserHasBeenNotifiedFor: Set<String>
-            get() = bountiesThatUserHasBeenNotifiedForV2.toSet()
-        fun hasNotifiedBounty(bountyID: String): Boolean =
-            bountiesThatUserHasBeenNotifiedForV2.contains(bountyID)
-        /**
-         * Removes the bounty from the list of bounties that have been notified to the user.
-         */
-        fun removeNotifiedBounty(bountyID: String) {
-            if(bountiesThatUserHasBeenNotifiedForV2.remove(bountyID))
-                saveNotifiedBounties()
-        }
-        /**
-         * Adds the bounty to the list of bounties that have been notified to the user.
-         * This does not notify the user with a message, it only adds it to the list as if it did.
-         */
-        fun addNotifiedBounty(bountyID: String) {
-            if(bountiesThatUserHasBeenNotifiedForV2.add(bountyID))
-                saveNotifiedBounties()
-        }
-        private fun saveNotifiedBounties() {
-            Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedForV2.toSet()
-        }
+        @JvmStatic
+        var userNotifiedBountyIds: MutableSet<String> = mutableSetOf()
+            private set
+
         private fun loadNotifiedBounties() {
-            bountiesThatUserHasBeenNotifiedForV2.clear()
-            if (Global.getSector().persistentData.containsKey(NOTIFIED_BOUNTY_KEY)) {
-                @Suppress("UNCHECKED_CAST")
-                bountiesThatUserHasBeenNotifiedForV2.addAll(Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>)
+            @Suppress("UNCHECKED_CAST")
+            val existing = Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as? MutableSet<String>
+            userNotifiedBountyIds = existing ?: mutableSetOf<String>().also {
+                Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = it
             }
         }
 

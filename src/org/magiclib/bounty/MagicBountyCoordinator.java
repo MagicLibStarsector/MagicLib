@@ -194,10 +194,10 @@ public final class MagicBountyCoordinator {
                 if(isRepeatable == null) {
                     getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
                 } else if(isRepeatable.equals("always")) {
-                    BountyBoardIntelPlugin.Companion.removeNotifiedBounty(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                    BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
                 } else if(isRepeatable.equals("if_expired")) {
                     if(activeBounty.getStage() == ActiveBounty.Stage.ExpiredAfterAccepting || activeBounty.getStage() == ActiveBounty.Stage.ExpiredWithoutAccepting)
-                        BountyBoardIntelPlugin.Companion.removeNotifiedBounty(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                        BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
                     else
                         getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
                 }
@@ -535,7 +535,7 @@ public final class MagicBountyCoordinator {
                 activeBounty.endBounty(reason); // Call the end method
             getActiveBounties().remove(bountyKey); // Remove active bounty
             getCompletedBounties().remove(bountyKey); // Allow bounty to be created again.
-            BountyBoardIntelPlugin.Companion.removeNotifiedBounty(bountyKey); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+            BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(bountyKey); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
         }
     }
 
@@ -575,7 +575,7 @@ public final class MagicBountyCoordinator {
             // Then remove it from the list.
             getCompletedBounties().remove(bountyKey);
             // Then remove the player being notified of it.
-            BountyBoardIntelPlugin.Companion.removeNotifiedBounty(bountyKey);
+            BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(bountyKey);
             // Then reload.
             MagicBountyLoader.loadBountiesFromJSON(false);
         } else {
