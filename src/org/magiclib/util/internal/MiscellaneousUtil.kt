@@ -1,5 +1,6 @@
 package org.magiclib.util.internal
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ArmorGridAPI
 import com.fs.starfarer.api.combat.DamageType
 import com.fs.starfarer.api.combat.MutableShipStatsAPI
@@ -276,5 +277,17 @@ internal object MiscellaneousUtil {
             linearSrgbToSrgb(-0.0041960863f * cubedL - 0.7034186147f * cubedM + 1.7076147010f * cubedS).coerceIn(0f, 1f),
             ((alpha ?: 255) / 255f).coerceIn(0f, 1f)
         )
+    }
+
+    /**
+     * This class exists purely to encapsulate the deprecation of `Class.newInstance()`,
+     * which is used in the game code.
+     *
+     * While `Class.getDeclaredConstructor().newInstance()` should be used instead, it causes a file access / reflection exception and crashes the game.
+     */
+    @Suppress("DEPRECATION")
+    @JvmStatic
+    internal fun newInstance(inputClass: Class<*>): Any {
+        return inputClass.newInstance()
     }
 }

@@ -18,6 +18,7 @@ import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.kotlin.MagicKotlinExtKt;
 import org.magiclib.util.*;
+import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.*;
 
@@ -370,9 +371,7 @@ public class MagicBountyLoader {
         BountyBoardIntelPlugin.Companion.getPROVIDERS().clear();
         try {
             for (String className : MagicSettings.getList(MagicVariables.MAGICLIB_ID, "bountyProviders")) {
-                //noinspection deprecation
-                BountyBoardIntelPlugin.Companion.addProvider((BountyBoardProvider)
-                        Global.getSettings().getScriptClassLoader().loadClass(className).newInstance());
+                BountyBoardIntelPlugin.Companion.addProvider((BountyBoardProvider) MiscellaneousUtil.newInstance$MagicLib(Global.getSettings().getScriptClassLoader().loadClass(className)));
             }
         } catch (Throwable ex) {
             throw new RuntimeException(ex);

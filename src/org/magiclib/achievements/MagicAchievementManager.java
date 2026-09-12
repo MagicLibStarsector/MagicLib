@@ -18,6 +18,7 @@ import org.magiclib.LunaWrapper;
 import org.magiclib.LunaWrapperSettingsListener;
 import org.magiclib.util.MagicMisc;
 import org.magiclib.util.MagicVariables;
+import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.*;
 
@@ -415,7 +416,7 @@ public class MagicAchievementManager {
                     throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
                 }
 
-                @SuppressWarnings("deprecation") MagicAchievement magicAchievement = (MagicAchievement) commandClass.newInstance();
+                MagicAchievement magicAchievement = (MagicAchievement) MiscellaneousUtil.newInstance$MagicLib(commandClass);
                 magicAchievement.spec = spec;
                 newAchievementsById.put(spec.getId(), magicAchievement);
                 logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + script + ".");
