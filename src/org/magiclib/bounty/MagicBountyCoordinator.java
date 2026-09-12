@@ -200,6 +200,11 @@ public final class MagicBountyCoordinator {
                         BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
                     else
                         getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
+                } else if(isRepeatable.equals("if_fail")) {
+                    if(activeBounty.getStage() != ActiveBounty.Stage.Succeeded && activeBounty.getStage() != ActiveBounty.Stage.Dismissed)
+                        BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                    else
+                        getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
                 }
             }
         }

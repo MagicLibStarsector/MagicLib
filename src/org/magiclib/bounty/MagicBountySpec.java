@@ -188,6 +188,7 @@ public class MagicBountySpec {
      * null: Default behavior. If this bounty is completed, expires, or is dismissed at any time. This bounty can never be taken again.
      * "always": This bounty can be infinitely repeated even after being destroyed or despawned for any reason.
      * "if_expired": This bounty only repeats if the bounty end reason is 'ExpiredAfterAccepting' or 'ExpiredWithoutAccepting'
+     * "if_fail": This bounty only repeats if the bounty end reason is not 'Succeeded' or 'Dismissed'
      */
     @Nullable
     public String job_repeatable;
