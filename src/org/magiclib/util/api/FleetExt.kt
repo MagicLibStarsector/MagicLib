@@ -2,6 +2,7 @@
 
 package org.magiclib.util.api
 
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetDataAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.RepairTrackerAPI
@@ -41,3 +42,9 @@ fun FleetDataAPI.repairAndRestoreCR() {
         member.setStatUpdateNeeded(true)
     }
 }
+
+/**
+ * Returns whether this fleet is currently placed somewhere in the sector, as opposed to existing in memory without a location.
+ */
+fun CampaignFleetAPI.isPresentInSector(): Boolean =
+    this.containingLocation != null

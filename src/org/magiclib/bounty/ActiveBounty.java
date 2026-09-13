@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicVariables;
+import org.magiclib.util.api.FleetUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -102,8 +103,6 @@ public final class ActiveBounty {
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
     private boolean droppedInBountyBoard = false;
 
-    private boolean fleetSpawnedIn = false;
-
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
      * @param fleet              The fleet that, when destroyed, completes the bounty. Should have no location to start with.
@@ -153,8 +152,27 @@ public final class ActiveBounty {
         stage = Stage.Accepted;
         this.bountySource = bountySource;
 
-        if(!fleetSpawnedIn)
+        if(!FleetUtils.isPresentInSector(fleet))
             loadFleetIntoCampaign();
+
+        var memory = getFleet().getMemoryWithoutUpdate();
+
+        // Flag fleet as important so it has a target icon
+        Misc.makeImportant(getFleet(), "magicbounty");
+        // Add comm reply if needed
+        if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null)
+            memory.set("$MagicLib_Bounty_target_hasReply", true);
+
+        if(spec.fleet_memory_flags != null) {
+            for (String memoryKey : spec.fleet_memory_flags) {
+                if (!memoryKey.startsWith("$"))
+                    memoryKey = "$" + memoryKey;
+                memory.set(memoryKey, true);
+            }
+        }
+
+        memory.set("$MagicLib_Bounty_target_fleet", true);
+        memory.set(spec.job_memKey, true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
@@ -162,9 +180,8 @@ public final class ActiveBounty {
 
         // Intel shouldn't already exist since we're just accepting it now, but just in case.
         for (IntelInfoPlugin bounty : existingMagicIntel) {
-            if (((MagicBountyIntel) bounty).bountyKey.equals(this.bountyKey)) {
+            if (((MagicBountyIntel) bounty).bountyKey.equals(this.bountyKey))
                 intelForBounty = (MagicBountyIntel) bounty;
-            }
         }
 
         if (intelForBounty == null) {
@@ -173,13 +190,11 @@ public final class ActiveBounty {
             intelForBounty.setImportant(true);
         }
 
-        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null)
             Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
-        }
 
-        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null) {
+        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null)
             runRuleScript(spec.job_pick_script);
-        }
     }
 
     /**
@@ -213,13 +228,6 @@ public final class ActiveBounty {
             }
         }
 
-        // Flag fleet as important so it has a target icon
-        Misc.makeImportant(getFleet(), "magicbounty");
-        // Add comm reply if needed
-        if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null) {
-            getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
-        }
-
         var memory = getFleet().getMemoryWithoutUpdate();
         // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
         // Otherwise, this would still allow ships to retreat in combat.
@@ -228,19 +236,6 @@ public final class ActiveBounty {
 
         // Prevent retreating in interaction dialog, no pursue battles
         memory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, spec.fleet_no_retreat);
-
-        if(spec.fleet_memory_flags != null) {
-            for (String memoryKey : spec.fleet_memory_flags) {
-                if (!memoryKey.startsWith("$"))
-                    memoryKey = "$" + memoryKey;
-                memory.set(memoryKey, true);
-            }
-        }
-
-        memory.set("$MagicLib_Bounty_target_fleet", true);
-        memory.set(spec.job_memKey, true);
-
-        fleetSpawnedIn = true;
     }
 
     /**
