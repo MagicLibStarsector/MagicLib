@@ -16,6 +16,8 @@ class MagicPaintjobHullMod : BaseHullMod() {
     companion object {
         const val ID = "ML_skinSwap"
         const val PAINTJOB_TAG_PREFIX = "ML_paintjob-"
+        private const val MAGIC_PJ_CACHE_KEY = "MagicPaintjobCache"
+        private const val MAGIC_PAINTJOB_APPLIED_KEY = "MagicPaintjobApplied"
     }
 
     override fun applyEffectsAfterShipCreation(ship: ShipAPI?, id: String?) {
@@ -27,34 +29,36 @@ class MagicPaintjobHullMod : BaseHullMod() {
 
         MagicPaintjobManager.applyPaintjob(ship, paintjob)
 
-        if (paintjob.engineSpec == null) ship.setCustomData("MagicPaintjobApplied", true)
+        if (paintjob.engineSpec == null) ship.setCustomData(MAGIC_PJ_CACHE_KEY, paintjob)
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
         if (!MagicPaintjobManager.isEnabled) return
-        val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship.variant) ?: return
+        val paintjob = ship.customData[MAGIC_PJ_CACHE_KEY] as? MagicPaintjobSpec
+            ?: run {
+                val resolved = MagicPaintjobManager.getCurrentShipPaintjob(ship.variant) ?: return
+                // If the paintjob sets engines, delay until the engines exist
+                if (ship.engineController.shipEngines.isNotEmpty() || resolved.engineSpec == null)
+                    MagicPaintjobManager.applyPaintjob(ship, resolved)
+                else
+                    return
+
+                ship.setCustomData(MAGIC_PJ_CACHE_KEY, resolved)
+                resolved
+            }
+
+        // Apply each frame because of shields. (Shields can reset and thus need to be applied each frame)
+        MagicPaintjobManager.applyPaintjobToShield(ship, paintjob)
 
         // fighter wing paintjobs
         for (wing in ship.allWings) {
             for (fighter in wing.wingMembers) {
-                if ("MagicPaintjobApplied" in fighter.customData) continue
-
+                if (MAGIC_PAINTJOB_APPLIED_KEY in fighter.customData) continue
                 MagicPaintjobManager.getPaintjobsForHull(fighter.hullSpec).firstOrNull {
                     it.paintjobFamily?.equals(paintjob.paintjobFamily) == true
                 }?.let { MagicPaintjobManager.applyPaintjob(fighter, it) }
 
-                fighter.setCustomData("MagicPaintjobApplied", true)
-            }
-        }
-
-        // If the paintjob sets engines, delay until the engines exist
-        if (ship.engineController.shipEngines.isNotEmpty() || paintjob.engineSpec == null) {
-            if("MagicPaintjobApplied" !in ship.customData) {
-                MagicPaintjobManager.applyPaintjob(ship, paintjob)
-                ship.setCustomData("MagicPaintjobApplied", true)
-            } else {
-                // Apply each frame because of shields. (Shields can reset and thus need to be applied each frame)
-                MagicPaintjobManager.applyPaintjobToShield(ship, paintjob)
+                fighter.setCustomData(MAGIC_PAINTJOB_APPLIED_KEY, true)
             }
         }
     }

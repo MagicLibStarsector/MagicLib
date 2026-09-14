@@ -44,12 +44,12 @@ object MagicPaintjobManager {
     private const val isIntelImportantMemKey = "\$magiclib_isPaintjobIntelImportant"
     private val jsonObjectKey = "unlockedPaintjobs"
 
+    private val paintjobsInner = HashMap<String, MagicPaintjobSpec>() //Paintjob ID -> Paintjob Spec
+    private val weaponPaintjobsInner = HashMap<String, MagicWeaponPaintjobSpec>()
+
     private val unlockedPaintjobsInner = mutableSetOf<String>()
-    private val paintjobsInner = mutableMapOf<String, MagicPaintjobSpec>() //Paintjob ID -> Paintjob Spec
     private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableSetOf<String>()
     private val advanceIntervalUtil = IntervalUtil(1f, 1f)
-
-    private val weaponPaintjobsInner = mutableMapOf<String, MagicWeaponPaintjobSpec>()
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
@@ -727,22 +727,22 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun getCurrentShipPaintjob(variant: ShipVariantAPI): MagicPaintjobSpec? {
+        val hasPaintjobMod = variant.hasHullMod(MagicPaintjobHullMod.ID)
         val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
 
-        // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
-        if (!variant.hasHullMod(MagicPaintjobHullMod.ID)) {
-            if(pjTag != null)
-                removePaintjobFromShip(variant)
-            return null
+        return when {
+            !hasPaintjobMod -> { // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
+                if (pjTag != null) removePaintjobFromShip(variant)
+                null
+            }
+            pjTag == null -> { // If the tag is removed but the hull-mod isn't (probably a developer mistake?) Remove the hull-mod.
+                Global.getLogger(MagicPaintjobHullMod::class.java)
+                    .warn("Paintjob tag is missing from variant ${variant.hullVariantId} despite having paintjob hull-mod")
+                variant.removePermaMod(MagicPaintjobHullMod.ID)
+                null
+            }
+            else -> getPaintjob(pjTag.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX))
         }
-        else if(pjTag == null) { // If the tag is removed but the hull-mod isn't (probably a developer mistake?) Remove the hull-mod.
-            Global.getLogger(this::class.java).warn("Paintjob tag is missing from variant ${variant.hullVariantId} despite having paintjob hull-mod")
-            variant.removePermaMod(MagicPaintjobHullMod.ID)
-            return null
-        }
-
-        val paintjobId = pjTag.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX)
-        return getPaintjob(paintjobId)
     }
 
     @JvmStatic
