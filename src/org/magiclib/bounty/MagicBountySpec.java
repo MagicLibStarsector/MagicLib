@@ -167,8 +167,9 @@ public class MagicBountySpec {
      */
     public String job_pick_script;
     /**
-     * optional, MemKey set to false is added when accepting the job, set to true if the job is sucessful
+     * MemKey set to false is added when accepting the job, set to true if the job is sucessful
      */
+    @NotNull
     public String job_memKey;
     /**
      * optional, can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome

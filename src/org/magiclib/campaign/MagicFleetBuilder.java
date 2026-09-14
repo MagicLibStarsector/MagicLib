@@ -689,7 +689,14 @@ public class MagicFleetBuilder {
         if (thisVariant == null) {
             return null;
         }
-        FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, thisVariant);
+
+        FleetMemberAPI ship;
+        try {
+            ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, thisVariant);
+        } catch (Exception e) {
+            log.error("Failed to create FleetMemberAPI: " + variant, e);
+            return null;
+        }
 
         if (ship != null) {
             ship.getVariant().addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
