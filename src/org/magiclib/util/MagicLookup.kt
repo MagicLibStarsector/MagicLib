@@ -8,12 +8,15 @@ import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.HullModSpecAPI
+import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.loading.WeaponSpecAPI
+import org.apache.log4j.Level
 import org.magiclib.LunaWrapper
 import org.magiclib.util.api.getActualHullId
 import org.magiclib.util.api.getEffectiveHullId
 import org.magiclib.util.api.removeModFull
 import org.magiclib.util.internal.AssignHullSkinSourceMod.assignHullSkinSourceMods
+import org.magiclib.util.internal.MiscellaneousUtil.findMissingElements
 
 object MagicLookup {
     init {
@@ -69,22 +72,17 @@ object MagicLookup {
 
         allVariants = settings.allVariantIds.mapNotNull { runCatching { settings.getVariant(it) }.getOrNull() }
 
-
-        var removeMissing: Boolean
-        var assignSource: Boolean
-        if (Global.getSettings().modManager.isModEnabled("lunalib")) {
-            removeMissing = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_RemoveMissingVariantElements") ?: true
-            assignSource = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_AssignMissingSourceMods") ?: true
-        } else {
-            removeMissing = true
-            assignSource = true
-        }
-
-        if(removeMissing)
-            cleanVariantsForRemovedElements(allVariants)
-        if(assignSource)
+        if(LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_FixMissionVariantError", default = true))
+            cleanMissionVariantsForRemovedElements(allVariants)
+        if(LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_AssignMissingSourceMods", default = true))
             assignHullSkinSourceMods()
 
+        // Log a warning if any variant had missing elements (hull-mod, weapon, wing)
+        allVariants.forEach {
+            val missingElements = it.findMissingElements(includeModules = false)
+            if(missingElements.hadMissing)
+                missingElements.logIfHadMissing(Level.WARN)
+        }
 
         hullIDToVariant = allVariants.groupBy { it.hullSpec.hullId }
         effectiveHullIDToVariant = allVariants.groupBy { it.hullSpec.getEffectiveHullId() }
@@ -93,53 +91,32 @@ object MagicLookup {
         init = true
     }
 
-    private fun cleanVariantsForRemovedElements(allVariants: List<ShipVariantAPI>) {
+    private fun cleanMissionVariantsForRemovedElements(allVariants: List<ShipVariantAPI>) {
         var count = 0
         for(variant in allVariants) {
-            try {
-                fun cleanVariant(innerVariant: ShipVariantAPI) {
-                    var removedElement = false
+            if(variant.source != VariantSource.MISSION_SAVE)
+                return
 
-                    innerVariant.hullMods.toList().forEach { hullMod ->
-                        if (getHullModSpec(hullMod) == null) {
-                            innerVariant.removeModFull(hullMod)
-                            Global.getLogger(this.javaClass).info("Cleaned missing hull-mod '$hullMod' from variant-id '${innerVariant.hullVariantId}' of hull-id '${innerVariant.hullSpec.hullId}'")
-                            removedElement = true
-                        }
-                    }
-                    innerVariant.nonBuiltInWeaponSlots.toList().forEach { slot ->
-                        val weapon = innerVariant.getWeaponId(slot)
-                        if (getWeaponSpec(weapon) == null) {
-                            innerVariant.clearSlot(slot)
-                            Global.getLogger(this.javaClass).info("Cleaned missing weapon '$weapon' from variant-id '${innerVariant.hullVariantId}' of hull-id '${innerVariant.hullSpec.hullId}'")
-                            removedElement = true
-                        }
-                    }
-                    innerVariant.wings.toList().forEach { wing ->
-                        if (wing.isEmpty())
-                            return@forEach
-                        if (getFighterWingSpec(wing) == null) {
-                            innerVariant.wings.remove(wing)
-                            Global.getLogger(this.javaClass).info("Cleaned missing wing '$wing' from variant-id '${innerVariant.hullVariantId}' of hull-id '${innerVariant.hullSpec.hullId}'")
-                            removedElement = true
-                        }
-                    }
-                    
-                    if(removedElement)
-                        count++
-                }
-                cleanVariant(variant)
-            } catch (e: Exception) {
-                Global.getLogger(this.javaClass).error(
-                    "Error while cleaning variant-id '${variant.hullVariantId}'" +
-                            " of hull-id '${variant.hullSpec.hullId}'"
-                            + if (variant.source != null) ", from the mod ${variant.source.name}" else "", e
-                )
+            val missingElements = variant.findMissingElements(includeModules = false)
+            if(missingElements.hadMissing)
+                count++
+
+            missingElements.missingHullmods.forEach { hullMod ->
+                variant.removeModFull(hullMod)
+                Global.getLogger(this.javaClass).info("Cleaned missing hull-mod '$hullMod' from variant-id '${variant.hullVariantId}' of hull-id '${variant.hullSpec.hullId}'")
+            }
+            missingElements.missingWeapons.forEach { (slot, weaponId) ->
+                variant.clearSlot(slot)
+                Global.getLogger(this.javaClass).info("Cleaned missing weapon '$weaponId' from variant-id '${variant.hullVariantId}' of hull-id '${variant.hullSpec.hullId}'")
+            }
+            missingElements.missingWings.forEach { wing ->
+                variant.wings.remove(wing)
+                Global.getLogger(this.javaClass).info("Cleaned missing wing '$wing' from variant-id '${variant.hullVariantId}' of hull-id '${variant.hullSpec.hullId}'")
             }
         }
 
         if(count > 0)
-            Global.getLogger(this.javaClass).info("Cleaned $count variants for removed elements")
+            Global.getLogger(this.javaClass).info("Cleaned $count mission variants for removed elements")
     }
 
     /**Does not clone the variant, use with caution.*/

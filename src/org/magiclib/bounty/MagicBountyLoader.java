@@ -6,9 +6,11 @@ import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.characters.FullName;
+import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
 import com.fs.starfarer.api.impl.campaign.ids.Personalities;
 import com.fs.starfarer.api.util.Misc;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +20,7 @@ import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.kotlin.MagicKotlinExtKt;
 import org.magiclib.util.*;
+import org.magiclib.util.api.VariantUtils;
 import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.*;
@@ -565,18 +568,32 @@ public class MagicBountyLoader {
                     return false;
                 }
 
-                if (!magicVariantExists(this_bounty.fleet_flagship_variant)) {
+                ShipVariantAPI flagshipVariant = magicGetVariant(this_bounty.fleet_flagship_variant);
+                if (flagshipVariant == null) {
                     //that flagship variant couldn't be found, invalidating the bounty
                     LOG.warn(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
+                    return false;
+                }
+                if(VariantUtils.hasMissingSpecs(flagshipVariant)) {
+                    //that flagship variant references missing specs, invalidating the bounty
+                    LOG.warn(String.format("Fleet flagship variant '%s' from bounty %s references missing specs. Bounty is INVALID! More details below.", this_bounty.fleet_flagship_variant, bountyId));
+                    MiscellaneousUtil.findMissingElements$MagicLib(flagshipVariant, true).logIfHadMissing(Level.WARN);
                     return false;
                 }
 
                 if (this_bounty.fleet_preset_ships != null && !this_bounty.fleet_preset_ships.isEmpty()) {
                     //check all reinforcement variants
                     for (String v : this_bounty.fleet_preset_ships.keySet()) {
-                        if (!magicVariantExists(v)) {
+                        ShipVariantAPI variant = magicGetVariant(v);
+                        if (variant == null) {
                             //that reinforcement variant couldn't be found, invalidating the bounty
                             LOG.warn(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
+                            return false;
+                        }
+                        if(VariantUtils.hasMissingSpecs(variant)) {
+                            //that flagship variant references missing specs, invalidating the bounty
+                            LOG.warn(String.format("Fleet variant '%s' from bounty %s references missing specs. Bounty is INVALID! More details below.", v, bountyId));
+                            MiscellaneousUtil.findMissingElements$MagicLib(variant, true).logIfHadMissing(Level.WARN);
                             return false;
                         }
                     }
@@ -618,16 +635,21 @@ public class MagicBountyLoader {
     }
 
     // helper: checks if a variant exists (local + load)
-    public static boolean magicVariantExists(String variant) {
-        if(Global.getSettings().getVariant(variant) != null)
-            return true;
+    public static boolean magicVariantExists(String variantID) {
+        return magicGetVariant(variantID) != null;
+    }
 
-        var path = MagicVariables.VARIANT_PATH + variant + ".variant";
-        if(MagicKotlinExtKt.doesFileExist(Global.getSettings(), path)) { // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
-            return MagicCampaign.loadVariant(path) != null;
-        }
+    // helper: gets a variant (local + load)
+    public static ShipVariantAPI magicGetVariant(String variantID) {
+        ShipVariantAPI variant = Global.getSettings().getVariant(variantID);
+        if(variant != null)
+            return variant;
 
-        return false;
+        var path = MagicVariables.VARIANT_PATH + variantID + ".variant";
+        if(MagicKotlinExtKt.doesFileExist(Global.getSettings(), path)) // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
+            return MagicCampaign.loadVariant(path);
+
+        return null;
     }
 
 

@@ -1,11 +1,10 @@
 package org.magiclib.util.internal
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.combat.ArmorGridAPI
-import com.fs.starfarer.api.combat.DamageType
-import com.fs.starfarer.api.combat.MutableShipStatsAPI
-import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.util.Misc
+import org.apache.log4j.Level
+import org.magiclib.util.MagicLookup
 import java.awt.Color
 import java.awt.Point
 import kotlin.math.*
@@ -289,5 +288,101 @@ internal object MiscellaneousUtil {
     @JvmStatic
     internal fun newInstance(inputClass: Class<*>): Any {
         return inputClass.newInstance()
+    }
+
+    /**
+     * Returns a map of non-built-in weapon slots to their corresponding weapon IDs.
+     */
+    internal fun ShipVariantAPI.getNonBuiltInWeaponsMap(): Map<String, String> {
+        val weapons = mutableMapOf<String, String>()
+        nonBuiltInWeaponSlots.forEach { slot ->
+            val weaponID = getWeaponId(slot)
+            weapons[slot] = weaponID
+        }
+        return weapons
+    }
+
+    private data class VariantData(val variantId: String, val variant: ShipVariantAPI?)
+    private fun ShipVariantAPI.getModuleIdsAllowNull(): Map<String, VariantData> {
+        val modules = this.stationModules
+            ?.mapNotNull { (slot, variantId) ->
+                if (this.hullSpec.getWeaponSlot(slot)?.weaponType != WeaponAPI.WeaponType.STATION_MODULE) {
+                    Global.getLogger(this.javaClass).warn("Slot '$slot' of variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
+                    return@mapNotNull null
+                }
+
+                val variant: ShipVariantAPI? = this.getModuleVariant(slot)
+                slot to VariantData(variantId, variant)
+            }
+            ?.toMap()
+            ?: emptyMap()
+
+        return modules
+    }
+    internal data class MissingElements(
+        val variantID: String,
+        val missingWeapons: Map<String, String> = emptyMap(),
+        val missingHullmods: List<String> = emptyList(),
+        val missingWings: List<String> = emptyList(),
+        val missingModules: Map<String, String> = emptyMap(),
+    ) {
+        val hadMissing: Boolean
+            get() = missingModules.isNotEmpty()
+                    || missingWings.isNotEmpty()
+                    || missingHullmods.isNotEmpty()
+                    || missingWeapons.isNotEmpty()
+
+        fun logIfHadMissing(level: Level = Level.ERROR) {
+            if (hadMissing) {
+                val sb = StringBuilder("Variant ID '$variantID' has missing elements. This may result in a crash if created in game.\n")
+
+                if (missingWeapons.isNotEmpty())
+                    sb.append("  Weapons: ${missingWeapons.entries.joinToString(", ") { "${it.key} -> ${it.value}" }}\n")
+
+                if (missingHullmods.isNotEmpty())
+                    sb.append("  Hullmods: ${missingHullmods.joinToString(", ")}\n")
+
+                if (missingWings.isNotEmpty())
+                    sb.append("  Wings: ${missingWings.joinToString(", ")}\n")
+
+                if (missingModules.isNotEmpty())
+                    sb.append("  Modules: ${missingModules.entries.joinToString(", ") { "${it.key} -> ${it.value}" }}\n")
+
+                Global.getLogger(this.javaClass).log(level, sb.removeSuffix("\n"))
+            }
+        }
+    }
+    /**
+     * Returns a list of missing elements in this variant, sorted into categories.
+     */
+    @JvmStatic
+    internal fun ShipVariantAPI.findMissingElements(includeModules: Boolean = true): MissingElements {
+        val settings = Global.getSettings()
+
+        val missingModules = mutableMapOf<String, String>()
+        val missingWings = mutableListOf<String>()
+        val missingHullmods = mutableListOf<String>()
+        val missingWeapons = mutableMapOf<String, String>()
+
+        val modules = if (includeModules) this.getModuleIdsAllowNull()
+        else emptyMap()
+
+        modules.forEach { (slotId, variant) ->
+            if (variant.variant == null) missingModules[slotId] = variant.variantId
+        }
+
+        (modules.values.mapNotNull { it.variant } + this).forEach { variant ->
+            variant.nonBuiltInWings.forEach { wingId ->
+                if (wingId.isNotEmpty() && settings.getFighterWingSpec(wingId) == null) missingWings.add(wingId)
+            }
+            variant.nonBuiltInHullmods.forEach { hullmodId ->
+                if (settings.getHullModSpec(hullmodId) == null) missingHullmods.add(hullmodId)
+            }
+            variant.getNonBuiltInWeaponsMap().forEach { (slot, weaponId) ->
+                if (MagicLookup.getWeaponSpec(weaponId) == null) missingWeapons[slot] = weaponId
+            }
+        }
+
+        return MissingElements(this.hullVariantId, missingWeapons, missingHullmods, missingWings, missingModules)
     }
 }

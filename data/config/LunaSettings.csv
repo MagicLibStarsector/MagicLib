@@ -29,13 +29,12 @@ magiclib_subsystems_KeyBind5,Keybind 5,Keycode,49,,"Fifth assigned keybind",,,
 # MagicMiscellaneous
 magiclib_misc_Header,MagicMisc,Header,Miscellaneous,,,,,
 
-magiclib_RemoveMissingVariantElements,Remove Missing Variant Elements,Boolean,true,,"On game launch, look through every variant loaded within the game and remove any elements which cannot be found.
+magiclib_FixMissionVariantError,Fix Mission Variant Error,Boolean,true,,"On game launch, look through every saved mission variant loaded within the game and remove any elements which cannot be found.
 This includes removed weapons, wings, and hull-mods.
 Changes to this setting will only take effect after game restart.
 
 Example:
-This will prevent saved mission variants from causing the mission to fail to load due to lacking the mod the mission variant was saved with.
-It may also prevent game crashes in rare examples.",,,
+This will prevent saved mission variants from causing the mission to fail to load due to lacking the mod the variant was saved with.",,,
 
 magiclib_AssignMissingSourceMods,Assign Missing Source Mods on Ship Skins,Boolean,true,,"Fixes various issues where a source mod would be expected but are not present.
 By default, ship skins (e.g., Sunder XIV from Ship/Weapon Pack) do not have a source mod assigned.

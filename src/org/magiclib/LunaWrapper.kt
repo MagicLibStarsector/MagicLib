@@ -55,10 +55,26 @@ object LunaWrapper {
     }
 
     @JvmStatic
-    fun getBoolean(modID: String, fieldID: String): Boolean? = LunaSettings.getBoolean(modID, fieldID)
+    fun getBoolean(modID: String, fieldID: String): Boolean? {
+        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
+            return null
+
+        return LunaSettings.getBoolean(modID, fieldID)
+    }
+    @JvmStatic
+    fun getBoolean(modID: String, fieldID: String, default: Boolean = false): Boolean =
+        getBoolean(modID, fieldID) ?: default
 
     @JvmStatic
-    fun getInt(modID: String, fieldID: String): Int? = LunaSettings.getInt(modID, fieldID)
+    fun getInt(modID: String, fieldID: String): Int? {
+        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
+            return null
+
+        return LunaSettings.getInt(modID, fieldID)
+    }
+    @JvmStatic
+    fun getInt(modID: String, fieldID: String, default: Int = 0): Int =
+        getInt(modID, fieldID) ?: default
 }
 
 fun interface LunaWrapperSettingsListener {

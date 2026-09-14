@@ -63,6 +63,7 @@ Version 1.5.8
 - Removed compilation dependency on Vayra's Sector.
 - Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
 - Fix MagicAnim smoothToRange, smoothReturnToRange, and arbitrarySmooth. (Reported by Ayreos)
+- Report variants with missing elements (weapons, hull-mods, fighters) onApplicationLoad, and specify what is missing. This helps users identify crashes before they happen, from variants being created in-game with non-existent elements.
 - Added the 'ML_enhancedModuleArmor' hullmod. This hullmod that makes armor modules act like armor, not separate targets, and fixes explosions bypassing modular armor via occlusion raycasting. Thanks starficz
 - Added the 'ML_showModulePaperdoll' tag. When added to a hull, it adds an armor paperdoll preview to your ship info in combat to see the position and state of the armor modules. Thanks starficz
 - Moved a large amount of code from the 0.98 Starsector mod FleetBuilder into MagicLib.

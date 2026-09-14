@@ -11,6 +11,7 @@ import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.WeaponSpecAPI
 import org.magiclib.util.MagicLookup
+import org.magiclib.util.internal.MiscellaneousUtil.getNonBuiltInWeaponsMap
 
 /**
  * Delegate to [ShipHullSpecAPI.getActualHull]
@@ -34,12 +35,14 @@ fun ShipVariantAPI.getActualHullId(): String =
 fun ShipVariantAPI.getModules(): Map<String, ShipVariantAPI> {
     // stationModules: weapon slot id -> original variant id
     val modules = this.stationModules
-        ?.mapNotNull { (slot, _) ->
+        ?.mapNotNull { (slot, moduleID) ->
             if (this.hullSpec.getWeaponSlot(slot)?.weaponType != WeaponAPI.WeaponType.STATION_MODULE) {
-                Global.getLogger(this.javaClass).warn("Slot '$slot' of variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
+                Global.getLogger(this.javaClass).warn("The module '$slot -> $moduleID' of the variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
                 return@mapNotNull null
             }
+
             val variant: ShipVariantAPI? = this.getModuleVariant(slot)
+            if(variant == null) Global.getLogger(this.javaClass).warn("The module '$slot -> $moduleID' of the variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' has a null module variant. Does the module not exist?")
             variant?.let { slot to it }
         }
         ?.toMap() // converts the list of pairs back into a Map
@@ -54,11 +57,12 @@ fun ShipVariantAPI.getModules(): Map<String, ShipVariantAPI> {
  */
 fun ShipVariantAPI.getModulesAllowNull(): Map<String, ShipVariantAPI?> {
     val modules = this.stationModules
-        ?.mapNotNull { (slot, _) ->
+        ?.mapNotNull { (slot, moduleID) ->
             if (this.hullSpec.getWeaponSlot(slot)?.weaponType != WeaponAPI.WeaponType.STATION_MODULE) {
-                Global.getLogger(this.javaClass).warn("Slot '$slot' of variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
+                Global.getLogger(this.javaClass).warn("The module '$slot -> $moduleID' of the variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' is not a station module despite a module being assigned to that slot?")
                 return@mapNotNull null
             }
+
             val variant: ShipVariantAPI? = this.getModuleVariant(slot)
             slot to variant
         }
@@ -79,7 +83,8 @@ fun ShipVariantAPI.getModulesAllowNull(): Map<String, ShipVariantAPI?> {
 fun ShipVariantAPI.getFittedWeapons(): Map<String, WeaponSpecAPI> {
     val weapons = mutableMapOf<String, WeaponSpecAPI>()
     fittedWeaponSlots.forEach { slot ->
-        val weapon = getWeaponSpec(slot) ?: return@forEach
+        val weaponID = getWeaponId(slot)
+        val weapon = MagicLookup.getWeaponSpec(weaponID) ?: return@forEach
         weapons[slot] = weapon
     }
     return weapons
@@ -96,7 +101,8 @@ fun ShipVariantAPI.getFittedWeapons(): Map<String, WeaponSpecAPI> {
 fun ShipVariantAPI.getNonBuiltInWeapons(): Map<String, WeaponSpecAPI> {
     val weapons = mutableMapOf<String, WeaponSpecAPI>()
     nonBuiltInWeaponSlots.forEach { slot ->
-        val weapon = getWeaponSpec(slot) ?: return@forEach
+        val weaponID = getWeaponId(slot)
+        val weapon = MagicLookup.getWeaponSpec(weaponID) ?: return@forEach
         weapons[slot] = weapon
     }
     return weapons
@@ -187,6 +193,36 @@ fun ShipVariantAPI.allRegularHullMods(): Set<String> {
         .toSet()
 }
 
-
+/**
+ * Creates a [FleetMemberAPI] from this variant
+ *
+ * This picks [FleetMemberType.SHIP] or [FleetMemberType.FIGHTER_WING] based on [isFighter].
+ *
+ * Delegate to [Global.getSettings().createFleetMember][com.fs.starfarer.api.SettingsAPI.createFleetMember].
+ */
 fun ShipVariantAPI.createFleetMember(): FleetMemberAPI =
     Global.getSettings().createFleetMember(if (isFighter) FleetMemberType.FIGHTER_WING else FleetMemberType.SHIP, this)
+
+
+/**
+ * Checks whether this variant (and optionally its modules) references any specs (wings, hull-mods, weapons) that do not exist
+ *
+ * If member is created from a variant with missing specs, it will crash the game. This function can be used to check for this.
+ *
+ * @param includeModules also check module variants. Default `true`.
+ */
+@JvmOverloads
+fun ShipVariantAPI.hasMissingSpecs(includeModules: Boolean = true): Boolean {
+    val settings = Global.getSettings()
+
+    val modules = if(includeModules) this.getModulesAllowNull()
+    else emptyMap()
+    if(modules.any { it.value == null }) return true
+    (modules.values + this).forEach { variant ->
+        if(variant!!.nonBuiltInWings.any { it.isNotEmpty() && settings.getFighterWingSpec(it) == null }) return true
+        if(variant.nonBuiltInHullmods.any { settings.getHullModSpec(it) == null }) return true
+        if(variant.getNonBuiltInWeaponsMap().values.any { MagicLookup.getWeaponSpec(it) == null }) return true // We use MagicLookup instead of SettingsAPI here because SettingsAPI throws an exception instead of returning null.
+    }
+
+    return false
+}
