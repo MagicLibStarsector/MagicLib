@@ -9,6 +9,11 @@ import java.awt.Color
 import java.awt.Point
 import kotlin.math.*
 
+/**
+ * Contains miscellaneous utility functions that are used by other classes in this mod.
+ *
+ * Do not use.
+ */
 internal object MiscellaneousUtil {
     internal fun damageAfterArmor(
         damageType: DamageType,
@@ -384,5 +389,28 @@ internal object MiscellaneousUtil {
         }
 
         return MissingElements(this.hullVariantId, missingWeapons, missingHullmods, missingWings, missingModules)
+    }
+
+    /**
+     * Catch exceptions without needing to put an entire function in a try/catch which is ugly.
+     */
+    internal inline fun runSafe(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            Global.getLogger(this.javaClass).error(e)
+        }
+    }
+
+    /**
+     * Catch exceptions without needing to put an entire function in a try/catch which is ugly.
+     */
+    internal inline fun <T> Any.runSafe(default: T, block: () -> T): T {
+        return try {
+            block()
+        } catch (e: Exception) {
+            Global.getLogger(this.javaClass).error(e)
+            default
+        }
     }
 }
