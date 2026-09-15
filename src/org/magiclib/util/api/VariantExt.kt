@@ -42,7 +42,7 @@ fun ShipVariantAPI.getModules(): Map<String, ShipVariantAPI> {
             }
 
             val variant: ShipVariantAPI? = this.getModuleVariant(slot)
-            if(variant == null) Global.getLogger(this.javaClass).warn("The module '$slot -> $moduleID' of the variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' has a null module variant. Does the module not exist?")
+            if(variant == null) Global.getLogger(this.javaClass).warn("The module '$slot -> $moduleID' of the variantID '${this.hullVariantId}' of hullID '${this.hullSpec.hullId}' has a null module variant. Does the module's variant-id not exist?")
             variant?.let { slot to it }
         }
         ?.toMap() // converts the list of pairs back into a Map
