@@ -18,6 +18,11 @@ import org.magiclib.util.api.removeModFull
 import org.magiclib.util.internal.AssignHullSkinSourceMod.assignHullSkinSourceMods
 import org.magiclib.util.internal.MiscellaneousUtil.findMissingElements
 
+/**
+ * Cached, indexed lookups for game data (hulls, variants, weapons, hull mods, skills, etc)
+ *
+ * Populated by [setup] on first use; must not be accessed before `onApplicationLoad`.
+ */
 object MagicLookup {
     init {
         setup()

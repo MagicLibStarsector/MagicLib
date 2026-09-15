@@ -7,6 +7,11 @@ import org.magiclib.kotlin.doesFileExist
 import org.magiclib.util.api.getActualHullId
 import org.magiclib.util.api.isSkin
 
+/**
+ * Sets the missing source mod field on modded hull skins by inferring it from the ship skin's `.skin` file, using reflection to set the field.
+ *
+ * In the base-game, modded ship skins never have a source mod. This is used to fix that.
+ */
 internal object AssignHullSkinSourceMod {
     fun assignHullSkinSourceMods() {
         Global.getLogger(this.javaClass).info("Assigning modded hull skin source mods (if present)...")

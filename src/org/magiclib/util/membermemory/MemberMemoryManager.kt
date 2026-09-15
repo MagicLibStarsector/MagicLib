@@ -7,6 +7,13 @@ import com.fs.starfarer.api.campaign.econ.SubmarketAPI
 import com.fs.starfarer.campaign.fleet.FleetData
 import org.magiclib.util.membermemory.MemberMemoryAccess.SECTOR_MEMBER_MEMORY_KEY
 
+/**
+ * Holds and syncs the sector-wide [MemberMemoryStore], which lives in campaign save data.
+ *
+ * Loads/creates the store on game load, and on save prunes it down to currently-existing fleet member IDs (active fleets + mothballed storage).
+ *
+ * Logs a warning if duplicate member IDs are found across locations.
+ */
 internal object MemberMemoryManager {
 
     private var memberMemoryStore: MemberMemoryStore? = null
