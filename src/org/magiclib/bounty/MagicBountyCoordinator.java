@@ -147,14 +147,20 @@ public final class MagicBountyCoordinator {
             }
 
             var modVersion = MagicModVersionTracker.getModVersions().get(MagicVariables.MAGICLIB_ID);
-            if(modVersion == null || !Objects.equals(modVersion.getString(), "1.5.8rc1")) { // TODO, remove on 0.98.5a
+            if(modVersion == null || !Objects.equals(modVersion.getString(), "1.5.8rc2")) { // TODO, remove on 0.98.5a
+                List<String> bountyKeysToReset = new ArrayList<>();
+
                 for(ActiveBounty activeBounty : activeBountiesByKey.values()) {
                     var spec = activeBounty.getSpec();
                     spec.show_in_bounty_board = true;
                     if(spec.target_aiCoreId != null && spec.target_aiCoreId.equals("null")) {
                         spec.target_aiCoreId = null;
-                        resetBounty(activeBounty.getKey());
+                        bountyKeysToReset.add(activeBounty.getKey());
                     }
+                }
+
+                for (String bountyKey : bountyKeysToReset) {
+                    resetBounty(bountyKey);
                 }
             }
         }
