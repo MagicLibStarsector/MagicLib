@@ -1,3 +1,4 @@
+
 package org.magiclib.bounty;
 
 import com.fs.starfarer.api.campaign.FleetAssignment;

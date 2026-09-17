@@ -14,16 +14,14 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.launcher.ModManager;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.magiclib.LunaWrapper;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
-import org.magiclib.util.MagicCampaign;
-import org.magiclib.util.MagicSettings;
-import org.magiclib.util.MagicTxt;
-import org.magiclib.util.MagicVariables;
+import org.magiclib.util.*;
 
 import java.util.*;
 
@@ -146,6 +144,16 @@ public final class MagicBountyCoordinator {
             if (activeBountiesByKey == null) {
                 activeBountiesByKey = new HashMap<>();
                 Global.getSector().getMemoryWithoutUpdate().set(BOUNTIES_MEMORY_KEY, activeBountiesByKey);
+            }
+
+            var modVersion = MagicModVersionTracker.getModVersions().get(MagicVariables.MAGICLIB_ID);
+            if(modVersion == null || !Objects.equals(modVersion.getString(), "1.5.8rc1")) { // TODO, remove on 0.98.5a
+                for(ActiveBounty activeBounty : activeBountiesByKey.values()) {
+                    var spec = activeBounty.getSpec();
+                    spec.show_in_bounty_board = true;
+                    if(spec.target_aiCoreId != null && spec.target_aiCoreId.equals("null"))
+                        spec.target_aiCoreId = null;
+                }
             }
         }
 

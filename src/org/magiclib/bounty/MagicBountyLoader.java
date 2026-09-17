@@ -831,6 +831,9 @@ public class MagicBountyLoader {
                     return value;
 
                 value = output.toString();
+
+                if(Objects.equals(value, "null")) // I don't like that I have to do this. Some people use "null" as a string instead of simply 'null' in their bounty configs. I can't just not support that.
+                    return null;
             }
         } catch (JSONException ex) {
         }
