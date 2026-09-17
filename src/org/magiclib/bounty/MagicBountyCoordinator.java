@@ -151,8 +151,10 @@ public final class MagicBountyCoordinator {
                 for(ActiveBounty activeBounty : activeBountiesByKey.values()) {
                     var spec = activeBounty.getSpec();
                     spec.show_in_bounty_board = true;
-                    if(spec.target_aiCoreId != null && spec.target_aiCoreId.equals("null"))
+                    if(spec.target_aiCoreId != null && spec.target_aiCoreId.equals("null")) {
                         spec.target_aiCoreId = null;
+                        resetBounty(activeBounty.getKey());
+                    }
                 }
             }
         }
