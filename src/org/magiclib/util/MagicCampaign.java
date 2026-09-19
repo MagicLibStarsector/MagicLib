@@ -870,6 +870,8 @@ public class MagicCampaign {
 
         //checking trigger_marketFaction_any and trigger_marketFaction_alliedWith
         if (marketFaction_any != null && !marketFaction_any.isEmpty()) {
+            if(marketFaction_any.size() == 1 && marketFaction_any.get(0).equals("ALL")) // Special case to approve on ALL faction markets.
+                return true;
 
             for (String f : marketFaction_any) {
                 //skip non existing factions

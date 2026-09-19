@@ -480,18 +480,24 @@ public class MagicBountyLoader {
             if (this_bounty.trigger_marketFaction_any != null && !this_bounty.trigger_marketFaction_any.isEmpty()) {
                 List<String> trigger_marketFaction_any = this_bounty.trigger_marketFaction_any;
 
-                for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
-                    String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
-                    FactionAPI trigger_marketFaction = MagicStringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
+                // "ALL" is a special case that needs no validation
+                boolean isAllWildcard = trigger_marketFaction_any.size() == 1
+                        && trigger_marketFaction_any.get(0).equals("ALL");
 
-                    if (trigger_marketFaction == null) {
-                        //that faction couldn't be found, invalidating the bounty
-                        LOG.warn(String.format("Unable to find trigger_marketFaction_any '%s' from bounty %s. Bounty is INVALID!", trigger_marketFaction_anyId, bountyId));
-                        return false;
-                    } else if (!Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
-                        LOG.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
-                        this_bounty.trigger_marketFaction_any.remove(i);
-                        this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
+                if(!isAllWildcard) {
+                    for (int i = trigger_marketFaction_any.size() - 1; i >= 0; i--) {
+                        String trigger_marketFaction_anyId = trigger_marketFaction_any.get(i);
+                        FactionAPI trigger_marketFaction = MagicStringMatcher.findBestFactionMatch(trigger_marketFaction_anyId);
+
+                        if (trigger_marketFaction == null) {
+                            //that faction couldn't be found, invalidating the bounty
+                            LOG.warn(String.format("Unable to find trigger_marketFaction_any '%s' from bounty %s. Bounty is INVALID!", trigger_marketFaction_anyId, bountyId));
+                            return false;
+                        } else if (!Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
+                            LOG.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
+                            this_bounty.trigger_marketFaction_any.remove(i);
+                            this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
+                        }
                     }
                 }
             }

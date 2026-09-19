@@ -7,6 +7,7 @@
         "trigger_market_id": ["market_name"], # Default: no values. Can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
                                               # This beats all other conditions; a job will ALWAYS show in this market, even if other conditions fail.
         "trigger_marketFaction_any": ["faction"], # Default: no values. markets of these factions will show the bounty (if other conditions are met).
+                                                  # If the only specified option is "ALL", this will show up on every market (if other conditions are met).
         "trigger_marketFaction_alliedWith": true, # Default: false. if true, markets of all factions whose relationship is at least FAVORABLE to ANY ONE of the factions above will show the bounty (if other conditions are met).
         "trigger_marketFaction_none": ["other_faction"], # Default: no values. markets of factions listed here will never carry the bounty, regardless of other conditions.
         "trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
