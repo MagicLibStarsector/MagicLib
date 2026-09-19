@@ -3,7 +3,6 @@ package org.magiclib.util
 import com.fs.starfarer.api.ModPlugin
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.ModManagerAPI
 import com.fs.starfarer.api.VersionInfoAPI
 import com.fs.starfarer.launcher.ModManager
 
@@ -16,7 +15,7 @@ import com.fs.starfarer.launcher.ModManager
  *
  * Runs only once per session on the first advance of EveryFrameScript. After which the script is discarded.
  */
-class MagicModVersionTracker: EveryFrameScript {
+class MagicModVersions: EveryFrameScript {
     companion object {
         /**
          * Returns a map of the mod versions last recorded in persistent data.

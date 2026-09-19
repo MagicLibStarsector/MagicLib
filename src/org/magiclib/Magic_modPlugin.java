@@ -8,7 +8,7 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
-import org.magiclib.util.MagicModVersionTracker;
+import org.magiclib.util.MagicModVersions;
 import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
@@ -137,7 +137,7 @@ public class Magic_modPlugin extends BaseModPlugin {
         //Add industry item wrangler
         SectorAPI sector = Global.getSector();
         if (sector != null) {
-            sector.addTransientScript(new MagicModVersionTracker());
+            sector.addTransientScript(new MagicModVersions());
             if (!sector.getPersistentData().containsKey("ml_uniqueSaveId"))
                 sector.getPersistentData().put("ml_uniqueSaveId", sector.getSeedString() + "_" + UUID.randomUUID());
 

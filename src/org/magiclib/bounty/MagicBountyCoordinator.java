@@ -14,7 +14,6 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.util.Misc;
-import com.fs.starfarer.launcher.ModManager;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -146,7 +145,7 @@ public final class MagicBountyCoordinator {
                 Global.getSector().getMemoryWithoutUpdate().set(BOUNTIES_MEMORY_KEY, activeBountiesByKey);
             }
 
-            var modVersion = MagicModVersionTracker.getModVersions().get(MagicVariables.MAGICLIB_ID);
+            var modVersion = MagicModVersions.getModVersions().get(MagicVariables.MAGICLIB_ID);
             if(modVersion == null || !Objects.equals(modVersion.getString(), "1.5.8rc2")) { // TODO, remove on 0.98.5a
                 List<String> bountyKeysToReset = new ArrayList<>();
 
