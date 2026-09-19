@@ -264,7 +264,7 @@ object MagicPaintjobManager {
                     }
 
                     if (!skip && validHullIds.isEmpty()) {
-                        logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no valid hullIds, skipping.")
+                        logger.info("Paintjob $id in ${mod.id} by '${mod.author}' has no valid hullIds, skipping.")
                         skip = true
                     }
 
@@ -361,9 +361,8 @@ object MagicPaintjobManager {
                     return@forEach
                 }
 
-                /* TODO: Uncomment this for 0.98 */
                 if (!Global.getSettings().actuallyAllWeaponSpecs.any { it.weaponId in weaponIds }) {
-                    logger.warn("Weapon Paintjob with id: $id has no valid weaponId's, skipping.")
+                    logger.info("Weapon Paintjob with id: $id has no valid weaponId's, skipping.")
                     return@forEach
                 }
 
