@@ -19,6 +19,7 @@ import org.magiclib.util.api.getEffectiveHullId
 import org.magiclib.util.api.removeModFull
 import org.magiclib.util.internal.AssignHullSkinSourceMod.assignHullSkinSourceMods
 import org.magiclib.util.internal.MiscellaneousUtil.findMissingElements
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -30,6 +31,10 @@ object MagicLookup {
 
     private var isSetupComplete = false
     fun isSetup(): Boolean = isSetupComplete
+
+    private fun <K, V> Map<K, V>.unmodifiable(): Map<K, V> = Collections.unmodifiableMap(this)
+    private fun <T> List<T>.unmodifiable(): List<T> = Collections.unmodifiableList(this)
+    private fun <T> Set<T>.unmodifiable(): Set<T> = Collections.unmodifiableSet(this)
 
     private var dModIds: Set<String> = emptySet()
     private var hiddenEverywhereModIds: Set<String> = emptySet()
@@ -137,8 +142,8 @@ object MagicLookup {
         shipSystemsById = settings.allShipSystemSpecs.associateBy { it.id }
 
         factionIds = settings.allFactionSpecs.mapTo(HashSet()) { it.id }
-        dModIds = hullModsById.filterValues { it.hasTag(Tags.HULLMOD_DMOD) }.keys.toSet()
-        hiddenEverywhereModIds = hullModsById.filterValues { it.isHiddenEverywhere }.keys.toSet()
+        dModIds = hullModsById.filterValues { it.hasTag(Tags.HULLMOD_DMOD) }.keys
+        hiddenEverywhereModIds = hullModsById.filterValues { it.isHiddenEverywhere }.keys
 
         allVariants = settings.allVariantIds.mapNotNull { variantId ->
             try { settings.getVariant(variantId) }
