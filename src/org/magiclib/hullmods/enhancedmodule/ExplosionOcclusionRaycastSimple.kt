@@ -38,11 +38,15 @@ class ExplosionOcclusionRaycastSimple: DamageTakenModifier {
         if (param is DamagingExplosion || param is MissileAPI){
             @Suppress("UNCHECKED_CAST")
             val explosionMaps = parent.customData[EXPLOSION_RAYCAST_MAPS] as MutableMap<DamagingProjectileAPI, Map<String, Float>>
+
+            val currentTime = Global.getCombatEngine().getTotalElapsedTime(false)
+            explosionMaps.entries.retainAll { (_, em) -> em[ExplosionOcclusionRaycast.DELETE_TIME]!! >= currentTime } // remove all stale values
+
             val explosionMap = explosionMaps.firstNotNullOfOrNull { (dp, em) ->
                 if (dp === param) em
                 else if (dp.damageAmount.isCloseTo(param.damageAmount, 1e-6f) && Misc.getDistanceSq(dp.location, param.location) < 25f) em
                 else null
-            } ?: generateExplosionRayhitMap(param, damage, parent)
+            } ?: generateExplosionRayhitMap(param, damage, parent, currentTime)
 
             damage.modifier.modifyMult(OCCLUSION_MODIFIER, explosionMap.getOrDefault(target.id, 0f))
             return OCCLUSION_MODIFIER
@@ -50,17 +54,10 @@ class ExplosionOcclusionRaycastSimple: DamageTakenModifier {
         return null
     }
 
-
-    fun generateExplosionRayhitMap(projectile: DamagingProjectileAPI, damage: DamageAPI, parent: ShipAPI): Map<String, Float>{
-        if (projectile !is DamagingExplosion && projectile !is MissileAPI) return mapOf() // should never happen
-
+    private fun generateExplosionRayhitMap(projectile: DamagingProjectileAPI, damage: DamageAPI, parent: ShipAPI, currentTime: Float): Map<String, Float>{
         @Suppress("UNCHECKED_CAST")
         val explosionMaps = parent.customData[EXPLOSION_RAYCAST_MAPS] as MutableMap<DamagingProjectileAPI, Map<String, Float>>
         if (projectile in explosionMaps) return explosionMaps[projectile]!! // should also never happen, just in case
-
-        val currentTime = Global.getCombatEngine().getTotalElapsedTime(false)
-        // remove all stale values
-        explosionMaps.entries.retainAll { (_, em) -> em[DELETE_TIME]!! >= currentTime }
 
         // make new entry
         val explosionMap = mutableMapOf<String, Float>()

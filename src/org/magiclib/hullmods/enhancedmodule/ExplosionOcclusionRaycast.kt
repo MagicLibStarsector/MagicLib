@@ -10,7 +10,6 @@ import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.util.internal.MiscellaneousUtil.damageAfterArmor
 import org.magiclib.util.internal.MiscellaneousUtil.isCloseTo
-import kotlin.collections.iterator
 import kotlin.math.max
 import kotlin.math.min
 
@@ -38,22 +37,35 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
 
     override fun modifyDamageTaken(param: Any?, target: CombatEntityAPI, damage: DamageAPI, point: Vector2f, shieldHit: Boolean): String? {
         if (shieldHit) return null // Shields are not accounted for in raycasts, so hits may incorrectly pass through to blocking modules behind them. Thus, ignore shield hits.
-
         if (param !is DamagingProjectileAPI) return null
         val ship = target as? ShipAPI ?: return null
+        //if(ship.isPiece) return null
 
         val parent = ship.parentStation ?: ship
         if(parent.customData[EXPLOSION_RAYCAST_MAPS] == null)
             parent.setCustomData(EXPLOSION_RAYCAST_MAPS, mutableMapOf<DamagingProjectileAPI, Map<String, Float>>())
 
-        if (param is DamagingExplosion || param is MissileAPI){
+        if (param is DamagingExplosion || param is MissileAPI) {
             @Suppress("UNCHECKED_CAST")
             val explosionMaps = parent.customData[EXPLOSION_RAYCAST_MAPS] as MutableMap<DamagingProjectileAPI, Map<String, Float>>
+
+            val currentTime = Global.getCombatEngine().getTotalElapsedTime(false)
+            explosionMaps.entries.retainAll { (_, em) -> em[DELETE_TIME]!! >= currentTime } // remove all stale values
+
             val explosionMap = explosionMaps.firstNotNullOfOrNull { (dp, em) ->
-                if (dp === param) em
-                else if (dp.damageAmount.isCloseTo(param.damageAmount, 1e-6f) && Misc.getDistanceSq(dp.location, param.location) < 25f) em
-                else null
-            } ?: generateExplosionRayhitMap(param, damage, parent)
+                // Sometimes a DamagingExplosion can apply itself twice on what could be considered the same target.
+                // This is presumed to occur as a module is destroyed and is made into pieces. Each ship piece is considered a 'different ship' to the explosion, so they are exploded again.
+                // Did you know, DamagingExplosion moves! It seems it inherits its creator's velocity, then moves along it during its lifetime. So here we use .spawnLocation instead of .location to make it easier to match it with the MissieAPI that made it.
+                val paramLoc = if(param is DamagingExplosion) param.spawnLocation else param.location
+
+                if (dp === param)
+                    em
+                else if (//dp.damageAmount.isCloseTo(param.damageAmount, 1e-6f) && // Commented out as some missiles have different damage amounts at different radius's within the same DamagingExplosion due to damage falloff from coreRadius to radius.
+                    (dp.location == paramLoc || Misc.getDistanceSq(dp.location,paramLoc) < 25f))
+                    em
+                else
+                    null
+            } ?: generateExplosionRayhitMap(param, damage, parent, currentTime)
 
             damage.modifier.modifyMult(OCCLUSION_MODIFIER, explosionMap.getOrDefault(target.id, 0f))
             return OCCLUSION_MODIFIER
@@ -61,17 +73,10 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         return null
     }
 
-
-    fun generateExplosionRayhitMap(projectile: DamagingProjectileAPI, damage: DamageAPI, parent: ShipAPI): Map<String, Float>{
-        if (projectile !is DamagingExplosion && projectile !is MissileAPI) return mapOf() // should never happen
-
+    private fun generateExplosionRayhitMap(projectile: DamagingProjectileAPI, damage: DamageAPI, parent: ShipAPI, currentTime: Float): Map<String, Float> {
         @Suppress("UNCHECKED_CAST")
         val explosionMaps = parent.customData[EXPLOSION_RAYCAST_MAPS] as MutableMap<DamagingProjectileAPI, Map<String, Float>>
         if (projectile in explosionMaps) return explosionMaps[projectile]!! // should also never happen, just in case
-
-        val currentTime = Global.getCombatEngine().getTotalElapsedTime(false)
-        // remove all stale values
-        explosionMaps.entries.retainAll { (_, em) -> em[DELETE_TIME]!! >= currentTime }
 
         // make new entry
         val explosionMap = mutableMapOf<String, Float>()
@@ -105,57 +110,90 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         val blockingModules = allInRange.filterNot { it.hasTag(PASS_THROUGH_OCCLUSION) }.toSet()
 
         val rayEndpoints = MathUtils.getPointsAlongCircumference(projectile.location, radius, NUM_RAYCASTS, 0f)
+        val origin = projectile.location
+        val moduleCount = allInRange.size
 
-        val hitsMap = mutableMapOf<ShipAPI, Int>()
+        // Cast every ray once. Collisions don't change with destruction, so cache each ray's hits sorted by distance.
+        val distSq = FloatArray(moduleCount)
+        val scratch = IntArray(moduleCount)
+        val rayHits = ArrayList<IntArray>(NUM_RAYCASTS)
         var totalRayHits = 0
 
         for (endpoint in rayEndpoints) {
-            // every module this ray crosses, nearest first
-            val collisions = allInRange
-                .mapNotNull { module ->
-                    val pointOnBounds = CollisionUtils.getCollisionPoint(projectile.location, endpoint, module)
-                    pointOnBounds?.let { module to Misc.getDistanceSq(projectile.location, it) }
-                }
-                .sortedBy { it.second }
-
-            if (collisions.isEmpty()) continue
-
-            totalRayHits++
-
-            for ((index, pair) in collisions.withIndex()) {
-                val module = pair.first
-
-                hitsMap[module] = hitsMap.getOrDefault(module, 0) + 1 // Hit!
-                if(index == 0 && module.hasTag(DEDUCT_FIRST_HIT_RAYCAST)) totalRayHits--
-                if (module in blockingModules) break // blocked here, ray goes no further
-                // else: pass-through module took a hit, but the ray keeps traveling
+            var count = 0
+            for (i in 0 until moduleCount) {
+                val p = CollisionUtils.getCollisionPoint(origin, endpoint, allInRange[i]) ?: continue
+                distSq[i] = Misc.getDistanceSq(origin, p)
+                scratch[count++] = i
             }
+            if (count == 0) continue
+
+            // Stable insertion sort by distance
+            for (a in 1 until count) {
+                val v = scratch[a]
+                var b = a - 1
+                while (b >= 0 && distSq[scratch[b]] > distSq[v]) { scratch[b + 1] = scratch[b]; b-- }
+                scratch[b + 1] = v
+            }
+
+            if (!allInRange[scratch[0]].hasTag(DEDUCT_FIRST_HIT_RAYCAST)) totalRayHits++
+            rayHits += scratch.copyOf(count)
         }
 
-        // Task: overkill damage should affect modules too, not just the parent.
+        if (rayHits.isEmpty()) return explosionMap
 
-        // resolve how much damage each hit module / the parent hull itself takes
-        if (hitsMap.size == 1) {
-            explosionMap[hitsMap.keys.first().id] = 1f
-        } else if (hitsMap.isNotEmpty()) {
-            // Note: this implementation does not account for overkill damage for any other module than the parent.
-            var overkillDamage = 0f
-            for ((occlusion, rayHits) in hitsMap) {
-                if (occlusion === parent) continue // special case the parent
+        val isBlocker = BooleanArray(moduleCount) { allInRange[it] in blockingModules }
+        // Parent dying ends the fight, and DEDUCT_FIRST_HIT_RAYCAST modules are typically invincible, so neither can be "destroyed"
+        val canDie = BooleanArray(moduleCount) { allInRange[it] !== parent && !allInRange[it].hasTag(DEDUCT_FIRST_HIT_RAYCAST) }
 
-                val damageMult = min(1f, max(rayHits / totalRayHits.toFloat(), rayHits / (NUM_RAYCASTS/2).toFloat()))
-                explosionMap[occlusion.id] = damageMult
-                val armor = occlusion.getAverageArmorInSlice(Misc.getAngleInDegrees(occlusion.location, projectile.location), 30f)
-                val (_, hullDamage) = damageAfterArmor(projectile.damageType, projectile.damageAmount * damageMult, projectile.damageAmount, armor, occlusion)
-                overkillDamage += max(0f, hullDamage - occlusion.hitpoints)
+        // How much of a ray's damage continues past each module: 0 = stops, 1 = passes fully
+        val pass = FloatArray(moduleCount) { if (isBlocker[it]) 0f else 1f }
+        val weights = FloatArray(moduleCount)
+        val mults = FloatArray(moduleCount)
+        val total = max(1, totalRayHits).toFloat()
+
+        // Each round, destroyed blockers let more damage through, which can destroy the next module.
+        // Pass values only ever increase, so this converges; the loop bound is just a safety cap.
+        for (iteration in 0..moduleCount) {
+            weights.fill(0f)
+            for (hits in rayHits) {
+                var w = 1f
+                for (i in hits) {
+                    weights[i] += w
+                    w *= pass[i]
+                    if (w <= 0f) break
+                }
             }
 
-            // do the same mult calc for the parent, except also subtract overkill from the reduction
-            val parentDamageMult = if (parent !in hitsMap) 0f
-            else min(1f, max(hitsMap[parent]!! / totalRayHits.toFloat(), hitsMap[parent]!! / (NUM_RAYCASTS/2).toFloat()))
-            explosionMap[parent.id] = min(((projectile.damageAmount * parentDamageMult) + overkillDamage) / projectile.damageAmount, 1f)
+            var changed = false
+            for (i in 0 until moduleCount) {
+                val mult = min(1f, max(weights[i] / total, weights[i] / (NUM_RAYCASTS / 2f)))
+                mults[i] = mult // never reduced: a module that would die takes its full original damage
+
+                if (canDie[i] && weights[i] > 0f) {
+                    val module = allInRange[i]
+                    val damageTaken = hullDamageTaken(projectile, module, mult)
+                    if (damageTaken > module.hitpoints) {
+                        val overkillFraction = (damageTaken - module.hitpoints) / damageTaken
+                        val newPass = if (isBlocker[i]) overkillFraction else 1f
+                        if (newPass > pass[i] + 0.001f) { pass[i] = newPass; changed = true }
+                    }
+                }
+            }
+            if (!changed) break
+        }
+
+        val hitCount = weights.count { it > 0f }
+        for (i in 0 until moduleCount) {
+            if (weights[i] > 0f) explosionMap[allInRange[i].id] = if (hitCount == 1) 1f else mults[i]
         }
 
         return explosionMap
+    }
+
+    private fun hullDamageTaken(projectile: DamagingProjectileAPI, module: ShipAPI, mult: Float): Float {
+        val armor = module.getAverageArmorInSlice(Misc.getAngleInDegrees(module.location, projectile.location), 30f)
+        val (_, hullDamage) = damageAfterArmor(projectile.damageType, projectile.damageAmount * mult, projectile.damageAmount, armor, module)
+        return hullDamage
     }
 }
