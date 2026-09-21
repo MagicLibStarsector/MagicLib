@@ -14,17 +14,25 @@ import kotlin.collections.iterator
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Scales explosion damage across a ship and its modules based on occlusion.
+ *
+ * Casts [NUM_RAYCASTS] rays from the blast center and converts each module's share of ray hits
+ * into a damage multiplier, so modules shielded by others take less damage. Per-module behavior
+ * is controlled by the [PASS_THROUGH_OCCLUSION], [DEDUCT_FIRST_HIT_RAYCAST], and [NO_OCCLUSION]
+ * hull tags. Results are cached briefly per explosion.
+ */
 class ExplosionOcclusionRaycast(): DamageTakenModifier {
     companion object {
         const val EXPLOSION_RAYCAST_MAPS = "explosion_raycast"
         const val OCCLUSION_MODIFIER = "occlusion_modifier"
         const val DELETE_TIME = "delete_time"
-        const val PASS_THROUGH_OCCLUSION = "pass_through_occlusion" // Allow raycast to pass through and apply damage through this module
-            // This is intended for use on non armor modules which you want explosions to pass through. Like the base-game, except damage is reduced depending on how much of the module is hit in comparison to other modules.
-        const val DEDUCT_FIRST_HIT_RAYCAST = "deduct_first_hit_raycast" // If raycast hit this module first, deduct 1 from the total ray hits to preserve the correct damage amount for other modules as if this module was not hit.
-            // This is intended for use on modules that take 0 damage, such as station vast bulk modules. As to not 'waste' damage on modules that don't take damage anyway.
-        const val NO_OCCLUSION = "no_occlusion" // Damage is always 1f, no raycasts are performed, raycasts cannot see this. This is simply excluded.
-            // Base-game behavior, completely ignore occlusion logic.
+        const val PASS_THROUGH_OCCLUSION = "pass_through_occlusion" // Rays hit this module but continue through it.
+            // This is intended for non-armor modules that explosions should pass through. Damage is scaled by how much of the module the blast hits relative to other modules.
+        const val DEDUCT_FIRST_HIT_RAYCAST = "deduct_first_hit_raycast" // Rays that hit this module first don't count toward total hits.
+            // This is intended for use on modules that take no damage (e.g. station vast bulk modules), so damage is not 'wasted' on invincible modules.
+        const val NO_OCCLUSION = "no_occlusion" // Ignore occlusion entirely; No raycasts, always takes full damage.
+            // Base-game behavior, this module is effectively invisible to this class.
         const val NUM_RAYCASTS = 36;
     }
 
@@ -93,8 +101,7 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
             return explosionMap
         }
 
-        // Modules that stop a ray outright. Everything else still takes a hit when a ray crosses it,
-        // but lets that ray continue on to whatever's behind it.
+        // blockingModules stop a ray outright. All other modules still take a hit when a ray crosses them, but the ray isn't blocked and continues on to whatever's behind it.
         val blockingModules = allInRange.filterNot { it.hasTag(PASS_THROUGH_OCCLUSION) }.toSet()
 
         val rayEndpoints = MathUtils.getPointsAlongCircumference(projectile.location, radius, NUM_RAYCASTS, 0f)
