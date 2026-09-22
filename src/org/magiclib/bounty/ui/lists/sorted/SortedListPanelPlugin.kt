@@ -19,18 +19,15 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         if (outerPanel != null) {
             outerTooltip!!.removeComponent(innerPanel)
             outerPanel!!.removeComponent(outerTooltip)
+            parentPanel.removeComponent(outerPanel)
             clearItems()
         }
 
         val outerPanelLocal = outerPanel ?: parentPanel.createCustomPanel(panelWidth, panelHeight, this)
         outerPanel = outerPanelLocal
 
-        var validMembers = members.filter { shouldMakePanelForItem(it) }
-        sortersForItems.forEach { it.loadFromPersistentData(validMembers) }
-
-        lastMembers = validMembers
-        //validMembers = sortMembers(validMembers)
-        validMembers = validMembers.sortedBy { it.getSortIndex() }
+        lastMembers = members
+        val sortedMembers = members.sortedBy { it.getSortIndex() }
 
         val outerTooltipLocal = outerPanelLocal.createUIElement(panelWidth, panelHeight, false)
         outerTooltip = outerTooltipLocal
@@ -60,7 +57,7 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
             scrollingPanel.createUIElement(panelWidth, 0f, false) // Height is assigned later
 
         var lastItem: UIPanelAPI? = null
-        validMembers
+        sortedMembers
             .map { it to createPanelForItem(tooltip, it) }
             .filter { (_, rowPlugin) -> rowPlugin != null }
             .forEach { (item, rowPlugin) ->

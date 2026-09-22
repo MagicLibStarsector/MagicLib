@@ -62,7 +62,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         var currentOrderSelected: ButtonAPI? = null
 
         orderTogglesData.forEachIndexed { index, (label, order) ->
-            val checkbox = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 0f)
+            val checkbox = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, 0f)
             checkbox.setSize(Global.getSettings().computeStringWidth(label, "graphics/fonts/insignia15LTaa.fnt") + checkbox.height + 4f, checkbox.height)
 
             // Check the current order by default
@@ -94,7 +94,7 @@ class TogglePrimarySorter : ListSorter<BountyInfo, LocationAPI> {
         var currentSelected: ButtonAPI? = null
 
         togglesData.forEachIndexed { index, (label, method) ->
-            val checkbox = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, if(index == 0) 0f else 0f)
+            val checkbox = toggleGroupTooltip.addCheckbox(20f, 20f, label, null, ButtonAPI.UICheckboxSize.SMALL, 0f)
             checkbox.setSize(Global.getSettings().computeStringWidth(label, "graphics/fonts/insignia15LTaa.fnt") + checkbox.height + 4f, checkbox.height)
 
             if (sortBy == method) {

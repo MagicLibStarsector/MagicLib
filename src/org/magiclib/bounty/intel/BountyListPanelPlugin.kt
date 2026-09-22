@@ -16,6 +16,7 @@ import org.magiclib.bounty.ui.lists.sorted.SortedListPanelPlugin
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.util.MagicTxt
 import java.awt.Color
+import kotlin.collections.forEach
 
 class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin<BountyInfo>(parentPanel) {
     override val rowWidth
@@ -55,9 +56,11 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
     }
 
     override fun layoutPanels(members: List<BountyInfo>): CustomPanelAPI {
-        val outerPanelLocal = super.layoutPanels(members)
+        val validMembers = members.filter { shouldMakePanelForItem(it) }
+        getApplicableSorters().forEach { it.loadFromPersistentData(validMembers) }
+        finalItem = validMembers.maxByOrNull { it.getSortIndex() }
 
-        finalItem = members.maxByOrNull { it.getSortIndex() }
+        val outerPanelLocal = super.layoutPanels(validMembers)
 
         this.addListener {
             selectedItem = it

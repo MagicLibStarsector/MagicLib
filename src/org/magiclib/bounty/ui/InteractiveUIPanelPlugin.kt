@@ -17,10 +17,10 @@ open class InteractiveUIPanelPlugin : BaseUIPanelPlugin() {
 
     final override fun advance(amount: Float) {
         var checkedButton: ButtonAPI? = null
-        buttons.forEach { (button, _) ->
+        for((button, _) in buttons) {
             if (button.isChecked && button.isEnabled) {
                 checkedButton = button
-                return@forEach
+                break
             }
         }
 

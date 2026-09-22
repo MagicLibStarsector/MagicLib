@@ -245,7 +245,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         return "00000Bounties"
     }
 
-    override fun getIntelTags(map: SectorMapAPI?): Set<String>? {
+    override fun getIntelTags(map: SectorMapAPI?): Set<String> {
         val tags = super.getIntelTags(map)
         tags.add(Tags.INTEL_BOUNTY)
         return tags
