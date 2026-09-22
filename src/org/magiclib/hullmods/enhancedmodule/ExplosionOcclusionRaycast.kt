@@ -146,14 +146,14 @@ class ExplosionOcclusionRaycast(): DamageTakenModifier {
         // Parent dying ends the fight, and DEDUCT_FIRST_HIT_RAYCAST modules are typically invincible, so neither can be "destroyed"
         val canDie = BooleanArray(moduleCount) { allInRange[it] !== parent && !allInRange[it].hasTag(DEDUCT_FIRST_HIT_RAYCAST) }
 
-        // How much of a ray's damage continues past each module: 0 = stops, 1 = passes fully
         val pass = FloatArray(moduleCount) { if (isBlocker[it]) 0f else 1f }
         val weights = FloatArray(moduleCount)
         val mults = FloatArray(moduleCount)
         val total = max(1, totalRayHits).toFloat()
 
-        // Each round, destroyed blockers let more damage through, which can destroy the next module.
-        // Pass values only ever increase, so this converges; the loop bound is just a safety cap.
+        // pass[i] is how much damage continues past module i once it's destroyed.
+        // Blockers start opaque (pass=0); destroying one exposes what's behind it, so we recompute each round until nothing new dies.
+        // The loop bound (moduleCount) is just a safety cap.
         for (iteration in 0..moduleCount) {
             weights.fill(0f)
             for (hits in rayHits) {
