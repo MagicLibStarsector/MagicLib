@@ -153,7 +153,7 @@ internal object MagicPaintjobRefitPanel {
             if (!selectorPlugin.isUnlocked && !paintjobSpec?.unlockConditions.isNullOrBlank()) {
                 scrollerTooltip.addTooltip(selectorPanel, TooltipMakerAPI.TooltipLocation.BELOW, 250f) { tooltip ->
                     tooltip.addTitle(MagicTxt.getString("ml_mp_refit_locked"))
-                    tooltip.addPara(paintjobSpec!!.unlockConditions, 0f)
+                    tooltip.addPara(paintjobSpec.unlockConditions, 0f)
                 }
             }
         }
@@ -181,7 +181,7 @@ internal object MagicPaintjobRefitPanel {
                         if (selectorPlugin.paintjobSpec == null)
                             MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
                         else {
-                            val moduleHull = (moduleVariant as ShipVariantAPI).hullSpec
+                            val moduleHull = moduleVariant.hullSpec
                             MagicPaintjobManager.getPaintjobsForHull(moduleHull).firstOrNull {
                                 it.paintjobFamily == selectorPlugin.paintjobSpec.paintjobFamily
                             }?.let {

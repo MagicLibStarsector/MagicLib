@@ -375,7 +375,7 @@ object MagicPaintjobManager {
                         null
                     }
                 }.toMap()
-                newSpecs.add(MagicWeaponPaintjobSpec(mod.id, id!!, paintjobFamilies, weaponIds, spriteMap))
+                newSpecs.add(MagicWeaponPaintjobSpec(mod.id, id, paintjobFamilies, weaponIds, spriteMap))
             }.onFailure { e ->
                 logger.warn(
                     "Unable to load weapon paintjob ($id) in ${mod.id} by ${

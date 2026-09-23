@@ -173,7 +173,7 @@ abstract class ShipKillsAchievement @JvmOverloads constructor(
         val playerDamageRatio = damageInfoPerShipId.amountFromPlayer / totalDamage
 
         if (playerDamageRatio >= (damageRatioOverride ?: damageRatio)) {
-            val maxProgress = maxProgress ?: return
+            val maxProgress = maxProgress
             val prev =
                 (achievementMemory["killsByHull${combatEngine.playerShip?.hullSpec?.hullId}"] as? String?)?.toIntOrNull()
                     ?: 0

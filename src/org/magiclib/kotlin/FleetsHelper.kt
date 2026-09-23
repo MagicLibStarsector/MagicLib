@@ -173,19 +173,19 @@ private object FleetsHelper {
         isPrimary: Boolean,
         divisor: Float
     ) {
-        destParams.fleetType = sourceParams.fleetType ?: null
-        destParams.aiCores = sourceParams.aiCores ?: null
-        destParams.allWeapons = sourceParams.allWeapons ?: null
-        destParams.averageSMods = sourceParams.averageSMods ?: null
-        destParams.doNotAddShipsBeforePruning = sourceParams.doNotAddShipsBeforePruning ?: null
-        destParams.doNotPrune = sourceParams.doNotPrune ?: null
-        destParams.doctrineOverride = sourceParams.doctrineOverride ?: null
+        destParams.fleetType = sourceParams.fleetType
+        destParams.aiCores = sourceParams.aiCores
+        destParams.allWeapons = sourceParams.allWeapons
+        destParams.averageSMods = sourceParams.averageSMods
+        destParams.doNotAddShipsBeforePruning = sourceParams.doNotAddShipsBeforePruning
+        destParams.doNotPrune = sourceParams.doNotPrune
+        destParams.doctrineOverride = sourceParams.doctrineOverride
         destParams.doNotIntegrateAICores = sourceParams.doNotIntegrateAICores
-        destParams.flagshipVariant = sourceParams.flagshipVariant ?: null
-        destParams.flagshipVariantId = sourceParams.flagshipVariantId ?: null
-        destParams.forceAllowPhaseShipsEtc = sourceParams.forceAllowPhaseShipsEtc ?: null
-        destParams.ignoreMarketFleetSizeMult = sourceParams.ignoreMarketFleetSizeMult ?: null
-        destParams.modeOverride = sourceParams.modeOverride ?: null
+        destParams.flagshipVariant = sourceParams.flagshipVariant
+        destParams.flagshipVariantId = sourceParams.flagshipVariantId
+        destParams.forceAllowPhaseShipsEtc = sourceParams.forceAllowPhaseShipsEtc
+        destParams.ignoreMarketFleetSizeMult = sourceParams.ignoreMarketFleetSizeMult
+        destParams.modeOverride = sourceParams.modeOverride
         destParams.maxNumShips =
             if (sourceParams.maxNumShips != null)
                 sourceParams.maxNumShips / divisor.toInt()
@@ -196,17 +196,17 @@ private object FleetsHelper {
         destParams.officerLevelLimit = sourceParams.officerLevelLimit
         destParams.officerNumberBonus = sourceParams.officerNumberBonus
         destParams.officerNumberMult = sourceParams.officerNumberMult
-        destParams.onlyApplyFleetSizeToCombatShips = sourceParams.onlyApplyFleetSizeToCombatShips ?: null
-        destParams.onlyRetainFlagship = sourceParams.onlyRetainFlagship ?: null
-        destParams.random = sourceParams.random ?: null
-        destParams.timestamp = sourceParams.timestamp ?: null
-        destParams.treatCombatFreighterSettingAsFraction = sourceParams.treatCombatFreighterSettingAsFraction ?: null
+        destParams.onlyApplyFleetSizeToCombatShips = sourceParams.onlyApplyFleetSizeToCombatShips
+        destParams.onlyRetainFlagship = sourceParams.onlyRetainFlagship
+        destParams.random = sourceParams.random
+        destParams.timestamp = sourceParams.timestamp
+        destParams.treatCombatFreighterSettingAsFraction = sourceParams.treatCombatFreighterSettingAsFraction
         destParams.withOfficers = sourceParams.withOfficers
 
         if (isPrimary) {
-            destParams.commander = sourceParams.commander ?: null
+            destParams.commander = sourceParams.commander
             destParams.commanderLevelLimit = sourceParams.commanderLevelLimit
-            destParams.noCommanderSkills = sourceParams.noCommanderSkills ?: null
+            destParams.noCommanderSkills = sourceParams.noCommanderSkills
         }
     }
 
