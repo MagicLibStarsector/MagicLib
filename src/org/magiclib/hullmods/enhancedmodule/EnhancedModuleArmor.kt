@@ -13,12 +13,13 @@ import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import org.lwjgl.util.vector.Vector2f
 
 /**
- * A hull-mod that makes armor modules act like armor, not separate targets, and fixes
- * explosions bypassing modular armor via occlusion raycasting.
+ * Makes armor modules act like armor, not separate targets, and stops explosions from bypassing modular armor with occlusion ray-casting.
  *
- * If this hull-mod is applied to a hull with modules, it will be applied to all modules present on that hull.
+ * See [ExplosionOcclusionRaycast] for more details.
  *
- * If this hull-mod is applied to a module, it will only function on that specific module.
+ * If this hull-mod is applied to a module alone, only that specific module will act like armor.
+ *
+ * If this hull-mod is applied to a hull with modules, all modules on that hull will act like armor.
  */
 class EnhancedModuleArmor: BaseHullMod() {
     companion object {

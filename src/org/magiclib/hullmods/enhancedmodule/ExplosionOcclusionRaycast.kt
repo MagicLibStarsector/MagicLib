@@ -14,14 +14,17 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Scales explosion damage across a ship and its modules based on occlusion.
+ * Splits explosion damage between a ship and its modules based on how exposed each one is to the blast.
  *
- * Casts [NUM_RAYCASTS] rays from the blast center and converts each module's share of ray hits
- * into a damage multiplier, so modules shielded by others take less damage. Per-module behavior
- * is controlled by the [PASS_THROUGH_OCCLUSION], [DEDUCT_FIRST_HIT_RAYCAST], and [NO_OCCLUSION]
- * hull tags. Results are cached briefly per explosion.
+ * Casts [NUM_RAYCASTS] rays outward from the blast center. A module's damage multiplier is its share
+ * of the ray hits, so the blast is spread across modules rather than hitting each at full strength.
+ * Modules block rays unless tagged [PASS_THROUGH_OCCLUSION]; a blocker that the blast would destroy
+ * lets the remaining damage through to whatever is behind it.
+ *
+ * Per-module behavior is set with the [PASS_THROUGH_OCCLUSION], [DEDUCT_FIRST_HIT_RAYCAST] and
+ * [NO_OCCLUSION] hull tags. Results are cached briefly per explosion.
  */
-class ExplosionOcclusionRaycast(): DamageTakenModifier {
+class ExplosionOcclusionRaycast : DamageTakenModifier {
     companion object {
         const val EXPLOSION_RAYCAST_MAPS = "explosion_raycast"
         const val OCCLUSION_MODIFIER = "occlusion_modifier"

@@ -15,7 +15,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Simpler version of [ExplosionOcclusionRaycast] that does not account for tags. Occlusion applies equally to all modules, including the parent hull.
+ * Scales explosion damage across a ship and its modules based on occlusion.
+ *
+ * Simpler version of [ExplosionOcclusionRaycast]. Occlusion applies equally to all modules, including the parent hull.
  */
 class ExplosionOcclusionRaycastSimple: DamageTakenModifier {
     companion object {
