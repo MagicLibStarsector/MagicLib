@@ -30,39 +30,48 @@ class EnhancedModuleArmor: BaseHullMod() {
         const val HULL_MOD_ID = "ML_enhancedModuleArmor"
     }
 
+    private inline fun <reified T : Any> ShipAPI.addListenerIfAbsent(create: () -> T) {
+        if (!hasListenerOfClass(T::class.java)) addListener(create())
+    }
+
+    private fun ShipAPI.addOcclusionTag() {
+        when {
+            variant.hasHullMod(HullMods.VASTBULK) ->
+                addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
+            !variant.hasHullMod(HULL_MOD_ID) ->
+                addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+        }
+    }
+
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
         if((ship.childModulesCopy.isEmpty() && ship.parentStation == null) || ship.hasTag(MODULE_LISTENERS_ADDED)) return
 
         ship.addTag(MODULE_LISTENERS_ADDED)
 
-        ship.parentStation?.let { parent -> // Apply to parent if module
-            if (!ship.hasListenerOfClass(ArmorModuleChild::class.java)) ship.addListener(ArmorModuleChild(ship))
+        // Apply to parent if module
+        ship.parentStation?.let { parent ->
+            ship.addListenerIfAbsent { ArmorModuleChild(ship) }
 
             if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
                 parent.addListener(ExplosionOcclusionRaycast())
-                if (parent.variant.hasHullMod(HullMods.VASTBULK))
-                    parent.addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-                else
-                    parent.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                parent.addOcclusionTag()
 
                 parent.childModulesCopy.forEach {
-                    if (!it.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) it.addListener(ExplosionOcclusionRaycast())
-
-                    if (it.variant.hasHullMod(HullMods.VASTBULK)) it.addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-                    else if (!it.variant.hasHullMod(HULL_MOD_ID)) it.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                    it.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+                    it.addOcclusionTag()
                 }
             }
         }
-        if(ship.childModulesCopy.isNotEmpty()) {
-            if (!ship.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) ship.addListener(ExplosionOcclusionRaycast())
-            if (ship.variant.hasHullMod(HullMods.VASTBULK))
-                ship.addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-            else
-                ship.addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
 
-            ship.childModulesCopy.forEach { module -> // Apply to children if parent
-                if (!module.hasListenerOfClass(ArmorModuleChild::class.java)) module.addListener(ArmorModuleChild(module))
-                if (!module.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) module.addListener(ExplosionOcclusionRaycast())
+        // Apply to children if parent
+        val children = ship.childModulesCopy
+        if (children.isNotEmpty()) {
+            ship.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+            ship.addOcclusionTag()
+
+            children.forEach { module ->
+                module.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+                module.addListenerIfAbsent { ArmorModuleChild(module) }
             }
         }
     }
