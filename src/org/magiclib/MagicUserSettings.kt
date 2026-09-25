@@ -8,39 +8,28 @@ import org.lazywizard.lazylib.ext.json.optFloat
 import org.magiclib.kotlin.optColor
 import java.awt.Color
 
-object LunaWrapper {
+/**
+ * Utility for reading user configured mod settings in a way that supports both LunaLib and plain `userSettings.json` files.
+ *
+ * If LunaLib is not enabled, or the setting does not exist in LunaLib, the utility will fall back to reading from `userSettings.json`.
+ * This makes having an optional dependency on LunaLib easier, as none of the functions in this file require LunaLib to be an enabled mod.
+ */
+object MagicUserSettings {
     val lunaLibEnabled = Global.getSettings().modManager.isModEnabled("lunalib")
 
     /**
-     * Adds a listener to be notified when LunaLib settings change.
+     * Adds a listener to be notified for when LunaLib settings change, optionally invoking the listener once upon creation.
      *
-     * This listener gets called when the settings from any mod get changed.
-     * @param listener The listener to add.
-     */
-    @JvmStatic
-    @Deprecated("Use addSettingsListener(modId, listener) instead.")
-    fun addSettingsListener(listener: LunaWrapperSettingsListener) {
-        if (!lunaLibEnabled) return
-        LunaSettings.addSettingsListener(object : lunalib.lunaSettings.LunaSettingsListener {
-            override fun settingsChanged(modID: String) {
-                listener.settingsChanged(modID)
-            }
-        })
-    }
-
-    /**
-     * Adds a listener to be notified when LunaLib settings change and optionally once upon creation.
+     * If [invokeImmediately] is true, the listener will be called once regardless of if the mod LunaLib is enabled or not.
      *
-     * If [invokeImmediately] is true, the listener will be called once irregardless of if LunaLib is enabled or not.
-     *
-     * This listener only gets called when the input [modId] matches the modId of the mod which had their settings changed.
+     * The listener is only called for changes to [modId]'s own settings, not for other mods.
      * @param modId The mod ID to listen to.
      * @param invokeImmediately If true, the listener will be invoked immediately after creation.
      * @param listener The listener to add.
      */
     @JvmStatic
     @JvmOverloads
-    fun addSettingsListener(modId: String, invokeImmediately: Boolean = true, listener: LunaWrapperSettingsListener) {
+    fun addSettingsListener(modId: String, invokeImmediately: Boolean = true, listener: MagicSettingsListener) {
         if (invokeImmediately)
             listener.settingsChanged(modId)
 
@@ -76,6 +65,14 @@ object LunaWrapper {
         return modSettings.has(fieldID)
     }
 
+    /**
+     * Gets a [Boolean] setting: checks LunaLib first, if LunaLib is not enabled or does not have that setting it will look in `userSettings.json` instead.
+     *
+     * Returns [default] if the setting wasn't found in either.
+     * @param modID The mod ID to retrieve the setting from.
+     * @param fieldID The field ID of the setting.
+     * @param default The default value to return if the setting is not found.
+     */
     @JvmStatic
     @JvmOverloads
     fun getBoolean(modID: String, fieldID: String, default: Boolean = false): Boolean {
@@ -87,6 +84,14 @@ object LunaWrapper {
         return modSettings.optBoolean(fieldID, default)
     }
 
+    /**
+     * Gets a [Int] setting: checks LunaLib first, if LunaLib is not enabled or does not have that setting it will look in `userSettings.json` instead.
+     *
+     * Returns [default] if the setting wasn't found in either.
+     * @param modID The mod ID to retrieve the setting from.
+     * @param fieldID The field ID of the setting.
+     * @param default The default value to return if the setting is not found.
+     */
     @JvmStatic
     @JvmOverloads
     fun getInt(modID: String, fieldID: String, default: Int = 0): Int {
@@ -98,6 +103,14 @@ object LunaWrapper {
         return modSettings.optInt(fieldID, default)
     }
 
+    /**
+     * Gets a [Double] setting: checks LunaLib first, if LunaLib is not enabled or does not have that setting it will look in `userSettings.json` instead.
+     *
+     * Returns [default] if the setting wasn't found in either.
+     * @param modID The mod ID to retrieve the setting from.
+     * @param fieldID The field ID of the setting.
+     * @param default The default value to return if the setting is not found.
+     */
     @JvmStatic
     @JvmOverloads
     fun getDouble(modID: String, fieldID: String, default: Double = 0.0): Double {
@@ -109,6 +122,14 @@ object LunaWrapper {
         return modSettings.optDouble(fieldID, default)
     }
 
+    /**
+     * Gets a [Float] setting: checks LunaLib first, if LunaLib is not enabled or does not have that setting it will look in `userSettings.json` instead.
+     *
+     * Returns [default] if the setting wasn't found in either.
+     * @param modID The mod ID to retrieve the setting from.
+     * @param fieldID The field ID of the setting.
+     * @param default The default value to return if the setting is not found.
+     */
     @JvmStatic
     @JvmOverloads
     fun getFloat(modID: String, fieldID: String, default: Float = 0f): Float {
@@ -120,6 +141,14 @@ object LunaWrapper {
         return modSettings.optFloat(fieldID, default)
     }
 
+    /**
+     * Gets a [String] setting: checks LunaLib first, if LunaLib is not enabled or does not have that setting it will look in `userSettings.json` instead.
+     *
+     * Returns [default] if the setting wasn't found in either.
+     * @param modID The mod ID to retrieve the setting from.
+     * @param fieldID The field ID of the setting.
+     * @param default The default value to return if the setting is not found.
+     */
     @JvmStatic
     @JvmOverloads
     fun getString(modID: String, fieldID: String, default: String = ""): String {
@@ -131,6 +160,14 @@ object LunaWrapper {
         return modSettings.optString(fieldID, default)
     }
 
+    /**
+     * Gets a [Color] setting: checks LunaLib first, if LunaLib is not enabled or does not have that setting it will look in `userSettings.json` instead.
+     *
+     * Returns [default] if the setting wasn't found in either.
+     * @param modID The mod ID to retrieve the setting from.
+     * @param fieldID The field ID of the setting.
+     * @param default The default value to return if the setting is not found.
+     */
     @JvmStatic
     @JvmOverloads
     fun getColor(modID: String, fieldID: String, default: Color = Color.WHITE): Color {
@@ -148,6 +185,6 @@ object LunaWrapper {
     }
 }
 
-fun interface LunaWrapperSettingsListener {
+fun interface MagicSettingsListener {
     fun settingsChanged(modID: String)
 }

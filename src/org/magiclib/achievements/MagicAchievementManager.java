@@ -14,8 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.JSONUtils;
-import org.magiclib.LunaWrapper;
-import org.magiclib.LunaWrapperSettingsListener;
+import org.magiclib.MagicUserSettings;
 import org.magiclib.util.MagicMisc;
 import org.magiclib.util.MagicVariables;
 import org.magiclib.util.internal.MiscellaneousUtil;
@@ -92,8 +91,8 @@ public class MagicAchievementManager {
         // Set up LunaLib settings.
         if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
             // Add settings listener.
-            LunaWrapper.addSettingsListener(MagicVariables.MAGICLIB_ID, false, settings -> {
-                areAchievementsEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements", true);
+            MagicUserSettings.addSettingsListener(MagicVariables.MAGICLIB_ID, false, settings -> {
+                areAchievementsEnabled = MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements", true);
 
                 boolean isGameLoading = Global.getCurrentState() == GameState.CAMPAIGN;
                 setAchievementsEnabled(areAchievementsEnabled, isGameLoading);
@@ -101,7 +100,7 @@ public class MagicAchievementManager {
         }
 
         // Read from settings for initial load.
-        areAchievementsEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements", true);
+        areAchievementsEnabled = MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableAchievements", true);
 
         setAchievementsEnabled(areAchievementsEnabled, false);
     }

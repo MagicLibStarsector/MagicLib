@@ -19,7 +19,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.optFloat
 import org.lazywizard.lazylib.ext.logging.w
-import org.magiclib.LunaWrapper
+import org.magiclib.MagicUserSettings
 import org.magiclib.Magic_modPlugin
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getFieldsMatching
@@ -96,9 +96,9 @@ object MagicPaintjobManager {
     @JvmStatic
     fun onApplicationLoad() {
         // Add LunaLib settings listener.
-        LunaWrapper.addSettingsListener(MagicVariables.MAGICLIB_ID) { modID ->
+        MagicUserSettings.addSettingsListener(MagicVariables.MAGICLIB_ID) { modID ->
             val lunaIsEnabled =
-                LunaWrapper.getBoolean(modID, "magiclib_enablePaintjobs", default = true)
+                MagicUserSettings.getBoolean(modID, "magiclib_enablePaintjobs", default = true)
 
             if (isEnabled != lunaIsEnabled) {
                 isEnabled = lunaIsEnabled

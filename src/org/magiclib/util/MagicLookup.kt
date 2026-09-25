@@ -11,7 +11,7 @@ import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.loading.WeaponSpecAPI
 import org.apache.log4j.Level
-import org.magiclib.LunaWrapper
+import org.magiclib.MagicUserSettings
 import org.magiclib.util.api.getActualHull
 import org.magiclib.util.api.getActualHullId
 import org.magiclib.util.api.getEffectiveHull
@@ -153,7 +153,7 @@ object MagicLookup {
             }
         }
 
-        if(LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_FixMissionVariantError", default = true))
+        if(MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_FixMissionVariantError", default = true))
             stripMissingElementsFromMissionVariants(allVariants)
 
         // Log a warning if any variant had missing elements (hull-mod, weapon, wing)
@@ -173,7 +173,7 @@ object MagicLookup {
         enabledModIds = settings.modManager.enabledModsCopy.mapTo(HashSet()) { it.id }
 
 
-        if(LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_AssignMissingSourceMods", default = true))
+        if(MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_AssignMissingSourceMods", default = true))
             assignHullSkinSourceMods()
 
 

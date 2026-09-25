@@ -17,7 +17,7 @@ import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.magiclib.LunaWrapper;
+import org.magiclib.MagicUserSettings;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.util.*;
@@ -63,8 +63,8 @@ public final class MagicBountyCoordinator {
 
         initIntel();
 
-        LunaWrapper.addSettingsListener(MagicVariables.MAGICLIB_ID, s -> {
-            DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines", DEADLINES_ENABLED);
+        MagicUserSettings.addSettingsListener(MagicVariables.MAGICLIB_ID, s -> {
+            DEADLINES_ENABLED = MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines", DEADLINES_ENABLED);
         });
     }
 
