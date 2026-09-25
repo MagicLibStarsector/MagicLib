@@ -98,7 +98,7 @@ object MagicPaintjobManager {
         // Add LunaLib settings listener.
         LunaWrapper.addSettingsListener(MagicVariables.MAGICLIB_ID) { modID ->
             val lunaIsEnabled =
-                LunaWrapper.getBoolean(modID, "magiclib_enablePaintjobs") ?: true
+                LunaWrapper.getBoolean(modID, "magiclib_enablePaintjobs", default = true)
 
             if (isEnabled != lunaIsEnabled) {
                 isEnabled = lunaIsEnabled

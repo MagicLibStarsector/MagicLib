@@ -36,7 +36,6 @@ val modDependencies = listOf(
 //Directories keep their structure in the zip; files are placed at the zip root.
 //Missing entries are silently skipped by Gradle.
 val packageIncludes = listOf(
-    "mod_info.json",
     "data",
     "graphics",
     "sounds",
@@ -47,6 +46,7 @@ val packageIncludes = listOf(
 //File extensions to include from the project root in the packaged zip.
 //Each entry is matched as "*.<ext>" against files directly in the project root.
 val packageIncludeExtensions = listOf(
+    "json",
     "version",
     "md",
     "txt"

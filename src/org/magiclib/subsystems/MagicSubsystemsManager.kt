@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector2f
 import org.magiclib.LunaWrapper
 import org.magiclib.LunaWrapperSettingsListener
 import org.magiclib.util.MagicSettings
+import org.magiclib.util.MagicVariables
 
 object MagicSubsystemsManager {
     val log: Logger = Global.getLogger(MagicSubsystemsManager::class.java)
@@ -28,11 +29,7 @@ object MagicSubsystemsManager {
      */
     @JvmStatic
     fun initialize() {
-        reloadSettings()
-
-        if (lunaLibEnabled) {
-            LunaWrapper.addSettingsListener(SubsystemSettingsListener())
-        }
+        LunaWrapper.addSettingsListener(MagicVariables.MAGICLIB_ID, listener = SubsystemSettingsListener())
     }
 
     /**
@@ -128,27 +125,20 @@ object MagicSubsystemsManager {
     }
 
     fun reloadSettings() {
-        if (lunaLibEnabled) {
-            infoByDefault = LunaWrapper.getBoolean("MagicLib", "magiclib_subsystems_showInfoDefault") ?: true
-            infoHotkey = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_InfoKeyBind") ?: 23
-            hotkeyList = mutableListOf(
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind1") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind2") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind3") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind4") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind5") ?: 0,
-            )
-                .filter { it > 0 }
+        infoByDefault = LunaWrapper.getBoolean("MagicLib", "magiclib_subsystems_showInfoDefault", default = true)
+        infoHotkey = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_InfoKeyBind", default = 23)
+        hotkeyList = mutableListOf(
+            LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind1"),
+            LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind2"),
+            LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind3"),
+            LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind4"),
+            LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind5"),
+        )
+            .filter { it > 0 }
 
-            widgetOffsetX = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetX") ?: 0
-            widgetOffsetY = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetY") ?: 0
-            infoAlphaFadeout = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_infoTextFadeout") ?: 0
-        } else {
-            infoHotkey = MagicSettings.getString("MagicLib", "subsystemInfoKey")?.let { Keyboard.getKeyIndex(it) } ?: 23
-            hotkeyList = MagicSettings.getList("MagicLib", "subsystemKeys")
-                .map { Keyboard.getKeyIndex(it) }
-                .filter { it != 0 }
-        }
+        widgetOffsetX = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetX")
+        widgetOffsetY = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetY")
+        infoAlphaFadeout = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_infoTextFadeout")
 
         log.i({ "Loaded hotkey list ${hotkeyList.joinToString { "," }}" })
     }

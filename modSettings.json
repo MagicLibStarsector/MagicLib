@@ -1,0 +1,43 @@
+# If LunaLib is enabled, this file will be ignored and the in game settings will be used instead.
+{
+    "magiclib_enableAchievements": true, # Disabling achievements will not affect progress.
+    "magiclib_enablePaintjobs": true, # Disabling paintjobs will not affect unlocks.
+    "magiclib_enableBountyDeadlines": true, # Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.
+
+
+    "magiclib_subsystems_showInfoDefault": true, # Whether extra info will be displayed on the Subsystems widget when combat starts.
+
+    "magiclib_subsystems_widgetOffsetX": 0,
+    "magiclib_subsystems_widgetOffsetY": 0,
+    "magiclib_subsystems_infoTextFadeout": 0, # The hotkey text for displaying info will fade to this value after a second of not pressing it. 0 is invisible, while 255 is no fade out.
+
+    # See "https://gist.github.com/Mumfrey/5cfc3b7e14fef91b6fa56470dc05218a" for what number relates to what key.
+    "magiclib_subsystems_InfoKeyBind": 23, # Keybind for viewing subsystem info in combat. 23 = KEY_I
+    # Keybinds for subsystems. They are used in order. If any are empty they will be ignored and the next available keybind will be used.
+    "magiclib_subsystems_KeyBind1": 56, # 56 = left alt
+    "magiclib_subsystems_KeyBind2": 21, # 21 = KEY_Y
+    "magiclib_subsystems_KeyBind3": 35, # 35 = KEY_H
+    "magiclib_subsystems_KeyBind4": 36, # 36 = KEY_J
+    "magiclib_subsystems_KeyBind5": 49, # 49 = KEY_N
+
+
+
+    "magiclib_FixMissionVariantError": true,
+    # On game launch, look through every saved mission variant loaded within the game and remove any elements which cannot be found.
+    # This includes removed weapons, wings, and hull-mods.
+    #
+    # Example:
+    # This will prevent saved mission variants from causing the mission to fail to load due to lacking the mod the variant was saved with.
+
+
+    "magiclib_AssignMissingSourceMods": true
+    # Fixes various issues where a source mod would be expected but are not present.
+    # By default, ship skins (e.g., Sunder XIV from Ship/Weapon Pack) do not have a source mod assigned.
+    # This option assigns the appropriate source mod to each hull skin where relevant.
+    #
+    # Example:
+    # Ensures ship skins correctly display their originating mod in the codex.
+    # Fixes some mod behavior which relies on detecting which mod a hull skin came from.
+    # ETC.
+
+}

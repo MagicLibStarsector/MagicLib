@@ -1,15 +1,16 @@
 package org.magiclib
 
 import com.fs.starfarer.api.Global
+import lunalib.backend.ui.settings.LunaSettingsLoader
 import lunalib.lunaSettings.LunaSettings
-import org.lazywizard.lazylib.LazyLib
-import org.magiclib.util.MagicVariables
+import org.json.JSONObject
+import org.lazywizard.lazylib.ext.json.optFloat
+import org.magiclib.kotlin.optColor
+import java.awt.Color
 
-/**
- * There's some bug where having even a soft dependency on LunaLib becomes a hard dependency.
- * Creating a wrapper class that's onlyl instantiated if LunaLib is present seems to fix it.
- */
 object LunaWrapper {
+    val lunaLibEnabled = Global.getSettings().modManager.isModEnabled("lunalib")
+
     /**
      * Adds a listener to be notified when LunaLib settings change.
      *
@@ -17,10 +18,9 @@ object LunaWrapper {
      * @param listener The listener to add.
      */
     @JvmStatic
+    @Deprecated("Use addSettingsListener(modId, listener) instead.")
     fun addSettingsListener(listener: LunaWrapperSettingsListener) {
-        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
-            return
-
+        if (!lunaLibEnabled) return
         LunaSettings.addSettingsListener(object : lunalib.lunaSettings.LunaSettingsListener {
             override fun settingsChanged(modID: String) {
                 listener.settingsChanged(modID)
@@ -31,6 +31,8 @@ object LunaWrapper {
     /**
      * Adds a listener to be notified when LunaLib settings change and optionally once upon creation.
      *
+     * If [invokeImmediately] is true, the listener will be called once irregardless of if LunaLib is enabled or not.
+     *
      * This listener only gets called when the input [modId] matches the modId of the mod which had their settings changed.
      * @param modId The mod ID to listen to.
      * @param invokeImmediately If true, the listener will be invoked immediately after creation.
@@ -38,9 +40,11 @@ object LunaWrapper {
      */
     @JvmStatic
     @JvmOverloads
-    internal fun addSettingsListener(modId: String, invokeImmediately: Boolean = true, listener: LunaWrapperSettingsListener) {
-        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
-            return
+    fun addSettingsListener(modId: String, invokeImmediately: Boolean = true, listener: LunaWrapperSettingsListener) {
+        if (invokeImmediately)
+            listener.settingsChanged(modId)
+
+        if (!lunaLibEnabled) return
 
         LunaSettings.addSettingsListener(object : lunalib.lunaSettings.LunaSettingsListener {
             override fun settingsChanged(modID: String) {
@@ -49,32 +53,88 @@ object LunaWrapper {
                 listener.settingsChanged(modID)
             }
         })
+    }
 
-        if (invokeImmediately)
-            listener.settingsChanged(MagicVariables.MAGICLIB_ID)
+    private fun loadModFileSettings(modID: String): JSONObject? = try {
+        Global.getSettings().loadJSON("modSettings.json", modID)
+    } catch (e: Exception) {
+        Global.getLogger(this::class.java).error("Failed to load mod settings for $modID", e)
+        null
+    }
+
+    private fun settingExistsInLunaLib(modID: String, fieldID: String): Boolean {
+        if (!lunaLibEnabled) return false
+        if (!LunaSettingsLoader.hasLoaded) LunaSettingsLoader.load()
+
+        val modSettings = LunaSettingsLoader.Settings[modID] ?: return false
+        return modSettings.has(fieldID)
     }
 
     @JvmStatic
-    fun getBoolean(modID: String, fieldID: String): Boolean? {
-        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
-            return null
+    @JvmOverloads
+    fun getBoolean(modID: String, fieldID: String, default: Boolean = false): Boolean {
+        if (lunaLibEnabled && settingExistsInLunaLib(modID, fieldID))
+            return LunaSettings.getBoolean(modID, fieldID) ?: default
 
-        return LunaSettings.getBoolean(modID, fieldID)
+        val modSettings = loadModFileSettings(modID) ?: return default
+
+        return modSettings.optBoolean(fieldID, default)
     }
-    @JvmStatic
-    fun getBoolean(modID: String, fieldID: String, default: Boolean = false): Boolean =
-        getBoolean(modID, fieldID) ?: default
 
     @JvmStatic
-    fun getInt(modID: String, fieldID: String): Int? {
-        if (!Global.getSettings().modManager.isModEnabled("lunalib"))
-            return null
+    @JvmOverloads
+    fun getInt(modID: String, fieldID: String, default: Int = 0): Int {
+        if (lunaLibEnabled && settingExistsInLunaLib(modID, fieldID))
+            return LunaSettings.getInt(modID, fieldID) ?: default
 
-        return LunaSettings.getInt(modID, fieldID)
+        val modSettings = loadModFileSettings(modID) ?: return default
+
+        return modSettings.optInt(fieldID, default)
     }
+
     @JvmStatic
-    fun getInt(modID: String, fieldID: String, default: Int = 0): Int =
-        getInt(modID, fieldID) ?: default
+    @JvmOverloads
+    fun getDouble(modID: String, fieldID: String, default: Double = 0.0): Double {
+        if (lunaLibEnabled && settingExistsInLunaLib(modID, fieldID))
+            return LunaSettings.getDouble(modID, fieldID) ?: default
+
+        val modSettings = loadModFileSettings(modID) ?: return default
+
+        return modSettings.optDouble(fieldID, default)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun getFloat(modID: String, fieldID: String, default: Float = 0f): Float {
+        if (lunaLibEnabled && settingExistsInLunaLib(modID, fieldID))
+            return LunaSettings.getFloat(modID, fieldID) ?: default
+
+        val modSettings = loadModFileSettings(modID) ?: return default
+
+        return modSettings.optFloat(fieldID, default)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun getString(modID: String, fieldID: String, default: String = ""): String {
+        if (lunaLibEnabled && settingExistsInLunaLib(modID, fieldID))
+            return LunaSettings.getString(modID, fieldID) ?: default
+
+        val modSettings = loadModFileSettings(modID) ?: return default
+
+        return modSettings.optString(fieldID, default)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun getColor(modID: String, fieldID: String, default: Color = Color.WHITE): Color {
+        if (lunaLibEnabled && settingExistsInLunaLib(modID, fieldID))
+            return LunaSettings.getColor(modID, fieldID) ?: default
+
+        val modSettings = loadModFileSettings(modID) ?: return default
+
+        return modSettings.optColor(fieldID, default)
+    }
 }
 
 fun interface LunaWrapperSettingsListener {
