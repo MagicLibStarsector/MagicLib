@@ -55,11 +55,17 @@ object LunaWrapper {
         })
     }
 
-    private fun loadModFileSettings(modID: String): JSONObject? = try {
-        Global.getSettings().loadJSON("modSettings.json", modID)
-    } catch (e: Exception) {
-        Global.getLogger(this::class.java).error("Failed to load mod settings for $modID", e)
-        null
+    private var modSettings: JSONObject? = null
+    private fun loadModFileSettings(modID: String): JSONObject? {
+        if(modSettings == null) {
+            try {
+                modSettings = Global.getSettings().loadJSON("userSettings.json", modID)
+            } catch (e: Exception) {
+                Global.getLogger(this::class.java).error("Failed to load mod settings for $modID", e)
+            }
+        }
+        
+        return modSettings
     }
 
     private fun settingExistsInLunaLib(modID: String, fieldID: String): Boolean {
@@ -133,7 +139,12 @@ object LunaWrapper {
 
         val modSettings = loadModFileSettings(modID) ?: return default
 
-        return modSettings.optColor(fieldID, default)
+        try {
+            return modSettings.optColor(fieldID, default)
+        } catch (e: Exception) {
+            Global.getLogger(this::class.java).error("Failed to load color setting for modID '$modID' fieldID '$fieldID'", e)
+            return default
+        }
     }
 }
 
