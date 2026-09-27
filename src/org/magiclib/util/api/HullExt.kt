@@ -83,10 +83,9 @@ fun ShipHullSpecAPI.getSlotsForModules(): List<String> {
  * Returns the "effective" hull for a hull spec.
  *
  * In Starsector, hull specs may represent:
- * - A base hull (Normal ship hull made straight from the .ship file)
- * - A default D-Hull (Ship Hull/Skin with _default_D placed at the end to be annoying. Has no seemingly other meaningful changes aside from ruining hullID comparisons)
- * - A skin derived from another hull (Normal ship skin made straight from the .skin file)
- * - A D-Modded hull skin (Ship skin made straight from the .skin file. Notably has DMods as built in mods, sometimes missing mounts and a restoreToBaseHull)
+ * - A base hull (Ship hull made straight from the .ship file)
+ * - A skin derived from another hull (Ship skin made straight from the .skin file)
+ * - A default D-Hull (ShipHullSpecAPI clone made of every hull/skin with '_default_D' placed at the end and a few other changes. See [ShipHullSpecAPI.getActualHull] for more details.
  *
  * This function resolves the input hull to the most appropriate "base-like" hull provided the hull is compatible with its base.
  *
@@ -115,9 +114,16 @@ fun ShipHullSpecAPI.getEffectiveHullId(): String =
     this.getEffectiveHull().hullId
 
 /**
- * Returns the HullSpec from its source file (.ship or .skin), without any extra modifications such as default D-Hull variations.
+ * Returns the hull's real spec, unwrapping the auto-generated default D-Hull variation if this is one.
  *
- * @return The actual hull spec.
+ * Default D-Hulls are auto-generated per hull under a separate hull id, with a lower base value, " (D)" in the name, a damaged-hull description, and  all custom tags stripped.
+ *
+ * A default D-Hull is used in most ships that come out of combat with new D-Mods.
+ *
+ * A ship using a default D-Hull as a hull will fail custom tag or hull-id checks written against the base spec.
+ * Use this function instead of the raw hull spec wherever you need the "real" identity of the hull, instead of the auto-generated clone.
+ *
+ * @return The parent hull spec if this is a default D-Hull, otherwise this spec unchanged.
  */
 fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI {
     return this.dParentHull ?: this
@@ -128,7 +134,14 @@ fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI {
 }
 
 /**
- * Returns the HullSpec id from its source file (.ship or .skin), without any extra modifications such as default D-Hull variations.
+ * Returns the hull's real spec id, unwrapping the auto-generated default D-Hull variation if this is one.
+ *
+ * Default D-Hulls are auto-generated per hull under a separate hull id, with a lower base value, " (D)" in the name, a damaged-hull description, and  all custom tags stripped.
+ *
+ * A default D-Hull is used in most ships that come out of combat with new D-Mods.
+ *
+ * A ship using a default D-Hull as a hull will fail custom tag or hull-id checks written against the base spec.
+ * Use this function instead of the raw hull spec wherever you need the "real" identity of the hull, instead of the auto-generated clone.
  */
 fun ShipHullSpecAPI.getActualHullId(): String =
     this.getActualHull().hullId
