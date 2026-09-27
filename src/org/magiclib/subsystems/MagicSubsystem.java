@@ -300,6 +300,15 @@ public abstract class MagicSubsystem {
     }
 
     /**
+     * Uses system stats to calculate the actual cooldown duration based on {@link MagicSubsystem#scaleSystemStat(float, float)}
+     * @return effective cooldown duration
+     */
+    public float calcCooldownDuration() {
+        float base = getCooldownDuration();
+        return scaleSystemStat(base, ship.getMutableStats().getSystemCooldownBonus().computeEffective(base));
+    }
+
+    /**
      * How long the subsystem takes to gain a charge.
      * To modify after adding the subsystem to the ship, use {@link MagicSubsystem#setChargeGenerationDuration(float, boolean)}
      *
@@ -493,7 +502,8 @@ public abstract class MagicSubsystem {
             stateInterval.setInterval(getOutDuration(), getOutDuration());
         } else if (newState == State.COOLDOWN) {
             state = State.COOLDOWN;
-            stateInterval.setInterval(getCooldownDuration(), getCooldownDuration());
+            float effectiveCooldown = calcCooldownDuration();
+            stateInterval.setInterval(effectiveCooldown, effectiveCooldown);
         } else if (newState == State.READY) {
             state = State.READY;
         }
@@ -525,11 +535,7 @@ public abstract class MagicSubsystem {
             if (!getAdvancesWhileDead() && !alive) return;
 
             if (state != State.READY && !stateInterval.intervalElapsed()) {
-                if (state == State.COOLDOWN) {
-                    stateInterval.advance(scaleSystemStat(amount, ship.getMutableStats().getSystemCooldownBonus().computeEffective(amount)));
-                } else {
-                    stateInterval.advance(amount);
-                }
+                stateInterval.advance(amount);
             }
 
             if (charges < calcMaxCharges()) {
@@ -887,9 +893,9 @@ public abstract class MagicSubsystem {
                 fill = (this.getInDuration() + stateInterval.getElapsed()) / (this.getInDuration() + this.getActiveDuration());
             }
         } else if (state == State.OUT) {
-            fill = 1f - (stateInterval.getElapsed() / (this.getOutDuration() + this.getCooldownDuration()));
+            fill = 1f - (stateInterval.getElapsed() / (this.getOutDuration() + this.calcCooldownDuration()));
         } else if (state == State.COOLDOWN) {
-            fill = 1f - ((this.getOutDuration() + stateInterval.getElapsed()) / (this.getOutDuration() + this.getCooldownDuration()));
+            fill = 1f - ((this.getOutDuration() + stateInterval.getElapsed()) / (this.getOutDuration() + this.calcCooldownDuration()));
         } else if (state == State.READY) {
             if (hasCharges() && charges == 0) {
                 fill = this.chargeInterval.getElapsed() / this.chargeInterval.getIntervalDuration();

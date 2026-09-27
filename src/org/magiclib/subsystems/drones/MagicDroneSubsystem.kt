@@ -347,8 +347,8 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
                     (inDuration + stateInterval.elapsed) / (inDuration + activeDuration)
                 }
 
-                State.OUT -> 1f - stateInterval.elapsed / (outDuration + cooldownDuration)
-                State.COOLDOWN -> 1f - (outDuration + stateInterval.elapsed) / (outDuration + cooldownDuration)
+                State.OUT -> 1f - stateInterval.elapsed / (outDuration + calcCooldownDuration())
+                State.COOLDOWN -> 1f - (outDuration + stateInterval.elapsed) / (outDuration + calcCooldownDuration())
             }
 
             return fill.coerceIn(0f..1f)

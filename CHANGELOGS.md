@@ -50,6 +50,9 @@ Version 1.5.8
 - Add vents color changing alongside the engines and shield file.
 - Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
 
+**MagicSubsystems**
+- Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
+
 **Other**
 - Stop a new campaign trail being added to the save file on every game load. Campaign trails are no longer serialized to the save game.
 - Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
