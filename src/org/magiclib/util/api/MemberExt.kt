@@ -5,6 +5,7 @@ package org.magiclib.util.api
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.Misc
 
@@ -34,14 +35,15 @@ fun FleetMemberAPI.getActualHullId(): String {
  * variant registry. Editing it in place can silently affect those other holders and may not
  * persist correctly on save/load. Route edits through this function instead.
  *
- * @param clearOriginalVariant If true, clears the clone's original-variant reference.
+ * @param clearOriginalVariant If true, clears the clone's original-variant reference. This prevents reverting to a stock variant on fleet deflation
  * @return The newly cloned, member-owned variant now assigned to this member.
  */
 @JvmOverloads
-fun FleetMemberAPI.cloneVariantForEdit(clearOriginalVariant: Boolean = false): ShipVariantAPI {
+fun FleetMemberAPI.cloneVariantForEdit(clearOriginalVariant: Boolean = true): ShipVariantAPI {
     return variant.clone().apply {
         hullVariantId = "${hullId}_${Misc.genUID()}"
         source = VariantSource.REFIT
         if (clearOriginalVariant) setOriginalVariant(null)
+        //variant.addTag(Tags.TAG_NO_AUTOFIT);
     }.also { setVariant(it, false, false) }
 }
