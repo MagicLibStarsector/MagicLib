@@ -52,6 +52,7 @@ Version 1.5.8
 
 **MagicSubsystems**
 - Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
+- Added FighterAIFormation as a MagicDroneSubsystem formation. This formation gives the drone base-game fighter ai, and allows the modder to set behavior such as ENAGAGE or REGROUP.
 
 **Other**
 - Stop a new campaign trail being added to the save file on every game load. Campaign trails are no longer serialized to the save game.
