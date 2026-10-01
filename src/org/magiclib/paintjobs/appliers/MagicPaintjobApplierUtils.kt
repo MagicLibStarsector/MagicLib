@@ -12,7 +12,6 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.campaign.fleet.CampaignShipEngineGlow
 import com.fs.starfarer.campaign.fleet.FleetMember
 import com.fs.starfarer.loading.specs.HullVariantSpec
-import com.fs.starfarer.util.ColorShifter
 import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.get
@@ -26,6 +25,7 @@ import org.magiclib.kotlin.internal.width
 import org.magiclib.kotlin.internal.x
 import org.magiclib.kotlin.internal.y
 import org.magiclib.paintjobs.MagicPaintjobManager
+import org.magiclib.paintjobs.MagicPaintjobSpec
 import org.magiclib.util.api.getModules
 import java.awt.Color
 
@@ -148,30 +148,9 @@ internal object MagicPaintjobApplierUtils {
 
                 if (variantSpriteField != null)
                     makeNewSpriteToReplace(variantPaintJobSpec?.spriteId ?: member.hullSpec.spriteName, variantSpriteField, memberIcon)
-
-                if (memberIcon is FleetMemberViewAPI) {
-                    if (variantPaintJobSpec != null) {
-                        variantPaintJobSpec.engineSpec?.let { spec ->
-                            (spec.contrailCampaignColor ?: spec.contrailColor)?.let {
-                                memberIcon.contrailColor.base = it
-                            }
-                            (spec.campaignColor ?: spec.color)?.let {
-                                memberIcon.engineColor.base = it
-                                memberIcon.engineGlowColor.base = it
-                            }
-                        }
-                    } else {
-                        val spec = CampaignShipEngineGlow(member as FleetMember, 1f)
-                        spec.contrailColor?.let {
-                            memberIcon.contrailColor.base = it
-                        }
-                        spec.color?.let {
-                            memberIcon.engineColor.base = it
-                            memberIcon.engineGlowColor.base = it
-                        }
-                    }
-                }
             }
+
+            if (memberIcon is FleetMemberViewAPI) applyEngineColors(member, memberIcon, variantPaintJobSpec)
         }
 
         // Variant Modules
@@ -235,6 +214,28 @@ internal object MagicPaintjobApplierUtils {
             val weaponPaintjob = weaponPaintjobs.getOrNull(0) ?: return@forEach
         }
         */
+    }
+
+    private fun applyEngineColors(member: FleetMemberAPI, view: FleetMemberViewAPI, paintjob: MagicPaintjobSpec?) {
+        val spec = paintjob?.engineSpec
+        if (spec != null) {
+            (spec.contrailCampaignColor ?: spec.contrailColor)?.let {
+                view.contrailColor.base = it
+            }
+            (spec.campaignColor ?: spec.color)?.let {
+                view.engineColor.base = it
+                view.engineGlowColor.base = it
+            }
+        } else {
+            val default = CampaignShipEngineGlow(member as FleetMember, 1f)
+            default.contrailColor?.let {
+                view.contrailColor.base = it
+            }
+            default.color?.let {
+                view.engineColor.base = it
+                view.engineGlowColor.base = it
+            }
+        }
     }
 
     private fun makeNewSpriteToReplace(
