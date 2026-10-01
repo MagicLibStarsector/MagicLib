@@ -5,6 +5,7 @@ import lunalib.backend.ui.settings.LunaSettingsLoader
 import lunalib.lunaSettings.LunaSettings
 import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.optFloat
+import org.magiclib.kotlin.doesFileExist
 import org.magiclib.kotlin.optColor
 import java.awt.Color
 
@@ -44,17 +45,23 @@ object MagicUserSettings {
         })
     }
 
-    private var modSettings: JSONObject? = null
+    const val USER_SETTINGS_FILE_NAME = "userSettings.json"
+    private val modSettingsCache = mutableMapOf<String, JSONObject>()
     private fun loadModFileSettings(modID: String): JSONObject? {
-        if(modSettings == null) {
-            try {
-                modSettings = Global.getSettings().loadJSON("userSettings.json", modID)
-            } catch (e: Exception) {
-                Global.getLogger(this::class.java).error("Failed to load mod settings for $modID", e)
-            }
+        modSettingsCache[modID]?.let { return it }
+
+        if(!Global.getSettings().doesFileExist(USER_SETTINGS_FILE_NAME, modID)) {
+            //Global.getLogger(this::class.java).error("Mod settings with name '$USER_SETTINGS_FILE_NAME' not found in mod '$modID'")
+            return null
         }
-        
-        return modSettings
+
+        try {
+            modSettingsCache[modID] = Global.getSettings().loadJSON(USER_SETTINGS_FILE_NAME, modID)
+        } catch (e: Exception) {
+            Global.getLogger(this::class.java).error("Failed to parse '$USER_SETTINGS_FILE_NAME' for mod '$modID'", e)
+        }
+
+        return modSettingsCache[modID]
     }
 
     private fun settingExistsInLunaLib(modID: String, fieldID: String): Boolean {
