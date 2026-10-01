@@ -3,10 +3,12 @@
 # More info: https://starsector.wiki.gg/wiki/MagicLib#Engines_and_Shields
 {
   "engines":{
-    "color":[0,0,0,0],
-    "glowAlternateColor":[0,0,0,0],
+    "color":[0,0,0,0], # Engine color in combat layer.
+    "campaignColor"[0,0,0,0], # Engine color in campaign layer. (defaults to 'color' if unset)
+    "glowAlternateColor":[0,0,0,0], # Engine glow in combat
     "glowSizeMult": 1,
-    "contrailColor":[0,0,0,0],
+    "contrailColor":[0,0,0,25], # Contrail color in combat layer.
+    "contrailCampaignColor":[0,0,0,75] # Contrail color in campaign layer. (defaults to 'contrailColor' if unset)
     "contrailSpawnDistMult":1,
     "contrailWidthMultiplier":1,
   },

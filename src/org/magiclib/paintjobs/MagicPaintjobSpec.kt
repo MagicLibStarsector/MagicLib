@@ -82,7 +82,9 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
 
     data class PaintjobEngineSpec(
         var color: Color?,
+        var campaignColor: Color?,
         var contrailColor: Color?,
+        var contrailCampaignColor: Color?,
         var	contrailSpawnDistMult: Float?,
         var	contrailWidthMultiplier: Float?,
         var	glowAlternateColor: Color?,

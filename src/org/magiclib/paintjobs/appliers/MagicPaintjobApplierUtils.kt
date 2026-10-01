@@ -152,10 +152,10 @@ internal object MagicPaintjobApplierUtils {
                 if (memberIcon is FleetMemberViewAPI) {
                     if (variantPaintJobSpec != null) {
                         variantPaintJobSpec.engineSpec?.let { spec ->
-                            spec.contrailColor?.let {
+                            (spec.contrailCampaignColor ?: spec.contrailColor)?.let {
                                 (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
                             }
-                            spec.color?.let {
+                            (spec.campaignColor ?: spec.color)?.let {
                                 (memberIcon.get(name = "engineColor") as ColorShifter).base = it
                                 (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
                             }

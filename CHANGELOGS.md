@@ -49,6 +49,8 @@ Version 1.5.8
 - Fix paintjob not applying to ship modules in some cases.
 - Add vents color changing alongside the engines and shield file.
 - Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
+- Fixed 'contrailColor' not applying itself in combat.
+- Added 'campaignColor' and 'contrailCampaignColor' to configure paintjob colors on the campaign layer.
 
 **MagicSubsystems**
 - Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
@@ -60,7 +62,6 @@ Version 1.5.8
 - Added functionality to allow adding random memory to a FleetMemberAPI
 - loadVariant now tries to clone the _Hull variant using the hull ID instead of createEmptyVariant() where possible. This makes loadVariant create empty module slots by default; it is intended to fix issues where expected modules were missing due to misconfigured .variant files.
 - Added MagicModVersions which adds mod versions to `sector.getPersistentData()["ml_modVersions"]` after onGameLoad. This allows other mod developers to see the 'last' mod versions in onGameLoad and handle version migration behavior as desired.
-- Fix modSettings.json 'subsystemInfoKey'
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
 - MagicLib now builds using Gradle.
 - Cleared up all compilation warnings.

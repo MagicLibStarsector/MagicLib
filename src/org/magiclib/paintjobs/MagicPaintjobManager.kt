@@ -188,7 +188,9 @@ object MagicPaintjobManager {
                         getJSONObject("engines")?.let { engineJson ->
                             MagicPaintjobSpec.PaintjobEngineSpec(
                                 engineJson.optColor("color", null),
+                                engineJson.optColor("campaignColor", null),
                                 engineJson.optColor("contrailColor", null),
+                                engineJson.optColor("contrailCampaignColor", null),
                                 engineJson.optFloat("contrailSpawnDistMult").takeIf { !it.isNaN() },
                                 engineJson.optFloat("contrailWidthMultiplier").takeIf { !it.isNaN() },
                                 engineJson.optColor("glowAlternateColor", null),
@@ -620,15 +622,28 @@ object MagicPaintjobManager {
 
         applyPaintjobToShield(combatShip, paintjob)
 
-        combatShip.engineController?.shipEngines?.forEach { shipEngine ->
-            val slot = shipEngine.engineSlot
-            paintjob.engineSpec?.let { spec ->
+        combatShip.engineController?.let { engineController ->
+            val spec = paintjob.engineSpec ?: return@let
+
+            engineController.shipEngines?.forEach { shipEngine ->
+                val slot = shipEngine.engineSlot
                 spec.color?.let { slot.color = it }
-                spec.contrailColor?.let { slot.contrailColor = it }
+                spec.contrailColor?.let { slot.contrailColor = it}
                 spec.contrailSpawnDistMult?.let { slot.contrailSpawnDistMult = it }
                 spec.contrailWidthMultiplier?.let { slot.contrailWidthMultiplier = it }
                 spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
                 spec.glowSizeMult?.let { slot.glowSizeMult = it }
+            }
+
+            // This is necessary to make contrail color applied in combat
+            spec.contrailColor?.let { contrailColor ->
+                engineController.fadeToOtherColor(
+                    MagicPaintjobHullMod.ID,
+                    null, //spec.color, // may be null
+                    contrailColor, // may be null
+                    1f,
+                    1f
+                )
             }
         }
 
