@@ -153,21 +153,21 @@ internal object MagicPaintjobApplierUtils {
                     if (variantPaintJobSpec != null) {
                         variantPaintJobSpec.engineSpec?.let { spec ->
                             (spec.contrailCampaignColor ?: spec.contrailColor)?.let {
-                                (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
+                                memberIcon.contrailColor.base = it
                             }
                             (spec.campaignColor ?: spec.color)?.let {
-                                (memberIcon.get(name = "engineColor") as ColorShifter).base = it
-                                (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
+                                memberIcon.engineColor.base = it
+                                memberIcon.engineGlowColor.base = it
                             }
                         }
                     } else {
                         val spec = CampaignShipEngineGlow(member as FleetMember, 1f)
                         spec.contrailColor?.let {
-                            (memberIcon.get(name = "contrailColor") as ColorShifter).base = it
+                            memberIcon.contrailColor.base = it
                         }
                         spec.color?.let {
-                            (memberIcon.get(name = "engineColor") as ColorShifter).base = it
-                            (memberIcon.get(name = "engineGlowColor") as ColorShifter).base = it
+                            memberIcon.engineColor.base = it
+                            memberIcon.engineGlowColor.base = it
                         }
                     }
                 }
