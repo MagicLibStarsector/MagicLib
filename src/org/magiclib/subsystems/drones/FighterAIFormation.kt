@@ -5,11 +5,10 @@ import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipwideAIFlags
 
 /**
- * Gives drones the game's regular fighter AI back (MagicDroneSubsystem strips it on spawn) and lets you switch
- * between regrouping on the mothership and going out to fight.
+ * Gives drones the game's regular fighter AI and lets you switch between regrouping on the mothership and going out to fight.
  *
  * @param mode Current mode. Can be changed at any time.
- * @param modeSelector Optional. If set, it is asked for the mode every frame and [mode] is ignored.
+ * @param modeSelector Optional. If set, it is asked for the mode every advance and [mode] is ignored.
  */
 class FighterAIFormation @JvmOverloads constructor(
     var mode: Mode = Mode.ENGAGE,
@@ -17,7 +16,7 @@ class FighterAIFormation @JvmOverloads constructor(
 ) : DroneFormation() {
 
     enum class Mode {
-        /** Regroup. Drones escort the mothership and only defend it. This sets the ESCORT_OTHER_SHIP AI flag. */
+        /** Drones escort the mothership and only defend it. This sets the ESCORT_OTHER_SHIP AI flag. */
         REGROUP,
 
         /** Drones attack the nearest enemy within the wing's range of the mothership, and escort it otherwise. */
@@ -38,12 +37,9 @@ class FighterAIFormation @JvmOverloads constructor(
 
         for (drone in drones.keys) {
             val wing = drone.wing
-            if (wing == null) {
-                // FighterAI does nothing without a wing.
-                if (warnedNoWing.add(drone)) {
-                    Global.getLogger(FighterAIFormation::class.java)
-                        .warn("Drone ${drone.hullSpec.hullId} has no wing, so FighterAIFormation can't drive it.")
-                }
+            if (wing == null) { // FighterAI does nothing without a wing.
+                if (warnedNoWing.add(drone))
+                    Global.getLogger(FighterAIFormation::class.java).warn("Drone ${drone.hullSpec.hullId} has no wing, so FighterAIFormation can't drive it.")
                 continue
             }
 
@@ -52,11 +48,11 @@ class FighterAIFormation @JvmOverloads constructor(
 
             if (drone.shipAI == null) drone.resetDefaultAI()
 
-            if (current == Mode.REGROUP) {
+            if (current == Mode.REGROUP)
                 drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.ESCORT_OTHER_SHIP, 1f, ship)
-            } else {
+            else
                 drone.aiFlags.unsetFlag(ShipwideAIFlags.AIFlags.ESCORT_OTHER_SHIP)
-            }
+
         }
     }
 }
