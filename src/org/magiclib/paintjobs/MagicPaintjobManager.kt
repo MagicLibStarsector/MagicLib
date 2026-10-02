@@ -625,15 +625,7 @@ object MagicPaintjobManager {
         combatShip.engineController?.let { engineController ->
             val spec = paintjob.engineSpec ?: return@let
 
-            engineController.shipEngines?.forEach { shipEngine ->
-                val slot = shipEngine.engineSlot
-                spec.color?.let { slot.color = it }
-                spec.contrailColor?.let { slot.contrailColor = it}
-                spec.contrailSpawnDistMult?.let { slot.contrailSpawnDistMult = it }
-                spec.contrailWidthMultiplier?.let { slot.contrailWidthMultiplier = it }
-                spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
-                spec.glowSizeMult?.let { slot.glowSizeMult = it }
-            }
+            applyPaintjobToEngines(combatShip, paintjob)
 
             // This is necessary to make contrail color applied in combat
             spec.contrailColor?.let { contrailColor ->
@@ -657,6 +649,24 @@ object MagicPaintjobManager {
                 applyWeaponPaintjob(weapon, weaponPaintjob)
             }
         }
+    }
+
+    internal fun applyPaintjobToEngines(combatShip: ShipAPI, paintjob: MagicPaintjobSpec): Boolean {
+        val spec = paintjob.engineSpec ?: return false
+
+        val engines = combatShip.engineController?.shipEngines
+        if (engines.isNullOrEmpty()) return false
+
+        engines.forEach { shipEngine ->
+            val slot = shipEngine.engineSlot
+            spec.color?.let { slot.color = it }
+            spec.contrailColor?.let { slot.contrailColor = it }
+            spec.contrailSpawnDistMult?.let { slot.contrailSpawnDistMult = it }
+            spec.contrailWidthMultiplier?.let { slot.contrailWidthMultiplier = it }
+            spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
+            spec.glowSizeMult?.let { slot.glowSizeMult = it }
+        }
+        return true
     }
 
     /**

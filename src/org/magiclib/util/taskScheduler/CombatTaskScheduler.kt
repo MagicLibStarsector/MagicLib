@@ -31,6 +31,26 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
     companion object {
         private var active: CombatTaskScheduler? = null
 
+        @JvmStatic
+        fun getSystemTasks(): Collection<TimedTask> {
+            return active?.systemTimeQueue?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getCombatTasks(): Collection<TimedTask> {
+            return active?.combatTimeQueue?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getOnUnpauseTasks(): Collection<Task> {
+            return active?.onUnpause?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getOnBattleStartTasks(): Collection<Task> {
+            return onBattleStart.toList()
+        }
+
         /**
          * Runs [action] once, [delay] milliseconds from now.
          *
@@ -41,7 +61,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          * Does not persist between battles
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performLater(delay: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
             val engine = inst.engine ?: return handle
@@ -73,7 +93,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          * Does not persist between battles
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performEvery(interval: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
             val engine = inst.engine ?: return handle

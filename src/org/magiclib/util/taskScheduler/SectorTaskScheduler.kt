@@ -32,6 +32,31 @@ class SectorTaskScheduler : EveryFrameScript {
             active = value
         }
 
+        @JvmStatic
+        fun getSystemTasks(): Collection<TimedTask> {
+            return active?.systemTimeQueue?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getSectorTasks(): Collection<TimedTask> {
+            return active?.sectorTimeQueue?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getOnUnpauseTasks(): Collection<Task> {
+            return active?.onUnpause?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getAfterPlayerBattleTasks(): Collection<Task> {
+            return active?.afterPlayerBattle?.toList() ?: emptyList()
+        }
+
+        @JvmStatic
+        fun getAfterSectorExitTasks(): Collection<Task> {
+            return onSectorExit.toList()
+        }
+
         /**
          * [CampaignClockAPI.getTimestamp] advances in fixed calendar milliseconds (86,400,000 per in-game day) regardless of how fast that day actually passes in real time.
          *
@@ -54,7 +79,7 @@ class SectorTaskScheduler : EveryFrameScript {
          * Does not persist in save file, re-register every session if needed.
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performLater(delay: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
 
@@ -86,7 +111,7 @@ class SectorTaskScheduler : EveryFrameScript {
          * Does not persist in save file, re-register every session if needed.
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performEvery(interval: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
 

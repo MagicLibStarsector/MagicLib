@@ -103,6 +103,45 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
         fleetsApplied.remove(fleet.id)
     }
 
+    // No longer needed, but kept to avoid loss of useful code that may have purpose in the future.
+    /*
+    private val fleetScreenShipsApplied: MutableSet<Any> = Collections.newSetFromMap(IdentityHashMap())
+    private fun applyToFleetScreen() {
+        val fleetTab = BoxedFleetTab.get()
+        if (fleetTab == null) {
+            fleetScreenShipsApplied.clear()
+            return
+        }
+
+        val list = fleetTab.fleetPanel.safeInvoke("getList") ?: return
+        val items = list.safeInvoke("getItems") as? ArrayList<*> ?: return
+
+        val views = mutableSetOf<FleetMemberView>()
+        items.forEach { item ->
+            val fleetMemberView = item.getFieldsMatching(type = FleetMemberView::class.java)[0].get(item) as? FleetMemberView ?: return@forEach
+            views.add(fleetMemberView)
+        }
+
+        views.forEach { view ->
+            val renderer = view.invoke("getButton")?.invoke("getRenderer") ?: return@forEach
+            val shipDisplay = renderer.getFieldsMatching()
+                .mapNotNull { it.get(renderer) }
+                .firstOrNull { it.getMethodsMatching("getShips").isNotEmpty() }
+                ?: return@forEach
+            val ships = shipDisplay.invoke("getShips") as? Array<*> ?: return@forEach
+
+            ships.filterIsInstance<ShipAPI>().forEach ship@{ ship ->
+                if (ship in fleetScreenShipsApplied) return@ship
+                val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship.variant)
+                if (paintjob?.engineSpec == null) {
+                    fleetScreenShipsApplied.add(ship)
+                    return@ship
+                }
+                if (MagicPaintjobManager.applyPaintjobToEngines(ship, paintjob)) fleetScreenShipsApplied.add(ship)
+            }
+        }
+    }*/
+
     private var centerTooltipHash: Int = 0
     private fun applyToInteractionDialogSelectCraft() {
         val sector = Global.getSector()
