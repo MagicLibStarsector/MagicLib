@@ -9,7 +9,7 @@ import org.lazywizard.lazylib.VectorUtils;
 import org.lazywizard.lazylib.combat.CombatUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,20 @@ public class MagicTargeting {
         HIGHTEST_DAMAGE,
     }
 
-    private static Map<ShipAPI.HullSize, Integer> WEIGHT = new HashMap<>();
+    private static Map<ShipAPI.HullSize, Integer> buildWeights(Integer fighter, Integer frigate, Integer destroyer, Integer cruiser, Integer capital) {
+        Map<ShipAPI.HullSize, Integer> weights = new EnumMap<>(ShipAPI.HullSize.class);
+        weights.put(ShipAPI.HullSize.FIGHTER, fighter == null ? 0 : fighter);
+        weights.put(ShipAPI.HullSize.FRIGATE, frigate == null ? 0 : frigate);
+        weights.put(ShipAPI.HullSize.DESTROYER, destroyer == null ? 0 : destroyer);
+        weights.put(ShipAPI.HullSize.CRUISER, cruiser == null ? 0 : cruiser);
+        weights.put(ShipAPI.HullSize.CAPITAL_SHIP, capital == null ? 0 : capital);
+        return weights; // HullSize.DEFAULT (and anything else) is treated as weight 0
+    }
+
+    private static int weightOf(Map<ShipAPI.HullSize, Integer> weights, ShipAPI.HullSize size) {
+        Integer w = weights.get(size);
+        return w == null ? 0 : w;
+    }
 
     /**
      * Generic target picker
@@ -102,12 +115,8 @@ public class MagicTargeting {
             source = (ShipAPI) seeker;
         }
 
-        //PRIORITY WEIGHTS:   
-        WEIGHT.put(ShipAPI.HullSize.FIGHTER, fighterWeight);
-        WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
-        WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
-        WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
-        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);
+        //PRIORITY WEIGHTS:
+        Map<ShipAPI.HullSize, Integer> weights = buildWeights(fighterWeight, frigateWeight, destroyerWeight, cruiserWeight, capitalWeight);
 
         switch (seeks) {
             case NO_RANDOM:
@@ -115,7 +124,7 @@ public class MagicTargeting {
                 theTarget = getDirectTarget(engine, source, weapon, seeker.getLocation(), seeker.getFacing(), searchCone); //get deliberate target
 
                 if (theTarget == null) { //if there are none, get closest valid target
-                    theTarget = getClosestTargetInCone(engine, seeker, maxRange, searchCone, failsafe);
+                    theTarget = getClosestTargetInCone(engine, seeker, weights, maxRange, searchCone, failsafe);
                 }
 
                 return theTarget;
@@ -125,19 +134,19 @@ public class MagicTargeting {
                 theTarget = getDirectTarget(engine, source, weapon, seeker.getLocation(), seeker.getFacing(), searchCone); //get deliberate target
 
                 if (theTarget == null) {
-                    theTarget = getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, failsafe); //if there are none, pick a random threat around the missile
+                    theTarget = getRandomTargetInCone(engine, seeker, weights, seeker.getLocation(), maxRange, searchCone, failsafe); //if there are none, pick a random threat around the missile
                 } else {
-                    theTarget = getRandomTargetInCone(engine, seeker, theTarget.getLocation(), maxRange, searchCone, failsafe); //else pick a random threat around the direct target 
+                    theTarget = getRandomTargetInCone(engine, seeker, weights, theTarget.getLocation(), maxRange, searchCone, failsafe); //else pick a random threat around the direct target
                 }
                 return theTarget;
 
             case FULL_RANDOM:
 
-                return getRandomTargetInCone(engine, seeker, seeker.getLocation(), maxRange, searchCone, failsafe); //pick a random threat around the missile
+                return getRandomTargetInCone(engine, seeker, weights, seeker.getLocation(), maxRange, searchCone, failsafe); //pick a random threat around the missile
 
             case IGNORE_SOURCE:
 
-                return getClosestTargetInCone(engine, seeker, maxRange, searchCone, failsafe);
+                return getClosestTargetInCone(engine, seeker, weights, maxRange, searchCone, failsafe);
 
             default:
                 return null;
@@ -302,11 +311,7 @@ public class MagicTargeting {
         ShipAPI source = missile.getSource();
 
         //PRIORITY WEIGHTS:   
-        WEIGHT.put(ShipAPI.HullSize.FIGHTER, fighterWeight);
-        WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
-        WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
-        WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
-        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);
+        Map<ShipAPI.HullSize, Integer> weights = buildWeights(fighterWeight, frigateWeight, destroyerWeight, cruiserWeight, capitalWeight);
 
         switch (seeks) {
             case NO_RANDOM:
@@ -315,7 +320,7 @@ public class MagicTargeting {
 
                 if (theTarget == null) { //if there are none, get closest valid target
 
-                    theTarget = getClosestTargetInCone(engine, missile, maxRange, searchCone, false);
+                    theTarget = getClosestTargetInCone(engine, missile, weights, maxRange, searchCone, false);
                 }
 
                 return theTarget;
@@ -325,19 +330,19 @@ public class MagicTargeting {
                 theTarget = getDirectTarget(engine, source, missile.getWeapon(), missile.getLocation(), missile.getFacing(), searchCone); //get deliberate target
 
                 if (theTarget == null) {
-                    theTarget = getRandomTargetInCone(engine, missile, missile.getLocation(), maxRange, searchCone, false); //if there are none, pick a random threat around the missile
+                    theTarget = getRandomTargetInCone(engine, missile, weights, missile.getLocation(), maxRange, searchCone, false); //if there are none, pick a random threat around the missile
                 } else {
-                    theTarget = getRandomTargetInCone(engine, missile, theTarget.getLocation(), maxRange, searchCone, false); //else pick a random threat around the direct target 
+                    theTarget = getRandomTargetInCone(engine, missile, weights, theTarget.getLocation(), maxRange, searchCone, false); //else pick a random threat around the direct target
                 }
                 return theTarget;
 
             case FULL_RANDOM:
 
-                return getRandomTargetInCone(engine, missile, missile.getLocation(), maxRange, searchCone, false); //pick a random threat around the missile
+                return getRandomTargetInCone(engine, missile, weights, missile.getLocation(), maxRange, searchCone, false); //pick a random threat around the missile
 
             case IGNORE_SOURCE:
 
-                return getClosestTargetInCone(engine, missile, maxRange, searchCone, false);
+                return getClosestTargetInCone(engine, missile, weights, maxRange, searchCone, false);
 
             default:
                 return null;
@@ -388,11 +393,7 @@ public class MagicTargeting {
         ShipAPI theTarget;
 
         //PRIORITY WEIGHTS:   
-        WEIGHT.put(ShipAPI.HullSize.FIGHTER, fighterWeight);
-        WEIGHT.put(ShipAPI.HullSize.FRIGATE, frigateWeight);
-        WEIGHT.put(ShipAPI.HullSize.DESTROYER, destroyerWeight);
-        WEIGHT.put(ShipAPI.HullSize.CRUISER, cruiserWeight);
-        WEIGHT.put(ShipAPI.HullSize.CAPITAL_SHIP, capitalWeight);
+        Map<ShipAPI.HullSize, Integer> weights = buildWeights(fighterWeight, frigateWeight, destroyerWeight, cruiserWeight, capitalWeight);
 
         switch (seeks) {
             case NO_RANDOM:
@@ -401,7 +402,7 @@ public class MagicTargeting {
 
                 if (theTarget == null) { //if there are none, get closest valid target
 
-                    theTarget = getClosestTargetInCone(engine, source, maxRange, searchCone, false);
+                    theTarget = getClosestTargetInCone(engine, source, weights, maxRange, searchCone, false);
                 }
 
                 return theTarget;
@@ -411,19 +412,19 @@ public class MagicTargeting {
                 theTarget = getDirectTarget(engine, source, null, source.getLocation(), source.getFacing(), searchCone); //get deliberate target
 
                 if (theTarget == null) {
-                    theTarget = getRandomTargetInCone(engine, source, source.getLocation(), maxRange, searchCone, false); //if there are none, pick a random threat around the missile
+                    theTarget = getRandomTargetInCone(engine, source, weights, source.getLocation(), maxRange, searchCone, false); //if there are none, pick a random threat around the missile
                 } else {
-                    theTarget = getRandomTargetInCone(engine, source, theTarget.getLocation(), maxRange, searchCone, false); //else pick a random threat around the direct target 
+                    theTarget = getRandomTargetInCone(engine, source, weights, theTarget.getLocation(), maxRange, searchCone, false); //else pick a random threat around the direct target
                 }
                 return theTarget;
 
             case FULL_RANDOM:
 
-                return getRandomTargetInCone(engine, source, source.getLocation(), maxRange, searchCone, false); //pick a random threat around the missile
+                return getRandomTargetInCone(engine, source, weights, source.getLocation(), maxRange, searchCone, false); //pick a random threat around the missile
 
             case IGNORE_SOURCE:
 
-                return getClosestTargetInCone(engine, source, maxRange, searchCone, false);
+                return getClosestTargetInCone(engine, source, weights, maxRange, searchCone, false);
 
             default:
                 return null;
@@ -489,7 +490,7 @@ public class MagicTargeting {
         return null;
     }
 
-    private static ShipAPI getClosestTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Integer maxRange, Integer searchCone, boolean failsafe) {
+    private static ShipAPI getClosestTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Map<ShipAPI.HullSize, Integer> weights, Integer maxRange, Integer searchCone, boolean failsafe) {
         ShipAPI candidate = null;
         ShipAPI backup = null;
         boolean allAspect = (searchCone >= 360);
@@ -497,7 +498,7 @@ public class MagicTargeting {
 
         for (ShipAPI s : engine.getShips()) {
 
-            if (s.isAlive() && s.getOwner() != source.getOwner() && WEIGHT.get(s.getHullSize()) > 0) { //is the ship targetable
+            if (s.isAlive() && s.getOwner() != source.getOwner() && weightOf(weights, s.getHullSize()) > 0) { //is the ship targetable
 
                 if (CombatUtils.isVisibleToSide(s, source.getOwner())) {
 
@@ -521,7 +522,7 @@ public class MagicTargeting {
         return candidate;
     }
 
-    private static ShipAPI getRandomTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Vector2f lookAround, Integer maxRange, Integer searchCone, boolean failsafe) {
+    private static ShipAPI getRandomTargetInCone(CombatEngineAPI engine, CombatEntityAPI source, Map<ShipAPI.HullSize, Integer> weights, Vector2f lookAround, Integer maxRange, Integer searchCone, boolean failsafe) {
         ShipAPI candidate = null;
         ShipAPI backup = null;
         boolean allAspect = (searchCone >= 360);
@@ -532,14 +533,14 @@ public class MagicTargeting {
 
         for (ShipAPI s : engine.getShips()) {
 
-            if (s.isAlive() && s.getOwner() != source.getOwner() && WEIGHT.get(s.getHullSize()) > 0) { //is the ship targetable
+            if (s.isAlive() && s.getOwner() != source.getOwner() && weightOf(weights, s.getHullSize()) > 0) { //is the ship targetable
 
                 if (CombatUtils.isVisibleToSide(s, source.getOwner())) {
                     if (MathUtils.isWithinRange(lookAround, s.getLocation(), maxRange)) { //is it close
 
                         if (allAspect || Math.abs(MathUtils.getShortestRotation(source.getFacing(), VectorUtils.getAngle(source.getLocation(), s.getLocation()))) < searchCone / 2) { //is it in cone
 
-                            targetPicker.add(s, WEIGHT.get(s.getHullSize()));
+                            targetPicker.add(s, weightOf(weights, s.getHullSize()));
 
                         } else if (backup == null || MathUtils.getDistanceSquared(lookAround, s.getLocation()) < range) {
                             backup = s;
