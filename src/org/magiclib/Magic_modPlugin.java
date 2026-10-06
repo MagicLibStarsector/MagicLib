@@ -150,6 +150,10 @@ public class Magic_modPlugin extends BaseModPlugin {
             sector.addTransientListener(new MagicIndustryItemWrangler());
 
             sector.addTransientScript(new MagicCampaignTrailPlugin());
+
+            var sectorTaskScheduler = new SectorTaskScheduler();
+            sector.addTransientScript(sectorTaskScheduler);
+            SectorTaskScheduler.Companion.setActive$MagicLib(sectorTaskScheduler);
         }
 
         MagicVariables.checkBountySystems();
@@ -193,11 +197,6 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicPaintjobManager.onGameLoad();
 
         MemberMemoryManager.onGameLoad();
-
-        var sectorTaskScheduler = new SectorTaskScheduler();
-        assert sector != null;
-        sector.addTransientScript(sectorTaskScheduler);
-        SectorTaskScheduler.Companion.setActive$MagicLib(sectorTaskScheduler);
     }
 
     @Override
