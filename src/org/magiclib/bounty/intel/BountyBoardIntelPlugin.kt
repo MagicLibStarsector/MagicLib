@@ -252,6 +252,9 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     }
 
     companion object {
+        private val instance: BountyBoardIntelPlugin?
+            get() = Global.getSector().transientScripts.find { it.javaClass == BountyBoardIntelPlugin::class.java } as? BountyBoardIntelPlugin
+
         // These constant values should instead be a setting somewhere that can be modified by other mods.
         var MIN_MAGIC_PERSONAL_BOUNTIES = 1
         var MAX_MAGIC_PERSONAL_BOUNTIES = 2
@@ -282,6 +285,18 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).apply {
                 refreshPanel()
             }
+        }
+
+        /**
+         * Evaluates every bounty from every provider. [BountyInfo.shouldShow] creates any bounty that should currently be available, and the player is notified once about each newly available bounty.
+         */
+        fun notifyAllAvailableBounties() {
+            val board = instance ?: return
+            PROVIDERS
+                .flatMap { it.getBounties() }
+                .filter { it.shouldShow() }
+                .filter { it.getBountyId() !in userNotifiedBountyIds }
+                .forEach { board.notifyUserThatBountyIsAvailable(it) }
         }
     }
 }
