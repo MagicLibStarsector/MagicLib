@@ -1,29 +1,17 @@
 package org.magiclib.paintjobs
 
 
-import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.ButtonAPI
 import com.fs.starfarer.api.ui.CutStyle
 import com.fs.starfarer.api.ui.UIPanelAPI
 import org.lwjgl.input.Keyboard
 import org.magiclib.ReflectionUtils
-import org.magiclib.kotlin.internal.Font
-import org.magiclib.kotlin.internal.addButton
-import org.magiclib.kotlin.internal.bottom
-import org.magiclib.kotlin.internal.findChildWithMethod
-import org.magiclib.kotlin.internal.getChildrenCopy
-import org.magiclib.kotlin.internal.height
-import org.magiclib.kotlin.internal.left
-import org.magiclib.kotlin.internal.onClick
-import org.magiclib.kotlin.internal.parent
-import org.magiclib.kotlin.internal.top
-import org.magiclib.kotlin.internal.width
-import org.magiclib.kotlin.internal.xAlignOffset
-import org.magiclib.kotlin.internal.yAlignOffset
+import org.magiclib.kotlin.internal.*
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.paintjobs.MagicPaintjobRefitPanel.createMagicPaintjobRefitPanel
 import org.magiclib.util.MagicTxt
+import org.magiclib.util.reflection.boxed.BoxedRefitTab
 import java.awt.Color
 
 /**
@@ -32,13 +20,11 @@ import java.awt.Color
 internal object MagicPaintjobRefitPanelCreator {
     private val PAINTJOB_BUTTON_COLOR = Color(240, 160, 0, 130)
     private val PAINTJOB_BUTTON_TEXT_COLOR = PAINTJOB_BUTTON_COLOR.brighter().setAlpha(255)
-    fun addPaintjobButton(refitTab: UIPanelAPI, inCampaign: Boolean) {
-        val refitPanel = refitTab.findChildWithMethod("syncWithCurrentVariant") as? UIPanelAPI ?: return
-        val statsAndHullmodsPanel = refitPanel.findChildWithMethod("getColorFor") as? UIPanelAPI ?: return
-        val hullmodsPanel =
-            statsAndHullmodsPanel.findChildWithMethod("removeNotApplicableMods") as? UIPanelAPI ?: return
+    fun addPaintjobButton(refitTab: BoxedRefitTab, inCampaign: Boolean) {
+        val statsAndHullmodsPanel = refitTab.refitPanel.findChildWithMethod("getColorFor") as? UIPanelAPI ?: return
+        val hullmodsPanel = statsAndHullmodsPanel.findChildWithMethod("removeNotApplicableMods") as? UIPanelAPI ?: return
 
-        val fleetMember = ReflectionUtils.invoke(refitPanel, "getMember") as? FleetMemberAPI
+        val fleetMember = refitTab.getCurrentMember()
         val existingElements = hullmodsPanel.getChildrenCopy()
         val lastElement = existingElements.lastOrNull() ?: return // if children is empty, return
 
@@ -82,9 +68,9 @@ internal object MagicPaintjobRefitPanelCreator {
             // width/height calcs here are to match vanilla's hullmod panel sizes when screen size grow/shrink
             val width = if (inCampaign) (refitTab.width - 343).coerceIn(667f, 700f) else 667f
             val height = if (inCampaign) (refitTab.height - 12).coerceIn(722f, 800f) else 722f
-            val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, refitPanel, width, height)
+            val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, width, height)
 
-            val coreUI = ReflectionUtils.invoke(refitPanel, "getCoreUI") as UIPanelAPI
+            val coreUI = ReflectionUtils.invoke(refitTab.refitPanel, "getCoreUI") as UIPanelAPI
             coreUI.addComponent(paintjobPanel)
 
             // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.

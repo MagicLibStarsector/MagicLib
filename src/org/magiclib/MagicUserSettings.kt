@@ -5,8 +5,8 @@ import lunalib.backend.ui.settings.LunaSettingsLoader
 import lunalib.lunaSettings.LunaSettings
 import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.optFloat
-import org.magiclib.kotlin.doesFileExist
 import org.magiclib.kotlin.optColor
+import org.magiclib.util.api.doesFileExist
 import java.awt.Color
 
 /**

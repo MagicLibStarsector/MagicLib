@@ -3,7 +3,7 @@ package org.magiclib.util.internal
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.ModSpecAPI
 import org.magiclib.ReflectionUtils.getFieldsMatching
-import org.magiclib.kotlin.doesFileExist
+import org.magiclib.util.api.doesFileExist
 import org.magiclib.util.api.getActualHullId
 import org.magiclib.util.api.isSkin
 

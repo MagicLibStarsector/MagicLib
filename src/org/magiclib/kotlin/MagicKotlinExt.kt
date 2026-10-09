@@ -156,27 +156,7 @@ fun ClosedFloatingPointRange<Float>.random(): Float =
     Random.nextDouble(this.start.toDouble(), this.endInclusive.toDouble()).toFloat()
 
 fun CampaignClockAPI.elapsedDaysSinceGameStart(): Float =
-    Global.getSector().clock.getElapsedDaysSince(-55661245698000L);
+    Global.getSector().clock.getElapsedDaysSince(-55661245698000L)
 
 fun SettingsAPI.getErrorVariantID(): String =
     this.getString("errorShipVariant")
-
-/**
- * Checks if a file exists in `/data`.
- *
- * @param filename The path to the file.
- * @param modID The mod ID of the mod to check. If null, checks all available sources.
- * @return `true` if the file exists and can be loaded, `false` otherwise.
- */
-@JvmOverloads
-fun SettingsAPI.doesFileExist(
-    filename: String,
-    modID: String? = null,
-): Boolean {
-    return try {
-        modID?.let { loadText(filename, it) } ?: loadText(filename)
-        true
-    } catch (_: Exception) {
-        false
-    }
-}

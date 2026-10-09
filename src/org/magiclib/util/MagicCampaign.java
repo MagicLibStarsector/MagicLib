@@ -38,6 +38,7 @@ import org.magiclib.campaign.MagicCaptainBuilder;
 import org.magiclib.campaign.MagicFleetBuilder;
 import org.magiclib.kotlin.MagicKotlinExtKt;
 import org.magiclib.util.api.HullUtils;
+import org.magiclib.util.api.OtherUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -212,7 +213,7 @@ public class MagicCampaign {
                             int lastSlash = path.lastIndexOf("/");
                             String modulePath = (lastSlash >= 0 ? path.substring(0, lastSlash + 1) : "") + moduleVariantId + ".variant";
 
-                            if (MagicKotlinExtKt.doesFileExist(Global.getSettings(), modulePath)) {
+                            if (OtherUtils.doesFileExist(Global.getSettings(), modulePath)) {
                                 moduleVariant = loadVariant(modulePath);
                                 if (moduleVariant != null) {
                                     variant.setModuleVariant(slotId, moduleVariant);

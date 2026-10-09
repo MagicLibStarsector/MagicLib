@@ -27,9 +27,11 @@ import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.kotlin.forEach
 import org.magiclib.kotlin.optColor
 import org.magiclib.kotlin.toStringList
+import org.magiclib.util.MagicLookup
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
+import org.magiclib.util.api.doesFileExist
 import org.magiclib.util.api.getActualHull
 import org.magiclib.util.api.getEffectiveHullId
 import org.magiclib.util.api.isSkin
@@ -164,8 +166,7 @@ object MagicPaintjobManager {
                     if (id.isBlank()) continue
 
                     val hullId = item.optString("hullId")?.trim()
-                    val hullIds =
-                        (item.optString("hullIds")?.split(",").orEmpty().map { it.trim() } + hullId).filterNotNull()
+                    val hullIds = (item.optString("hullIds")?.split(",").orEmpty().map { it.trim() } + hullId).filterNotNull()
                     val name = item.getString("name").trim()
                     val description = item.getString("description").trim()
                     val unlockConditions = item.getString("unlockConditions").trim()
@@ -245,7 +246,7 @@ object MagicPaintjobManager {
                         }
                     }
 
-                    val validHullIds = hullIds.filter { runCatching { Global.getSettings().getHullSpec(it) }.getOrNull() != null }
+                    val validHullIds = hullIds.filter { MagicLookup.getHullSpec(it) != null }
 
                     if (id.isBlank()) {
                         // Just a blank row, no need to warn.
@@ -260,7 +261,7 @@ object MagicPaintjobManager {
                     } else if (spriteId.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
                         skip = true
-                    } else if (runCatching { Global.getSettings().loadText(spriteId) }.getOrNull().isNullOrBlank()) { // Check if file exists without loading the texture
+                    } else if (!Global.getSettings().doesFileExist(spriteId)) { // Check if file exists without loading the texture
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has missing or unreadable sprite file, skipping.")
                         skip = true
                     }

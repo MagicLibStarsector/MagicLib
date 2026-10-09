@@ -1,5 +1,7 @@
 package org.magiclib.paintjobs
 
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
@@ -10,6 +12,8 @@ import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getConstructorsMatching
 import org.magiclib.kotlin.internal.findChildWithMethod
 import org.magiclib.kotlin.internal.getChildrenCopy
+import org.magiclib.util.reflection.UIFinder
+import org.magiclib.util.reflection.boxed.BoxedRefitTab
 
 class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
     companion object {
@@ -17,19 +21,12 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
         var SHIPS_FIELD: String? = null
     }
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
-        val newCoreUI = (AppDriver.getInstance().currentState as? TitleScreenState)?.let {
-            ReflectionUtils.invoke(it, "getScreenPanel") as? UIPanelAPI
-        } ?: return
-        cacheShipPreviewClass(newCoreUI)
+        if(Global.getCurrentState() != GameState.TITLE) return
+        val screenPanel = UIFinder.getScreenPanel() ?: return
+        cacheShipPreviewClass(screenPanel)
         if (!MagicPaintjobManager.isEnabled) return // return if not enabled
 
-        val delegateChild = newCoreUI.findChildWithMethod("dismiss") as? UIPanelAPI ?: return
-        val oldCoreUI = delegateChild.findChildWithMethod("getMissionInstance") as? UIPanelAPI ?: return
-        val holographicBG = oldCoreUI.findChildWithMethod("forceFoldIn") ?: return
-
-        val refitTab = holographicBG.let {
-            ReflectionUtils.invoke(it, "getCurr")
-        } as? UIPanelAPI ?: return
+        val refitTab = BoxedRefitTab.get() ?: return
 
         MagicPaintjobRefitPanelCreator.addPaintjobButton(refitTab, false)
     }

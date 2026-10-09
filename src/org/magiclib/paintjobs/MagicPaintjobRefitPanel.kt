@@ -11,22 +11,15 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.loading.specs.HullVariantSpec
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
-import org.magiclib.ReflectionUtils
 import org.magiclib.kotlin.alphaf
 import org.magiclib.kotlin.bluef
 import org.magiclib.kotlin.greenf
-import org.magiclib.kotlin.internal.addTooltip
-import org.magiclib.kotlin.internal.bottom
-import org.magiclib.kotlin.internal.height
-import org.magiclib.kotlin.internal.left
-import org.magiclib.kotlin.internal.parent
-import org.magiclib.kotlin.internal.right
-import org.magiclib.kotlin.internal.top
-import org.magiclib.kotlin.internal.width
+import org.magiclib.kotlin.internal.*
 import org.magiclib.kotlin.redf
 import org.magiclib.paintjobs.MagicPaintjobSelector.MagicPaintjobSelectorPlugin
 import org.magiclib.paintjobs.MagicPaintjobSelector.createPaintjobSelector
 import org.magiclib.util.MagicTxt
+import org.magiclib.util.reflection.boxed.BoxedRefitTab
 import java.awt.Color
 
 /**
@@ -35,7 +28,7 @@ import java.awt.Color
 internal object MagicPaintjobRefitPanel {
     private const val BACKGROUND_ALPHA = 0.7f
 
-    internal class MagicPaintjobRefitPanelPlugin(private val refitTab: UIPanelAPI) : BaseCustomUIPanelPlugin() {
+    internal class MagicPaintjobRefitPanelPlugin(private val refitTab: BoxedRefitTab) : BaseCustomUIPanelPlugin() {
         lateinit var paintjobPanel: CustomPanelAPI
 
         override fun renderBelow(alphaMult: Float) {
@@ -99,7 +92,7 @@ internal object MagicPaintjobRefitPanel {
     }
 
     internal fun createMagicPaintjobRefitPanel(
-        refitTab: UIPanelAPI, refitPanel: UIPanelAPI,
+        refitTab: BoxedRefitTab,
         width: Float, height: Float
     ): CustomPanelAPI {
         val endPad = 6f
@@ -114,8 +107,7 @@ internal object MagicPaintjobRefitPanel {
         val scrollerTooltip = paintjobPanel.createUIElement(width + 2f, height, true)
         scrollerTooltip.position.inTL(0f, 0f)
 
-        val shipDisplay = ReflectionUtils.invoke(refitPanel, "getShipDisplay") as UIPanelAPI
-        val baseVariant = ReflectionUtils.invoke(shipDisplay, "getCurrentVariant") as HullVariantSpec
+        val baseVariant = refitTab.getCurrentVariant() ?: return paintjobPanel
 
         val currentPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(baseVariant)
         val baseHullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(
@@ -129,7 +121,7 @@ internal object MagicPaintjobRefitPanel {
 
         (listOf(null) + baseHullPaintjobs).forEachIndexed { index, paintjobSpec ->
             // make panel
-            val selectorPanel = createPaintjobSelector(baseVariant, paintjobSpec, selectorWidth)
+            val selectorPanel = createPaintjobSelector(baseVariant as HullVariantSpec, paintjobSpec, selectorWidth)
             val selectorPlugin = selectorPanel.plugin as MagicPaintjobSelectorPlugin
             selectorPlugins.add(selectorPlugin)
             if (currentPaintjob == paintjobSpec) {
@@ -189,9 +181,9 @@ internal object MagicPaintjobRefitPanel {
                             }
                         }
                     }
-                    ReflectionUtils.invoke(refitPanel, "syncWithCurrentVariant")
-                    ReflectionUtils.invoke(shipDisplay, "updateModules")
-                    ReflectionUtils.invoke(shipDisplay, "updateButtonPositionsToZoomLevel")
+                    refitTab.syncWithCurrentVariant()
+                    refitTab.updateModules()
+                    refitTab.updateButtonPositionsToZoomLevel()
                 }
             }
         }

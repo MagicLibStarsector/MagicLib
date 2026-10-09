@@ -20,6 +20,7 @@ import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
 import org.magiclib.kotlin.MagicKotlinExtKt;
 import org.magiclib.util.*;
+import org.magiclib.util.api.OtherUtils;
 import org.magiclib.util.api.VariantUtils;
 import org.magiclib.util.internal.MiscellaneousUtil;
 
@@ -652,7 +653,7 @@ public class MagicBountyLoader {
             return variant;
 
         var path = MagicVariables.VARIANT_PATH + variantID + ".variant";
-        if(MagicKotlinExtKt.doesFileExist(Global.getSettings(), path)) // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
+        if(OtherUtils.doesFileExist(Global.getSettings(), path)) // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
             return MagicCampaign.loadVariant(path);
 
         return null;
