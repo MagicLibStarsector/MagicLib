@@ -51,6 +51,7 @@ Version 1.5.8
 - Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
 - Fixed 'contrailColor' not applying itself in combat.
 - Added 'campaignColor' and 'contrailCampaignColor' to configure paintjob colors on the campaign layer.
+- Fix paintjob button sometimes flickering when re-opening the refit tab.
 
 **MagicSubsystems**
 - Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
