@@ -24,6 +24,7 @@ object UIFinder {
     }
 
     // Tip: Core UI is a child of the screen panel
+    /** Only functions in the campaign state */
     @JvmStatic
     fun getCoreUI(): CoreUIAPI? {
         val state = AppDriver.getInstance().currentState

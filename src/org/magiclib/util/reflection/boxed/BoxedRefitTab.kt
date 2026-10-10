@@ -30,6 +30,8 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
         private const val METHOD_SET_SUPPRESS_MESSAGES = "setSuppressMessages"
         private const val METHOD_SET_EDITED_SINCE_SAVE = "setEditedSinceSave"
         private const val METHOD_SAVE_CURRENT_VARIANT = "saveCurrentVariant"
+        private const val METHOD_IS_SHOWING_DIALOG = "isShowingDialog"
+        private const val METHOD_SET_SHOWING_DIALOG = "setShowingDialog"
     }
 
     val refitPanel: UIPanelAPI = run {
@@ -94,6 +96,18 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
      */
     fun setSuppressMessages(value: Boolean) =
         shipDisplay.safeInvoke(METHOD_SET_SUPPRESS_MESSAGES, value)
+
+    /**
+     * Returns true if the refit tab is currently showing a dialog. (e.g. weapon or fighter picker dialog.)
+     */
+    //fun isShowingDialog(): Boolean =
+    //    shipDisplay.safeInvoke(METHOD_IS_SHOWING_DIALOG) as Boolean
+
+    /**
+     * Set whether the refit tab is currently showing a dialog.
+     */
+    //fun setShowingDialog(value: Boolean) =
+    //    shipDisplay.safeInvoke(METHOD_SET_SHOWING_DIALOG, value)
 
 
     /**
