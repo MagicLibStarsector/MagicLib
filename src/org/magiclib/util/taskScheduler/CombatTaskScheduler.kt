@@ -5,20 +5,21 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.input.InputEventAPI
-import org.magiclib.util.taskScheduler.TaskSchedulerUtils.safeRun
+import org.magiclib.util.taskScheduler.TaskSchedulerUtils.drainDueTasks
+import org.magiclib.util.taskScheduler.TaskSchedulerUtils.runCallbacks
 import java.util.*
 
 /**
  * A task scheduler for timed, recurring, and event-driven actions in combat.
  *
  * Example Java Usage:
- * ```java
+ * ```
  * CombatTaskScheduler.performLater(0L, false, handle -> {
  *     Global.getLogger(this.getClass()).warn("TEST");
  * });
  * ```
  * Example Kotlin Usage:
- * ```kotlin
+ * ```
  * CombatTaskScheduler.performLater(0L, false) { handle ->
  *     Global.getLogger(this::class.java).warn("TEST")
  * }
@@ -61,7 +62,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          * Does not persist between battles
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
             val engine = inst.engine ?: return handle
@@ -93,7 +94,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          * Does not persist between battles
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
             val engine = inst.engine ?: return handle
@@ -177,22 +178,14 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
     private var init = false
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
+        SystemTaskScheduler.internalAdvance()
 
         if (!init) {
             // No Title-Screen
             if (Global.getCurrentState() == GameState.TITLE) {
                 if (!SectorTaskScheduler.initAfterFirstAdvance) return // Prevent this from running on load game, as the combat engine starts there for some reason.
 
-                if(SectorTaskScheduler.onSectorExit.isNotEmpty()) {
-                    val callbacks = SectorTaskScheduler.onSectorExit.toList()
-                    SectorTaskScheduler.onSectorExit.clear()
-                    callbacks.forEach {
-                        safeRun("onSectorExit callback") { it.action.invoke() }
-
-                        if (!it.repeat || it.handle?.cancelled == true) return@forEach
-                        SectorTaskScheduler.onSectorExit.add(it)
-                    }
-                }
+                runCallbacks(SectorTaskScheduler.onSectorExit, "onSectorExit callback")
 
                 onBattleStart.clear()
 
@@ -213,16 +206,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
             SectorTaskScheduler.battleStarted()
 
-            if(onBattleStart.isNotEmpty()) {
-                val starters = onBattleStart.toList()
-                onBattleStart.clear()
-                starters.forEach {
-                    safeRun("onPlayerBattleStart callback") { it.action.invoke() }
-
-                    if (!it.repeat || it.handle?.cancelled == true) return@forEach
-                    onBattleStart.add(it)
-                }
-            }
+            runCallbacks(onBattleStart, "onPlayerBattleStart callback")
 
             init = true
         }
@@ -232,54 +216,10 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
         val paused = engine.isPaused
 
         // detect unpause
-        if (wasPaused && !paused && onUnpause.isNotEmpty()) {
-            val callbacks = onUnpause.toList()
-            onUnpause.clear()
-            callbacks.forEach {
-                safeRun("onUnpause callback") { it.action.invoke() }
-
-                if (!it.repeat || it.handle?.cancelled == true) return@forEach
-                onUnpause.add(it)
-            }
-        }
+        if (wasPaused && !paused) runCallbacks(onUnpause, "onUnpause callback")
         wasPaused = paused
 
-        if(systemTimeQueue.isNotEmpty()) {
-            val systemNow = System.nanoTime()
-            while (true) {
-                val task = systemTimeQueue.peek() ?: break
-                if (task.time >= systemNow) break
-
-                systemTimeQueue.poll()
-
-                if (task.handle?.cancelled == true) continue
-
-                safeRun("deferred systemTime task") { task.action.invoke() }
-
-                task.interval?.let {
-                    task.time = systemNow + it
-                    systemTimeQueue.add(task)
-                }
-            }
-        }
-
-        if(combatTimeQueue.isNotEmpty()) {
-            val combatNow = (engine.getTotalElapsedTime(false) * 1000).toLong()
-            while (true) {
-                val task = combatTimeQueue.peek() ?: break
-                if (task.time >= combatNow) break
-
-                combatTimeQueue.poll()
-
-                if (task.handle?.cancelled == true) continue
-
-                safeRun("deferred combatTime task") { task.action.invoke() }
-
-                task.interval?.let {
-                    task.time = combatNow + it
-                    combatTimeQueue.add(task)
-                }
-            }
-        }
+        drainDueTasks(systemTimeQueue, System.nanoTime(), "deferred systemTime task")
+        drainDueTasks(combatTimeQueue, (engine.getTotalElapsedTime(false) * 1000).toLong(), "deferred combatTime task")
     }
 }

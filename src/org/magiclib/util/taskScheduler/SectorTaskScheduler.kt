@@ -3,20 +3,21 @@ package org.magiclib.util.taskScheduler
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignClockAPI
-import org.magiclib.util.taskScheduler.TaskSchedulerUtils.safeRun
+import org.magiclib.util.taskScheduler.TaskSchedulerUtils.drainDueTasks
+import org.magiclib.util.taskScheduler.TaskSchedulerUtils.runCallbacks
 import java.util.*
 
 /**
  * A task scheduler for timed, recurring, and event-driven actions in the sector.
  *
  * Example Java Usage:
- * ```java
+ * ```
  * SectorTaskScheduler.performLater(0L, false, handle -> {
  *     Global.getLogger(this.getClass()).warn("TEST");
  * });
  * ```
  * Example Kotlin Usage:
- * ```kotlin
+ * ```
  * SectorTaskScheduler.performLater(0L, false) { handle ->
  *     Global.getLogger(this::class.java).warn("TEST")
  * }
@@ -76,10 +77,10 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [systemTime] is true, timing follows [System.nanoTime] in milliseconds, not sector-days, and keeps advancing while the game is paused.
          *
-         * Does not persist in save file, re-register every session if needed.
+         * Does not persist in save file, re-register every new sector session if needed.
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
 
@@ -108,10 +109,10 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [systemTime] is true, timing follows [System.nanoTime] in milliseconds, not sector-days, and keeps advancing while the game is paused.
          *
-         * Does not persist in save file, re-register every session if needed.
+         * Does not persist in save file, re-register every new sector session if needed.
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = true, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val inst = active ?: return handle
 
@@ -141,7 +142,7 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [repeat] is false, the task will only run once.
          *
-         * Does not persist in save file, re-register every session if needed.
+         * Does not persist in save file, re-register every new sector session if needed.
          */
         @JvmStatic
         @JvmOverloads
@@ -166,7 +167,7 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [repeat] is false, the task will only run once.
          *
-         * Does not persist in save file, re-register every session if needed.
+         * Does not persist in save file, re-register every new sector session if needed.
          */
         @JvmStatic
         @JvmOverloads
@@ -231,6 +232,8 @@ class SectorTaskScheduler : EveryFrameScript {
 
     private var init = false
     override fun advance(amount: Float) {
+        SystemTaskScheduler.internalAdvance()
+
         val sector = Global.getSector() ?: return
         val paused = sector.isPaused
 
@@ -243,66 +246,13 @@ class SectorTaskScheduler : EveryFrameScript {
             initAfterFirstAdvance = true
         }
 
-        if (battleStarted && afterPlayerBattle.isNotEmpty()) {
-            val callbacks = afterPlayerBattle.toList()
-            afterPlayerBattle.clear()
-            callbacks.forEach {
-                safeRun("onPlayerBattleFinish callback") { it.action.invoke() }
-
-                if (!it.repeat || it.handle?.cancelled == true) return@forEach
-                afterPlayerBattle.add(it)
-            }
-        }
+        if (battleStarted) runCallbacks(afterPlayerBattle, "onPlayerBattleFinish callback")
         battleStarted = false
 
-        if (wasPaused && !paused && onUnpause.isNotEmpty()) {
-            val callbacks = onUnpause.toList()
-            onUnpause.clear()
-            callbacks.forEach {
-                safeRun("onUnpause callback") { it.action.invoke() }
-
-                if (!it.repeat || it.handle?.cancelled == true) return@forEach
-                onUnpause.add(it)
-            }
-        }
+        if (wasPaused && !paused) runCallbacks(onUnpause, "onUnpause callback")
         wasPaused = paused
 
-        if(systemTimeQueue.isNotEmpty()) {
-            val systemNow = System.nanoTime()
-            while (true) {
-                val task = systemTimeQueue.peek() ?: break
-                if (task.time >= systemNow) break
-
-                systemTimeQueue.poll()
-
-                if (task.handle?.cancelled == true) continue
-
-                safeRun("deferred systemTime task") { task.action.invoke() }
-
-                task.interval?.let {
-                    task.time = systemNow + it
-                    systemTimeQueue.add(task)
-                }
-            }
-        }
-
-        if(sectorTimeQueue.isNotEmpty()) {
-            val sectorNow = sector.clock.timestamp
-            while (true) {
-                val task = sectorTimeQueue.peek() ?: break
-                if (task.time >= sectorNow) break
-
-                sectorTimeQueue.poll()
-
-                if (task.handle?.cancelled == true) continue
-
-                safeRun("deferred sectorTime task") { task.action.invoke() }
-
-                task.interval?.let {
-                    task.time = sectorNow + it
-                    sectorTimeQueue.add(task)
-                }
-            }
-        }
+        drainDueTasks(systemTimeQueue, System.nanoTime(), "deferred systemTime task")
+        drainDueTasks(sectorTimeQueue, sector.clock.timestamp, "deferred sectorTime task")
     }
 }
