@@ -36,6 +36,7 @@ object SystemTaskScheduler {
      * Persists in the current session, does not persist through game restart.
      */
     @JvmStatic
+    @JvmOverloads
     fun performLater(delay: Long = 0, action: TaskSchedulerUtils.TaskAction): TaskHandle {
         val handle = TaskHandle()
 
