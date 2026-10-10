@@ -77,14 +77,6 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
     fun syncWithCurrentVariant() =
         refitPanel.safeInvoke(METHOD_SYNC_WITH_CURRENT_VARIANT)
 
-    /*
-    /**
-     * Rebuilds the live preview Ship instance (sprite, stats, CR effects) from the current variant. Does not update anything on the refit tab other than the ship.
-     */
-    fun updateFromCurrentVariant() =
-        shipDisplay.safeInvoke(METHOD_UPDATE_FROM_CURRENT_VARIANT)
-    */ // This method gets called by syncWithCurrentVariant; thus to avoid confusion it was commented out.
-
     /**
      * Return the fleet member currently loaded into the refit panel
      */
@@ -96,19 +88,6 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
      */
     fun setSuppressMessages(value: Boolean) =
         shipDisplay.safeInvoke(METHOD_SET_SUPPRESS_MESSAGES, value)
-
-    /**
-     * Returns true if the refit tab is currently showing a dialog. (e.g. weapon or fighter picker dialog.)
-     */
-    //fun isShowingDialog(): Boolean =
-    //    shipDisplay.safeInvoke(METHOD_IS_SHOWING_DIALOG) as Boolean
-
-    /**
-     * Set whether the refit tab is currently showing a dialog.
-     */
-    //fun setShowingDialog(value: Boolean) =
-    //    shipDisplay.safeInvoke(METHOD_SET_SHOWING_DIALOG, value)
-
 
     /**
      * Marks the refit as having unsaved changes; toggles the Save/Undo buttons' enabled state
@@ -124,6 +103,27 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
     @JvmOverloads
     fun saveCurrentVariant(forceMessage: Boolean = false) =
         refitPanel.safeInvoke(METHOD_SAVE_CURRENT_VARIANT, forceMessage)
+
+    /*
+    /**
+     * Rebuilds the live preview Ship instance (sprite, stats, CR effects) from the current variant. Does not update anything on the refit tab other than the ship.
+     */
+    fun updateFromCurrentVariant() =
+        shipDisplay.safeInvoke(METHOD_UPDATE_FROM_CURRENT_VARIANT)
+    */ // This method gets called by syncWithCurrentVariant; thus to avoid confusion it was commented out.
+
+    /*
+    /**
+     * Returns true if the refit tab is currently showing a dialog. (e.g. weapon or fighter picker dialog.)
+     */
+    fun isShowingDialog(): Boolean =
+        shipDisplay.safeInvoke(METHOD_IS_SHOWING_DIALOG) as Boolean
+    /**
+     * Set whether the refit tab is currently showing a dialog.
+     */
+    fun setShowingDialog(value: Boolean) =
+        shipDisplay.safeInvoke(METHOD_SET_SHOWING_DIALOG, value)
+    */ // Commented out to avoid extra complexity/confusion. Anyone who wants to use these functions probably knows enough to do it themselves, but let me know if I'm wrong.
 
     //fun recreateUI() =
     //    refitPanel.safeInvoke("recreateUI")

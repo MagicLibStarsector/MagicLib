@@ -6,10 +6,12 @@ import com.fs.starfarer.api.campaign.CampaignUIAPI
 import com.fs.starfarer.api.campaign.CoreUIAPI
 import com.fs.starfarer.api.campaign.CoreUITabId
 import com.fs.starfarer.api.impl.codex.CodexDialogAPI
+import com.fs.starfarer.api.ui.IntelUIAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.coreui.CaptainPickerDialog
 import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils.getMethodsMatching
+import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.ReflectionUtilsSafe.safeInvoke
 import org.magiclib.kotlin.internal.findChildWithMethod
 import org.magiclib.kotlin.internal.getChildrenCopy
@@ -80,6 +82,11 @@ object UIFinder {
             null
         else
             getCurrentTab()
+    }
+
+    // Marked internal as this should probably be made into a boxed class like the others.
+    internal fun getIntelUI(intelTab: UIPanelAPI? = getIntelTab()): IntelUIAPI? {
+        return intelTab?.invoke("getEventsPanel") as? IntelUIAPI
     }
 
     @JvmStatic

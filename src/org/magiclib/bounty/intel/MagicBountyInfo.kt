@@ -35,6 +35,7 @@ import org.magiclib.kotlin.setAlpha
 import org.magiclib.kotlin.ucFirst
 import org.magiclib.util.MagicCampaign
 import org.magiclib.util.MagicTxt
+import org.magiclib.util.reflection.UIFinder
 import java.awt.Color
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -345,29 +346,7 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
                 BountyBoardIntelPlugin.refreshPanel(this)
                 // Update intel list to account for new bounty intel entry.
                 try {
-                    // These functions should probably be moved somewhere else, but I don't know where else to put them at the moment.
-                    fun getCoreUI(): CoreUIAPI? {
-                        val state = AppDriver.getInstance().currentState
-                        if (state is CampaignUIAPI) {
-                            return (state.currentInteractionDialog?.let { dialog ->
-                                dialog.invoke("getCoreUI") as? CoreUIAPI
-                            } ?: state.invoke("getCore") as? CoreUIAPI)
-                        }
-                        return null
-                    }
-                    fun getCurrentTab(): UIPanelAPI? {
-                        return getCoreUI()?.invoke("getCurrentTab") as? UIPanelAPI
-                    }
-                    fun getIntelTab(): UIPanelAPI? {
-                        return if (Global.getSector()?.campaignUI?.currentCoreTab != CoreUITabId.INTEL)
-                            null
-                        else
-                            getCurrentTab()
-                    }
-                    fun getIntelUI(): IntelUIAPI? {
-                        return getIntelTab()?.invoke("getEventsPanel") as? IntelUIAPI
-                    }
-                    val intelUI = getIntelUI()
+                    val intelUI = UIFinder.getIntelUI()
                     intelUI?.updateIntelList(true)
                 } catch (e: Exception) {
                     Global.getLogger(this.javaClass).warn("Failed to update intel list", e)
