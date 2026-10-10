@@ -126,6 +126,9 @@ object MagicLookup {
     //
 
     internal fun setup() {
+        if(isSetup())
+            return
+
         val settings = Global.getSettings()
 
         val allHullSpecs = settings.allShipHullSpecs

@@ -24,8 +24,7 @@ internal object AssignHullSkinSourceMod {
                     hull.getFieldsMatching(type = ModSpecAPI::class.java).getOrNull(0)?.set(hull, sourceMod)
                     Global.getLogger(this.javaClass).info("Assigning modded hull skin source mod for ${hull.hullId} to modID ${sourceMod.id}.")
                     count++
-                } else if (hull.shipFilePath.startsWith("data/hulls/") // Base game skins typically have a full file path. Mod skins starts with "data/hulls/"
-                    ) {
+                } else if (hull.shipFilePath.startsWith("data/hulls/")) { // Base game skins typically have a full file path. Mod skins starts with "data/hulls/"
                     // This is not a base-game hull, yet no sourceMod was found.
                     Global.getLogger(this.javaClass).info("Could not assign the modded hull skin source mod for ${hull.hullId} at path ${hull.shipFilePath}. Make sure the skinId and file name are equal.")
                 }
