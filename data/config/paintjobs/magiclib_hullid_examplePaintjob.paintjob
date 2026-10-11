@@ -4,13 +4,13 @@
 {
   "engines":{
     "color":[0,0,0,0], # Engine color in combat layer.
-    "campaignColor"[0,0,0,0], # Engine color in campaign layer. (defaults to 'color' if unset)
+    "campaignColor":[0,0,0,0], # Engine color in campaign layer. (defaults to 'color' if unset)
     "glowAlternateColor":[0,0,0,0], # Engine glow in combat
     "glowSizeMult": 1,
     "contrailColor":[0,0,0,25], # Contrail color in combat layer.
-    "contrailCampaignColor":[0,0,0,75] # Contrail color in campaign layer. (defaults to 'contrailColor' if unset)
+    "contrailCampaignColor":[0,0,0,75], # Contrail color in campaign layer. (defaults to 'contrailColor' if unset)
     "contrailSpawnDistMult":1,
-    "contrailWidthMultiplier":1,
+    "contrailWidthMultiplier":1
   },
   "shield":{
     "innerColor":[0,0,0,0],
@@ -18,8 +18,10 @@
     "innerRotationRate":1,
     "ringRotationRate":1
   },
-  "vents":{
+  "misc":{
     "ventCoreColor":[0,0,0,0],
-    "ventFringeColor":[0,0,0,0]
+    "ventFringeColor":[0,0,0,0],
+    "overloadColor":[0,0,0,0],
+    "explosionFlashColor":[0,0,0,0]
   }
 }

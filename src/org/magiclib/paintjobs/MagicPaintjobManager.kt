@@ -219,16 +219,18 @@ object MagicPaintjobManager {
                         }
                     }?.getOrNull()
 
-                    val ventsSpec = paintjobJson?.runCatching {
-                        getJSONObject("vents")?.let { ventsJson ->
-                            MagicPaintjobSpec.PaintjobVentsSpec(
+                    val miscSpec = paintjobJson?.runCatching {
+                        getJSONObject("misc")?.let { ventsJson ->
+                            MagicPaintjobSpec.PaintjobMiscSpec(
                                 ventsJson.optColor("ventCoreColor", null),
                                 ventsJson.optColor("ventFringeColor", null),
+                                ventsJson.optColor("overloadColor", null),
+                                ventsJson.optColor("explosionFlashColor", null)
                             )
                         }
                     }?.onFailure { e ->
                         if (!(e is JSONException && e.message?.contains("not found") == true)) {
-                            logger.warn("Unable to load vents JSON of $id paintjob", e)
+                            logger.warn("Unable to load misc JSON of $id paintjob", e)
                         }
                     }?.getOrNull()
 
@@ -287,7 +289,7 @@ object MagicPaintjobManager {
                                 tags = tags,
                                 engineSpec = engineSpec,
                                 shieldSpec = shieldSpec,
-                                ventsSpec = ventsSpec,
+                                miscSpec = miscSpec,
                                 paintjobFamily = paintjobFamily
                             )
                                 .also {
@@ -640,9 +642,11 @@ object MagicPaintjobManager {
             }
         }
 
-        paintjob.ventsSpec?.let { vents ->
+        paintjob.miscSpec?.let { vents ->
             vents.ventCoreColor?.let { combatShip.ventCoreColor = it }
             vents.ventFringeColor?.let { combatShip.ventFringeColor = it }
+            vents.overloadColor?.let { combatShip.overloadColor = it }
+            vents.explosionFlashColor?.let { combatShip.explosionFlashColorOverride = it }
         }
 
         for (weapon in combatShip.allWeapons) {
@@ -684,6 +688,18 @@ object MagicPaintjobManager {
                 spec.innerRotationRate?.let { shield.innerRotationRate = it }
                 spec.ringRotationRate?.let { shield.ringRotationRate = it }
             }
+        }
+    }
+
+    /**
+     * This needs to be re-applied every frame in combat. See [applyPaintjobToShield] for details.
+     */
+    internal fun applyPaintjobToOverload(
+        combatShip: ShipAPI,
+        paintjob: MagicPaintjobSpec
+    ) {
+        paintjob.miscSpec?.let { misc ->
+            misc.overloadColor?.let { combatShip.overloadColor = it }
         }
     }
 

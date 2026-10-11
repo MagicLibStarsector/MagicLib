@@ -66,6 +66,8 @@ class MagicPaintjobHullMod : BaseHullMod() {
 
         // Apply each frame because of shields. (Shields can reset and thus need to be applied each frame)
         MagicPaintjobManager.applyPaintjobToShield(ship, paintjob)
+        // Also need to apply each frame for overload color.
+        MagicPaintjobManager.applyPaintjobToOverload(ship, paintjob)
 
         // Only applies if needed
         applyToEngines(ship, paintjob)

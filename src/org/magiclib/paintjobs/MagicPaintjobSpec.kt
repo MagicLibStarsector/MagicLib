@@ -20,7 +20,7 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var tags: List<String>?,
     var engineSpec: PaintjobEngineSpec?,
     var shieldSpec: PaintjobShieldSpec?,
-    var ventsSpec: PaintjobVentsSpec?,
+    var miscSpec: PaintjobMiscSpec?,
     var paintjobFamily: String?
 ) {
 
@@ -95,12 +95,14 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
         var innerColor: Color?,
         var ringColor: Color?,
         var innerRotationRate: Float?,
-        var ringRotationRate: Float?,
+        var ringRotationRate: Float?
     )
 
-    data class PaintjobVentsSpec(
+    data class PaintjobMiscSpec(
         var ventCoreColor: Color?,
         var ventFringeColor: Color?,
+        var overloadColor: Color?,
+        var explosionFlashColor: Color?
     )
 }
 
