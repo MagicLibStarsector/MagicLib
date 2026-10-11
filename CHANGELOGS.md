@@ -47,7 +47,7 @@ Version 1.5.8
   * If this is undesired behavior; either add another hull id to your paintjob in the .csv, or tag your hull skin with 'ML_ForceBasePaintjobs'.
   * You can also tag the relevant hull skin with 'ML_NoBasePaintjobs' to forbid paintjobs from being appliable from the base-hull.
 - Fix paintjob not applying to ship modules in some cases.
-- Add vents color changing alongside the engines and shield file.
+- Add vent colors, overload colors, and explosion flash colors alongside the engines and shield colors.
 - Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
 - Fixed 'contrailColor' not applying itself in combat.
 - Added 'campaignColor' and 'contrailCampaignColor' to configure paintjob colors on the campaign layer.
