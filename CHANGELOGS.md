@@ -32,6 +32,7 @@
 - Bounty validation logs are now Level.WARN instead of Level.INFO
 - Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.
+- Added "ALL" key to "trigger_marketFaction_any", which allows the bounty to spawn on every market.
 
 ### MagicPaintjobs
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
@@ -49,6 +50,8 @@
 - Moved a large amount of code from the 0.98a Starsector mod FleetBuilder into MagicLib.
   * See util.api for all of the new extensions and functions added.
   * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat.
+  * See util.reflection to get and call functions on UI elements easier.
+  * See util.MagicLookup.kt to get cached, indexed lookups for game data (hulls, variants, weapons, hull mods, skills, etc).
 - Added the 'ML_enhancedModuleArmor' hullmod. This hullmod makes armor modules act like armor, not separate targets, and fixes explosions bypassing modular armor via occlusion raycasting. Thanks to starficz
 - Added the 'ML_showModulePaperdoll' tag. When added to a hull, it adds an armor paperdoll preview to your ship info in combat to see the position and state of the armor modules. Thanks to starficz
 - Added MagicUserSettings, A utility for reading user configured mod settings in a way that supports both LunaLib and plain `userSettings.json` files.
