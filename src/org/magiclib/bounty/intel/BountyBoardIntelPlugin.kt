@@ -22,6 +22,9 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     @Transient
     private var lastHeight: Float = 0f
 
+    @Transient
+    private var tempSummaryCount: Int? = null
+
     //TODO: Remove on 0.98.5a
     @Transient
     @Deprecated("Use userNotifiedBountyIds instead")
@@ -89,6 +92,9 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     override fun hasSmallDescription(): Boolean = false
 
     override fun getName(): String {
+        tempSummaryCount?.let {
+            return "${MagicTxt.getString("mb_intelTitle")} - ${MagicTxt.getString("mb_newBountiesPosted", it.toString())}"
+        }
         if (tempBountyInfo != null) {
             return "${MagicTxt.getString("mb_intelTitle")} - ${tempBountyInfo!!.getBountyName()}"
         }
@@ -105,19 +111,46 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         tc: Color,
         initPad: Float
     ) {
+        if (tempSummaryCount != null) return // summary has no per-bounty bullets
         tempBountyInfo?.addNotificationBulletpoints(info)
     }
 
-    fun notifyUserThatBountyIsAvailable(bountyInfo: BountyInfo) {
+    /**
+     * Marks the bounty as notified and returns true if the player should actually be told about it.
+     */
+    private fun markNotified(bountyInfo: BountyInfo): Boolean {
         userNotifiedBountyIds.add(bountyInfo.getBountyId())
-
         bountyInfo.notifiedUserThatBountyIsAvailable()
 
-        if(bountyInfo.getBountySpec()?.job_auto_accept != null) // If the bounty is auto accepted in any way, avoid showing a notification.
-            return
-        this.tempBountyInfo = bountyInfo
-        this.sendUpdateIfPlayerHasIntel(null, false, false)
-        this.tempBountyInfo = null
+        if (bountyInfo.getBountySpec()?.job_auto_accept != null) return false // Auto-accepted bounties don't get a notification.
+
+        return true
+    }
+
+    private fun sendBountyUpdate(bountyInfo: BountyInfo) {
+        tempBountyInfo = bountyInfo
+        sendUpdateIfPlayerHasIntel(null, false, false)
+        tempBountyInfo = null
+    }
+
+    private fun sendSummaryUpdate(count: Int) {
+        tempSummaryCount = count
+        sendUpdateIfPlayerHasIntel(null, false, false)
+        tempSummaryCount = null
+    }
+
+    fun notifyUserThatBountyIsAvailable(bountyInfo: BountyInfo) {
+        if (markNotified(bountyInfo)) sendBountyUpdate(bountyInfo)
+    }
+
+    /** Notifies individually for up to [MAX_INDIVIDUAL_NOTIFICATIONS] bounties, otherwise sends one summary. */
+    fun notifyUserThatBountiesAreAvailable(bounties: List<BountyInfo>) {
+        val announceable = bounties.filter { markNotified(it) }
+
+        if (announceable.size > MAX_INDIVIDUAL_NOTIFICATIONS)
+            sendSummaryUpdate(announceable.size)
+        else
+            announceable.forEach { sendBountyUpdate(it) }
     }
 
     override fun advance(amount: Float) {
@@ -168,17 +201,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         boardRefreshInterval.advance(days)
         if (!boardRefreshInterval.intervalElapsed()) return
 
-        // Don't show bounties until the player has been playing for a few days.
-        // This prevents the player from being overwhelmed with bounties right at the start of the game.
-        if (Global.getSector().clock.elapsedDaysSinceGameStart() < 3) return
-
-        PROVIDERS
-            .flatMap { it.getBounties() }
-            .filter { !userNotifiedBountyIds.contains(it.getBountyId()) }
-            .firstOrNull { it.shouldShow() }
-            ?.let {
-                notifyUserThatBountyIsAvailable(it)
-            }
+        notifyAllAvailableBounties()
     }
 
     fun layoutPanel(panel: CustomPanelAPI, width: Float = lastWidth, height: Float = lastHeight) {
@@ -287,16 +310,20 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             }
         }
 
+        const val MAX_INDIVIDUAL_NOTIFICATIONS = 3
+
         /**
-         * Evaluates every bounty from every provider. [BountyInfo.shouldShow] creates any bounty that should currently be available, and the player is notified once about each newly available bounty.
+         * Evaluates every bounty from every provider that has not yet been notified to the player.
+         *
+         * [BountyInfo.shouldShow] creates any bounty that should currently be available, and the player is notified once about each newly available bounty.
          */
         fun notifyAllAvailableBounties() {
             val board = instance ?: return
-            PROVIDERS
+            val newBounties = PROVIDERS
                 .flatMap { it.getBounties() }
-                .filter { it.shouldShow() }
                 .filter { it.getBountyId() !in userNotifiedBountyIds }
-                .forEach { board.notifyUserThatBountyIsAvailable(it) }
+                .filter { it.shouldShow() }
+            board.notifyUserThatBountiesAreAvailable(newBounties)
         }
     }
 }

@@ -56,6 +56,7 @@
 
     #magic bounties
     "mb_intelTitle": "Bounty Board",
+    "mb_newBountiesPosted": "%s new bounties posted",
     "mb_listHeader": "Bounties",
     "mb_greeting": "A subroutine from your implant informs you that this establishment is broadcasting an informal job board.",
     "mb_connect": "Connect to the local unsanctioned bounty board.",
