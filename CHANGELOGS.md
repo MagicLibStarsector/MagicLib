@@ -81,6 +81,7 @@
 - Fix the bounty file option 'target_skill_preference'. It was previously not working.
 - Improve bounty plot course targeting so it will show up in more situations.
 - The ML_bounty faction is now set as hostile to the player by default.
+- Fix a crash that occurs when clicking a bounty which is in a constellation with a star system that has a null primary star.
 
 ### MagicPaintjobs
 - Fix the paintjob unlock notifier, as it didn't appear to be working.

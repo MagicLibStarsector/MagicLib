@@ -697,7 +697,7 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
 
                 else -> {
                     val constellation = location.constellation
-                    if(constellation != null) {
+                    if (constellation != null) {
                         //Show constellation
                         params.filterData.constellations = true
                         params.filterData.names = false
@@ -715,12 +715,18 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
                         setupSystemParams(params, location)
                     }
 
-                    targetInfoTooltip.addPara(
-                        createLocationEstimateText(bounty),
-                        10f,
-                        location.lightColor,
-                        BreadcrumbSpecial.getLocationDescription(bounty.fleetSpawnLocation, false)
-                    )
+                    try {
+                        targetInfoTooltip.addPara(
+                            createLocationEstimateText(bounty),
+                            10f,
+                            location.lightColor,
+                            BreadcrumbSpecial.getLocationDescription(bounty.fleetSpawnLocation, false)
+                        )
+                    } catch (e: Exception) {
+                        Global.getLogger(this::class.java).error("Failed to create location estimate text", e)
+                        val firstLine = e.message?.lineSequence()?.first() ?: e.javaClass.simpleName
+                        targetInfoTooltip.addPara("Failed to create location estimate text. See log for details.\n$firstLine", Misc.getNegativeHighlightColor(), 10f)
+                    }
                 }
             }
 
