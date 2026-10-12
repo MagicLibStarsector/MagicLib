@@ -1,5 +1,6 @@
 package org.magiclib.util.taskScheduler
 
+import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignClockAPI
@@ -12,13 +13,13 @@ import java.util.*
  *
  * Example Java Usage:
  * ```
- * SectorTaskScheduler.performLater(0L, false, handle -> {
+ * SectorTaskScheduler.performLater(0L, "", handle -> {
  *     Global.getLogger(this.getClass()).warn("TEST");
  * });
  * ```
  * Example Kotlin Usage:
  * ```
- * SectorTaskScheduler.performLater(0L, false) { handle ->
+ * SectorTaskScheduler.performLater(0L) { handle ->
  *     Global.getLogger(this::class.java).warn("TEST")
  * }
  * ```
@@ -26,21 +27,52 @@ import java.util.*
  * @author S-Numan
  */
 class SectorTaskScheduler : EveryFrameScript {
+    init {
+        CombatTaskScheduler.onBattleStart.clear()
+    }
 
     companion object {
         private var active: SectorTaskScheduler? = null
         internal fun setActive(value: SectorTaskScheduler?) {
             active = value
         }
+        private fun getActiveOrNull(): SectorTaskScheduler? {
+            if(active == null) {
+                val caller = Throwable().stackTrace.getOrNull(1)
+                val callerName = caller?.let { "${it.className.substringAfterLast('.')}.${it.methodName}" } ?: "unknown"
+                Global.getLogger(this::class.java).warn("Function [$callerName] called when not in sector. Cannot add task.")
+            }
+            return active
+        }
 
-        @JvmStatic
-        fun getSystemTasks(): Collection<TimedTask> {
-            return active?.systemTimeQueue?.toList() ?: emptyList()
+        private const val PERSIST_KEY = "ML_persistentTaskTimers"
+
+        @Suppress("UNCHECKED_CAST")
+        internal fun savedStates(): MutableMap<String, TaskState> =
+            Global.getSector().persistentData.getOrPut(PERSIST_KEY) { HashMap<String, TaskState>() } as MutableMap<String, TaskState>
+
+
+        private fun resolveState(key: String, defaultTime: Long, interval: Long?): TaskState {
+            if (key.isEmpty()) return TaskState("", defaultTime, interval) // unkeyed: not persisted
+
+            val saved = savedStates()
+            val existing = saved[key]
+            if (existing != null && existing.interval == interval) return existing
+            return TaskState(key, defaultTime, interval).also { saved[key] = it }
         }
 
         @JvmStatic
         fun getSectorTasks(): Collection<TimedTask> {
-            return active?.sectorTimeQueue?.toList() ?: emptyList()
+            return active?.sectorTimeQueue?.sorted() ?: emptyList()
+        }
+
+        /** Avoid having an action call this on itself, use [TaskHandle.cancel] if possible instead. */
+        @JvmStatic
+        fun removeSectorTaskWithKey(key: String) {
+            if(key.isEmpty()) return
+
+            active?.sectorTimeQueue?.removeAll { it.state.key == key }
+            savedStates().remove(key)
         }
 
         @JvmStatic
@@ -72,31 +104,29 @@ class SectorTaskScheduler : EveryFrameScript {
         /**
          * Runs [action] once, [delay] milliseconds from now.
          *
-         * If [systemTime] is false, timing follows the sector clock and stops advancing while the game is paused. Elapsed real time will differ from [delay] if the game's time acceleration
+         * Timing follows the sector clock and stops advancing while the game is paused. Elapsed real time will differ from [delay] if the game's time acceleration
          * (e.g. fast-forward) is active, or if a mod changes [CampaignClockAPI.getSecondsPerDay].
          *
-         * If [systemTime] is true, timing follows [System.nanoTime] in milliseconds, not sector-days, and keeps advancing while the game is paused.
+         * - The task does not persist in the save file, re-register the task after every [BaseModPlugin.onGameLoad] as needed.
+         * - Provide a unique [key] to persist the task's timer: Re-registering the task with the same [key] resumes its existing schedule rather than restarting the timer, provided the task was left unfinished.
+         * - If a task is overdue, it runs once immediately, then resumes its regular schedule.
          *
-         * Does not persist in save file, re-register every new sector session if needed.
+         * @param key Unique ID for persisting the timer. Leave empty for a non-persistent task.
+         * @return A [TaskHandle] that can be used to cancel the task.
          */
         @JvmStatic
-        fun performLater(delay: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performLater(delay: Long = 0, key: String = "", action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
-            val inst = active ?: return handle
+            val inst = getActiveOrNull() ?: return handle
 
-            val task = TimedTask(
-                action = { action.run(handle) },
-                time =
-                    if (systemTime) System.nanoTime() + delay * 1_000_000L
-                    else Global.getSector().clock.timestamp + realMsToClockMs(delay),
-                interval = null,
-                handle = handle
+            val state = resolveState(key, Global.getSector().clock.timestamp + realMsToClockMs(delay), null)
+
+            if(key.isNotEmpty()) inst.sectorTimeQueue.removeAll { it.key == key }
+            inst.sectorTimeQueue.add(
+                TimedTask({ action.run(handle) }, // inject handle into lambda
+                    state,
+                    handle)
             )
-
-            if (systemTime)
-                inst.systemTimeQueue.add(task)
-            else
-                inst.sectorTimeQueue.add(task)
 
             return handle
         }
@@ -104,33 +134,31 @@ class SectorTaskScheduler : EveryFrameScript {
         /**
          * Runs [action] every [interval] milliseconds, starting after one interval.
          *
-         * If [systemTime] is false, timing follows the sector clock and stops advancing while the game is paused. Elapsed real time will differ from [interval] if the game's time acceleration
+         * Timing follows the sector clock and stops advancing while the game is paused. Elapsed real time will differ from [interval] if the game's time acceleration
          * (e.g. fast-forward) is active, or if a mod changes [CampaignClockAPI.getSecondsPerDay].
          *
-         * If [systemTime] is true, timing follows [System.nanoTime] in milliseconds, not sector-days, and keeps advancing while the game is paused.
+         * - The task does not persist in the save file, re-register the task after every [BaseModPlugin.onGameLoad] as needed.
+         * - Provide a unique [key] to persist the task's timer: Re-registering the task with the same [key] resumes its existing schedule rather than restarting the timer, provided the task was left unfinished.
+         * - If a task is overdue, it runs once immediately, then resumes its regular schedule.
          *
-         * Does not persist in save file, re-register every new sector session if needed.
+         * @param key Unique ID for persisting the timer. Leave empty for a non-persistent task.
+         * @return A [TaskHandle] that can be used to cancel the task.
          */
         @JvmStatic
-        fun performEvery(interval: Long = 0, systemTime: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performEvery(interval: Long = 0, key: String = "", action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
-            val inst = active ?: return handle
+            val inst = getActiveOrNull() ?: return handle
 
-            val convertedInterval = if (systemTime) interval * 1_000_000L else realMsToClockMs(interval)
+            val convertedInterval = realMsToClockMs(interval)
 
-            val task = TimedTask(
-                action = { action.run(handle) }, // inject handle into lambda
-                time =
-                    if (systemTime) System.nanoTime() + convertedInterval
-                    else Global.getSector().clock.timestamp + convertedInterval,
-                interval = convertedInterval,
-                handle = handle
+            val state = resolveState(key, Global.getSector().clock.timestamp + convertedInterval, convertedInterval)
+
+            if(key.isNotEmpty()) inst.sectorTimeQueue.removeAll { it.key == key }
+            inst.sectorTimeQueue.add(
+                TimedTask({ action.run(handle) }, // inject handle into lambda
+                    state,
+                    handle)
             )
-
-            if (systemTime)
-                inst.systemTimeQueue.add(task)
-            else
-                inst.sectorTimeQueue.add(task)
 
             return handle
         }
@@ -148,6 +176,7 @@ class SectorTaskScheduler : EveryFrameScript {
         @JvmOverloads
         fun performOnUnpause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
+            val active = getActiveOrNull() ?: return handle
 
             val task = Task(
                 action = { action.run(handle) }, // inject handle into lambda
@@ -155,7 +184,7 @@ class SectorTaskScheduler : EveryFrameScript {
                 handle = handle
             )
 
-            active?.onUnpause?.add(task)
+            active.onUnpause.add(task)
 
             return handle
         }
@@ -173,6 +202,7 @@ class SectorTaskScheduler : EveryFrameScript {
         @JvmOverloads
         fun performAfterPlayerBattle(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
+            val active = getActiveOrNull() ?: return handle
 
             val task = Task(
                 action = { action.run(handle) }, // inject handle into lambda
@@ -180,7 +210,7 @@ class SectorTaskScheduler : EveryFrameScript {
                 handle = handle
             )
 
-            active?.afterPlayerBattle?.add(task)
+            active.afterPlayerBattle.add(task)
 
             return handle
         }
@@ -219,9 +249,7 @@ class SectorTaskScheduler : EveryFrameScript {
     }
 
     private var battleStarted = false
-    private val systemTimeQueue = PriorityQueue<TimedTask>()
     private val sectorTimeQueue = PriorityQueue<TimedTask>()
-
     private val onUnpause = mutableListOf<Task>()
     private var wasPaused = false
 
@@ -232,27 +260,27 @@ class SectorTaskScheduler : EveryFrameScript {
 
     private var init = false
     override fun advance(amount: Float) {
-        SystemTaskScheduler.internalAdvance()
-
         val sector = Global.getSector() ?: return
         val paused = sector.isPaused
 
         if (!init) {
-            CombatTaskScheduler.onBattleStart.clear()
-
             initAfterFirstAdvance = false
             init = true
         } else if (!initAfterFirstAdvance) {
             initAfterFirstAdvance = true
         }
 
-        if (battleStarted) runCallbacks(afterPlayerBattle, "onPlayerBattleFinish callback")
-        battleStarted = false
+        if (battleStarted) {
+            runCallbacks(afterPlayerBattle, "onPlayerBattleFinish callback")
+            CombatTaskScheduler.setActive(null)
+            battleStarted = false
+        }
 
         if (wasPaused && !paused) runCallbacks(onUnpause, "onUnpause callback")
         wasPaused = paused
 
-        drainDueTasks(systemTimeQueue, System.nanoTime(), "deferred systemTime task")
         drainDueTasks(sectorTimeQueue, sector.clock.timestamp, "deferred sectorTime task")
+
+        SystemTaskScheduler.internalAdvance()
     }
 }

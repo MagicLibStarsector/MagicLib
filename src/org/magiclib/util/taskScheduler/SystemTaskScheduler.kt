@@ -25,7 +25,7 @@ object SystemTaskScheduler {
 
     @JvmStatic
     fun getSystemTasks(): Collection<TimedTask> {
-        return systemTimeQueue.toList()
+        return systemTimeQueue.sorted()
     }
 
     /**
@@ -42,8 +42,10 @@ object SystemTaskScheduler {
 
         val task = TimedTask(
             action = { action.run(handle) },
-            time = System.nanoTime() + delay * 1_000_000L,
-            interval = null,
+            TaskState(
+                time = System.nanoTime() + delay * 1_000_000L,
+                interval = null
+            ),
             handle = handle
         )
 
@@ -67,8 +69,10 @@ object SystemTaskScheduler {
 
         val task = TimedTask(
             action = { action.run(handle) }, // inject handle into lambda
-            time = System.nanoTime() + convertedInterval,
-            interval = convertedInterval,
+            TaskState(
+                time = System.nanoTime() + convertedInterval,
+                interval = convertedInterval
+            ),
             handle = handle
         )
 

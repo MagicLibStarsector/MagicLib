@@ -7,7 +7,7 @@ object TaskSchedulerUtils {
     internal inline fun safeRun(what: String, block: () -> Unit) {
         try {
             block()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Global.getLogger(this::class.java).error(this::class.java.name + ": exception in $what", e)
         }
     }
@@ -25,16 +25,31 @@ object TaskSchedulerUtils {
             val task = queue.peek() ?: break
             if (task.time >= now) break
 
+            val keyed = task.key.isNotEmpty()
+            val savedStates = if(keyed) SectorTaskScheduler.savedStates() else null
             queue.poll()
+            // Cache before action, as action may mutate state.time (e.g. reschedule itself)
+            if (keyed) savedStates?.remove(task.key)
 
-            if (task.handle?.cancelled == true) continue
+            if (task.handle?.cancelled == true) // Canceled before its own action
+                continue
 
             safeRun(label) { task.action.invoke() }
 
-            val interval = task.interval ?: continue
-            if (task.handle?.cancelled == true) continue // cancelled from inside its own action
+            val interval = task.interval ?: continue // No interval, no repeat
+            if (task.handle?.cancelled == true) continue // Canceled from inside its own action
 
-            task.time = now + interval
+            if(keyed && savedStates != null) {
+                if (savedStates.containsKey(task.key)) continue // replaced from inside its own action: drop this one
+                savedStates[task.key] = task.state
+            }
+
+            var next = task.state.time + interval
+            if (next <= now) next = now + interval // If we're still behind after advancing, skip the missed runs rather than firing them all back-to-back.
+
+            task.state.time = next
+            task.sequence = nextTaskSequence()
+
             queue.add(task)
         }
     }
