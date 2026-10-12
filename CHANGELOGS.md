@@ -1,84 +1,103 @@
-Version 1.5.8
-
-**MagicBounty**
-- Bounties are now kept in the intel bounty board if the player has previously been notified of them, as opposed to the previous behavior of disappearing if out of comms range. This is to prevent confusion on why bounties may not appear in some situations as that isn't documented anywhere.
+# 1.5.8
+## For users
+### MagicBounty
+- Bounties persist in the intel board if the player has previously been notified of them, instead of disappearing when out of comms range.
 - Replaced the broken intel bounty filtering menu with a sorting menu, allowing sorting by alphabetical order, credits, and distance.
+- Drop/Raise button to sort the specified bounty to the bottom or top of the list.
+- Enable deadlines by default, provided the mod-maker configured deadlines in their bounty.
+- Bounty board notifications now show all new bounties at once instead of over time, but summarizes them into a single notification if more than 3 are posted at once.
 - Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
-- Fixed bounty arrow pointing directly at the destination even when not specified to do so.
-- Fixed bounty intel not showing up in one of the lower faction intel tabs and instead duplicating a intel tab above.
+- Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
+
+### MagicPaintjobs
+- Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
+- Shiny paintjobs now have a shiny icon to indicate their status.
+- Improved CPU performance in combat and campaign, more notably in the campaign.
+- Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
+
+### Miscellaneous
+- Assign Missing Source Mods on Ship Skins: assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that.
+
+---
+
+## For modders
+### MagicBounty
+- New bounty spec options: 'job_auto_accept', 'job_repeatable', and 'show_in_bounty_board' to bounty spec. See 'magicBounty_data_example.json' for more details
+  * job_auto_accept controls when a bounty is accepted. This can cause the bounty to always be accepted when it is available, be accepted upon the fleet being seen by the player, or be accepted on occasion with a max amount like vanilla personal bounties.
+  * job_repeatable controls whether this job should be repeatable even after it ends. This can be set to always be repeatable, only repeatable if the bounty expired, or only repeatable if the bounty failed.
+  * show_in_bounty_board controls if this bounty should show in the bounty board.
 - Added 'fleet_memory_flags' to the bounty spec to add true memory keys to the bounty fleet.
 - Added the ability to specify item type with 'job_item_reward' beforehand with a $ in the bounty spec. Including "$commodity", "$weapon", "$fighter", "$hullmod", "$special"
 - Added `drawHUDStatusBar` overload that takes a `Vector2f`.
-- Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
-- Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
 - Bounty validation now warns
-- The ML_bounty faction is now set as hostile to the player by default.
-- The MagicLib_ResetBounty command now properly resets the input bounty, reloading it from the magicBounty_data.json file.
-- Drop/Raise button to sort the specified bounty to the bottom or top of the list.
-- The intel list now updates when accepting a bounty from the bounty board.
-- Reward credits are set only on bounty creation, they can no longer change depending on the fleet size of the bounty and/or player outside of when they are first created.
 - Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
-- Force base-game ambient battle music before combat is unpaused when fighting against a bounty with 'fleet_musicSetId' set. This fixes the bad music transitions from modded music tracks to bounty music tracks.
-- Enable deadlines by default, provided the mod-maker configured deadlines in their bounty.
-- Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
-- Fix magicBounty_variants from failing to properly load modules onto bounty variants in some circumstances. Modules can now also be placed in magicBounty_variants
-- Added 'job_auto_accept', 'job_repeatable', and 'show_in_bounty_board' to bounty spec. See 'magicBounty_data_example.json' for more details
-  * job_auto_accept controls when a bounty is accepted. This can cause the bounty to always be accepted when it is avaliable, be accepted upon the fleet being seen by the player, or be accepted on occasion with a max amount like vanilla personal bounties.
-  * job_repeatable controls whether this job should be repeatable even after it ends. This can be set to always be repeatable, only repeatable if the bounty expired, or only repeatable if the bounty failed.
-  * show_in_bounty_board controls if this bounty should show in the bounty board.
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.
-- Fix the bounty file option 'target_skill_preference'. It was previously not working.
-- Improve bounty plot course targeting so it will show up in more situations.
-
-**MagicAchievements**
-- Fix possible 'ShipKillsAchievement' game crash.
-- Avoid log spam when a mod which added achivements was removed.
-
-**MagicPaintjobs**
-- Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
-- Shiny paintjobs now have a shiny icon to indicate their status.
-- Improve CPU performance in campaign.
-- Improve CPU performance in combat.
-- Fix the paintjob unlock notifier, as it didn't appear to be working.
-- Fix the game crashing if paintjob sprite did not exist or was not accessable, often occuring when opening the paintjob intel entry.
 - Improved shiny paintjob spawning functionality and added shiny spawning probablity on a per mod basis.
+
+### MagicPaintjobs
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
   * This stops hull skins which are not compatible with the base hull from receiving the base hull's paintjobs.
   * If this is undesired behavior; either add another hull id to your paintjob in the .csv, or tag your hull skin with 'ML_ForceBasePaintjobs'.
   * You can also tag the relevant hull skin with 'ML_NoBasePaintjobs' to forbid paintjobs from being appliable from the base-hull.
-- Fix paintjob not applying to ship modules in some cases.
-- Add vent colors, overload colors, and explosion flash colors alongside the engines and shield colors.
-- Cleaned up the magic paintjob intel tab. Now it hides both fighters and wings, and sorts by the hull-id.
-- Fixed 'contrailColor' not applying itself in combat.
 - Added 'campaignColor' and 'contrailCampaignColor' to configure paintjob colors on the campaign layer.
-- Fix paintjob button sometimes flickering when re-opening the refit tab.
+- Add vent colors, overload colors, and explosion flash colors alongside the engines and shield colors.
 
-**MagicSubsystems**
-- Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
+### MagicSubsystems
 - Added FighterAIFormation as a MagicDroneSubsystem formation. This formation gives the drone base-game fighter ai, and allows the modder to set behavior such as ENAGAGE or REGROUP.
-
-**Other**
-- Stop a new campaign trail being added to the save file on every game load. Campaign trails are no longer serialized to the save game.
-- Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
+  
+### Miscellaneous
+- Moved a large amount of code from the 0.98a Starsector mod FleetBuilder into MagicLib.
+  * See util.api for all of the new extensions and functions added.
+  * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat.
+- Added the 'ML_enhancedModuleArmor' hullmod. This hullmod that makes armor modules act like armor, not separate targets, and fixes explosions bypassing modular armor via occlusion raycasting. Thanks to starficz
+- Added the 'ML_showModulePaperdoll' tag. When added to a hull, it adds an armor paperdoll preview to your ship info in combat to see the position and state of the armor modules. Thanks to starficz
+- Added MagicUserSettings, A utility for reading user configured mod settings in a way that supports both LunaLib and plain `userSettings.json` files.
 - Added functionality to allow adding random memory to a FleetMemberAPI
-- loadVariant now tries to clone the _Hull variant using the hull ID instead of createEmptyVariant() where possible. This makes loadVariant create empty module slots by default; it is intended to fix issues where expected modules were missing due to misconfigured .variant files.
 - Added MagicModVersions which adds mod versions to `sector.getPersistentData()["ml_modVersions"]` after onGameLoad. This allows other mod developers to see the 'last' mod versions in onGameLoad and handle version migration behavior as desired.
+- Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
+- Report variants with missing elements (weapons, hull-mods, fighters) onApplicationLoad, and specify what is missing. This helps users identify crashes before they happen, from variants being created in-game with non-existent elements.
+- Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
 - MagicLib now builds using Gradle.
 - Cleared up all compilation warnings.
 - Removed compilation dependency on Vayra's Sector.
-- Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
+
+---
+
+## Bug Fixess
+### MagicBounty
+- Fixed bounty arrow pointing directly at the destination even when not specified to do so.
+- Fixed bounty intel not showing up in one of the lower faction intel tabs and instead duplicating a intel tab above.
+- Fixed null personalityAPIs being assigned to bounty commanders by affirming if the target_personality is valid.
+- Fixed bounty fleets with "fleet_no_retreat" set to true retreating in some circumstances.
+- The MagicLib_ResetBounty command now properly resets the input bounty, reloading it from the magicBounty_data.json file.
+- The intel list now updates when accepting a bounty from the bounty board.
+- Reward credits are set only on bounty creation, they can no longer change depending on the fleet size of the bounty and/or player outside of when they are first created.
+- Force base-game ambient battle music before combat is unpaused when fighting against a bounty with 'fleet_musicSetId' set. This fixes the bad music transitions from modded music tracks to bounty music tracks.
+- Fix magicBounty_variants from failing to properly load modules onto bounty variants in some circumstances. Modules can now also be placed in magicBounty_variants
+- Fix the bounty file option 'target_skill_preference'. It was previously not working.
+- Improve bounty plot course targeting so it will show up in more situations.
+- The ML_bounty faction is now set as hostile to the player by default.
+
+### MagicPaintjobs
+- Fix the paintjob unlock notifier, as it didn't appear to be working.
+- Fix the game crashing if paintjob sprite did not exist or was not accessable, often occuring when opening the paintjob intel entry.
+- Fix paintjob not applying to ship modules in some cases.
+- Fix 'contrailColor' not applying itself in combat.
+- Fix paintjob button sometimes flickering when re-opening the refit tab.
+
+### MagicAchievements
+- Fix possible 'ShipKillsAchievement' game crash.
+- Avoid log spam when a mod which added achivements was removed.
+
+### MagicSubsystems
+- Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
+
+### Miscellaneous
+- Stop a new campaign trail being added to the save file on every game load. Campaign trails are no longer serialized to the save game.
+- loadVariant now tries to clone the _Hull variant using the hull ID instead of createEmptyVariant() where possible. This makes loadVariant create empty module slots by default; it is intended to fix issues where expected modules were missing due to misconfigured .variant files.
 - Fix MagicAnim smoothToRange, smoothReturnToRange, and arbitrarySmooth. (Reported by Ayreos)
-- Report variants with missing elements (weapons, hull-mods, fighters) onApplicationLoad, and specify what is missing. This helps users identify crashes before they happen, from variants being created in-game with non-existent elements.
-- Added the 'ML_enhancedModuleArmor' hullmod. This hullmod that makes armor modules act like armor, not separate targets, and fixes explosions bypassing modular armor via occlusion raycasting. Thanks starficz
-- Added the 'ML_showModulePaperdoll' tag. When added to a hull, it adds an armor paperdoll preview to your ship info in combat to see the position and state of the armor modules. Thanks starficz
-- Added MagicUserSettings, A utility for reading user configured mod settings in a way that supports both LunaLib and plain `userSettings.json` files.
 - Fixed MagicTargeting null crash where ShipAPI.HullSize = ShipAPI.HullSize.DEFAULT
-- Moved a large amount of code from the 0.98 Starsector mod FleetBuilder into MagicLib.
-  * Added 'Remove Missing Variant Elements' which removes all missing weapons/wings/hull-mods from variants on game launch. Typically from remove mods. This fixes some niche issues including saved mission variants causing missions to crash.
-  * Added 'Assign Missing Source Mods on Ship Skins' which assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that for some reason.
-  * See util.api for all of the new extensions and functions added.
-  * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat.
 
 Version 1.5.7
 
