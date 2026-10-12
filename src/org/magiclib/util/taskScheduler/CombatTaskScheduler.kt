@@ -174,8 +174,10 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
     private var init = false
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
+        val currentState = Global.getCurrentState()
+
         if (!init) {
-            if (Global.getCurrentState() == GameState.TITLE) {
+            if (currentState == GameState.TITLE) {
                 // GameState.TITLE
                 if (!SectorTaskScheduler.initAfterFirstAdvance) return // Prevent this from running on load game, as the combat engine starts there for some reason.
 
@@ -186,8 +188,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
                 SectorTaskScheduler.initAfterFirstAdvance = false
                 SectorTaskScheduler.setActive(null)
                 init = true
-            } else {
-                // GameState.COMBAT
+            } else if (currentState == GameState.COMBAT) {
                 this.engine = Global.getCombatEngine()
                 if (engine != null) {
                     combatTimeQueue.clear()
@@ -205,7 +206,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
                 }
             }
         }
-        if (Global.getCurrentState() != GameState.TITLE) {
+        if (currentState == GameState.COMBAT) {
             val engine = this.engine
             if (engine != null) {
                 val paused = engine.isPaused
