@@ -21,7 +21,7 @@
   "misc":{
     "ventCoreColor":[0,0,0,0],
     "ventFringeColor":[0,0,0,0],
-    "overloadColor":[0,0,0,0],
-    "explosionFlashColor":[0,0,0,0]
+    "overloadColor":[150,150,150,255],
+    "explosionFlashColor":[0,0,0,0] # Overrides hull_styles.json baseCombatExplosionColor
   }
 }
