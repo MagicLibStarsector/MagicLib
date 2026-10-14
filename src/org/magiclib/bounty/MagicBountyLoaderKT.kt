@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global
 import org.json.JSONArray
 import org.json.JSONObject
 import org.magiclib.bounty.MagicBountyLoader.magicVariantExists
-import org.magiclib.util.api.toList
+import org.magiclib.kotlin.toList
 
 internal object MagicBountyLoaderKT {
     @JvmStatic
