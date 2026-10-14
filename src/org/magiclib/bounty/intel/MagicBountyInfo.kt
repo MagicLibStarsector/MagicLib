@@ -715,7 +715,7 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
                         setupSystemParams(params, location)
                     }
 
-                    try {
+                    try { // try catch to avoid crash that happens when a constellation has a star system with a null star. `Cannot invoke "com.fs.starfarer.api.campaign.PlanetAPI.getSpec()" because "star" is null`
                         targetInfoTooltip.addPara(
                             createLocationEstimateText(bounty),
                             10f,
