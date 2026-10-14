@@ -349,6 +349,10 @@
     "subsystemState_Cooldown": "",
     "subsystemState_OutOfRange": "OUT OF RANGE",
     "subsystemState_NoTarget": "NO TARGET",
-    "subsystemState_FluxCapped": "FLUX TOO HIGH"
+    "subsystemState_FluxCapped": "FLUX TOO HIGH",
+
+    # Incompatible mod checker
+    "imc_title": "Incompatible mods detected",
+    "imc_message": "The mod %s [%s] conflicts with the mod %s [%s].\nThese two mods cannot be enabled at the same time.\nDisable one of the conflicting mods to continue."
   }
 }

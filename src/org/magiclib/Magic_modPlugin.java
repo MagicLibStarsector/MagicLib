@@ -1,14 +1,13 @@
 package org.magiclib;
 
-import com.fs.starfarer.api.BaseModPlugin;
-import com.fs.starfarer.api.EveryFrameScript;
-import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.*;
 import com.fs.starfarer.api.campaign.RepLevel;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
 import org.magiclib.util.MagicModVersions;
+import org.magiclib.util.internal.IncompatibleModChecker;
 import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
@@ -33,6 +32,9 @@ import java.util.UUID;
  */
 @SuppressWarnings("deprecation")
 public class Magic_modPlugin extends BaseModPlugin {
+    public Magic_modPlugin() {
+        IncompatibleModChecker.INSTANCE.check$MagicLib(); // Check to pause and crash as early as possible if a mod is incompatible.
+    }
 
     ////////////////////////////////////////
     //                                    //
