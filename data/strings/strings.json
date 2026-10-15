@@ -353,6 +353,7 @@
 
     # Incompatible mod checker
     "imc_title": "Incompatible mods detected",
-    "imc_message": "The mod %s [%s] conflicts with the mod %s [%s].\nThese two mods cannot be enabled at the same time.\nDisable one of the conflicting mods to continue."
+    "imc_message": "The mod %s [%s] conflicts with the mod %s [%s].\nThese two mods cannot be enabled at the same time.\nDisable one of the conflicting mods to continue.",
+    "imc_message_with_reason": "The mod %s [%s] conflicts with the mod %s [%s].\nThese two mods cannot be enabled at the same time.\n\n%s\n\nDisable one of the conflicting mods to continue."
   }
 }

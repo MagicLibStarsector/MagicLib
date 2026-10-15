@@ -14,6 +14,10 @@
       # "version": "3.0.0" # Remove the specific version for future-proofing.
     }
   ],
+  # If any mod ID in this list is enabled, prevent the game from completing its loading process and explain why.
+  "magiclib_modConflicts": [
+    { "id": "Mod_ID_HERE", "reason": "Example reason text here"}
+  ],
   "jars": [ "jars/MagicLib.jar"],
   "modPlugin": "org.magiclib.Magic_modPlugin"
 }
