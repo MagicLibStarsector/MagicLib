@@ -1,6 +1,7 @@
 package org.magiclib.util
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.HullModEffect
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
@@ -17,7 +18,7 @@ object MagicIncompatibleHullmods {
     /**
      * Makes [hullModId] unapplicable for any ship which has [incompatibleHullModId] installed.
      *
-     * Call only once per incompatibility to avoid duplicate entries.
+     * Add each incompatibility only once to avoid duplicate entries. This is typically done in [BaseHullMod.init]
      */
     @JvmStatic
     fun addIncompatibility(hullModId: String, incompatibleHullModId: String) {
@@ -30,7 +31,7 @@ object MagicIncompatibleHullmods {
      *
      * Shows [incompatibleReason] as the reason.
      *
-     * Call only once per incompatibility to avoid duplicate entries.
+     * Add each incompatibility only once to avoid duplicate entries. This is typically done in [BaseHullMod.init]
      */
     @JvmStatic
     fun addIncompatibility(hullModId: String, incompatibleHullModId: String, incompatibleReason: String) {
@@ -45,7 +46,7 @@ object MagicIncompatibleHullmods {
      *
      * Shows [incompatibleReason] as the reason.
      *
-     * Call only once per incompatibility to avoid duplicate entries.
+     * Add each incompatibility only once to avoid duplicate entries. This is typically done in [BaseHullMod.init]
      */
     @JvmStatic
     fun addIncompatibility(hullModId: String, incompatibleReason: String, isIncompatible: (ShipAPI) -> Boolean) {

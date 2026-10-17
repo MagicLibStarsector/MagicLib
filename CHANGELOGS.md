@@ -52,6 +52,7 @@
   * See util.taskScheduler for timed, recurring, and event-driven actions in the sector and in combat.
   * See util.reflection to get and call functions on UI elements easier.
   * See util.MagicLookup.kt to get cached, indexed lookups for game data (hulls, variants, weapons, hull mods, skills, etc).
+- Added `MagicIncompatibleHullmods.addIncompatibility` allowing hullmods to be retroactively marked as incompatible with another. Unlike `MagicIncompatibleHullmods.removeHullmodWithWarning`, this prevents incompatible hullmods from being added through the hullmod picker UI.
 - Added the 'ML_enhancedModuleArmor' hullmod. This hullmod makes armor modules act like armor, not separate targets, and fixes explosions bypassing modular armor via occlusion raycasting. Thanks to starficz
 - Added the 'ML_showModulePaperdoll' tag. When added to a hull, it adds an armor paperdoll preview to your ship info in combat to see the position and state of the armor modules. Thanks to starficz
 - Added MagicUserSettings, A utility for reading user configured mod settings in a way that supports both LunaLib and plain `userSettings.json` files.
