@@ -1,5 +1,6 @@
 package org.magiclib.util.reflection.boxed
 
+import com.fs.starfarer.api.campaign.CoreUIAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
@@ -32,6 +33,7 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
         private const val METHOD_SAVE_CURRENT_VARIANT = "saveCurrentVariant"
         private const val METHOD_IS_SHOWING_DIALOG = "isShowingDialog"
         private const val METHOD_SET_SHOWING_DIALOG = "setShowingDialog"
+        private const val METHOD_GET_CORE_UI = "getCoreUI"
     }
 
     val refitPanel: UIPanelAPI = run {
@@ -103,6 +105,10 @@ class BoxedRefitTab private constructor(override val target: UIPanelAPI) : Boxed
     @JvmOverloads
     fun saveCurrentVariant(forceMessage: Boolean = false) =
         refitPanel.safeInvoke(METHOD_SAVE_CURRENT_VARIANT, forceMessage)
+
+    /** Returns the core UI. */
+    fun getCoreUI() =
+        refitPanel.safeInvoke(METHOD_GET_CORE_UI) as? CoreUIAPI
 
     /*
     /**
