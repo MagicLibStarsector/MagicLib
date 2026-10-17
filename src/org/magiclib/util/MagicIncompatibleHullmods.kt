@@ -51,7 +51,11 @@ object MagicIncompatibleHullmods {
     @JvmStatic
     fun addIncompatibility(hullModId: String, incompatibleReason: String, isIncompatible: (ShipAPI) -> Boolean) {
         try {
-            val hullMod = Global.getSettings().getHullModSpec(hullModId) ?: return
+            val hullMod = Global.getSettings().getHullModSpec(hullModId)
+            if (hullMod == null) {
+                Global.getLogger(this::class.java).error("addIncompatibility failed for hullmod '$hullModId'")
+                return
+            }
             var original = hullMod.effect ?: return
             if (original !is IncompatibleHullModEffect) {
                 val wrapped = IncompatibleHullModEffect(original)
@@ -62,7 +66,7 @@ object MagicIncompatibleHullmods {
 
             original.blockers.add(Incompatibility(incompatibleReason, isIncompatible))
         } catch (e: Exception) {
-            Global.getLogger(IncompatibleHullModEffect::class.java).error("makeIncompatible failed", e)
+            Global.getLogger(this::class.java).error("addIncompatibility failed for hullmod '$hullModId' with reason '$incompatibleReason'", e)
         }
     }
 
