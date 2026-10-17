@@ -10,6 +10,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
+ * Weapons must be added to data/config/modSetting.json in the MagicLib.interferences_weapons section.
+ * <p>
+ * - id: weapon id from weapon_data.csv
+ * - intensity: defines the amount of interference generated. By default it can be "WEAK", "MILD" or "STRONG, but mods can add new ratings in modSettings.json, although those will not be mentioned in the hullmod description.
+ * <br />
+ * <br />
+ * By default, weak = -20 flux dissipation for each other interference weapon installed, mild = -40 and strong = -80
+ * <br />
+ * <br />
+ * Then the weapon must have an everyframeWeaponScript to trigger the interference check:
+ * <pre>
+ *     if(weapon.getShip().getOriginalOwner()<0 && !weapon.getSlot().isBuiltIn()){
+ *     MagicInterference.ApplyInterference(weapon.getShip().getVariant());
+ * }
+ * </pre>
+ * <p>
+ * A default script is provided: {@link org.magiclib.weapons.MagicBasicInterferenceEffect}
+ * <br />
+ * <br />
+ * Please note that the interference trait should be mentioned in the weapon extra effect part of the tooltip card.
  * @author Tartiflette
  */
 public class MagicInterference {
