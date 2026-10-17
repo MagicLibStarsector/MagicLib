@@ -70,8 +70,7 @@ internal object MagicPaintjobRefitPanelCreator {
             val height = if (inCampaign) (refitTab.height - 12).coerceIn(722f, 800f) else 722f
             val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, width, height)
 
-            val coreUI = ReflectionUtils.invoke(refitTab.refitPanel, "getCoreUI") as UIPanelAPI
-            coreUI.addComponent(paintjobPanel)
+            (refitTab.getCoreUI() as UIPanelAPI).addComponent(paintjobPanel)
 
             // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.
             // the other calcs here do ensure correct relative placement
