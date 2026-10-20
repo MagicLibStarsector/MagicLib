@@ -319,6 +319,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
          *
          * [BountyInfo.shouldShow] creates any bounty that should currently be available, and the player is notified once about each newly available bounty.
          */
+        @JvmStatic
         fun notifyAllAvailableBounties() {
             val board = instance ?: return
             val newBounties = PROVIDERS
