@@ -10,6 +10,7 @@ import com.fs.starfarer.api.campaign.SectorAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI
+import com.fs.starfarer.api.impl.campaign.procgen.Constellation
 
 /**
  * Returns the actual CoreUITabId of the campaign UI.
@@ -30,6 +31,11 @@ fun CampaignUIAPI.getActualCurrentTab(): CoreUITabId? {
     return this.currentCoreTab
 }
 
+/**
+ * Returns all distinct constellations in the sector by de-duplicating the constellations of every star system.
+ */
+fun SectorAPI.getAllConstellations(): Set<Constellation> =
+    starSystems.mapNotNullTo(mutableSetOf()) { it.constellation }
 
 /**
  * Returns all entities across all locations in the sector.
