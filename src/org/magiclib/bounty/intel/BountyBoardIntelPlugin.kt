@@ -9,7 +9,6 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.bounty.ActiveBounty
-import org.magiclib.kotlin.elapsedDaysSinceGameStart
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.ui.MagicRefreshableBaseIntelPlugin
 import java.awt.Color
@@ -310,6 +309,9 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             }
         }
 
+        /**
+         * The maximum number of bounties that can be notified to the player at once before they are summarized into a single notification.
+         */
         const val MAX_INDIVIDUAL_NOTIFICATIONS = 3
 
         /**

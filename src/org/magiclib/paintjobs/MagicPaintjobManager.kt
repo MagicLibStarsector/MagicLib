@@ -220,12 +220,12 @@ object MagicPaintjobManager {
                     }?.getOrNull()
 
                     val miscSpec = paintjobJson?.runCatching {
-                        getJSONObject("misc")?.let { ventsJson ->
+                        getJSONObject("misc")?.let { miscJson ->
                             MagicPaintjobSpec.PaintjobMiscSpec(
-                                ventsJson.optColor("ventCoreColor", null),
-                                ventsJson.optColor("ventFringeColor", null),
-                                ventsJson.optColor("overloadColor", null),
-                                ventsJson.optColor("explosionFlashColor", null)
+                                miscJson.optColor("ventCoreColor", null),
+                                miscJson.optColor("ventFringeColor", null),
+                                miscJson.optColor("overloadColor", null),
+                                miscJson.optColor("explosionFlashColor", null)
                             )
                         }
                     }?.onFailure { e ->
@@ -623,8 +623,6 @@ object MagicPaintjobManager {
             ShaderLib.overrideShipTexture(combatShip, spriteId)
         }
 
-        applyPaintjobToShield(combatShip, paintjob)
-
         combatShip.engineController?.let { engineController ->
             val spec = paintjob.engineSpec ?: return@let
 
@@ -642,12 +640,12 @@ object MagicPaintjobManager {
             }
         }
 
-        paintjob.miscSpec?.let { vents ->
-            vents.ventCoreColor?.let { combatShip.ventCoreColor = it }
-            vents.ventFringeColor?.let { combatShip.ventFringeColor = it }
-            vents.overloadColor?.let { combatShip.overloadColor = it }
-            vents.explosionFlashColor?.let { combatShip.explosionFlashColorOverride = it }
+        applyPaintjobToResettables(combatShip, paintjob)
+
+        paintjob.miscSpec?.let { misc ->
+            misc.explosionFlashColor?.let { combatShip.explosionFlashColorOverride = it }
         }
+
 
         for (weapon in combatShip.allWeapons) {
             getPaintjobsForWeapon(weapon.spec.weaponId, paintjob.paintjobFamily).forEach { weaponPaintjob ->
@@ -675,12 +673,18 @@ object MagicPaintjobManager {
     }
 
     /**
-     * Kept separate from [applyPaintjob] for optimization reasons, as the ShipAPI shield tends to reset and needs to be re-applied every frame.
+     * Kept separate from [applyPaintjob] for optimization reasons, as the ShipAPI tends to reset these color based parameters and needs them to be re-applied every frame.
      */
-    internal fun applyPaintjobToShield(
+    internal fun applyPaintjobToResettables(
         combatShip: ShipAPI,
         paintjob: MagicPaintjobSpec
     ) {
+        paintjob.miscSpec?.let { misc ->
+            misc.ventCoreColor?.let { combatShip.ventCoreColor = it }
+            misc.ventFringeColor?.let { combatShip.ventFringeColor = it }
+            misc.overloadColor?.let { combatShip.overloadColor = it }
+        }
+
         combatShip.shield?.let { shield ->
             paintjob.shieldSpec?.let { spec ->
                 spec.innerColor?.let { shield.innerColor = it }
@@ -688,18 +692,6 @@ object MagicPaintjobManager {
                 spec.innerRotationRate?.let { shield.innerRotationRate = it }
                 spec.ringRotationRate?.let { shield.ringRotationRate = it }
             }
-        }
-    }
-
-    /**
-     * This needs to be re-applied every frame in combat. See [applyPaintjobToShield] for details.
-     */
-    internal fun applyPaintjobToOverload(
-        combatShip: ShipAPI,
-        paintjob: MagicPaintjobSpec
-    ) {
-        paintjob.miscSpec?.let { misc ->
-            misc.overloadColor?.let { combatShip.overloadColor = it }
         }
     }
 

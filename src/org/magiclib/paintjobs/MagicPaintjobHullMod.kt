@@ -1,7 +1,5 @@
 package org.magiclib.paintjobs
 
-import com.fs.starfarer.api.GameState
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignUIAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.combat.BaseHullMod
@@ -9,8 +7,6 @@ import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import org.magiclib.util.MagicTxt
-import org.magiclib.util.taskScheduler.CombatTaskScheduler
-import org.magiclib.util.taskScheduler.SectorTaskScheduler
 
 /**
  * This hullmod displays the paintjob itself. It determines which to display by looking for a tag on the variant.
@@ -26,10 +22,8 @@ class MagicPaintjobHullMod : BaseHullMod() {
     }
 
     private fun applyToEngines(ship: ShipAPI, paintjob: MagicPaintjobSpec) {
-        if(!ship.hasTag(MAGIC_PAINTJOB_ENGINES_APPLIED_KEY)) {
-            MagicPaintjobManager.applyPaintjobToEngines(ship, paintjob)
-            ship.addTag(MAGIC_PAINTJOB_ENGINES_APPLIED_KEY)
-        }
+        MagicPaintjobManager.applyPaintjobToEngines(ship, paintjob)
+        ship.addTag(MAGIC_PAINTJOB_ENGINES_APPLIED_KEY)
     }
 
     override fun applyEffectsAfterShipCreation(ship: ShipAPI?, id: String?) {
@@ -54,7 +48,8 @@ class MagicPaintjobHullMod : BaseHullMod() {
         // Wait a tick for engines to load in if needed. No need to do this in combat as advanceInCombat will do that.
         if(Global.getCurrentState() == GameState.CAMPAIGN && ship.engineController.shipEngines?.isEmpty() == true) {
             SectorTaskScheduler.performLater {
-                applyToEngines(ship, paintjob)
+                if(!ship.hasTag(MAGIC_PAINTJOB_ENGINES_APPLIED_KEY))
+                    applyToEngines(ship, paintjob)
             }
         }
         */
@@ -64,13 +59,11 @@ class MagicPaintjobHullMod : BaseHullMod() {
         if (!MagicPaintjobManager.isEnabled) return
         val paintjob = ship.customData[MAGIC_PJ_CACHE_KEY] as? MagicPaintjobSpec ?: return
 
-        // Apply each frame because of shields. (Shields can reset and thus need to be applied each frame)
-        MagicPaintjobManager.applyPaintjobToShield(ship, paintjob)
-        // Also need to apply each frame for overload color.
-        MagicPaintjobManager.applyPaintjobToOverload(ship, paintjob)
+        if(!ship.hasTag(MAGIC_PAINTJOB_ENGINES_APPLIED_KEY))
+            applyToEngines(ship, paintjob)
 
-        // Only applies if needed
-        applyToEngines(ship, paintjob)
+        // Need to apply these each frame
+        MagicPaintjobManager.applyPaintjobToResettables(ship, paintjob)
 
         // fighter wing paintjobs
         for (wing in ship.allWings) {
