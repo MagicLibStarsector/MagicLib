@@ -152,8 +152,7 @@ public final class ActiveBounty {
         stage = Stage.Accepted;
         this.bountySource = bountySource;
 
-        if(!FleetUtils.isPresentInSector(fleet))
-            loadFleetIntoCampaign();
+        ensureFleetInSector();
 
         var memory = getFleet().getMemoryWithoutUpdate();
 
@@ -198,14 +197,15 @@ public final class ActiveBounty {
     }
 
     /**
-     * Spawns the bounty fleet into the campaign. This is called in acceptBounty, but may be called preemptively if desired.
+     * Spawns the bounty fleet into the campaign and sets the current assignment if unset. This is called in acceptBounty, but may be called preemptively if desired.
      */
-    public void loadFleetIntoCampaign() {
-        //CHECK IF THE FLEET EXIST
-        if (getFleet().getCurrentAssignment() == null) {
+    public void ensureFleetInSector() {
+        if (!FleetUtils.isPresentInSector(getFleet())) {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
             systemLocation.addEntity(getFleet());
             getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
+        }
+        if (getFleet().getCurrentAssignment() == null) {
             getFleet().getAI().addAssignment(
                     getSpec().fleet_behavior == null
                             ? FleetAssignment.ORBIT_AGGRESSIVE
@@ -213,17 +213,19 @@ public final class ActiveBounty {
                     fleetSpawnLocation,
                     1000000f,
                     null);
+        }
 
-            //if needed set the bounty faction to neutral with everyone but the player.
-            if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
-                FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
-                for (FactionAPI f : Global.getSector().getAllFactions()) {
-                    if (f != bountyFaction) {
-                        if(f != Global.getSector().getPlayerFaction())
-                            f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
-                        else
-                            f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.HOSTILE);
-                    }
+        MagicBountyCoordinator.removeStagedFleet(spec.existing_target_memkey); // Only removes the fleet if it exists in sector persistent data, otherwise does nothing.
+
+        //if needed set the bounty faction to neutral with everyone but the player.
+        if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
+            FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
+            for (FactionAPI f : Global.getSector().getAllFactions()) {
+                if (f != bountyFaction) {
+                    if (f != Global.getSector().getPlayerFaction())
+                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                    else
+                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.HOSTILE);
                 }
             }
         }
@@ -232,10 +234,12 @@ public final class ActiveBounty {
         // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
         // Otherwise, this would still allow ships to retreat in combat.
         // See https://fractalsoftworks.com/forum/index.php?topic=5061.msg294053#msg294053.
-        memory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
+        if(!memory.contains(MemFlags.FLEET_FIGHT_TO_THE_LAST))
+            memory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
 
         // Prevent retreating in interaction dialog, no pursue battles
-        memory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, spec.fleet_no_retreat);
+        if(!memory.contains(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE))
+            memory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, spec.fleet_no_retreat);
     }
 
     /**

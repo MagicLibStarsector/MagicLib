@@ -2,9 +2,7 @@ package org.magiclib.bounty.intel
 
 import com.fs.graphics.Sprite
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignUIAPI
-import com.fs.starfarer.api.campaign.CoreUIAPI
-import com.fs.starfarer.api.campaign.CoreUITabId
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
@@ -16,11 +14,9 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BreadcrumbSpec
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.Misc
-import com.fs.state.AppDriver
 import org.lwjgl.input.Keyboard
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.ReflectionUtils.getFieldsMatching
-import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.TooltipHelper
 import org.magiclib.bounty.ActiveBounty
 import org.magiclib.bounty.MagicBountyCoordinator
@@ -192,19 +188,8 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
 
         //CHECK FOR EXISTING FLEET
         if (bountySpec.existing_target_memkey != null) { // Bounty has pre-existing target
-            var targetFleetFound = false
-            for (s in Global.getSector().starSystems) {
-                for (f in s.fleets) {
-                    if (f.memoryWithoutUpdate.contains(bountySpec.existing_target_memkey)) {
-                        targetFleetFound = true
-                        break
-                    }
-                }
-                if (targetFleetFound) break
-            }
-            if (!targetFleetFound) { // If the bounty was intended to target an existing fleet, and no fleet was found
-                return false // Don't show it, as the target fleet does not exist
-            }
+            // If the bounty was intended to target an existing fleet, and no fleet was found
+            if (MagicBountyCoordinator.getExistingTarget(bountySpec.existing_target_memkey) == null) return false // Don't show it, as the target fleet does not exist
         }
 
         //check if close enough to receive from an offering faction, only if it hasn't already been seen by the player

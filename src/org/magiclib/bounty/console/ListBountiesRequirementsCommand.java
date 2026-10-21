@@ -274,20 +274,11 @@ public class ListBountiesRequirementsCommand implements BaseCommand {
 
         if (bounty.existing_target_memkey != null && !bounty.existing_target_memkey.isEmpty()) {
             Console.showMessage(" - " + "Requires a fleet with the MemKey set on it: " + bounty.existing_target_memkey);
-            boolean key = false;
-            for (StarSystemAPI s : Global.getSector().getStarSystems()) {
-                for (CampaignFleetAPI f : s.getFleets()) {
-                    if (f.getMemoryWithoutUpdate().contains(bounty.existing_target_memkey)) {
-                        key = true;
-                        Console.showMessage("     " + "PASS");
-                        break;
-                    }
-                }
-            }
-
-            if (!key) {
+            if(MagicBountyCoordinator.getExistingTarget(bounty.existing_target_memkey) == null) {
                 valid = false;
                 Console.showMessage("     " + "FAIL");
+            } else {
+                Console.showMessage("     " + "PASS");
             }
         }
 
