@@ -5,7 +5,6 @@ package org.magiclib.util.api
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
-import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.Misc
 
