@@ -215,7 +215,8 @@ public final class ActiveBounty {
                     null);
         }
 
-        MagicBountyCoordinator.removeStagedFleet(spec.existing_target_memkey); // Only removes the fleet if it exists in sector persistent data, otherwise does nothing.
+        if(spec.existing_target_memkey != null)
+            MagicBountyCoordinator.removeStagedFleet(spec.existing_target_memkey); // Only removes the fleet if it exists in sector persistent data, otherwise does nothing.
 
         //if needed set the bounty faction to neutral with everyone but the player.
         if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {

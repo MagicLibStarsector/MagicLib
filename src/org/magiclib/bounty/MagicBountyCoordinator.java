@@ -70,9 +70,8 @@ public final class MagicBountyCoordinator {
             DEADLINES_ENABLED = MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines", DEADLINES_ENABLED);
         });
 
-        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY)) {
+        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY))
             Global.getSector().getPersistentData().put(STAGED_BOUNTY_FLEETS_KEY, new HashMap<String, CampaignFleetAPI>());
-        }
     }
 
     @Nullable
@@ -416,8 +415,9 @@ public final class MagicBountyCoordinator {
                 return null;
             }
 
-            suitableTargetLocation = fleet.getCurrentAssignment().getTarget();
-            if(!FleetUtils.isPresentInSector(fleet) || suitableTargetLocation == null)
+            if (fleet.getCurrentAssignment() != null)
+                suitableTargetLocation = fleet.getCurrentAssignment().getTarget();
+            if (!FleetUtils.isPresentInSector(fleet) || suitableTargetLocation == null)
                 suitableTargetLocation = getSuitableTargetLocation(spec);
 
             if (suitableTargetLocation == null) {
@@ -627,6 +627,9 @@ public final class MagicBountyCoordinator {
      * @param existingTargetMemkey the memory key the bounty refers to
      */
     public static void addStagedFleet(@NotNull CampaignFleetAPI fleet, @NotNull String existingTargetMemkey) {
+        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY))
+            Global.getSector().getPersistentData().put(STAGED_BOUNTY_FLEETS_KEY, new HashMap<String, CampaignFleetAPI>());
+
         @SuppressWarnings("unchecked")
         Map<String, CampaignFleetAPI> stagedFleets = (Map<String, CampaignFleetAPI>) Global.getSector().getPersistentData().get(STAGED_BOUNTY_FLEETS_KEY);
 
@@ -639,6 +642,9 @@ public final class MagicBountyCoordinator {
      * @param existingTargetMemkey the memory key the bounty refers to
      */
     public static void removeStagedFleet(@NotNull String existingTargetMemkey) {
+        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY))
+            Global.getSector().getPersistentData().put(STAGED_BOUNTY_FLEETS_KEY, new HashMap<String, CampaignFleetAPI>());
+
         @SuppressWarnings("unchecked")
         Map<String, CampaignFleetAPI> stagedFleets = (Map<String, CampaignFleetAPI>) Global.getSector().getPersistentData().get(STAGED_BOUNTY_FLEETS_KEY);
 
@@ -661,9 +667,9 @@ public final class MagicBountyCoordinator {
         Map<String, CampaignFleetAPI> stagedFleets = (Map<String, CampaignFleetAPI>) sector.getPersistentData().get(STAGED_BOUNTY_FLEETS_KEY);
 
         if (stagedFleets != null) {
-            CampaignFleetAPI cached = stagedFleets.get(existingTargetMemkey);
-            if (cached != null) {
-                return cached;
+            CampaignFleetAPI staged = stagedFleets.get(existingTargetMemkey);
+            if (staged != null) {
+                return staged;
             }
         }
 
