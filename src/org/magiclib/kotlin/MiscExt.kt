@@ -818,7 +818,7 @@ inline fun FleetMemberAPI.isShipRecoverable(
 /**
  * @since 0.46.0
  */
-inline fun SectorEntityToken.findNearestJumpPointTo() =
+inline fun SectorEntityToken.findNearestJumpPointTo(allowWormhole: Boolean = false) =
     Misc.findNearestJumpPointTo(this)
 
 /**
@@ -1072,7 +1072,7 @@ inline fun MemoryAPI.cleanUpMissionMemory(prefix: String) = Misc.cleanUpMissionM
 /**
  * @since 0.46.0
  */
-inline fun SectorEntityToken.getSalvageSeed() = Misc.getSalvageSeed(this)
+inline fun SectorEntityToken.getSalvageSeed(nonRandom: Boolean = false) = Misc.getSalvageSeed(this, nonRandom)
 
 /**
  * @since 0.46.0
@@ -1939,3 +1939,189 @@ inline fun Vector2f.isOutsideSector() = Misc.isOutsideSector(this)
  * @since 0.46.0
  */
 inline fun LocationAPI.crossesAnySlipstream(from: Vector2f, to: Vector2f) = Misc.crossesAnySlipstream(this, from, to)
+
+
+/**
+ * @since 1.5.8
+ */
+inline fun SectorEntityToken.isReversePolarity() = Misc.isReversePolarity(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun MarketAPI.isHiddenBase() = Misc.isHiddenBase(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun SectorEntityToken.isFringe() = Misc.isFringe(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun StarSystemAPI.isFringe() = Misc.isFringe(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun Vector2f.isFringe() = Misc.isFringe(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun Vector2f.getFringeFactor() = Misc.getFringeFactor(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.isFleetReturningToDespawn() = Misc.isFleetReturningToDespawn(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun SectorEntityToken.fadeIn(`in`: Float) = Misc.fadeIn(this, `in`)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.isInsideBlackHole(includeEventHorizon: Boolean) = Misc.isInsideBlackHole(this, includeEventHorizon)
+
+/**
+ * @since 1.5.8
+ */
+inline fun Vector2f.isInAbyss() = Misc.isInAbyss(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun SectorEntityToken.isInAbyss() = Misc.isInAbyss(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun SectorEntityToken.getAbyssalDepth(uncapped: Boolean = false) = Misc.getAbyssalDepth(this, uncapped)
+
+/**
+ * @since 1.5.8
+ */
+inline fun Vector2f.getAbyssalDepth(uncapped: Boolean = false) = Misc.getAbyssalDepth(this, uncapped)
+
+// Skipping getAbyssalDepthOfPlayer as that does not work as well as a function
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.getSourceEntity() = Misc.getSourceEntity(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.makeHostileToPlayerTradeFleets() = Misc.makeHostileToPlayerTradeFleets(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.makeHostileToAllTradeFleets() = Misc.makeHostileToAllTradeFleets(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.makeNonHostileToFaction(factionId: String, dur: Float) = Misc.makeNonHostileToFaction(this, factionId, dur)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.makeNonHostileToFaction(factionId: String, nonHostile: Boolean, dur: Float) = Misc.makeNonHostileToFaction(this, factionId, nonHostile, dur)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.makeHostileToFaction(factionId: String, dur: Float) = Misc.makeHostileToFaction(this, factionId, dur)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.makeHostileToFaction(factionId: String, hostile: Boolean, dur: Float) = Misc.makeHostileToFaction(this, factionId, hostile, dur)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.isFleetMadeHostileToFaction(faction: FactionAPI) = Misc.isFleetMadeHostileToFaction(this, faction)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.isFleetMadeHostileToFaction(factionId: String) = Misc.isFleetMadeHostileToFaction(this, factionId)
+
+/**
+ * @since 1.5.8
+ */
+inline fun ShipAPI.findClosestShipTo(
+     locFromForSorting: Vector2f,
+     smallestToNote: ShipAPI.HullSize,
+     maxRange: Float,
+     considerShipRadius: Boolean,
+     allowHulks: Boolean,
+     filter: Misc.FindShipFilter? = null
+) = Misc.findClosestShipTo(this, locFromForSorting, smallestToNote, maxRange, considerShipRadius, allowHulks, filter)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PlanetAPI.getPlanetSurveyClass() = Misc.getPlanetSurveyClass(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun CampaignFleetAPI.getFleetType() = Misc.getFleetType(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PersonAPI.isKeepOnShipRecovery() = Misc.isKeepOnShipRecovery(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PersonAPI.setKeepOnShipRecovery(keepOnRecovery: Boolean) = Misc.setKeepOnShipRecovery(this, keepOnRecovery)
+
+/**
+ * @since 1.5.8
+ */
+inline fun MarketAPI.getRuinsSpec() = Misc.getRuinsSpec(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun MarketAPI.getRuinsType() = Misc.getRuinsType(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PlanetSpecAPI.getAveragePlanetRadius() = Misc.getAveragePlanetRadius(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PlanetSpecAPI.canPlanetTypeRollHabitable() = Misc.canPlanetTypeRollHabitable(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PlanetSpecAPI.canPlanetTypeRollCondition(id: String) = Misc.canPlanetTypeRollCondition(this, id)
+
+/**
+ * @since 1.5.8
+ */
+inline fun MarketAPI.getMaxMarketSize() = Misc.getMaxMarketSize(this)
+
+/**
+ * @since 1.5.8
+ */
+inline fun ShipAPI.getWeaponSkin(weaponId: String, type: Misc.WeaponSkinType) = Misc.getWeaponSkin(this, weaponId, type)
+
+/**
+ * @since 1.5.8
+ */
+inline fun ShipAPI.getWeaponSkin(cat: String, weaponId: String, type: Misc.WeaponSkinType) = Misc.getWeaponSkin(cat, weaponId, this, type)
+
