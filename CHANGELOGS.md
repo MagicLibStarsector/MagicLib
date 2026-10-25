@@ -63,6 +63,7 @@
 - Report variants with missing elements (weapons, hull-mods, fighters) onApplicationLoad, and specify what is missing. This helps users identify crashes before they happen, from variants being created in-game with non-existent elements.
 - Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
 - Added "magiclib_modConflicts" field to mod_info.json. If any mod ID in this list is enabled, prevent the game from completing its loading process and explain why.
+- Added some of the new Misc functions to MiscExt.kt from 0.97a and 0.98a
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
 - MagicLib now builds using Gradle.
 - Cleared up all compilation warnings.
