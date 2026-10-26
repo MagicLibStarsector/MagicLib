@@ -42,9 +42,9 @@ object UIFinder {
 
     @JvmOverloads
     @JvmStatic
-    fun getCaptainPickerDialog(coreUI: CoreUIAPI? = getCoreUI()): CaptainPickerDialog? {
+    fun getCaptainPickerDialog(coreUI: CoreUIAPI? = getCoreUI()): UIPanelAPI? {
         val children = coreUI?.safeInvoke("getChildrenNonCopy") as? MutableList<*> ?: return null
-        return children.firstOrNull { it is CaptainPickerDialog } as? CaptainPickerDialog
+        return children.firstOrNull { it is CaptainPickerDialog } as? UIPanelAPI
     }
 
     @JvmOverloads
