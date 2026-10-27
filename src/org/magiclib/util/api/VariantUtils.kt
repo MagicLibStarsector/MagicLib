@@ -145,6 +145,14 @@ fun ShipVariantAPI.getNonBuiltInWingSpecs(): Map<Int, FighterWingSpecAPI> {
 }
 
 /**
+ * Returns a set of all hull-mods that are not within the HullSpecAPI of this variant.
+ *
+ * As opposed to [ShipVariantAPI.getNonBuiltInHullmods], this does not exclude normally unremovable hullmods such as permaMods which most sMods happen to be.
+ */
+fun ShipVariantAPI.getNonHullSpecHullmods(): Set<String> =
+    hullMods.filter { !hullSpec.builtInMods.contains(it) }.toSet()
+
+/**
  * Completely removes a mod from the variant. This includes removing it from sMods, sModdedBuiltIns, permaMods, and hullMods.
  *
  * Optionally removes built-in mods from the variant. Not allowed by default.
@@ -185,14 +193,6 @@ fun ShipVariantAPI.allSMods(): Set<String> {
 }
 
 /**
- * Returns a set of all hull-mods that are not within the HullSpecAPI of this variant.
- *
- * As of 0.98a: This exists because [ShipVariantAPI.getNonBuiltInHullmods] excludes all perma mods as well, not just HullSpec built-in mods. It even excludes sMods?
- */
-fun ShipVariantAPI.allNonHullSpecMods(): Set<String> =
-    hullMods.filter { !hullSpec.builtInMods.contains(it) }.toSet()
-
-/**
  * Gets all hullmods that are not sMods, perma mods, suppressed mods, or built-in mods. Simply the ordinary hullmods only.
  */
 fun ShipVariantAPI.allRegularHullMods(): Set<String> {
@@ -228,7 +228,7 @@ fun ShipVariantAPI.hasMissingSpecs(includeModules: Boolean = true): Boolean {
     if(modules.any { it.value == null }) return true
     (modules.values + this).forEach { variant ->
         if(variant!!.nonBuiltInWings.any { it.isNotEmpty() && settings.getFighterWingSpec(it) == null }) return true
-        if(variant.allNonHullSpecMods().any { settings.getHullModSpec(it) == null }) return true
+        if(variant.getNonHullSpecHullmods().any { settings.getHullModSpec(it) == null }) return true
         if(variant.getNonBuiltInWeaponsMap().values.any { MagicLookup.getWeaponSpec(it) == null }) return true // We use MagicLookup instead of SettingsAPI here because SettingsAPI throws an exception instead of returning null.
     }
 

@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.util.Misc
 import org.apache.log4j.Level
 import org.magiclib.util.MagicLookup
-import org.magiclib.util.api.allNonHullSpecMods
+import org.magiclib.util.api.getNonHullSpecHullmods
 import java.awt.Color
 import java.awt.Point
 import kotlin.math.*
@@ -387,7 +387,7 @@ internal object MiscellaneousUtil {
             variant.nonBuiltInWings.forEach { wingId ->
                 if (wingId.isNotEmpty() && settings.getFighterWingSpec(wingId) == null) missingWings.add(wingId)
             }
-            variant.allNonHullSpecMods().forEach { hullmodId ->
+            variant.getNonHullSpecHullmods().forEach { hullmodId ->
                 if (settings.getHullModSpec(hullmodId) == null) missingHullmods.add(hullmodId)
             }
             variant.getNonBuiltInWeaponsMap().forEach { (slot, weaponId) ->
