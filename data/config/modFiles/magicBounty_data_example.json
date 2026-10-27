@@ -188,7 +188,7 @@
             ["ship_variant1", 1], # Format: [variant_id, count]. Count defaults to 1 if omitted.
             ["ship_variant2", 3],
             ["ship_variant3"], # Adds one copy of this variant.
-            ["ship_variant4", "ship_variant5", "ship_variant6"], # Multiple variants: randomly picks one valid variant from the list. Missing variants are ignored.
+            ["ship_variant4", "ship_variant5", "ship_variant6"], # Multiple variants: randomly picks one valid variant from the list. A valid variant is one that exists and does not contain missing elements.
             ["$first_valid", "ship_variant7", "ship_variant8", "ship_variant9"], # Adding "$first_valid": Use the first valid variant instead of randomly selecting. Useful when you want a priority order among possible variants.
             ["fake_variant"], # If none of the listed variants exist, the bounty will fail to load.
             ["$optional", "fake_variant"], # Adding "$optional": Allows no ship to be selected if all variants are invalid, preventing a load failure.

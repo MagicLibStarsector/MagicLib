@@ -25,6 +25,7 @@ import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.loading.WeaponGroupType;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +40,8 @@ import org.magiclib.campaign.MagicFleetBuilder;
 import org.magiclib.kotlin.MagicKotlinExtKt;
 import org.magiclib.util.api.HullUtils;
 import org.magiclib.util.api.OtherUtils;
+import org.magiclib.util.api.VariantUtils;
+import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,46 +120,40 @@ public class MagicCampaign {
      * @param path variant file full path.
      * @return ship variant object
      */
-    //Credit to Rubi
     public static ShipVariantAPI loadVariant(String path) {
-        ShipVariantAPI variant = null;
+        return loadVariant(path, Level.WARN);
+    }
+
+    /**
+     * Creates a ship variant from a regular variant file.
+     * Used to create variants that requires different mods to be loaded.
+     *
+     * @param path variant file full path.
+     * @param level what level to log with if the variant cannot be loaded. OFF to disable logging.
+     * @return ship variant object
+     */
+    //Credit to Rubi
+    public static ShipVariantAPI loadVariant(String path, Level level) {
+        ShipVariantAPI variant;
         try {
             JSONObject obj = Global.getSettings().loadJSON(path);
             String displayName = obj.getString("displayName");
             int fluxCapacitors = obj.getInt("fluxCapacitors");
             int fluxVents = obj.getInt("fluxVents");
-            boolean goalVariant = false;
-            try {
-                goalVariant = obj.getBoolean("goalVariant");
-            } catch (JSONException ignored) {
-            }
+            boolean goalVariant = obj.optBoolean("goalVariant", false);
+
             String hullId = obj.getString("hullId");
             JSONArray hullMods = obj.getJSONArray("hullMods");
-            JSONArray modules = null;
-            try {
-                modules = obj.getJSONArray("modules");
-            } catch (JSONException ignored) {
-            }
+            JSONArray modules = obj.optJSONArray("modules");
             JSONArray permaMods = obj.getJSONArray("permaMods");
-            JSONArray sMods = null;
-            try {
-                sMods = obj.getJSONArray("sMods");
-            } catch (JSONException ignored) {
-            }
-            JSONArray sModdedBuiltIns = null;
-            try {
-                sModdedBuiltIns = obj.getJSONArray("sModdedBuiltIns");
-            } catch (JSONException ignored) {
-            }
+            JSONArray sMods = obj.optJSONArray("sMods");
+
+            JSONArray sModdedBuiltIns = obj.optJSONArray("sModdedBuiltIns");
 
             //float quality = (float) obj.getDouble("quality"); not used/available in API
             String variantId = obj.getString("variantId");
             JSONArray weaponGroups = obj.getJSONArray("weaponGroups");
-            JSONArray wings = null;
-            try {
-                wings = obj.getJSONArray("wings");
-            } catch (JSONException ignored) {
-            }
+            JSONArray wings = obj.optJSONArray("wings");
 
             var hullSpec = Global.getSettings().getHullSpec(hullId);
 
@@ -214,14 +211,14 @@ public class MagicCampaign {
                             String modulePath = (lastSlash >= 0 ? path.substring(0, lastSlash + 1) : "") + moduleVariantId + ".variant";
 
                             if (OtherUtils.doesFileExist(Global.getSettings(), modulePath)) {
-                                moduleVariant = loadVariant(modulePath);
+                                moduleVariant = loadVariant(modulePath, level);
                                 if (moduleVariant != null) {
                                     variant.setModuleVariant(slotId, moduleVariant);
                                 } else {
-                                    Global.getLogger(MagicCampaign.class).error("Failed to load module variant from " + modulePath);
+                                    log.log(level, "Failed to load module variant from " + modulePath);
                                 }
                             } else {
-                                Global.getLogger(MagicCampaign.class).error("Module variant " + moduleVariantId + " not found");
+                                log.log(level, "Module variant " + moduleVariantId + " not found");
                             }
                         } else {
                             moduleVariant.setSource(null);
@@ -242,6 +239,10 @@ public class MagicCampaign {
                     for (int s = 0; s < slots.length(); s++) {
                         String slotId = slots.getString(s);
                         String weaponId = weapons.getString(slotId);
+                        if(MagicLookup.getWeaponSpec(weaponId) == null) {
+                            log.log(level, "Could not load ship variant at '" + path + "', returning null instead.\nWeapon with id '" + weaponId + "' not found");
+                            return null;
+                        }
                         variant.addWeapon(slotId, weaponId);
                         weaponGroupSpec.addSlot(slotId);
                     }
@@ -258,13 +259,20 @@ public class MagicCampaign {
                 }
             }
         } catch (Exception e) {
-            log.warn("could not load ship variant at " + path, e);
+            log.log(level, "Could not load ship variant at '" + path + "', returning null instead.", e);
+            return null;
+        }
+
+        if (VariantUtils.hasMissingSpecs(variant)) {
+            if(level != Level.OFF) {
+                String missingWarning = MiscellaneousUtil.findMissingElements$MagicLib(variant, true).buildMissingWarning();
+                log.warn(String.format("Could not load ship variant at '%s', returning null instead. More details below.\n%s", path, missingWarning));
+            }
+            return null;
         }
 
         //Maintain the S-mods through salvage
-        if (variant != null) {
-            variant.addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
-        }
+        variant.addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
 
         return variant;
     }

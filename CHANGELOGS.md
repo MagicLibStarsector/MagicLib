@@ -31,6 +31,7 @@
 - Added `drawHUDStatusBar` overload that takes a `Vector2f`.
 - Bounty validation logs are now Level.WARN instead of Level.INFO
 - Added new bounty formatting to 'fleet_preset_ships' to better handle missing variants. See 'fleet_preset_ships' inside the file 'magicBounty_data_example.json' for details.
+- A variant specified in a bounty will now fail to load if any of its contents are missing, opposed to the previous behavior of loading with missing contents.
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.
 - Added "ALL" key to "trigger_marketFaction_any", which allows the bounty to spawn on every market.
 - Added `MagicBountyCoordinator.addStagedFleet(fleet, existingTargetMemkey)` to stage an unspawned fleet for existing_target_memkey bounties. Staged fleets are spawned into the sector when the bounty is accepted.

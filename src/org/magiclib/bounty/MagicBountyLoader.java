@@ -416,14 +416,14 @@ public class MagicBountyLoader {
 
                 if (faction == null) {
                     //that faction couldn't be found, invalidating the bounty
-                    LOG.warn(String.format("Unable to find faction '%s' from bounty %s. Bounty is INVALID!", fleetFactionId, bountyId));
+                    LOG.warn(String.format("Unable to find faction '%s' from bounty '%s'. Bounty is INVALID!", fleetFactionId, bountyId));
                     return false;
                 } else if (!Objects.equals(faction.getId(), fleetFactionId)) {
-                    LOG.info(String.format("Corrected faction id '%s' to '%s' in bounty %s.", fleetFactionId, faction.getId(), bountyId));
+                    LOG.info(String.format("Corrected faction id '%s' to '%s' in bounty '%s'.", fleetFactionId, faction.getId(), bountyId));
                     this_bounty.fleet_faction = faction.getId();
                 }
             } else if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) { //The fleet_faction is a mandatory value if the bounty is not placed on an existing fleet
-                LOG.warn(String.format("Missing fleet_faction from bounty %s. Bounty is INVALID!", bountyId));
+                LOG.warn(String.format("Missing fleet_faction from bounty '%s'. Bounty is INVALID!", bountyId));
                 return false;
             }
 
@@ -434,10 +434,10 @@ public class MagicBountyLoader {
 
                 if (fleetCompositionFaction == null) {
                     //that faction couldn't be found, invalidating the bounty
-                    LOG.warn(String.format("Unable to find fleet_composition_faction '%s' from bounty %s. Bounty is INVALID!", compositionFactionId, bountyId));
+                    LOG.warn(String.format("Unable to find fleet_composition_faction '%s' from bounty '%s'. Bounty is INVALID!", compositionFactionId, bountyId));
                     return false;
                 } else if (!Objects.equals(fleetCompositionFaction.getId(), compositionFactionId)) {
-                    LOG.info(String.format("Corrected fleet_composition_faction '%s' to '%s' in bounty %s.", compositionFactionId, fleetCompositionFaction.getId(), bountyId));
+                    LOG.info(String.format("Corrected fleet_composition_faction '%s' to '%s' in bounty '%s'.", compositionFactionId, fleetCompositionFaction.getId(), bountyId));
                     this_bounty.fleet_composition_faction = fleetCompositionFaction.getId();
                 }
             }
@@ -449,10 +449,10 @@ public class MagicBountyLoader {
 
                 if (job_forFaction == null) {
                     //that faction couldn't be found, invalidating the bounty
-                    LOG.warn(String.format("Unable to find job_forFaction '%s' from bounty %s. Bounty is INVALID!", job_forFactionId, bountyId));
+                    LOG.warn(String.format("Unable to find job_forFaction '%s' from bounty '%s'. Bounty is INVALID!", job_forFactionId, bountyId));
                     return false;
                 } else if (!Objects.equals(job_forFaction.getId(), job_forFactionId)) {
-                    LOG.info(String.format("Corrected job_forFactionId '%s' to '%s' in bounty %s.", job_forFactionId, job_forFaction.getId(), bountyId));
+                    LOG.info(String.format("Corrected job_forFactionId '%s' to '%s' in bounty '%s'.", job_forFactionId, job_forFaction.getId(), bountyId));
                     this_bounty.job_forFaction = job_forFaction.getId();
                 }
             }
@@ -467,10 +467,10 @@ public class MagicBountyLoader {
 
                     if (location_marketFaction == null) {
                         //that faction couldn't be found, invalidating the bounty
-                        LOG.warn(String.format("Unable to find location_marketFactions '%s' from bounty %s. Bounty is INVALID!", location_marketFactionId, bountyId));
+                        LOG.warn(String.format("Unable to find location_marketFactions '%s' from bounty '%s'. Bounty is INVALID!", location_marketFactionId, bountyId));
                         return false;
                     } else if (!Objects.equals(location_marketFaction.getId(), location_marketFactionId)) {
-                        LOG.info(String.format("Corrected location_marketFactionId '%s' to '%s' in bounty %s.", location_marketFactionId, location_marketFaction.getId(), bountyId));
+                        LOG.info(String.format("Corrected location_marketFactionId '%s' to '%s' in bounty '%s'.", location_marketFactionId, location_marketFaction.getId(), bountyId));
                         this_bounty.location_marketFactions.remove(i);
                         this_bounty.location_marketFactions.add(location_marketFaction.getId());
                     }
@@ -492,10 +492,10 @@ public class MagicBountyLoader {
 
                         if (trigger_marketFaction == null) {
                             //that faction couldn't be found, invalidating the bounty
-                            LOG.warn(String.format("Unable to find trigger_marketFaction_any '%s' from bounty %s. Bounty is INVALID!", trigger_marketFaction_anyId, bountyId));
+                            LOG.warn(String.format("Unable to find trigger_marketFaction_any '%s' from bounty '%s'. Bounty is INVALID!", trigger_marketFaction_anyId, bountyId));
                             return false;
                         } else if (!Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_anyId)) {
-                            LOG.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty %s.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
+                            LOG.info(String.format("Corrected trigger_marketFaction_any '%s' to '%s' in bounty '%s'.", trigger_marketFaction_anyId, trigger_marketFaction.getId(), bountyId));
                             this_bounty.trigger_marketFaction_any.remove(i);
                             this_bounty.trigger_marketFaction_any.add(trigger_marketFaction.getId());
                         }
@@ -513,10 +513,10 @@ public class MagicBountyLoader {
 
                     if (trigger_marketFaction == null) {
                         //that faction couldn't be found, invalidating the bounty
-                        LOG.warn(String.format("Unable to find trigger_marketFaction_none '%s' from bounty %s. Bounty is INVALID!", trigger_marketFaction_noneId, bountyId));
+                        LOG.warn(String.format("Unable to find trigger_marketFaction_none '%s' from bounty '%s'. Bounty is INVALID!", trigger_marketFaction_noneId, bountyId));
                         return false;
                     } else if (!Objects.equals(trigger_marketFaction.getId(), trigger_marketFaction_noneId)) {
-                        LOG.info(String.format("Corrected trigger_marketFaction_none '%s' to '%s' in bounty %s.", trigger_marketFaction_noneId, trigger_marketFaction.getId(), bountyId));
+                        LOG.info(String.format("Corrected trigger_marketFaction_none '%s' to '%s' in bounty '%s'.", trigger_marketFaction_noneId, trigger_marketFaction.getId(), bountyId));
                         this_bounty.trigger_marketFaction_none.remove(i);
                         this_bounty.trigger_marketFaction_none.add(trigger_marketFaction.getId());
                     }
@@ -532,11 +532,11 @@ public class MagicBountyLoader {
 
                     if (trigger_playerRelationship_faction == null) {
                         //that faction couldn't be found, invalidating the bounty
-                        LOG.warn(String.format("Unable to find trigger_playerRelationship_atLeast '%s' from bounty %s. Bounty is INVALID!", f, bountyId));
+                        LOG.warn(String.format("Unable to find trigger_playerRelationship_atLeast '%s' from bounty '%s'. Bounty is INVALID!", f, bountyId));
                         return false;
                     } else {
                         if (!Objects.equals(trigger_playerRelationship_faction.getId(), f)) {
-                            LOG.info(String.format("Corrected trigger_playerRelationship_atLeast '%s' to '%s' in bounty %s.", f, trigger_playerRelationship_faction.getId(), bountyId));
+                            LOG.info(String.format("Corrected trigger_playerRelationship_atLeast '%s' to '%s' in bounty '%s'.", f, trigger_playerRelationship_faction.getId(), bountyId));
                         }
                         validIDs.put(trigger_playerRelationship_faction.getId(), trigger_playerRelationship_atLeast.get(f));
                     }
@@ -554,11 +554,11 @@ public class MagicBountyLoader {
 
                     if (trigger_playerRelationship_faction == null) {
                         //that faction couldn't be found, invalidating the bounty
-                        LOG.warn(String.format("Unable to find trigger_playerRelationship_atMost '%s' from bounty %s. Bounty is INVALID!", f, bountyId));
+                        LOG.warn(String.format("Unable to find trigger_playerRelationship_atMost '%s' from bounty '%s'. Bounty is INVALID!", f, bountyId));
                         return false;
                     } else {
                         if (!Objects.equals(trigger_playerRelationship_faction.getId(), f)) {
-                            LOG.info(String.format("Corrected trigger_playerRelationship_atMost '%s' to '%s' in bounty %s.", f, trigger_playerRelationship_faction.getId(), bountyId));
+                            LOG.info(String.format("Corrected trigger_playerRelationship_atMost '%s' to '%s' in bounty '%s'.", f, trigger_playerRelationship_faction.getId(), bountyId));
                         }
                         validIDs.put(trigger_playerRelationship_faction.getId(), trigger_playerRelationship_atMost.get(f));
                     }
@@ -571,20 +571,14 @@ public class MagicBountyLoader {
             if (MagicTxt.nullStringIfEmpty(this_bounty.existing_target_memkey) == null) {
                 if (MagicTxt.nullStringIfEmpty(this_bounty.fleet_flagship_variant) == null) {
                     //No flagship variant, invalidating the bounty
-                    LOG.warn(String.format("Missing fleet_flagship_variant from bounty %s. Bounty is INVALID!", bountyId));
+                    LOG.warn(String.format("Missing fleet_flagship_variant from bounty '%s'. Bounty is INVALID!", bountyId));
                     return false;
                 }
 
                 ShipVariantAPI flagshipVariant = magicGetVariant(this_bounty.fleet_flagship_variant);
                 if (flagshipVariant == null) {
                     //that flagship variant couldn't be found, invalidating the bounty
-                    LOG.warn(String.format("Missing fleet_flagship_variant '%s' from bounty %s. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
-                    return false;
-                }
-                if(VariantUtils.hasMissingSpecs(flagshipVariant)) {
-                    //that flagship variant references missing specs, invalidating the bounty
-                    LOG.warn(String.format("Fleet flagship variant '%s' from bounty %s references missing specs. Bounty is INVALID! More details below.", this_bounty.fleet_flagship_variant, bountyId));
-                    MiscellaneousUtil.findMissingElements$MagicLib(flagshipVariant, true).logIfHadMissing(Level.WARN);
+                    LOG.warn(String.format("Missing fleet_flagship_variant '%s' from bounty '%s'. Bounty is INVALID!", this_bounty.fleet_flagship_variant, bountyId));
                     return false;
                 }
 
@@ -595,12 +589,6 @@ public class MagicBountyLoader {
                         if (variant == null) {
                             //that reinforcement variant couldn't be found, invalidating the bounty
                             LOG.warn(String.format("Missing fleet_preset_ships variant '%s' from bounty %s. Bounty is INVALID!", v, bountyId));
-                            return false;
-                        }
-                        if(VariantUtils.hasMissingSpecs(variant)) {
-                            //that flagship variant references missing specs, invalidating the bounty
-                            LOG.warn(String.format("Fleet variant '%s' from bounty %s references missing specs. Bounty is INVALID! More details below.", v, bountyId));
-                            MiscellaneousUtil.findMissingElements$MagicLib(variant, true).logIfHadMissing(Level.WARN);
                             return false;
                         }
                     }
@@ -641,23 +629,25 @@ public class MagicBountyLoader {
         return null;
     }
 
-    // helper: checks if a variant exists (local + load)
-    public static boolean magicVariantExists(String variantID) {
-        return magicGetVariant(variantID) != null;
+    // helper: checks if a variant exists (local + load) and is valid.
+    public static boolean magicVariantExists(String variantID, Level level) {
+        return magicGetVariant(variantID, level) != null;
     }
+    public static boolean magicVariantExists(String variantID) { return magicVariantExists(variantID, Level.WARN); }
 
     // helper: gets a variant (local + load)
-    public static ShipVariantAPI magicGetVariant(String variantID) {
+    public static ShipVariantAPI magicGetVariant(String variantID, Level level) {
         ShipVariantAPI variant = Global.getSettings().getVariant(variantID);
         if(variant != null)
             return variant;
 
         var path = MagicVariables.VARIANT_PATH + variantID + ".variant";
         if(OtherUtils.doesFileExist(Global.getSettings(), path)) // Avoids an error being logged in loadVariant if the variant simply doesn't exist.
-            return MagicCampaign.loadVariant(path);
+            return MagicCampaign.loadVariant(path, level);
 
         return null;
     }
+    public static ShipVariantAPI magicGetVariant(String variantID) { return magicGetVariant(variantID, Level.WARN); }
 
 
     /**

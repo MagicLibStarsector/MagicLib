@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.*
 import com.fs.starfarer.api.util.Misc
 import org.apache.log4j.Level
 import org.magiclib.util.MagicLookup
+import org.magiclib.util.api.allNonHullSpecMods
 import java.awt.Color
 import java.awt.Point
 import kotlin.math.*
@@ -338,6 +339,11 @@ internal object MiscellaneousUtil {
                     || missingWeapons.isNotEmpty()
 
         fun logIfHadMissing(level: Level = Level.ERROR) {
+            val buildMissingWarning = buildMissingWarning() ?: return
+            Global.getLogger(this.javaClass).log(level, buildMissingWarning)
+        }
+
+        fun buildMissingWarning(): String? {
             if (hadMissing) {
                 val sb = StringBuilder("Variant ID '$variantID' has missing elements. This may result in a crash if created in game.\n")
 
@@ -353,8 +359,9 @@ internal object MiscellaneousUtil {
                 if (missingModules.isNotEmpty())
                     sb.append("  Modules: ${missingModules.entries.joinToString(", ") { "${it.key} -> ${it.value}" }}\n")
 
-                Global.getLogger(this.javaClass).log(level, sb.removeSuffix("\n"))
+                return sb.removeSuffix("\n").toString()
             }
+            return null
         }
     }
     /**
@@ -380,7 +387,7 @@ internal object MiscellaneousUtil {
             variant.nonBuiltInWings.forEach { wingId ->
                 if (wingId.isNotEmpty() && settings.getFighterWingSpec(wingId) == null) missingWings.add(wingId)
             }
-            variant.nonBuiltInHullmods.forEach { hullmodId ->
+            variant.allNonHullSpecMods().forEach { hullmodId ->
                 if (settings.getHullModSpec(hullmodId) == null) missingHullmods.add(hullmodId)
             }
             variant.getNonBuiltInWeaponsMap().forEach { (slot, weaponId) ->

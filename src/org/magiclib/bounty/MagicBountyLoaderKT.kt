@@ -1,9 +1,9 @@
 package org.magiclib.bounty
 
 import com.fs.starfarer.api.Global
+import org.apache.log4j.Level
 import org.json.JSONArray
 import org.json.JSONObject
-import org.magiclib.bounty.MagicBountyLoader.magicVariantExists
 import org.magiclib.kotlin.toList
 
 internal object MagicBountyLoaderKT {
@@ -40,7 +40,7 @@ internal object MagicBountyLoaderKT {
             return null
         }
 
-        val validShips = ships.filter { magicVariantExists(it) }
+        val validShips = ships.filter { MagicBountyLoader.magicVariantExists(it, if(first_valid || optional) Level.OFF else Level.WARN) }
 
         if(validShips.isEmpty()) {
             return if(optional) {
@@ -66,6 +66,12 @@ internal object MagicBountyLoaderKT {
         while (keys.hasNext()) {
             val key = keys.next()
             if (key !is String) continue
+
+            if(!MagicBountyLoader.magicVariantExists(key)) {
+                Global.getLogger(this.javaClass).warn("Unknown ship variant: $key. Bounty is INVALID")
+                return null
+            }
+
             val value = shipObject.get(key)
 
             val currentAmount = output.getOrDefault(key, 0)
