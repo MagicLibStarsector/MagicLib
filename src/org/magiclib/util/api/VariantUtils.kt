@@ -175,13 +175,15 @@ fun ShipVariantAPI.removeModFull(modId: String, removeBuiltIns: Boolean = false)
 /**
  * Returns a set of all DMods in the variant.
  */
-fun ShipVariantAPI.allDMods(): Set<String> =
+fun ShipVariantAPI.getDMods(): Set<String> =
     hullMods.filter { MagicLookup.isDMod(it) }.toSet()
 
 /**
- * Returns a set of all SMods in the variant. This includes both SMods and SModdedBuiltIns.
+ * Returns a set of all SMods and SModdedBuiltIns in the variant.
+ *
+ * Unlike [getSMods], this also includes SModdedBuiltIns.
  */
-fun ShipVariantAPI.allSMods(): Set<String> {
+fun ShipVariantAPI.getAllSMods(): Set<String> {
     val outputSMods = mutableSetOf<String>()
     for (mod in sMods) {
         outputSMods.add(mod)
@@ -195,7 +197,7 @@ fun ShipVariantAPI.allSMods(): Set<String> {
 /**
  * Gets all hullmods that are not sMods, perma mods, suppressed mods, or built-in mods. Simply the ordinary hullmods only.
  */
-fun ShipVariantAPI.allRegularHullMods(): Set<String> {
+fun ShipVariantAPI.getRegularHullMods(): Set<String> {
     return hullMods
         .filter { !sModdedBuiltIns.contains(it) && !sMods.contains(it) && !permaMods.contains(it) && !suppressedMods.contains(it) && !hullSpec.builtInMods.contains(it) }
         .toSet()
