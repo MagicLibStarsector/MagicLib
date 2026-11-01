@@ -17,6 +17,7 @@ import com.fs.starfarer.campaign.rules.Memory;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicVariables;
@@ -187,6 +188,7 @@ public final class ActiveBounty {
             intelForBounty = new MagicBountyIntel(bountyKey);
             intelManager.addIntel(intelForBounty);
             intelForBounty.setImportant(true);
+            BountyBoardIntelPlugin.getUserNotifiedBountyIds().add(bountyKey); // The player has been notified of this bounty as we just created the intel entry, mark it so if it is not already.
         }
 
         if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null)
