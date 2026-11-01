@@ -46,6 +46,8 @@ public final class MagicBountyCoordinator {
     private static final float MIN_DISTANCE_LY = 3f;
     private static final float MAX_DISTANCE_LY = 25f;
     private static final float PAYOUT_REFERENCE = 400000f;
+    // Payout worth this fraction of the player's credits counts as a full-length trip. Richer players get shorter trips.
+    private static final float LOOSE_CHANGE_FRACTION = 0.1f;
     // Fleet points at which difficulty cancels payout distance entirely. Above this, distance stays at the minimum.
     private static final float DIFFICULTY_REFERENCE_FP = 300f;
     public static final String STAGED_BOUNTY_FLEETS_KEY = "ml_stagedBountyFleets";
@@ -388,20 +390,24 @@ public final class MagicBountyCoordinator {
     }
 
     /**
-     * Payout pushes the target away, difficulty pulls it back. A bounty at
-     * {@link #DIFFICULTY_REFERENCE_FP} or harder always spawns {@link #MIN_DISTANCE_LY} away, however well it pays.
+     * Payout pushes the target away, difficulty pulls it back. Payout is measured against the larger of an absolute
+     * reference and {@link #LOOSE_CHANGE_FRACTION} of the player's credits, so a fixed sum stops counting as a long
+     * trip once the player is rich. A bounty at {@link #DIFFICULTY_REFERENCE_FP} or harder always spawns
+     * {@link #MIN_DISTANCE_LY} away, however well it pays.
      */
-    static float targetDistanceLY(int basePayout, int fleetMinFP) {
-        float payout = Math.max(0f, Math.min(1f, basePayout / PAYOUT_REFERENCE));
+    static float targetDistanceLY(int basePayout, int fleetMinFP, float playerCredits) {
+        float worthTheTrip = Math.max(PAYOUT_REFERENCE, playerCredits * LOOSE_CHANGE_FRACTION);
+        float payout = Math.max(0f, Math.min(1f, basePayout / worthTheTrip));
         float difficulty = Math.max(0f, Math.min(1f, fleetMinFP / DIFFICULTY_REFERENCE_FP));
         return MIN_DISTANCE_LY + (1f - difficulty) * payout * (MAX_DISTANCE_LY - MIN_DISTANCE_LY);
     }
 
     @Nullable
     static SectorEntityToken findLocationForPayout(int basePayout, int fleetMinFP) {
-        if (Global.getSector().getPlayerFleet() == null) return null;
+        CampaignFleetAPI player = Global.getSector().getPlayerFleet();
+        if (player == null) return null;
 
-        float targetLY = targetDistanceLY(basePayout, fleetMinFP);
+        float targetLY = targetDistanceLY(basePayout, fleetMinFP, player.getCargo().getCredits().get());
         float bestDifference = Float.MAX_VALUE;
         SectorEntityToken best = null;
         for (StarSystemAPI system : Global.getSector().getStarSystems()) {

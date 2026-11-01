@@ -4,6 +4,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModManagerAPI;
 import com.fs.starfarer.api.SettingsAPI;
 import com.fs.starfarer.api.campaign.CampaignClockAPI;
+import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.util.MutableValue;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
@@ -50,8 +52,13 @@ public final class BountyLocationCheck {
                     "payout placement gate follows the setting");
 
             Vector2f playerPosition = new Vector2f(100000f, 0f);
+            MutableValue credits = new MutableValue(0f);
             CampaignFleetAPI player = proxy(CampaignFleetAPI.class, (self, method, values) -> {
                 if (method.getName().equals("getLocationInHyperspace")) return playerPosition;
+                if (method.getName().equals("getCargo")) {
+                    return proxy(CargoAPI.class, (inner, innerMethod, innerValues) ->
+                            innerMethod.getName().equals("getCredits") ? credits : defaultValue(innerMethod.getReturnType()));
+                }
                 return defaultValue(method.getReturnType());
             });
             List<StarSystemAPI> systems = new ArrayList<>();
@@ -83,15 +90,25 @@ public final class BountyLocationCheck {
             check(MagicBountyCoordinator.findLocationForPayout(0, 0) == mid, "new placement follows current player position");
             playerPosition.set(100000f, 0f);
 
-            check(MagicBountyCoordinator.targetDistanceLY(400000, 0) == 25f, "no difficulty keeps the payout curve");
-            check(MagicBountyCoordinator.targetDistanceLY(400000, 150) == 14f, "half difficulty halves the payout distance");
-            check(MagicBountyCoordinator.targetDistanceLY(400000, 300) == 3f, "300 FP pulls a rich bounty to the minimum");
-            check(MagicBountyCoordinator.targetDistanceLY(400000, 1000) == 3f, "extreme difficulty clamps to the minimum");
-            check(MagicBountyCoordinator.targetDistanceLY(200000, 300) == 3f, "difficulty overrides a mid payout too");
-            check(MagicBountyCoordinator.targetDistanceLY(400000, 100) < MagicBountyCoordinator.targetDistanceLY(400000, 0),
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 0, 0f) == 25f, "no difficulty keeps the payout curve");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 150, 0f) == 14f, "half difficulty halves the payout distance");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 300, 0f) == 3f, "300 FP pulls a rich bounty to the minimum");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 1000, 0f) == 3f, "extreme difficulty clamps to the minimum");
+            check(MagicBountyCoordinator.targetDistanceLY(200000, 300, 0f) == 3f, "difficulty overrides a mid payout too");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 100, 0f) < MagicBountyCoordinator.targetDistanceLY(400000, 0, 0f),
                     "harder bounties spawn closer at equal payout");
             check(MagicBountyCoordinator.findLocationForPayout(400000, 300) == near, "hard rich bounty lands at the closest system");
             check(MagicBountyCoordinator.findLocationForPayout(400000, 150) == mid, "half difficulty lands halfway");
+
+            checkNear(MagicBountyCoordinator.targetDistanceLY(400000, 0, 0f), 25f, "no credits keeps the absolute payout curve");
+            checkNear(MagicBountyCoordinator.targetDistanceLY(400000, 0, 5000000f), 20.6f, "10 percent of 5M credits scales a 400k payout down");
+            checkNear(MagicBountyCoordinator.targetDistanceLY(400000, 0, 20000000f), 7.4f, "20M credits makes a 400k payout short");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 0, 1000000000f) < 4f, "wealth floors the payout distance");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 0, 10000000f) < MagicBountyCoordinator.targetDistanceLY(400000, 0, 0f),
+                    "richer players travel less for the same payout");
+            credits.set(20000000f);
+            check(MagicBountyCoordinator.findLocationForPayout(400000, 0) == low, "rich player placement uses the wealth-scaled distance");
+            credits.set(0f);
 
             SectorEntityToken first = token("first");
             SectorEntityToken second = token("second");
@@ -229,6 +246,10 @@ public final class BountyLocationCheck {
         if (type == float.class) return 0f;
         if (type == double.class) return 0d;
         return null;
+    }
+
+    private static void checkNear(float actual, float expected, String message) {
+        check(Math.abs(actual - expected) < 0.01f, message + " (was " + actual + ")");
     }
 
     private static void check(boolean condition, String message) {

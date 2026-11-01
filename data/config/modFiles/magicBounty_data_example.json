@@ -216,7 +216,8 @@
         # With the MagicLib setting `magiclib_bountyLocationScaleWithReward` on (default), a bounty that creates its own
         # fleet ignores every location_* setting below. It spawns at the system closest to a distance from the player
         # that follows job_credit_reward and fleet_min_FP: a rich bounty is pushed out to 25 LY, and difficulty pulls it
-        # back, reaching the 3 LY minimum at 300 fleet_min_FP. With the setting off, the location_* settings below apply
+        # back, reaching the 3 LY minimum at 300 fleet_min_FP. Payout is also weighed against the player's credits, so the
+        # same sum stops counting as a long trip once the player is rich. With the setting off, the location_* settings apply
         # as usual. Existing-fleet bounties are unaffected either way.
 
         "location_entitiesID": [  # Default: no preset. Preset locations (SectorEntityTokens) to spawn the bounty fleet, will fall back to other choices (if they are defined) and if this preset location doesn't exist (eg due to Nexerelin's random mode).

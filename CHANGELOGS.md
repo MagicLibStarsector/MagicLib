@@ -36,7 +36,7 @@
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.
 - Added "ALL" key to "trigger_marketFaction_any", which allows the bounty to spawn on every market.
 - Added `MagicBountyCoordinator.addStagedFleet(fleet, existingTargetMemkey)` to stage an unspawned fleet for existing_target_memkey bounties. Staged fleets are spawned into the sector when the bounty is accepted.
-- Bounty fleets that create their own fleet now spawn at a distance from the player that follows `job_credit_reward`, pulled back in by difficulty: 3 LY at 0 credits or at 300 `fleet_min_FP`, rising to 25 LY for a rich, easy bounty. The `location_*` settings are ignored for those bounties while this is on. Bounties placed on an existing fleet are unaffected. LunaLib setting `magiclib_bountyLocationScaleWithReward`, default on, controls this.
+- Bounty fleets that create their own fleet now spawn at a distance from the player that follows `job_credit_reward`, pulled back in by difficulty: 3 LY at 0 credits or at 300 `fleet_min_FP`, rising to 25 LY for a rich, easy bounty. Payout is measured against 10% of your credits, so the same sum stops pulling a target across the sector once you are rich. The `location_*` settings are ignored for those bounties while this is on. Bounties placed on an existing fleet are unaffected. LunaLib setting `magiclib_bountyLocationScaleWithReward`, default on, controls this.
 
 ### MagicPaintjobs
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.
