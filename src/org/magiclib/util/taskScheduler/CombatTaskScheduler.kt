@@ -219,6 +219,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
             }
         }
 
-        SystemTaskScheduler.internalAdvance()
+        if (currentState == GameState.COMBAT || currentState == GameState.TITLE) // Prevent this from running if a combat engine is running during campaign state for some weird mod reason.
+            SystemTaskScheduler.internalAdvance()
     }
 }
