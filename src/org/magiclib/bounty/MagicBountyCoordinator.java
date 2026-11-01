@@ -378,6 +378,10 @@ public final class MagicBountyCoordinator {
         return Objects.hash(memoryWithoutUpdate.getLong(key) + marketAPI.getId());
     }
 
+    static boolean isPayoutPlacementEnabled() {
+        return MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_bountyLocationScaleWithReward", true);
+    }
+
     @Nullable
     static SectorEntityToken findLocationForPayout(int basePayout) {
         if (Global.getSector().getPlayerFleet() == null) return null;
@@ -455,8 +459,10 @@ public final class MagicBountyCoordinator {
                 return null;
             }
         } else {
-            // Payout-based placement intentionally overrides authored location filters.
-            suitableTargetLocation = findLocationForPayout(spec.job_credit_reward);
+            // Payout-based placement overrides authored location filters while enabled.
+            if (isPayoutPlacementEnabled()) {
+                suitableTargetLocation = findLocationForPayout(spec.job_credit_reward);
+            }
             if (suitableTargetLocation == null) suitableTargetLocation = getSuitableTargetLocation(spec);
 
             if (suitableTargetLocation == null) {

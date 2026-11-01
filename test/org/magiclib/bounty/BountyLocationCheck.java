@@ -11,6 +11,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import org.json.JSONObject;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.Color;
@@ -24,6 +25,8 @@ import java.util.List;
 
 /** Run with compiled MagicLib classes and the game dependencies on the classpath. */
 public final class BountyLocationCheck {
+    private static final boolean GATES_OFF = "off".equals(System.getProperty("bountyLocationGates"));
+
     public static void main(String[] args) {
         SettingsAPI previousSettings = Global.getSettings();
         SectorAPI previousSector = Global.getSector();
@@ -34,8 +37,17 @@ public final class BountyLocationCheck {
                 if (method.getName().equals("getModManager")) {
                     return proxy(ModManagerAPI.class, (inner, innerMethod, innerValues) -> false);
                 }
+                if (GATES_OFF && method.getName().equals("doesFileExist")) return true;
+                if (GATES_OFF && method.getName().equals("loadJSON")) {
+                    return new JSONObject()
+                            .put("magiclib_bountyLocationScaleWithReward", false)
+                            .put("magiclib_bountyLocationRevealInSystem", false);
+                }
                 return defaultValue(method.getReturnType());
             }));
+
+            check(MagicBountyCoordinator.isPayoutPlacementEnabled() != GATES_OFF,
+                    "payout placement gate follows the setting");
 
             Vector2f playerPosition = new Vector2f(100000f, 0f);
             CampaignFleetAPI player = proxy(CampaignFleetAPI.class, (self, method, values) -> {
@@ -117,8 +129,10 @@ public final class BountyLocationCheck {
             MagicBountySpec spec = specWithAuthoredDistance(MagicBountyLoader.ShowDistance.VanillaDistance);
             installCoordinator();
             ActiveBounty bounty = new ActiveBounty("check", bountyFleet, spawnToken, Collections.emptyList(), spec);
-            check(bounty.getShowDistance() == MagicBountyLoader.ShowDistance.Exact,
-                    "authored mode is revealed exactly while the player shares the target system");
+            check(bounty.getShowDistance() == (GATES_OFF
+                            ? MagicBountyLoader.ShowDistance.VanillaDistance
+                            : MagicBountyLoader.ShowDistance.Exact),
+                    "in-system reveal follows the setting");
             setSector(proxy(CampaignFleetAPI.class, (self, method, values) -> defaultValue(method.getReturnType())), clock);
             check(bounty.getShowDistance() == MagicBountyLoader.ShowDistance.VanillaDistance,
                     "authored mode returns outside the target system");
