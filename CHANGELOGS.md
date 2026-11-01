@@ -8,6 +8,7 @@
 - Bounty board notifications now show all new bounties at once instead of over time, but summarizes them into a single notification if more than 3 are posted at once.
 - Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
 - Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
+- While your fleet is in the same system as a bounty's fleet, its intel and map marker show the exact location. LunaLib setting `magiclib_bountyLocationRevealInSystem`, default on, turns this off.
 
 ### MagicPaintjobs
 - Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
@@ -35,6 +36,7 @@
 - If a bounty has not configured any market triggers, the bounty will show anywhere. Previously this behavior did not exist.
 - Added "ALL" key to "trigger_marketFaction_any", which allows the bounty to spawn on every market.
 - Added `MagicBountyCoordinator.addStagedFleet(fleet, existingTargetMemkey)` to stage an unspawned fleet for existing_target_memkey bounties. Staged fleets are spawned into the sector when the bounty is accepted.
+- Bounty fleets that create their own fleet now spawn at a distance from the player that follows `job_credit_reward`: 3 LY at 0 credits, rising to 25 LY at 400000 credits. The `location_*` settings are ignored for those bounties. Bounties placed on an existing fleet are unaffected.
 
 ### MagicPaintjobs
 - Fixed issue where paintjobs were applicable to too many ships, such as the pirate and pather Venture being able to use regular Venture paintjobs.

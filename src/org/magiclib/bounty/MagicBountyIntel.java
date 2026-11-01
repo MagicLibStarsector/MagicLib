@@ -414,8 +414,9 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
-                if (bounty.getSpec().job_show_distance != MagicBountyLoader.ShowDistance.None) {
-                    switch (bounty.getSpec().job_show_distance) {
+                MagicBountyLoader.ShowDistance showDistance = bounty.getShowDistance();
+                if (showDistance != MagicBountyLoader.ShowDistance.None) {
+                    switch (showDistance) {
                         case Exact:
                             info.addPara(MagicBountyUtilsInternal.createLocationPreciseText(bounty), 10f);
                             break;
@@ -462,7 +463,7 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
         SectorEntityToken hideoutLocation = bounty.getFleetSpawnLocation();
 
-        switch (bounty.getSpec().job_show_distance) {
+        switch (bounty.getShowDistance()) {
             case Exact:
             case System:
                 return hideoutLocation;

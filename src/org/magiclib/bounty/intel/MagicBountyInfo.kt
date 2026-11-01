@@ -612,8 +612,9 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
         }
 
         val location = getLocationIfBountyIsActive()
+        val showDistance = bounty.showDistance
         if (location is StarSystemAPI
-            && bountySpec.job_show_distance != ShowDistance.None) {
+            && showDistance != ShowDistance.None) {
 
             fun setupSystemParams(params: MapParams, location: StarSystemAPI) {
                 params.showSystem(location)
@@ -624,7 +625,7 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
             val w = targetInfoTooltip.widthSoFar
             val h = (w / 1.6f).roundToInt().toFloat()
 
-            when (bountySpec.job_show_distance) {
+            when (showDistance) {
                 ShowDistance.Exact -> {
                     setupSystemParams(params, location)
 

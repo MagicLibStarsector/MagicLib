@@ -2,6 +2,7 @@ package org.magiclib.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
@@ -378,6 +379,35 @@ public final class MagicBountyCoordinator {
     }
 
     @Nullable
+    static SectorEntityToken findLocationForPayout(int basePayout) {
+        if (Global.getSector().getPlayerFleet() == null) return null;
+
+        float targetLY = 3f + Math.max(0f, Math.min(1f, basePayout / 400000f)) * 22f;
+        float bestDifference = Float.MAX_VALUE;
+        SectorEntityToken best = null;
+        for (StarSystemAPI system : Global.getSector().getStarSystems()) {
+            if (system.hasTag(Tags.THEME_HIDDEN)) continue;
+
+            List<SectorEntityToken> stableLocations = system.getEntitiesWithTag(Tags.STABLE_LOCATION);
+            SectorEntityToken spawnPoint;
+            if (!stableLocations.isEmpty()) {
+                spawnPoint = stableLocations.get(0);
+            } else {
+                List<PlanetAPI> planets = system.getPlanets();
+                spawnPoint = !planets.isEmpty() ? planets.get(0) : system.getStar();
+            }
+            if (spawnPoint == null) continue;
+
+            float difference = Math.abs(Misc.getDistanceToPlayerLY(system.getCenter()) - targetLY);
+            if (difference < bestDifference) {
+                bestDifference = difference;
+                best = spawnPoint;
+            }
+        }
+        return best;
+    }
+
+    @Nullable
     private SectorEntityToken getSuitableTargetLocation(MagicBountySpec spec) {
         SectorEntityToken suitableTargetLocation;
         List<String> themeBlocklist = new ArrayList<>(spec.location_themes_blacklist);
@@ -425,7 +455,9 @@ public final class MagicBountyCoordinator {
                 return null;
             }
         } else {
-            suitableTargetLocation = getSuitableTargetLocation(spec);
+            // Payout-based placement intentionally overrides authored location filters.
+            suitableTargetLocation = findLocationForPayout(spec.job_credit_reward);
+            if (suitableTargetLocation == null) suitableTargetLocation = getSuitableTargetLocation(spec);
 
             if (suitableTargetLocation == null) {
                 Global.getLogger(MagicBountyCoordinator.class).error("No suitable spawn location could be found for bounty " + bountyKey);

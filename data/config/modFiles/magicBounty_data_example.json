@@ -213,6 +213,9 @@
         "fleet_musicSetId": "music_combat",
 
         #LOCATION
+        # A bounty that creates its own fleet ignores every location_* setting below.
+        # Its fleet spawns at the system closest to a distance from the player that follows job_credit_reward:
+        # 3 LY at 0 credits, rising to 25 LY at 400000 credits. Bounties placed on an existing fleet are unaffected.
 
         "location_entitiesID": [  # Default: no preset. Preset locations (SectorEntityTokens) to spawn the bounty fleet, will fall back to other choices (if they are defined) and if this preset location doesn't exist (eg due to Nexerelin's random mode).
             "location1",
