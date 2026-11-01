@@ -43,6 +43,11 @@ public final class MagicBountyCoordinator {
     private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
     private static Boolean DEADLINES_ENABLED = true;
     private static final String isIntelImportantMemKey = "$magiclib_isBountyIntelImportant";
+    private static final float MIN_DISTANCE_LY = 3f;
+    private static final float MAX_DISTANCE_LY = 25f;
+    private static final float PAYOUT_REFERENCE = 400000f;
+    // Fleet points at which difficulty cancels payout distance entirely. Above this, distance stays at the minimum.
+    private static final float DIFFICULTY_REFERENCE_FP = 300f;
     public static final String STAGED_BOUNTY_FLEETS_KEY = "ml_stagedBountyFleets";
 
     @NotNull
@@ -382,11 +387,21 @@ public final class MagicBountyCoordinator {
         return MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_bountyLocationScaleWithReward", true);
     }
 
+    /**
+     * Payout pushes the target away, difficulty pulls it back. A bounty at
+     * {@link #DIFFICULTY_REFERENCE_FP} or harder always spawns {@link #MIN_DISTANCE_LY} away, however well it pays.
+     */
+    static float targetDistanceLY(int basePayout, int fleetMinFP) {
+        float payout = Math.max(0f, Math.min(1f, basePayout / PAYOUT_REFERENCE));
+        float difficulty = Math.max(0f, Math.min(1f, fleetMinFP / DIFFICULTY_REFERENCE_FP));
+        return MIN_DISTANCE_LY + (1f - difficulty) * payout * (MAX_DISTANCE_LY - MIN_DISTANCE_LY);
+    }
+
     @Nullable
-    static SectorEntityToken findLocationForPayout(int basePayout) {
+    static SectorEntityToken findLocationForPayout(int basePayout, int fleetMinFP) {
         if (Global.getSector().getPlayerFleet() == null) return null;
 
-        float targetLY = 3f + Math.max(0f, Math.min(1f, basePayout / 400000f)) * 22f;
+        float targetLY = targetDistanceLY(basePayout, fleetMinFP);
         float bestDifference = Float.MAX_VALUE;
         SectorEntityToken best = null;
         for (StarSystemAPI system : Global.getSector().getStarSystems()) {
@@ -461,7 +476,7 @@ public final class MagicBountyCoordinator {
         } else {
             // Payout-based placement overrides authored location filters while enabled.
             if (isPayoutPlacementEnabled()) {
-                suitableTargetLocation = findLocationForPayout(spec.job_credit_reward);
+                suitableTargetLocation = findLocationForPayout(spec.job_credit_reward, spec.fleet_min_FP);
             }
             if (suitableTargetLocation == null) suitableTargetLocation = getSuitableTargetLocation(spec);
 

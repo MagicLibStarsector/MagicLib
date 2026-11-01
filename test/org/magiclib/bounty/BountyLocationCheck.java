@@ -72,16 +72,26 @@ public final class BountyLocationCheck {
             systems.add(system(122.25f, false, Arrays.asList(high), Collections.emptyList(), null));
             systems.add(system(125f, false, Arrays.asList(far), Collections.emptyList(), null));
 
-            check(MagicBountyCoordinator.findLocationForPayout(-50000) == near, "negative payout clamps to 3 LY");
-            check(MagicBountyCoordinator.findLocationForPayout(0) == near, "zero payout targets 3 LY from player, not origin");
-            check(MagicBountyCoordinator.findLocationForPayout(50000) == low, "50000 credits targets 5.75 LY");
-            check(MagicBountyCoordinator.findLocationForPayout(200000) == mid, "200000 credits targets 14 LY");
-            check(MagicBountyCoordinator.findLocationForPayout(350000) == high, "350000 credits targets 22.25 LY");
-            check(MagicBountyCoordinator.findLocationForPayout(400000) == far, "400000 credits targets 25 LY");
-            check(MagicBountyCoordinator.findLocationForPayout(Integer.MAX_VALUE) == far, "high payout clamps to 25 LY");
+            check(MagicBountyCoordinator.findLocationForPayout(-50000, 0) == near, "negative payout clamps to 3 LY");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == near, "zero payout targets 3 LY from player, not origin");
+            check(MagicBountyCoordinator.findLocationForPayout(50000, 0) == low, "50000 credits targets 5.75 LY");
+            check(MagicBountyCoordinator.findLocationForPayout(200000, 0) == mid, "200000 credits targets 14 LY");
+            check(MagicBountyCoordinator.findLocationForPayout(350000, 0) == high, "350000 credits targets 22.25 LY");
+            check(MagicBountyCoordinator.findLocationForPayout(400000, 0) == far, "400000 credits targets 25 LY");
+            check(MagicBountyCoordinator.findLocationForPayout(Integer.MAX_VALUE, 0) == far, "high payout clamps to 25 LY");
             playerPosition.set(111000f, 0f);
-            check(MagicBountyCoordinator.findLocationForPayout(0) == mid, "new placement follows current player position");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == mid, "new placement follows current player position");
             playerPosition.set(100000f, 0f);
+
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 0) == 25f, "no difficulty keeps the payout curve");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 150) == 14f, "half difficulty halves the payout distance");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 300) == 3f, "300 FP pulls a rich bounty to the minimum");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 1000) == 3f, "extreme difficulty clamps to the minimum");
+            check(MagicBountyCoordinator.targetDistanceLY(200000, 300) == 3f, "difficulty overrides a mid payout too");
+            check(MagicBountyCoordinator.targetDistanceLY(400000, 100) < MagicBountyCoordinator.targetDistanceLY(400000, 0),
+                    "harder bounties spawn closer at equal payout");
+            check(MagicBountyCoordinator.findLocationForPayout(400000, 300) == near, "hard rich bounty lands at the closest system");
+            check(MagicBountyCoordinator.findLocationForPayout(400000, 150) == mid, "half difficulty lands halfway");
 
             SectorEntityToken first = token("first");
             SectorEntityToken second = token("second");
@@ -89,22 +99,22 @@ public final class BountyLocationCheck {
             systems.clear();
             systems.add(system(103f, true, Arrays.asList(near), Collections.emptyList(), null));
             systems.add(system(104f, false, Arrays.asList(first, second), Arrays.asList(planet), planet));
-            check(MagicBountyCoordinator.findLocationForPayout(0) == first, "hidden systems excluded; first stable location wins");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == first, "hidden systems excluded; first stable location wins");
             systems.clear();
             systems.add(system(104f, false, Collections.emptyList(), Arrays.asList(planet), null));
-            check(MagicBountyCoordinator.findLocationForPayout(0) == planet, "planet used without stable location");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == planet, "planet used without stable location");
             systems.clear();
             systems.add(system(104f, false, Collections.emptyList(), Collections.emptyList(), planet));
-            check(MagicBountyCoordinator.findLocationForPayout(0) == planet, "star used without planets or stable locations");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == planet, "star used without planets or stable locations");
             systems.clear();
             systems.add(system(103f, false, Collections.emptyList(), Collections.emptyList(), null));
             systems.add(system(102f, false, Arrays.asList(first), Collections.emptyList(), null));
             systems.add(system(104f, false, Arrays.asList(second), Collections.emptyList(), null));
-            check(MagicBountyCoordinator.findLocationForPayout(0) == first, "empty systems skipped; equal distances keep first system");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == first, "empty systems skipped; equal distances keep first system");
             systems.clear();
-            check(MagicBountyCoordinator.findLocationForPayout(0) == null, "empty sector permits original resolver fallback");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == null, "empty sector permits original resolver fallback");
             Global.setSector(proxy(SectorAPI.class, (self, method, values) -> defaultValue(method.getReturnType())));
-            check(MagicBountyCoordinator.findLocationForPayout(0) == null, "absent player permits original resolver fallback");
+            check(MagicBountyCoordinator.findLocationForPayout(0, 0) == null, "absent player permits original resolver fallback");
 
             SectorEntityToken spawn = proxy(SectorEntityToken.class, (self, method, values) -> defaultValue(method.getReturnType()));
             StarSystemAPI targetSystem = system(103f, false, Arrays.asList(spawn), Collections.emptyList(), null);

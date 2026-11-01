@@ -4,7 +4,7 @@ fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValu
 magiclib_enableAchievements,Enable Achievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
 magiclib_enablePaintjobs,Enable Paintjobs,Boolean,true,,"Disabling paintjobs will not affect unlocks.",,,
 magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,true,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,
-magiclib_bountyLocationScaleWithReward,Scale Bounty Distance With Payout,Boolean,true,,"Bounty fleets spawn closer to you when the bounty pays less: 3 LY at 0 credits, up to 25 LY at 400000 credits. When off, bounties use their own location settings.",,,
+magiclib_bountyLocationScaleWithReward,Scale Bounty Distance With Payout,Boolean,true,,"Bounty fleets spawn closer when a bounty pays less or is harder: 3 LY for a 300 FP fleet, up to 25 LY for a rich easy one. When off, bounties use their own location settings.",,,
 magiclib_bountyLocationRevealInSystem,Reveal Exact Location In System,Boolean,true,,"While your fleet is in the same system as a MagicLib bounty's fleet, the bounty intel and its map marker show the exact hiding place instead of a vague hint.",,,
 
 # MagicSubsystems
