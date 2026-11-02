@@ -30,17 +30,13 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.campaign.MagicCaptainBuilder;
 import org.magiclib.campaign.MagicFleetBuilder;
-import org.magiclib.kotlin.MagicKotlinExtKt;
-import org.magiclib.util.api.HullUtils;
-import org.magiclib.util.api.OtherUtils;
-import org.magiclib.util.api.VariantUtils;
+import org.magiclib.util.api.*;
 import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.ArrayList;
@@ -1155,6 +1151,65 @@ public class MagicCampaign {
     }
     */
 
+    public enum SectorDistance {
+        /** Near the center of the sector, inside the core bounds. */
+        CORE,
+        /** Outside the core but still reasonably near the center. */
+        CLOSE,
+        /** Everything beyond {@link #CLOSE}. */
+        FAR;
+
+        private static final float CORE_THRESHOLD = 0.22f;
+        private static final float CLOSE_THRESHOLD = 0.43f;
+
+        private static final float ANCHOR_CENTER_SHIFT = 0.06f;
+        private static final String ANCHOR_SYSTEM_ID = "Corvus";
+
+        /**
+         * The point distances are measured from. (0,0) in vanilla, but when the anchor system exists it is moved towards the bottom left, closer to the actual center of the core worlds.
+         */
+        private static Vector2f getSectorCenter() {
+            SectorAPI sector = Global.getSector();
+            if (sector != null && sector.getStarSystem(ANCHOR_SYSTEM_ID) != null) {
+                float shift = -MagicVariables.getSectorSize() * ANCHOR_CENTER_SHIFT;
+                return new Vector2f(shift, shift);
+            }
+            return new Vector2f(0f, 0f);
+        }
+
+        /**
+         * Returns true if the given hyperspace location is within the core bounds.
+         * <p>
+         * This can be inaccurate when involving mods that add custom systems, such as Diable Avionics.
+         * The far away diable markets count as part of the core worlds, and thus stretch the core bounds outward.
+         * That makes this a somewhat unreliable function.
+         */
+        private static boolean isWithinCoreBounds(Vector2f hyperspaceLocation) {
+            Vector2f min = Misc.getCoreMin();
+            Vector2f max = Misc.getCoreMax();
+            return hyperspaceLocation.x >= min.x && hyperspaceLocation.x <= max.x
+                    && hyperspaceLocation.y >= min.y && hyperspaceLocation.y <= max.y;
+        }
+
+        /**
+         * Classifies {@code hyperspaceLocation} by its distance from the sector center, as a fraction of the sector size.
+         * <p>
+         * {@link #CORE} additionally requires the location to be within the core bounds.
+         */
+        public static SectorDistance fromLocation(Vector2f hyperspaceLocation) {
+            float dist = Misc.getDistance(getSectorCenter(), hyperspaceLocation);
+            float sectorSize = MagicVariables.getSectorSize();
+
+            if (dist < sectorSize * CORE_THRESHOLD && isWithinCoreBounds(hyperspaceLocation)) {
+                return CORE;
+            } else if (dist < sectorSize * CLOSE_THRESHOLD) {
+                return CLOSE;
+            } else {
+                return FAR;
+            }
+        }
+    }
+
     /**
      * Returns a random target SectorEntityToken given the following parameters:
      *
@@ -1271,10 +1326,10 @@ public class MagicCampaign {
                 for (String this_theme : seek_themes) {
                     if (s.hasTag(this_theme)) {
                         //sort systems by distances because that will come in handy later
-                        float dist = s.getLocation().length();
-                        if (dist < sector_width * 0.33f) {
+                        SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                        if (category == SectorDistance.CORE) {
                             systems_core.add(s);
-                        } else if (dist < sector_width * 0.66f) {
+                        } else if (category == SectorDistance.CLOSE) {
                             systems_close.add(s);
                         } else {
                             systems_far.add(s);
@@ -1290,10 +1345,10 @@ public class MagicCampaign {
                         //check for the 3 bland themes
                         if (s.getTags().contains("theme_misc_skip") || s.getTags().contains("theme_misc") || s.getTags().contains("theme_core_unpopulated")) {
                             //sort systems by distances because that will come in handy later
-                            float dist = s.getLocation().length();
-                            if (dist < sector_width * 0.33f) {
+                            SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                            if (category == SectorDistance.CORE) {
                                 systems_core.add(s);
-                            } else if (dist < sector_width * 0.66f) {
+                            } else if (category == SectorDistance.CLOSE) {
                                 systems_close.add(s);
                             } else {
                                 systems_far.add(s);
@@ -1306,10 +1361,10 @@ public class MagicCampaign {
             //if there isn't any THEME preference, let's add *everything*
             for (StarSystemAPI s : Global.getSector().getStarSystems()) {
                 //sort systems by distances because that will come in handy later
-                float dist = s.getLocation().length();
-                if (dist < sector_width * 0.33f) {
+                SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                if (category == SectorDistance.CORE) {
                     systems_core.add(s);
-                } else if (dist < sector_width * 0.66f) {
+                } else if (category == SectorDistance.CLOSE) {
                     systems_close.add(s);
                 } else {
                     systems_far.add(s);
@@ -1322,10 +1377,10 @@ public class MagicCampaign {
             if (defaultToAnyEntity) {
                 for (StarSystemAPI s : Global.getSector().getStarSystems()) {
                     //sort systems by distances because that will come in handy later
-                    float dist = s.getLocation().length();
-                    if (dist < sector_width * 0.33f) {
+                    SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                    if (category == SectorDistance.CORE) {
                         systems_core.add(s);
-                    } else if (dist < sector_width * 0.66f) {
+                    } else if (category == SectorDistance.CLOSE) {
                         systems_close.add(s);
                     } else {
                         systems_far.add(s);
@@ -1511,7 +1566,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (1)");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -1537,7 +1592,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (2)");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -1559,7 +1614,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (3)");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -1598,7 +1653,7 @@ public class MagicCampaign {
 
                 if (verbose) {
                     SectorEntityToken picked = selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size() - 1));
-                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (4)");
                     return picked;
                 } else
                     return selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size() - 1));

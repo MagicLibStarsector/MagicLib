@@ -8,6 +8,7 @@
 - Bounty board notifications now show all new bounties at once instead of over time, but summarizes them into a single notification if more than 3 are posted at once.
 - Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
 - Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
+- Make bounties intended to spawn CLOSE spawn closer to the core worlds instead of very far away.
 
 ### MagicPaintjobs
 - Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
