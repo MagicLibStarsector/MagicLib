@@ -9,6 +9,7 @@
 - Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
 - Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
 - Make bounties intended to spawn CLOSE spawn closer to the core worlds instead of very far away.
+- While your fleet is in the same system as a bounty's fleet, its intel and map marker show the exact location. LunaLib setting `magiclib_bountyLocationRevealInSystem`, default on, turns this off.
 
 ### MagicPaintjobs
 - Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.

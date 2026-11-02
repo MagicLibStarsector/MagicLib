@@ -3,6 +3,7 @@
     "magiclib_enableAchievements": true, # Disabling achievements will not affect progress.
     "magiclib_enablePaintjobs": true, # Disabling paintjobs will not affect unlocks.
     "magiclib_enableBountyDeadlines": true, # Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.
+    "magiclib_bountyLocationRevealInSystem": false, # While your fleet is in the same system as a MagicLib bounty's fleet, the bounty intel and its map marker show the exact hiding place instead of a vague hint.
 
 
     "magiclib_subsystems_showInfoDefault": true, # Whether extra info will be displayed on the Subsystems widget when combat starts.

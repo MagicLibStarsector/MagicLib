@@ -17,6 +17,7 @@ import com.fs.starfarer.campaign.rules.Memory;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.MagicUserSettings;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicTxt;
@@ -467,6 +468,24 @@ public final class ActiveBounty {
 
     public @Nullable SectorEntityToken getBountySource() {
         return bountySource;
+    }
+
+    /**
+     * Returns the show distance for the bounty.
+     * <p>
+     * If the player is inside the bounty's StarSystem, and magiclib_bountyLocationRevealInSystem setting is true, returns {@link MagicBountyLoader.ShowDistance#Exact}.
+     * Otherwise, returns the bounty's show distance normally.
+     */
+    public @NotNull MagicBountyLoader.ShowDistance getShowDistance() {
+        CampaignFleetAPI player = Global.getSector().getPlayerFleet();
+        LocationAPI location = fleetSpawnLocation.getContainingLocation();
+        if (player != null
+                && location instanceof StarSystemAPI
+                && player.getContainingLocation() == location
+                && MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_bountyLocationRevealInSystem", false)) {
+            return MagicBountyLoader.ShowDistance.Exact;
+        }
+        return spec.job_show_distance;
     }
 
     public @NotNull Stage getStage() {

@@ -4,6 +4,7 @@ fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValu
 magiclib_enableAchievements,Enable Achievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
 magiclib_enablePaintjobs,Enable Paintjobs,Boolean,true,,"Disabling paintjobs will not affect unlocks.",,,
 magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,true,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,
+magiclib_bountyLocationRevealInSystem,Reveal Exact Location In System,Boolean,false,,"While your fleet is in the same system as a MagicLib bounty's fleet, the bounty intel and its map marker show the exact hiding place instead of a vague hint.",,,
 
 # MagicSubsystems
 magiclib_subsystems_Header,MagicSubsystems,Header,Subsystems,,,,,
