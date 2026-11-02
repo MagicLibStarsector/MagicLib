@@ -202,7 +202,7 @@ public final class ActiveBounty {
      * Spawns the bounty fleet into the campaign and sets the current assignment if unset. This is called in acceptBounty, but may be called preemptively if desired.
      */
     public void ensureFleetInSector() {
-        if (!FleetUtils.isPresentInSector(getFleet())) {
+        if (!getFleet().isAlive()) {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
             systemLocation.addEntity(getFleet());
             getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);

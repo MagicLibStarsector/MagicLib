@@ -417,7 +417,7 @@ public final class MagicBountyCoordinator {
 
             if (fleet.getCurrentAssignment() != null)
                 suitableTargetLocation = fleet.getCurrentAssignment().getTarget();
-            if (!FleetUtils.isPresentInSector(fleet) || suitableTargetLocation == null)
+            if (!fleet.isAlive() || suitableTargetLocation == null)
                 suitableTargetLocation = getSuitableTargetLocation(spec);
 
             if (suitableTargetLocation == null) {

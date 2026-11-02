@@ -42,9 +42,3 @@ fun FleetDataAPI.repairAndRestoreCR() {
         member.setStatUpdateNeeded(true)
     }
 }
-
-/**
- * Returns whether this fleet is currently placed somewhere in the sector, as opposed to existing in memory without a location.
- */
-fun CampaignFleetAPI.isPresentInSector(): Boolean =
-    this.containingLocation != null
