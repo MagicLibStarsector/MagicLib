@@ -69,7 +69,7 @@ class MagicPaintjobHullMod : BaseHullMod() {
         for (wing in ship.allWings) {
             for (fighter in wing.wingMembers) {
                 if (MAGIC_PAINTJOB_APPLIED_KEY in fighter.customData) continue
-                MagicPaintjobManager.getPaintjobsForHull(fighter.hullSpec).firstOrNull {
+                MagicPaintjobManager.getPaintjobsForHull(fighter.hullSpec, includeShiny = true, includeHidden = true).firstOrNull {
                     it.paintjobFamily?.equals(paintjob.paintjobFamily) == true
                 }?.let { MagicPaintjobManager.applyPaintjob(fighter, it) }
 
@@ -94,7 +94,7 @@ class MagicPaintjobHullMod : BaseHullMod() {
         super.addPostDescriptionSection(tooltip, hullSize, ship, width, isForModSpec)
         ship ?: return
 
-        val skin = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec, includeShiny = true)
+        val skin = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec, includeShiny = true, includeHidden = true)
             .firstOrNull { MagicPaintjobManager.getCurrentShipPaintjob(ship.fleetMember)?.id == it.id }
 
         if (skin != null) {
