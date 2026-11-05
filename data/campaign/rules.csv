@@ -6,7 +6,9 @@ magiclib_bountyCommText,OpenCommLink,"$entity.MagicLib_Bounty_target_hasReply sc
 !$entity.ignorePlayerCommRequests","$entity.ignorePlayerCommRequests = true
 MagicBountyCommsReplyCmd",,cutCommLinkNoText:Continue,
 ,,,,,,
-magiclib_fleetencounter_shiny,BeginFleetEncounter,DoesFleetHaveShiny score:9999998,"FireBest BeginFleetEncounter
+magiclib_fleetencounter_shiny,BeginFleetEncounter,"DoesFleetHaveShiny score:9999998
+!$player.magiclib_shinyEncounterNoted","$player.magiclib_shinyEncounterNoted = true 0
+FireBest BeginFleetEncounter
 AddText ""One of the ships displayed on sensors appears to have a non-standard paintjob.""
 Highlight ""paintjob""",,,
 ,,,,,,
