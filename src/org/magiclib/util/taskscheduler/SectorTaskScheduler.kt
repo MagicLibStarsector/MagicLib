@@ -1,11 +1,11 @@
-package org.magiclib.util.taskScheduler
+package org.magiclib.util.taskscheduler
 
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignClockAPI
-import org.magiclib.util.taskScheduler.TaskSchedulerUtils.drainDueTasks
-import org.magiclib.util.taskScheduler.TaskSchedulerUtils.runCallbacks
+import org.magiclib.util.taskscheduler.TaskSchedulerUtils.drainDueTasks
+import org.magiclib.util.taskscheduler.TaskSchedulerUtils.runCallbacks
 import java.util.*
 
 /**

@@ -1,6 +1,6 @@
 {
   "plugins": {
-    "CombatTaskScheduler": "org.magiclib.util.taskScheduler.CombatTaskScheduler",
+    "CombatTaskScheduler": "org.magiclib.util.taskscheduler.CombatTaskScheduler",
     "OMEPaperdollCombatUIAdder":"org.magiclib.util.ui.PaperdollUIPanelAdder",
     "ML_fakeBeamPlugin": "org.magiclib.plugins.MagicFakeBeamPlugin",
     "ML_spriteRenderManager": "org.magiclib.plugins.MagicRenderPlugin",

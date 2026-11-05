@@ -1,4 +1,4 @@
-package org.magiclib.util.taskScheduler
+package org.magiclib.util.taskscheduler
 
 import com.fs.starfarer.api.Global
 import java.util.PriorityQueue

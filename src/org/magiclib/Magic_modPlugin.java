@@ -22,7 +22,7 @@ import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
-import org.magiclib.util.taskScheduler.SectorTaskScheduler;
+import org.magiclib.util.taskscheduler.SectorTaskScheduler;
 
 import java.awt.*;
 import java.util.UUID;

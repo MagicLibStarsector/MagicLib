@@ -1,6 +1,6 @@
-package org.magiclib.util.taskScheduler
+package org.magiclib.util.taskscheduler
 
-import org.magiclib.util.taskScheduler.TaskSchedulerUtils.drainDueTasks
+import org.magiclib.util.taskscheduler.TaskSchedulerUtils.drainDueTasks
 import java.util.*
 
 /**

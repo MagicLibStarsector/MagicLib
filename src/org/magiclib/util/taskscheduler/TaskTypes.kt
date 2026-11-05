@@ -1,4 +1,4 @@
-package org.magiclib.util.taskScheduler
+package org.magiclib.util.taskscheduler
 
 import java.util.concurrent.atomic.AtomicLong
 
