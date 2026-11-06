@@ -150,7 +150,8 @@ public class Magic_modPlugin extends BaseModPlugin {
 
             sector.addTransientListener(new MagicIndustryItemWrangler());
 
-            sector.addTransientScript(new MagicCampaignTrailPlugin());
+            magicCampaignTrailPlugin = new MagicCampaignTrailPlugin();
+            sector.addTransientScript(magicCampaignTrailPlugin);
 
             var sectorTaskScheduler = new SectorTaskScheduler();
             sector.addTransientScript(sectorTaskScheduler);

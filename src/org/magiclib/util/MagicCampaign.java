@@ -217,8 +217,10 @@ public class MagicCampaign {
                                 log.log(level, "Module variant " + moduleVariantId + " not found");
                             }
                         } else {
-                            moduleVariant.setSource(null);
-                            variant.setModuleVariant(slotId, moduleVariant.clone());
+                            // getVariant returns the shared stock variant, so change only the copy.
+                            ShipVariantAPI moduleCopy = moduleVariant.clone();
+                            moduleCopy.setSource(null);
+                            variant.setModuleVariant(slotId, moduleCopy);
                         }
                     }
                 }
