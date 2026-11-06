@@ -154,3 +154,17 @@ fun List<String>.magicJoinToString(
         else -> "${this.dropLast(1).joinToString(listSeparator, transform = transform)}${manyElementsFinalSeparator}${transform(this.last())}"
     }
 }
+
+/** Converts "1" or "true" to 1, and "0" or "false" to 0. Returns null otherwise. */
+fun String.toBinaryOrNull(): Int? = when {
+    this == "1" || equals("true", ignoreCase = true) -> 1
+    this == "0" || equals("false", ignoreCase = true) -> 0
+    else -> null
+}
+
+/** Converts "1" or "true" to true, and "0" or "false" to false. Returns null otherwise. */
+fun String.toBooleanOrNull(): Boolean? = when (toBinaryOrNull()) {
+    1 -> true
+    0 -> false
+    else -> null
+}
