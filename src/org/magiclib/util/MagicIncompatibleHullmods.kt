@@ -9,6 +9,7 @@ import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.set
 import org.magiclib.hullmods.IncompatibleHullModEffect
 import org.magiclib.hullmods.IncompatibleHullModEffect.Incompatibility
+import org.magiclib.util.internal.OpCostLoop
 
 /**
  * Proposes a universal solution for hullmod incompatibilities when they can't be avoided through `isApplicableToShip`.
@@ -83,6 +84,7 @@ object MagicIncompatibleHullmods {
      */
     @JvmStatic
     fun removeHullmodWithWarning(variant: ShipVariantAPI, toRemove: String, removeCause: String) {
+        if (OpCostLoop.isRunning()) return
 
         //cleanup of the other variants just to avoid bloat
         if (INCOMPATIBILITIES.isNotEmpty()) {
