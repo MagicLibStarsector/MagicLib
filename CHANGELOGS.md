@@ -96,6 +96,7 @@
 - Fix paintjob not applying to ship modules in some cases.
 - Fix 'contrailColor' not applying itself in combat.
 - Fix paintjob button sometimes flickering when re-opening the refit tab.
+- Fix the paintjob picker showing the wrong preview when two paintjobs for the same ship share a paintjobFamily.
 
 ### MagicAchievements
 - Fix possible 'ShipKillsAchievement' game crash.
