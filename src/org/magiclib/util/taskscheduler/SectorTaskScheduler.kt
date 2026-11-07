@@ -28,7 +28,7 @@ import java.util.*
  */
 class SectorTaskScheduler : EveryFrameScript {
     init {
-        CombatTaskScheduler.onBattleStart.clear()
+        CombatTaskScheduler.onBattleStartSector.clear()
     }
 
     companion object {
@@ -62,7 +62,7 @@ class SectorTaskScheduler : EveryFrameScript {
         }
 
         @JvmStatic
-        fun getSectorTasks(): Collection<TimedTask> {
+        fun getSectorTasks(): List<TimedTask> {
             return active?.sectorTimeQueue?.sorted() ?: emptyList()
         }
 
@@ -107,7 +107,7 @@ class SectorTaskScheduler : EveryFrameScript {
          * Timing follows the sector clock and stops advancing while the game is paused. Elapsed real time will differ from [delay] if the game's time acceleration
          * (e.g. fast-forward) is active, or if a mod changes [CampaignClockAPI.getSecondsPerDay].
          *
-         * - The task does not persist in the save file, re-register the task after every [BaseModPlugin.onGameLoad] as needed.
+         * - The task does not persist in the save file, re-register the task after every [BaseModPlugin.onGameLoad] if needed.
          * - Provide a unique [key] to persist the task's timer: Re-registering the task with the same [key] resumes its existing schedule rather than restarting the timer, provided the task was left unfinished.
          * - If a task is overdue, it runs once immediately, then resumes its regular schedule.
          *
@@ -137,7 +137,7 @@ class SectorTaskScheduler : EveryFrameScript {
          * Timing follows the sector clock and stops advancing while the game is paused. Elapsed real time will differ from [interval] if the game's time acceleration
          * (e.g. fast-forward) is active, or if a mod changes [CampaignClockAPI.getSecondsPerDay].
          *
-         * - The task does not persist in the save file, re-register the task after every [BaseModPlugin.onGameLoad] as needed.
+         * - The task does not persist in the save file, re-register the task after every [BaseModPlugin.onGameLoad] if needed.
          * - Provide a unique [key] to persist the task's timer: Re-registering the task with the same [key] resumes its existing schedule rather than restarting the timer, provided the task was left unfinished.
          * - If a task is overdue, it runs once immediately, then resumes its regular schedule.
          *
@@ -170,7 +170,7 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [repeat] is false, the task will only run once.
          *
-         * Does not persist in save file, re-register every new sector session if needed.
+         * Does not persist in save file, re-register every new sector session in [BaseModPlugin.onGameLoad] as needed.
          */
         @JvmStatic
         @JvmOverloads
@@ -196,7 +196,7 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [repeat] is false, the task will only run once.
          *
-         * Does not persist in save file, re-register every new sector session if needed.
+         * Does not persist in save file, re-register every new sector session in [BaseModPlugin.onGameLoad] as needed.
          */
         @JvmStatic
         @JvmOverloads
@@ -225,7 +225,7 @@ class SectorTaskScheduler : EveryFrameScript {
          *
          * If [repeat] is false, the task will only run once.
          *
-         * Does not persist in save file, however this will persist as long as the game is not closed. re-register as needed.
+         * Does not persist in save file, however this will persist as long as the game is not closed. re-register every new application session in [BaseModPlugin.onApplicationLoad] as needed.
          */
         @JvmStatic
         @JvmOverloads

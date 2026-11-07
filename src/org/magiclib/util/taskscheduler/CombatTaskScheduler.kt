@@ -1,5 +1,6 @@
 package org.magiclib.util.taskscheduler
 
+import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
@@ -44,7 +45,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
         }
 
         @JvmStatic
-        fun getCombatTasks(): Collection<TimedTask> {
+        fun getCombatTasks(): List<TimedTask> {
             return active?.combatTimeQueue?.sorted() ?: emptyList()
         }
 
@@ -55,7 +56,12 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
         @JvmStatic
         fun getOnBattleStartTasks(): Collection<Task> {
-            return onBattleStart.toList()
+            return onBattleStartSector.toList()
+        }
+
+        @JvmStatic
+        fun getOnBattleStartPersistentTasks(): Collection<Task> {
+            return onBattleStartSector.toList()
         }
 
         /**
@@ -138,7 +144,8 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
             return handle
         }
 
-        internal val onBattleStart = mutableListOf<Task>()
+        internal val onBattleStartSector = mutableListOf<Task>() // Persist only in the sector, this list is cleared on leaving or changing sectors.
+        internal val onBattleStartPersistent = mutableListOf<Task>() // Always persist
 
         /**
          * Runs [action] on player entering a battle and CombatEngine existing.
@@ -147,7 +154,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          *
          * If [repeat] is false, the task will only run once.
          *
-         * Will persist between battles, even if not currently in a battle. Does not persist in save file, re-register every session if needed.
+         * Will persist between battles, even if not currently in a battle. Does not persist in save file, re-register every new sector session in [BaseModPlugin.onGameLoad] as needed.
          */
         @JvmStatic
         @JvmOverloads
@@ -160,7 +167,29 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
                 handle = handle
             )
 
-            onBattleStart.add(task)
+            onBattleStartSector.add(task)
+
+            return handle
+        }
+
+        /**
+         * Runs [action] on player entering a battle and CombatEngine existing.
+         *
+         * The task will be repeated every time the player enters a battle.
+         *
+         * This will persist as long as the game is not closed. re-register every new application session in [BaseModPlugin.onApplicationLoad] as needed.
+         */
+        @JvmStatic
+        fun performOnPlayerBattleStartPersistent(action: TaskSchedulerUtils.TaskAction): TaskHandle {
+            val handle = TaskHandle()
+
+            val task = Task(
+                action = { action.run(handle) }, // inject handle into lambda
+                repeat = true,
+                handle = handle
+            )
+
+            onBattleStartPersistent.add(task)
 
             return handle
         }
@@ -183,7 +212,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
                 runCallbacks(SectorTaskScheduler.onSectorExit, "onSectorExit callback")
 
-                onBattleStart.clear()
+                onBattleStartSector.clear()
 
                 SectorTaskScheduler.initAfterFirstAdvance = false
                 SectorTaskScheduler.setActive(null)
@@ -200,7 +229,8 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
                     SectorTaskScheduler.battleStarted()
 
-                    runCallbacks(onBattleStart, "onPlayerBattleStart callback")
+                    runCallbacks(onBattleStartSector, "onPlayerBattleStart callback")
+                    runCallbacks(onBattleStartPersistent, "onPlayerBattleStartPersistent callback")
 
                     init = true
                 }
