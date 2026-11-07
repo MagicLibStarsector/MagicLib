@@ -548,7 +548,9 @@ public class MagicAchievementManager {
      * Calls all achievements' afterGameSave() method.
      */
     public void afterGameSave() {
-        initIntel();
+        if (areAchievementsEnabled()) {
+            initIntel();
+        }
 
         for (MagicAchievement achievement : achievements.values()) {
             if (!achievement.isComplete()) {

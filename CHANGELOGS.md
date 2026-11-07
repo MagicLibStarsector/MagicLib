@@ -100,6 +100,7 @@
 ### MagicAchievements
 - Fix possible 'ShipKillsAchievement' game crash.
 - Avoid log spam when a mod which added achievements was removed.
+- Fix the achievements intel showing after resuming a save when achievements were turned off.
 
 ### MagicSubsystems
 - Fixed officer skill system expertise having opposite effect on the cooldown of subsystems. (reported by Firestone on the forums)
