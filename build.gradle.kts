@@ -846,6 +846,8 @@ tasks.register<Zip>("packageMod") {
     // 3. Include any project-root files matching packageIncludeExtensions.
     from(projectDir) {
         packageIncludeExtensions.forEach { ext -> include("*.$ext") }
+        // Personal Claude Code instructions. Not part of the mod.
+        exclude("CLAUDE.local.md")
     }
 }
 
