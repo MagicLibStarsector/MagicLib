@@ -13,16 +13,16 @@ import org.magiclib.kotlin.OtherExtensionsKt;
  * Loads a JSONObject into a hashmap with member functions that allow you to navigate the tree
  * without constantly having to cast.
  * <pre>
- *     myMap = MagicJson.fromJSON(Global.getSettings().loadJSON("data/my_json_file.json", true))
+ *     myMap = MagicJsonMap.fromJSON(Global.getSettings().loadJSON("data/my_json_file.json", true))
  *     myMap.getMap("key1").getIntList("my_ints").get(2);
  * </pre>
  *
  * @author Toaster
  */
 @SuppressWarnings("unused")
-public class MagicJson extends HashMap<String, Object> {
+public class MagicJsonMap extends HashMap<String, Object> {
     /**
-     * Loads JSON into a MagicJson, recursively going through the nodes.
+     * Loads JSON into a MagicJsonMap, recursively going through the nodes.
      * <p>
      * Based on: <a href="https://stackoverflow.com/questions/21720759/convert-a-json-string-to-a-hashmap">...</a>
      *
@@ -30,8 +30,8 @@ public class MagicJson extends HashMap<String, Object> {
      * @return The same thing, but turned into a map.
      * @throws JSONException If the JSON object isn't valid.
      */
-    public static MagicJson fromJSON(JSONObject json) throws JSONException {
-        MagicJson retMap = new MagicJson();
+    public static MagicJsonMap fromJSON(JSONObject json) throws JSONException {
+        MagicJsonMap retMap = new MagicJsonMap();
 
         if (json != null && json != JSONObject.NULL) retMap = jsonObjectToMap(json);
         return retMap;
@@ -41,12 +41,12 @@ public class MagicJson extends HashMap<String, Object> {
      * Parses the nodes, turning the objects into sensible values.
      *
      * @param object The JSON object that is the current node.
-     * @return That same thing, but turned into a MagicJson.
+     * @return That same thing, but turned into a MagicJsonMap.
      * @throws JSONException If the JSON object isn't valid.
      */
     @SuppressWarnings("unchecked")
-    protected static MagicJson jsonObjectToMap(JSONObject object) throws JSONException {
-        MagicJson map = new MagicJson();
+    protected static MagicJsonMap jsonObjectToMap(JSONObject object) throws JSONException {
+        MagicJsonMap map = new MagicJsonMap();
 
         Iterator<String> keysItr = object.keys();
         while (keysItr.hasNext()) {
@@ -194,26 +194,26 @@ public class MagicJson extends HashMap<String, Object> {
         return this.getStringSet(key);
     }
 
-    public MagicJson getMap(String key) {
-        return (MagicJson) this.get(key);
+    public MagicJsonMap getMap(String key) {
+        return (MagicJsonMap) this.get(key);
     }
 
-    public MagicJson getMapOrDefault(String key, MagicJson defaultValue) {
+    public MagicJsonMap getMapOrDefault(String key, MagicJsonMap defaultValue) {
         if (this.get(key) == null) return defaultValue;
         return this.getMap(key);
     }
 
     @SuppressWarnings("unchecked")
-    public List<MagicJson> getMapList(String key) {
+    public List<MagicJsonMap> getMapList(String key) {
         List<Object> listObj = (List<Object>) this.get(key);
-        List<MagicJson> listOut = new ArrayList<>();
+        List<MagicJsonMap> listOut = new ArrayList<>();
         for (Object o : listObj) {
-            listOut.add((MagicJson) o);
+            listOut.add((MagicJsonMap) o);
         }
         return listOut;
     }
 
-    public List<MagicJson> getMapListOrDefault(String key, List<MagicJson> defaultValue) {
+    public List<MagicJsonMap> getMapListOrDefault(String key, List<MagicJsonMap> defaultValue) {
         if (this.get(key) == null) return defaultValue;
         return this.getMapList(key);
     }
