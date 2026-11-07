@@ -224,9 +224,12 @@ internal object MagicPaintjobSelector {
         basePaintjobSpec?.let { paintjob ->
             @Suppress("UNCHECKED_CAST")
             for(ship in ReflectionUtils.get(shipPreview, name = MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!) as Array<ShipAPI>){
-                MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec).firstOrNull {
-                    it.paintjobFamily?.equals(paintjob.paintjobFamily) == true || it.id == paintjob.id
-                }?.let { MagicPaintjobManager.applyPaintjob(ship, it) }
+                // Checking the id first stops two paintjobs of one family showing the same preview.
+                // Fixes https://github.com/MagicLibStarsector/MagicLib/issues/84.
+                val hullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec)
+                val shipPaintjob = hullPaintjobs.firstOrNull { it.id == paintjob.id }
+                    ?: paintjob.paintjobFamily?.let { family -> hullPaintjobs.firstOrNull { it.paintjobFamily == family } }
+                shipPaintjob?.let { MagicPaintjobManager.applyPaintjob(ship, it) }
             }
         }
 

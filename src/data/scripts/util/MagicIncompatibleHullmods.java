@@ -17,6 +17,7 @@ public class MagicIncompatibleHullmods {
     private static final String WARNING = "ML_incompatibleHullmodWarning";
 
     public static void removeHullmodWithWarning(ShipVariantAPI variant, String toRemove, String removeCause) {
+        if (org.magiclib.util.internal.OpCostLoop.isRunning()) return;
 
         //cleanup of the other variants just to avoid bloat
         if (!INCOMPATIBILITIES.isEmpty()) {

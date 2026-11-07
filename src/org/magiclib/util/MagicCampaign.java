@@ -310,8 +310,9 @@ public class MagicCampaign {
         LocationAPI systemLocation = location.getContainingLocation();
         systemLocation.addEntity(fleet);
         fleet.setLocation(location.getLocation().x, location.getLocation().y);
-        if (order == FleetAssignment.PATROL_SYSTEM) {
-            fleet.addAssignment(order, target.getStarSystem().getStar(), 1000000f);
+        StarSystemAPI targetSystem = target.getStarSystem();
+        if (order == FleetAssignment.PATROL_SYSTEM && targetSystem != null) {
+            fleet.addAssignment(order, targetSystem.getStar(), 1000000f);
         } else {
             fleet.addAssignment(order, target, 1000000f);
         }
@@ -325,8 +326,8 @@ public class MagicCampaign {
         fleet.setTransponderOn(transponderOn);
 
         if (verbose) {
-            log.info("Spawned " + fleet.getName() + " around " + location.getId() + " in the " + location.getStarSystem().getId() + " system.");
-            log.info("Order: " + order.name() + ", target: " + target.getId() + " in the " + target.getStarSystem().getId() + " system.");
+            log.info("Spawned " + fleet.getName() + " around " + location.getId() + " in " + systemLocation.getName() + ".");
+            log.info("Order: " + order.name() + ", target: " + target.getId() + " in " + target.getContainingLocation().getName() + ".");
         }
     }
 
