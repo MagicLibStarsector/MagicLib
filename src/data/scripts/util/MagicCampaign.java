@@ -866,39 +866,7 @@ public class MagicCampaign {
             boolean transponderOn,
             boolean verbose
     ) {
-
-        //defaults
-        FleetAssignment order = FleetAssignment.ORBIT_AGGRESSIVE;
-        if (assignment != null) {
-            order = assignment;
-        }
-        SectorEntityToken location = target;
-        if (spawnLocation != null) {
-            location = spawnLocation;
-        }
-
-        //spawn placement and assignement
-        LocationAPI systemLocation = location.getContainingLocation();
-        systemLocation.addEntity(fleet);
-        fleet.setLocation(location.getLocation().x, location.getLocation().y);
-        if (order == FleetAssignment.PATROL_SYSTEM) {
-            fleet.addAssignment(order, target.getStarSystem().getStar(), 1000000f);
-        } else {
-            fleet.addAssignment(order, target, 1000000f);
-        }
-        //radius fix
-        fleet.forceSync();
-        fleet.getFleetData().setSyncNeeded();
-        fleet.getFleetData().syncIfNeeded();
-
-        //ancillary stuff
-        fleet.getMemoryWithoutUpdate().set(MemFlags.ENTITY_MISSION_IMPORTANT, isImportant);
-        fleet.setTransponderOn(transponderOn);
-
-        if (verbose) {
-            log.info("Spawned " + fleet.getName() + " around " + location.getId() + " in the " + location.getStarSystem().getId() + " system.");
-            log.info("Order: " + order.name() + ", target: " + target.getId() + " in the " + target.getStarSystem().getId() + " system.");
-        }
+        org.magiclib.util.MagicCampaign.spawnFleet(fleet, spawnLocation, assignment, target, isImportant, transponderOn, verbose);
     }
 
 

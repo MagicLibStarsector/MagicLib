@@ -112,7 +112,7 @@
 - Fix MagicAnim smoothToRange, smoothReturnToRange, and arbitrarySmooth. (Reported by Ayreos)
 - Fixed MagicTargeting null crash where ShipAPI.HullSize = ShipAPI.HullSize.DEFAULT
 - Fix a crash in the refit screen when a hullmod that affects OP costs calls MagicIncompatibleHullmods.removeHullmodWithWarning.
-- Fix MagicCampaign.spawnFleet (and MagicFleetBuilder) crashing in hyperspace with the PATROL_SYSTEM order or with verbose logging on. In hyperspace, PATROL_SYSTEM now patrols around the target.
+- Fix MagicCampaign.spawnFleet (and MagicFleetBuilder) crashing in hyperspace with the PATROL_SYSTEM order or with verbose logging on.
 
 Version 1.5.7
 
