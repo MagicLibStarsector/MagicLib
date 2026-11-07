@@ -21,6 +21,7 @@ import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin;
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin;
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldSource;
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
+import com.fs.starfarer.api.loading.VariantSource;
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.loading.WeaponGroupType;
 import com.fs.starfarer.api.util.Misc;
@@ -219,7 +220,7 @@ public class MagicCampaign {
                         } else {
                             // getVariant returns the shared stock variant, so change only the copy.
                             ShipVariantAPI moduleCopy = moduleVariant.clone();
-                            moduleCopy.setSource(null);
+                            moduleCopy.setSource(VariantSource.REFIT);
                             variant.setModuleVariant(slotId, moduleCopy);
                         }
                     }

@@ -180,7 +180,7 @@ fun ShipHullSpecAPI.createHullVariant(): ShipVariantAPI {
                         Global.getLogger(javaClass).warn("Could not find ideal match when getting hull variant with hullId '${this.hullId}' and effectiveId '${this.getEffectiveHullId()}'")
                         hullVariants.firstOrNull() // Cannot find a good enough match, just go for whatever
                     }
-            }?.clone()?.apply { source = null }
+            }?.clone()?.apply { source = VariantSource.REFIT }
     } ?: runCatching {
         val emptyVariant = Global.getSettings().createEmptyVariant(this.hullId, this)
         Global.getLogger(javaClass).warn(
