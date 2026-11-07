@@ -28,52 +28,41 @@ class EnhancedModuleArmor: BaseHullMod() {
         const val MODULE_LISTENERS_ADDED = "module_listeners_added"
 
         const val HULL_MOD_ID = "ML_enhancedModuleArmor"
-    }
 
-    private inline fun <reified T : Any> ShipAPI.addListenerIfAbsent(create: () -> T) {
-        if (!hasListenerOfClass(T::class.java)) addListener(create())
-    }
+        private inline fun <reified T : Any> ShipAPI.addListenerIfAbsent(create: () -> T) {
+            if (!hasListenerOfClass(T::class.java)) addListener(create())
+        }
 
-    private fun ShipAPI.addOcclusionTag() {
-        when {
-            variant.hasHullMod(HullMods.VASTBULK) ->
-                addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-            !variant.hasHullMod(HULL_MOD_ID) ->
-                addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+        private fun ShipAPI.addOcclusionTag() {
+            when {
+                variant.hasHullMod(HullMods.VASTBULK) -> addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
+                !variant.hasHullMod(HULL_MOD_ID) -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+            }
+        }
+
+        internal fun apply(ship: ShipAPI) {
+            if (ship.childModulesCopy.isEmpty() && ship.parentStation == null) return // Must be a moduled ship or a module itself.
+            val parent = ship.parentStation ?: ship
+
+            if (parent.hasTag(MODULE_LISTENERS_ADDED)) return
+            parent.addTag(MODULE_LISTENERS_ADDED)
+
+            val children = parent.childModulesCopy
+            if (children.isNotEmpty()) {
+                parent.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+                parent.addOcclusionTag()
+
+                children.forEach { module ->
+                    module.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+                    if (module.variant.hasHullMod(HULL_MOD_ID) || parent.variant.hasHullMod(HULL_MOD_ID))
+                        module.addListenerIfAbsent { ArmorModuleChild(module) }
+                }
+            }
         }
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
-        if((ship.childModulesCopy.isEmpty() && ship.parentStation == null) || ship.hasTag(MODULE_LISTENERS_ADDED)) return
-
-        ship.addTag(MODULE_LISTENERS_ADDED)
-
-        // Apply to parent if module
-        ship.parentStation?.let { parent ->
-            ship.addListenerIfAbsent { ArmorModuleChild(ship) }
-
-            if (!parent.hasListenerOfClass(ExplosionOcclusionRaycast::class.java)) {
-                parent.addListener(ExplosionOcclusionRaycast())
-                parent.addOcclusionTag()
-
-                parent.childModulesCopy.forEach {
-                    it.addListenerIfAbsent { ExplosionOcclusionRaycast() }
-                    it.addOcclusionTag()
-                }
-            }
-        }
-
-        // Apply to children if parent
-        val children = ship.childModulesCopy
-        if (children.isNotEmpty()) {
-            ship.addListenerIfAbsent { ExplosionOcclusionRaycast() }
-            ship.addOcclusionTag()
-
-            children.forEach { module ->
-                module.addListenerIfAbsent { ExplosionOcclusionRaycast() }
-                module.addListenerIfAbsent { ArmorModuleChild(module) }
-            }
-        }
+        apply(ship)
     }
 
     class ArmorModuleChild(val module: ShipAPI): DamageListener, HullDamageAboutToBeTakenListener, AdvanceableListener {
