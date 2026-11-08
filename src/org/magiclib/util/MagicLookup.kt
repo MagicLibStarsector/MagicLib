@@ -155,10 +155,7 @@ object MagicLookup {
                 null
             }
         }
-
-        if(MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_FixMissionVariantError", default = true))
-            stripMissingElementsFromMissionVariants(allVariants)
-
+        
         // Log a warning if any variant had missing elements (hull-mod, weapon, wing)
         allVariants.forEach {
             if(it.source == VariantSource.MISSION_SAVE) // Saved mission variants are out of a modders control, do not report them.
@@ -190,35 +187,6 @@ object MagicLookup {
         )
 
         isSetupComplete = true
-    }
-
-    private fun stripMissingElementsFromMissionVariants(allVariants: List<ShipVariantAPI>) {
-        var cleanedCount = 0
-        for(variant in allVariants) {
-            if(variant.source != VariantSource.MISSION_SAVE)
-                continue
-
-            val missingElements = variant.findMissingElements(includeModules = false)
-            if(!missingElements.hadMissing)
-                continue
-            cleanedCount++
-
-            missingElements.missingHullmods.forEach { hullMod ->
-                variant.removeModFull(hullMod)
-                Global.getLogger(this.javaClass).info("Cleaned missing hull-mod '$hullMod' from variant-id '${variant.hullVariantId}' of hull-id '${variant.hullSpec.hullId}'")
-            }
-            missingElements.missingWeapons.forEach { (slot, weaponId) ->
-                variant.clearSlot(slot)
-                Global.getLogger(this.javaClass).info("Cleaned missing weapon '$weaponId' from variant-id '${variant.hullVariantId}' of hull-id '${variant.hullSpec.hullId}'")
-            }
-            missingElements.missingWings.forEach { wing ->
-                variant.wings.removeAll { it == wing }
-                Global.getLogger(this.javaClass).info("Cleaned missing wing '$wing' from variant-id '${variant.hullVariantId}' of hull-id '${variant.hullSpec.hullId}'")
-            }
-        }
-
-        if(cleanedCount > 0)
-            Global.getLogger(this.javaClass).info("Cleaned $cleanedCount mission variants for removed elements")
     }
 
     /**
