@@ -682,13 +682,14 @@ public class MagicFleetBuilder {
 
     private static FleetMemberAPI generateShip(@Nullable String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
         ShipVariantAPI thisVariant = Global.getSettings().getVariant(variant);
-        //if the variant doesn't exist but a custom variant path is defined, try loading it
-        if (thisVariant == null && variantsPath != null) {
+        if (thisVariant != null) {
+            thisVariant = thisVariant.clone();
+        } else if (variantsPath != null) { // if the variant doesn't exist but a custom variant path is defined, try loading it
             thisVariant = MagicCampaign.loadVariant(variantsPath + variant + ".variant");
         }
-        if (thisVariant == null) {
+
+        if (thisVariant == null)
             return null;
-        }
 
         FleetMemberAPI ship;
         try {
