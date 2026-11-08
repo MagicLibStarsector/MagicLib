@@ -132,10 +132,8 @@ object MagicLookup {
         val settings = Global.getSettings()
 
         val allHullSpecs = settings.allShipHullSpecs
-        if (allHullSpecs.isEmpty()) {
-            Global.getLogger(this.javaClass).error("No hulls found. It is very likely that the '${this.javaClass.name}' object was accessed before onApplicationLoad. Avoid calling ${this.javaClass.name} before onApplicationLoad")
-            return
-        }
+        if (allHullSpecs.isEmpty())
+            throw Exception("No hulls found. It is very likely that the '${this.javaClass.name}' object was accessed before onApplicationLoad. Avoid calling ${this.javaClass.name} before onApplicationLoad")
 
         hullSpecsById = allHullSpecs.associateBy { it.hullId } // Do note this contains all the '_default_D' ships as well.
         wingsById = settings.allFighterWingSpecs.associateBy { it.id }
