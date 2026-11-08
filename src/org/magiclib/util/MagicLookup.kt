@@ -1,6 +1,7 @@
 package org.magiclib.util
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.SettingsAPI
 import com.fs.starfarer.api.characters.SkillSpecAPI
 import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import com.fs.starfarer.api.combat.ShipSystemSpecAPI
@@ -16,7 +17,6 @@ import org.magiclib.util.api.getActualHull
 import org.magiclib.util.api.getActualHullId
 import org.magiclib.util.api.getEffectiveHull
 import org.magiclib.util.api.getEffectiveHullId
-import org.magiclib.util.api.removeModFull
 import org.magiclib.util.internal.AssignHullSkinSourceMod.assignHullSkinSourceMods
 import org.magiclib.util.internal.MiscellaneousUtil.findMissingElements
 import java.util.Collections
@@ -32,9 +32,9 @@ object MagicLookup {
     private var isSetupComplete = false
     fun isSetup(): Boolean = isSetupComplete
 
-    private fun <K, V> Map<K, V>.unmodifiable(): Map<K, V> = Collections.unmodifiableMap(this)
-    private fun <T> List<T>.unmodifiable(): List<T> = Collections.unmodifiableList(this)
-    private fun <T> Set<T>.unmodifiable(): Set<T> = Collections.unmodifiableSet(this)
+    //private fun <K, V> Map<K, V>.unmodifiable(): Map<K, V> = Collections.unmodifiableMap(this)
+    //private fun <T> List<T>.unmodifiable(): List<T> = Collections.unmodifiableList(this)
+    //private fun <T> Set<T>.unmodifiable(): Set<T> = Collections.unmodifiableSet(this)
 
     private var dModIds: Set<String> = emptySet()
     private var hiddenEverywhereModIds: Set<String> = emptySet()
@@ -126,9 +126,6 @@ object MagicLookup {
     //
 
     internal fun setup() {
-        if(isSetup())
-            return
-
         val settings = Global.getSettings()
 
         val allHullSpecs = settings.allShipHullSpecs
@@ -139,7 +136,7 @@ object MagicLookup {
         wingsById = settings.allFighterWingSpecs.associateBy { it.id }
         hullModsById = settings.allHullModSpecs.associateBy { it.id }
         weaponsById = settings.actuallyAllWeaponSpecs.associateBy { it.weaponId }
-        skillsById = settings.skillIds.map { settings.getSkillSpec(it) }.associateBy { it.id }
+        skillsById = settings.skillIds.mapNotNull { settings.getSkillSpec(it) }.associateBy { it.id }
         shipSystemsById = settings.allShipSystemSpecs.associateBy { it.id }
 
         factionIds = settings.allFactionSpecs.mapTo(HashSet()) { it.id }
@@ -153,7 +150,7 @@ object MagicLookup {
                 null
             }
         }
-        
+
         // Log a warning if any variant had missing elements (hull-mod, weapon, wing)
         allVariants.forEach {
             if(it.source == VariantSource.MISSION_SAVE) // Saved mission variants are out of a modders control, do not report them.
@@ -188,44 +185,58 @@ object MagicLookup {
     }
 
     /**
-     * This function does not clone the variants, use with caution.
+     * Returns every variant from [SettingsAPI.getAllVariantIds], resolved with [SettingsAPI.getVariant].
      *
-     * Editing the variants in this list will edit them for everything that uses them.
+     * NOTE: The returned variants are the shared base instances. Modifying them will affect every ship that uses them.
+     * If you intend to modify the returned variants, create a copy using `ShipVariantAPI.clone()` first.
      */
     @JvmStatic
-    fun getAllVariantsRaw(): List<ShipVariantAPI> = allVariants
+    fun getAllVariantSpecs(): List<ShipVariantAPI> = allVariants
 
-    /**Does not clone the variant, use with caution.*/
-    internal fun getVariantsForEffectiveHullSpecRaw(hullSpec: ShipHullSpecAPI): List<ShipVariantAPI> {
-        return variantsByEffectiveHullId[hullSpec.getEffectiveHullId()].orEmpty()
+    /**
+     * Returns a list of effective hull variants for the given hull spec.
+     *
+     * See [ShipHullSpecAPI.getEffectiveHull] for more information.
+     *
+     * @param cloneVariants If true (default), each variant is cloned and is safe to mutate.
+     * If false, the shared base instances are returned as is, modifying them would affect all ships that use them.
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun getVariantsForEffectiveHullSpec(hullSpec: ShipHullSpecAPI, cloneVariants: Boolean = true): List<ShipVariantAPI> {
+        val variants = variantsByEffectiveHullId[hullSpec.getEffectiveHullId()] ?: emptyList()
+        return if (cloneVariants) variants.map { it.clone() } else variants
     }
 
     /**
-     * Returns a list of effective hull variants for the given hull spec, cloned.
-     *
-     * See [ShipHullSpecAPI.getEffectiveHull] for more information.
-     */
-    @JvmStatic
-    fun getVariantsForEffectiveHullSpec(hullSpec: ShipHullSpecAPI): List<ShipVariantAPI> =
-        variantsByEffectiveHullId[hullSpec.getEffectiveHullId()].orEmpty().map { it.clone() }
-
-    /**
-     * Returns a list of base hull variants for the given hull spec, cloned.
+     * Returns a list of base hull variants for the given hull spec.
      *
      * See [ShipHullSpecAPI.getBaseHull] for more information.
+     *
+     * @param cloneVariants If true (default), each variant is cloned and is safe to mutate.
+     * If false, the shared base instances are returned as is, modifying them would affect all ships that use them.
      */
     @JvmStatic
-    fun getVariantsForBaseHullSpec(hullSpec: ShipHullSpecAPI): List<ShipVariantAPI> =
-        variantsByBaseHullId[hullSpec.baseHullId].orEmpty().map { it.clone() }
+    @JvmOverloads
+    fun getVariantsForBaseHullSpec(hullSpec: ShipHullSpecAPI, cloneVariants: Boolean = true): List<ShipVariantAPI> {
+        val variants = variantsByBaseHullId[hullSpec.baseHullId] ?: emptyList()
+        return if (cloneVariants) variants.map { it.clone() } else variants
+    }
 
     /**
-     * Returns a list of actual hull variants for the given hull spec, cloned.
+     * Returns a list of actual hull variants for the given hull spec.
      *
      * See [ShipHullSpecAPI.getActualHull] for more information.
+     *
+     * @param cloneVariants If true (default), each variant is cloned and is safe to mutate.
+     * If false, the shared base instances are returned as is, modifying them would affect all ships that use them.
      */
     @JvmStatic
-    fun getVariantsForActualHullSpec(hullSpec: ShipHullSpecAPI): List<ShipVariantAPI> =
-        variantsByHullId[hullSpec.getActualHullId()].orEmpty().map { it.clone() }
+    @JvmOverloads
+    fun getVariantsForActualHullSpec(hullSpec: ShipHullSpecAPI, cloneVariants: Boolean = true): List<ShipVariantAPI> {
+        val variants = variantsByHullId[hullSpec.getActualHullId()] ?: emptyList()
+        return if (cloneVariants) variants.map { it.clone() } else variants
+    }
 
 
     @JvmStatic

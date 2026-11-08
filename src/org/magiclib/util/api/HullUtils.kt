@@ -167,7 +167,7 @@ fun ShipHullSpecAPI.createHullVariant(): ShipVariantAPI {
     // This function is incredibly overbuilt.
     // Simply getting the variant with the actual hull_id with _Hull appended to the end should work in most cases, but I really want to avoid having any issues here.
     return run {
-        val variants = MagicLookup.getVariantsForEffectiveHullSpecRaw(this)
+        val variants = MagicLookup.getVariantsForEffectiveHullSpec(this, cloneVariants = false)
 
         variants.filter { it.source == VariantSource.HULL } // Filter out non hull variants
             .takeIf { it.isNotEmpty() }

@@ -58,8 +58,7 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
 
-        if (!MagicLookup.INSTANCE.isSetup())
-            MagicLookup.INSTANCE.setup$MagicLib();
+        MagicLookup.INSTANCE.isSetup(); // Triggers MagicLookup's init on first access, which sets up MagicLookup.
 
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
         if (Global.getSettings().isDevMode()) {
@@ -127,6 +126,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_test_mode");
+
+        MagicLookup.INSTANCE.setup$MagicLib(); // Setup MagicLookup again for any changed specs if necessary.
     }
 
     ////////////////////////////////////////
