@@ -20,6 +20,7 @@
 
 ### Miscellaneous
 - Assign Missing Source Mods on Ship Skins: assigns modded hull skins with the source mod of the mod they come from, as the base-game does not do that.
+- Added the 'Enhanced Module Armor Applier' setting. Enabling it makes all relevant armor modules act like armor, not separate targets, and stops explosions from bypassing modular armor with occlusion ray-casting.
 
 ---
 

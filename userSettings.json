@@ -5,6 +5,8 @@
     "magiclib_enableBountyDeadlines": true, # Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.
     "magiclib_bountyLocationRevealInSystem": false, # While your fleet is in the same system as a MagicLib bounty's fleet, the bounty intel and its map marker show the exact hiding place instead of a vague hint.
 
+    "magiclib_automaticModuleArmorApplier": false, # Enabling makes all relevant armor modules act like armor, not separate targets, and stops explosions from bypassing modular armor with occlusion ray-casting.
+
 
     "magiclib_subsystems_showInfoDefault": true, # Whether extra info will be displayed on the Subsystems widget when combat starts.
 

@@ -5,6 +5,7 @@ magiclib_enableAchievements,Enable Achievements,Boolean,true,,"Disabling achieve
 magiclib_enablePaintjobs,Enable Paintjobs,Boolean,true,,"Disabling paintjobs will not affect unlocks.",,,
 magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,true,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,
 magiclib_bountyLocationRevealInSystem,Reveal Exact Location In System,Boolean,false,,"While your fleet is in the same system as a MagicLib bounty's fleet, the bounty intel and its map marker show the exact hiding place instead of a vague hint.",,,
+magiclib_automaticModuleArmorApplier,Enhanced Module Armor Applier,Boolean,false,,"Enabling makes all relevant armor modules act like armor, not separate targets, and stops explosions from bypassing modular armor with occlusion ray-casting.",,,
 
 # MagicSubsystems
 magiclib_subsystems_Header,MagicSubsystems,Header,Subsystems,,,,,

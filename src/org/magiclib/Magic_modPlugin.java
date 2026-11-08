@@ -4,6 +4,7 @@ import com.fs.starfarer.api.*;
 import com.fs.starfarer.api.campaign.RepLevel;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
+import org.magiclib.hullmods.enhancedmodule.AutomaticModuleArmorApplierPlugin;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
 import org.magiclib.util.MagicModVersions;
@@ -22,6 +23,7 @@ import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
+import org.magiclib.util.taskscheduler.CombatTaskScheduler;
 import org.magiclib.util.taskscheduler.SectorTaskScheduler;
 
 import java.awt.*;
@@ -99,6 +101,12 @@ public class Magic_modPlugin extends BaseModPlugin {
         }
 
         MagicSubsystemsManager.initialize();
+
+        CombatTaskScheduler.performOnPlayerBattleStartPersistent(handle -> {
+            if (MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_automaticModuleArmorApplier", false)) {
+                Global.getCombatEngine().addPlugin(new AutomaticModuleArmorApplierPlugin());
+            }
+        });
     }
 
     @Override
