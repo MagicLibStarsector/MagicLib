@@ -9,3 +9,6 @@
 *.iml
 
 *.zip
+
+# Personal Claude Code instructions
+CLAUDE.local.md
