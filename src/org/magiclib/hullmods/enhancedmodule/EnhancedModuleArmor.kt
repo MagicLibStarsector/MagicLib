@@ -36,11 +36,16 @@ class EnhancedModuleArmor: BaseHullMod() {
         private fun ShipAPI.addOcclusionTag() {
             when {
                 variant.hasHullMod(HullMods.VASTBULK) -> addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-                !variant.hasHullMod(HULL_MOD_ID) -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                !variant.hasHullMod(HULL_MOD_ID) || hasTag(HULL_MOD_ID) -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
             }
         }
 
-        internal fun apply(ship: ShipAPI) {
+        /**
+         * Inner content only runs once, even if called multiple times.
+         *
+         * Add all hull-mods or tags before running.
+         * */
+        fun apply(ship: ShipAPI) {
             if (ship.childModulesCopy.isEmpty() && ship.parentStation == null) return // Must be a moduled ship or a module itself.
             val parent = ship.parentStation ?: ship
 
@@ -54,7 +59,9 @@ class EnhancedModuleArmor: BaseHullMod() {
 
                 children.forEach { module ->
                     module.addListenerIfAbsent { ExplosionOcclusionRaycast() }
-                    if (module.variant.hasHullMod(HULL_MOD_ID) || parent.variant.hasHullMod(HULL_MOD_ID))
+                    if (module.variant.hasHullMod(HULL_MOD_ID) // Apply to module in specific
+                        || module.hasTag(HULL_MOD_ID) // Apply to module in specific, without editing the variant
+                        || parent.variant.hasHullMod(HULL_MOD_ID)) // Apply to all modules
                         module.addListenerIfAbsent { ArmorModuleChild(module) }
                 }
             }
