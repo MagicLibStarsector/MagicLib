@@ -10,6 +10,8 @@ import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.loading.FighterWingSpecAPI
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.loading.WeaponSpecAPI
+import com.fs.starfarer.api.util.Misc
+import org.magiclib.kotlin.getDHullId
 import org.magiclib.kotlin.getErrorVariantID
 import org.magiclib.util.MagicLookup
 
@@ -50,6 +52,14 @@ fun ShipHullSpecAPI.getBuiltInWeaponSpecs(): Map<String, WeaponSpecAPI> {
  */
 fun ShipHullSpecAPI.isModule(): Boolean =
     hints.contains(ShipHullSpecAPI.ShipTypeHints.MODULE)
+
+/**
+ * Returns true if the hull is a ship with modules.
+ *
+ * Note that this checks if the hull has the [ShipTypeHints.SHIP_WITH_MODULES] hint. This can return false even if a ship has modules, if the hull was improperly configured.
+ */
+fun ShipHullSpecAPI.isShipWithModules(): Boolean =
+    hints.contains(ShipHullSpecAPI.ShipTypeHints.SHIP_WITH_MODULES)
 
 /**
  * Returns true if the hull is a fighter wing.
@@ -116,9 +126,9 @@ fun ShipHullSpecAPI.getEffectiveHullId(): String =
 /**
  * Returns the hull's real spec, unwrapping the auto-generated default D-Hull variation if this is one.
  *
- * Default D-Hulls are auto-generated per hull under a separate hull id, with a lower base value, " (D)" in the name, a damaged-hull description, and  all custom tags stripped.
+ * Default D-Hulls are auto-generated per hull under a separate hull id with [Misc.D_HULL_SUFFIX] on the end, a lower base value, " (D)" in the display name, a damaged hull description, and all custom tags stripped.
  *
- * A default D-Hull is used in most ships that come out of combat with new D-Mods.
+ * Default D-Hulls are used in many places; most commonly in ships from post-combat recovery with new D-Mods, derelict recoveries, and sometimes when NPC fleets are inflated.
  *
  * A ship using a default D-Hull as a hull will fail custom tag or hull-id checks written against the base spec.
  * Use this function instead of the raw hull spec wherever you need the "real" identity of the hull, instead of the auto-generated clone.
@@ -136,15 +146,29 @@ fun ShipHullSpecAPI.getActualHull(): ShipHullSpecAPI {
 /**
  * Returns the hull's real spec id, unwrapping the auto-generated default D-Hull variation if this is one.
  *
- * Default D-Hulls are auto-generated per hull under a separate hull id, with a lower base value, " (D)" in the name, a damaged-hull description, and  all custom tags stripped.
+ * Default D-Hulls are auto-generated per hull under a separate hull id with [Misc.D_HULL_SUFFIX] on the end, a lower base value, " (D)" in the display name, a damaged hull description, and all custom tags stripped.
  *
- * A default D-Hull is used in most ships that come out of combat with new D-Mods.
+ * Default D-Hulls are used in many places; most commonly in ships from post-combat recovery with new D-Mods, derelict recoveries, and sometimes when NPC fleets are inflated.
  *
  * A ship using a default D-Hull as a hull will fail custom tag or hull-id checks written against the base spec.
  * Use this function instead of the raw hull spec wherever you need the "real" identity of the hull, instead of the auto-generated clone.
  */
 fun ShipHullSpecAPI.getActualHullId(): String =
     this.getActualHull().hullId
+
+/**
+ * Returns the default D-Hull of this hull, if this is the default D-Hull then return self. See [getActualHull] for more details.
+ *
+ * This is the inverse of [getActualHull]
+ */
+fun ShipHullSpecAPI.getDHull(): ShipHullSpecAPI {
+    try { // Just in case
+        return Global.getSettings().getHullSpec(this.getDHullId())
+    } catch (e: Exception) {
+        Global.getLogger(this.javaClass).error("Error in getDHull", e)
+        return this
+    }
+}
 
 /**
  * A skin is a hull that is a variation of another hull. Skins are made from .skin files.
