@@ -1,4 +1,4 @@
-id,name,description,tooltip,script,image,spoilerLevel,rarity,
+id,name,description,tooltip,script,image,spoilerLevel,rarity,requiredMods,
 # id: Required. The id of the achievement. Must be unique. Prefix with your mod id.
 # name: Required. The name of the achievement.
 # description: Required. The description of the achievement. Use past tense ("Killed 10 ships"). Aim for one or two sentences.
@@ -14,6 +14,7 @@ id,name,description,tooltip,script,image,spoilerLevel,rarity,
 #     HIDDEN: Not shown at all until unlocked. This is intended for achievements that the player is unlikely to unlock easily, but may unlock rarely.
 #             Good for things that require luck.
 # rarity: Optional. COMMON, UNCOMMON, RARE, EPIC, LEGENDARY. Defaults to COMMON.
+# requiredMods: Optional. Comma-separated mod ids, e.g. "nexerelin, lw_lazylib". Achievement only loads if ALL are present. Use `MagicAchievementManager.getInstance().addAchievementSpecs` for fully customizable behavior.
 
 # Examples
 #magiclib_exampleSimple,"Example Regular Achievement","Created your first achievement.",,org.magiclib.achievements.ExampleSimpleAchievement,,VISIBLE,UNCOMMON

@@ -18,6 +18,14 @@ open class MagicAchievementSpec(
     var spoilerLevel: MagicAchievementSpoilerLevel,
     var rarity: MagicAchievementRarity,
 ) {
+    /**
+     * Mod IDs that must *all* be enabled for this achievement to load.
+     * Set from the `requiredMods` column of magic_achievements.csv.
+     *
+     * @since 1.5.8
+     */
+    var requiredMods: List<String> = emptyList()
+
     fun toJsonObject(): JSONObject {
         val json = JSONObject()
         json.put("modId", modId)

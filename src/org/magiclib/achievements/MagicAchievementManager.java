@@ -4,6 +4,7 @@ import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.Misc;
@@ -20,6 +21,7 @@ import org.magiclib.util.MagicVariables;
 import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Manages and tracks achievements.
@@ -30,7 +32,7 @@ import java.util.*;
  * Alternatively, call {@link #addAchievementSpecs(MagicAchievementSpec...)} in your mod plugin's onGameLoad() method.
  * <p>
  * Then, create a class that extends MagicAchievement and implement the detection logic.
- * You will need to call setComplete() and then saveChanges() to complete the achievement.
+ * Call completeAchievement() to complete the achievement.
  *
  * @since 1.3.0
  */
@@ -51,6 +53,17 @@ public class MagicAchievementManager {
     private final Map<String, MagicAchievement> achievements = new HashMap<>();
     private final Set<String> completedAchievementIdsThatUserHasBeenNotifiedFor = new HashSet<>();
     private boolean areAchievementsEnabled = true;
+    private final Set<MagicAchievementListener> achievementListeners = new CopyOnWriteArraySet<>();
+    /**
+     * Set whenever an achievement is completed. `updateLoadedAchievements then runs on the next campaign frame,
+     * because completions often happen while something is looping over the achievements.
+     */
+    private boolean isShouldLoadAchievementsCheckPending = false;
+    /**
+     * Achievement instances where {@link MagicAchievement#shouldLoad()} returned false, by spec id.
+     * Lets us reuse instances instead of re-instantiating them for each check.
+     */
+    private final Map<String, MagicAchievement> notLoadedAchievements = new HashMap<>();
 
     @NotNull
     public static MagicAchievementManager getInstance() {
@@ -185,6 +198,36 @@ public class MagicAchievementManager {
         }
     }
 
+    /**
+     * Adds a listener for when any achievement is completed.
+     * <p>
+     * Listeners aren't saved across game sessions. Add them in your mod plugin's <code>onApplicationLoad</code>.
+     *
+     * @since 1.5.8
+     */
+    public void addAchievementListener(@NotNull MagicAchievementListener listener) {
+        achievementListeners.add(listener);
+    }
+
+    /**
+     * @since 1.5.8
+     */
+    public void removeAchievementListener(@NotNull MagicAchievementListener listener) {
+        achievementListeners.remove(listener);
+    }
+
+    void notifyAchievementCompleted(@NotNull MagicAchievement achievement, @Nullable PersonAPI completedByPlayer) {
+        isShouldLoadAchievementsCheckPending = true;
+
+        for (MagicAchievementListener listener : achievementListeners) {
+            try {
+                listener.onAchievementCompleted(achievement, completedByPlayer);
+            } catch (Exception e) {
+                logger.warn("Achievement listener " + listener.getClass().getName() + " threw an error for achievement " + achievement.getSpecId(), e);
+            }
+        }
+    }
+
     @Nullable
     public MagicAchievementIntel getIntel() {
         try {
@@ -282,8 +325,19 @@ public class MagicAchievementManager {
      * @param isSaveGameLoaded Whether a save game is loaded. If true, calls {@link MagicAchievement#onSaveGameLoaded(boolean)} on all achievements.
      */
     public void reloadAchievements(boolean isSaveGameLoaded) {
+        // This does a full load check, remove any scheduled one.
+        isShouldLoadAchievementsCheckPending = false;
+
         // Generate fresh, unused achievements from the specs.
-        Map<String, MagicAchievement> generatedAchievementsById = generateAchievementsFromSpec(instance.achievementSpecs);
+        // Skip specs whose required mods are missing before loading their script class, which may depend on those mods.
+        // Any saved progress for them is kept below as an "unloaded" achievement.
+        Map<String, MagicAchievementSpec> specsWithRequiredMods = new HashMap<>();
+        for (MagicAchievementSpec spec : instance.achievementSpecs.values()) {
+            if (areRequiredModsEnabled(spec)) {
+                specsWithRequiredMods.put(spec.getId(), spec);
+            }
+        }
+        Map<String, MagicAchievement> generatedAchievementsById = generateAchievementsFromSpec(specsWithRequiredMods);
 
         // Load achievements already saved in Common and overwrite the generated ones with their data.
         JSONUtils.CommonDataJSONObject commonJson;
@@ -352,6 +406,21 @@ public class MagicAchievementManager {
             }
         }
 
+        // Swap achievements whose shouldLoad() returns false with unloaded ones that keep their progress.
+        notLoadedAchievements.clear();
+        for (Map.Entry<String, MagicAchievement> entry : generatedAchievementsById.entrySet()) {
+            MagicAchievement achievement = entry.getValue();
+
+            if (!(achievement instanceof MagicUnloadedAchievement) && !shouldLoad(achievement)) {
+                MagicAchievement unloaded = toUnloadedAchievement(achievement);
+
+                if (unloaded != null) {
+                    entry.setValue(unloaded);
+                    notLoadedAchievements.put(entry.getKey(), achievement);
+                }
+            }
+        }
+
         for (MagicAchievement achievement : achievements.values()) {
             achievement.onDestroyed();
         }
@@ -395,20 +464,10 @@ public class MagicAchievementManager {
         Map<String, MagicAchievement> newAchievementsById = new HashMap<>();
 
         for (MagicAchievementSpec spec : specs.values()) {
-            String script = spec.getScript();
-
-            if (script == null || script.isBlank()) {
-                script = MagicAchievement.class.getCanonicalName();
-            }
+            String script = getScriptClassName(spec);
 
             try {
-                final Class<?> commandClass = Global.getSettings().getScriptClassLoader().loadClass(script);
-                if (!MagicAchievement.class.isAssignableFrom(commandClass)) {
-                    throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
-                }
-
-                MagicAchievement magicAchievement = (MagicAchievement) MiscellaneousUtil.newInstance$MagicLib(commandClass);
-                magicAchievement.spec = spec;
+                MagicAchievement magicAchievement = createAchievement(spec);
                 newAchievementsById.put(spec.getId(), magicAchievement);
                 logger.info("Loaded achievement " + spec.getId() + " from " + spec.getModId() + " with script " + script + ".");
             } catch (Exception e) {
@@ -420,6 +479,164 @@ public class MagicAchievementManager {
         }
 
         return newAchievementsById;
+    }
+
+    private static @NotNull String getScriptClassName(@NotNull MagicAchievementSpec spec) {
+        String script = spec.getScript();
+        return script == null || script.isBlank() ? MagicAchievement.class.getCanonicalName() : script;
+    }
+
+    /**
+     * Creates a fresh, unused achievement from the spec's script class. Throws if the class can't be loaded.
+     */
+    private static @NotNull MagicAchievement createAchievement(@NotNull MagicAchievementSpec spec) throws Exception {
+        String script = getScriptClassName(spec);
+        final Class<?> commandClass = Global.getSettings().getScriptClassLoader().loadClass(script);
+        if (!MagicAchievement.class.isAssignableFrom(commandClass)) {
+            throw new RuntimeException(String.format("%s does not extend %s", commandClass.getCanonicalName(), MagicAchievement.class.getCanonicalName()));
+        }
+
+        MagicAchievement magicAchievement = (MagicAchievement) MiscellaneousUtil.newInstance$MagicLib(commandClass);
+        magicAchievement.spec = spec;
+        return magicAchievement;
+    }
+
+    private static boolean areRequiredModsEnabled(@NotNull MagicAchievementSpec spec) {
+        for (String modId : spec.getRequiredMods()) {
+            if (!Global.getSettings().getModManager().isModEnabled(modId)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static @NotNull List<String> parseRequiredMods(@NotNull String requiredModsCsv) {
+        List<String> requiredMods = new ArrayList<>();
+
+        for (String modId : requiredModsCsv.split(",")) {
+            if (!modId.isBlank()) {
+                requiredMods.add(modId.trim());
+            }
+        }
+
+        return requiredMods;
+    }
+
+    /**
+     * Spec ids whose shouldLoad() has thrown an exception.
+     */
+    private static final Set<String> shouldLoadErrorsLogged = new HashSet<>();
+
+    /**
+     * Calls {@link MagicAchievement#shouldLoad()} for the given achievement.
+     */
+    private static boolean shouldLoad(@NotNull MagicAchievement achievement) {
+        try {
+            return achievement.shouldLoad();
+        } catch (Exception e) {
+            if (shouldLoadErrorsLogged.add(achievement.getSpecId())) {
+                logger.warn("shouldLoad() threw an error for achievement " + achievement.getSpecId()
+                        + " from mod " + achievement.getModId() + ", so loading it. Further errors from this achievement won't be logged.", e);
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Returns an unloaded achievement holding the same spec and progress, or null if the progress couldn't be copied.
+     */
+    private static @Nullable MagicAchievement toUnloadedAchievement(@NotNull MagicAchievement achievement) {
+        JSONObject json = achievement.toJsonObject();
+        MagicUnloadedAchievement unloaded = new MagicUnloadedAchievement();
+
+        if (json == null || !unloaded.loadFromJsonObject(json)) {
+            logger.warn("Unable to copy progress of achievement " + achievement.getSpecId() + " from mod " + achievement.getModId() + ", so leaving it loaded.");
+            return null;
+        }
+
+        unloaded.spec = achievement.spec;
+        return unloaded;
+    }
+
+    /**
+     * Loads achievements whose {@link MagicAchievement#shouldLoad()} now returns true,
+     * and unloads ones where it now returns false.
+     * <p>
+     * Unlike {@link #reloadAchievements(boolean)}, achievements that stay loaded are left alone.
+     * Only call this from the campaign, outside any loop over {@link #achievements}.
+     */
+    private void updateLoadedAchievements() {
+        if (!areAchievementsEnabled) return;
+
+        for (MagicAchievementSpec spec : achievementSpecs.values()) {
+            // The mod list can't change while the game runs, so these never load.
+            if (!areRequiredModsEnabled(spec)) continue;
+
+            String specId = spec.getId();
+            MagicAchievement current = achievements.get(specId);
+            boolean isLoaded = current != null && !(current instanceof MagicUnloadedAchievement);
+
+            if (isLoaded) {
+                if (!shouldLoad(current)) {
+                    MagicAchievement unloaded = toUnloadedAchievement(current);
+
+                    if (unloaded != null) {
+                        current.onDestroyed();
+                        achievements.put(specId, unloaded);
+                        notLoadedAchievements.put(specId, current);
+                        logger.info("Unloaded achievement " + specId + " because shouldLoad() returned false.");
+                    }
+                }
+            } else {
+                MagicAchievement candidate = notLoadedAchievements.get(specId);
+
+                if (candidate == null) {
+                    try {
+                        candidate = createAchievement(spec);
+                    } catch (Exception e) {
+                        // Already logged when achievements were loaded.
+                        continue;
+                    }
+
+                    notLoadedAchievements.put(specId, candidate);
+                }
+
+                // Give it the latest saved progress before asking, so shouldLoad() can use it.
+                // Code may have changed the progress through the unloaded achievement.
+                if (current != null) {
+                    JSONObject json = current.toJsonObject();
+
+                    if (json == null) {
+                        continue;
+                    }
+
+                    // loadFromJsonObject adds to memory rather than replacing it.
+                    // The kept instance may still hold keys that were removed while it was unloaded.
+                    candidate.getAchievementMemory().clear();
+
+                    if (!candidate.loadFromJsonObject(json)) {
+                        continue;
+                    }
+
+                    candidate.spec = spec;
+                }
+
+                if (shouldLoad(candidate)) {
+                    notLoadedAchievements.remove(specId);
+                    achievements.put(specId, candidate);
+
+                    // Don't show an "unlocked" pop-up for progress from before it loaded.
+                    if (candidate.isComplete()) {
+                        completedAchievementIdsThatUserHasBeenNotifiedFor.add(specId);
+                    }
+
+                    candidate.onApplicationLoaded(candidate.isComplete());
+                    candidate.onSaveGameLoaded(candidate.isComplete());
+                    logger.info("Loaded achievement " + specId + " because shouldLoad() returned true.");
+                }
+            }
+        }
     }
 
     /**
@@ -473,7 +690,7 @@ public class MagicAchievementManager {
                     }
 
                     if (!skip) {
-                        newAchievementSpecs.add(new MagicAchievementSpec(
+                        MagicAchievementSpec spec = new MagicAchievementSpec(
                                 mod.getId(),
                                 mod.getName(),
                                 id,
@@ -484,7 +701,9 @@ public class MagicAchievementManager {
                                 image,
                                 spoilerLevel,
                                 rarity
-                        ));
+                        );
+                        spec.setRequiredMods(parseRequiredMods(item.optString("requiredMods", "")));
+                        newAchievementSpecs.add(spec);
                     }
                 } catch (Exception e) {
                     logger.warn("Unable to load achievement #" + i + " (" + id + ") in " + mod.getId() + " by " + mod.getAuthor().substring(0, 30) + " from file " + specsFilename, e);
@@ -557,6 +776,9 @@ public class MagicAchievementManager {
                 achievement.afterGameSave();
             }
         }
+
+        // After the save is written, so anything a newly loaded achievement adds isn't saved this time.
+        updateLoadedAchievements();
     }
 
     /**
@@ -570,6 +792,11 @@ public class MagicAchievementManager {
      */
     void advance(float amount) {
         if (!areAchievementsEnabled()) return;
+
+        if (isShouldLoadAchievementsCheckPending) {
+            isShouldLoadAchievementsCheckPending = false;
+            updateLoadedAchievements();
+        }
 
         // Call the advance method on all achievements.
         for (MagicAchievement achievement : achievements.values()) {
