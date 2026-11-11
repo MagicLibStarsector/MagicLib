@@ -162,6 +162,8 @@ tasks.withType<JavaCompile>().configureEach {
 kotlin {
     compilerOptions {
         javaParameters = true
+        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
     }
 }
 
