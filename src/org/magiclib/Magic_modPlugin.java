@@ -33,9 +33,10 @@ import java.util.UUID;
  */
 @SuppressWarnings("deprecation")
 public class Magic_modPlugin extends BaseModPlugin {
-    static {
-        IncompatibleModChecker.INSTANCE.check$MagicLib(); // Pause and crash as early as possible if a mod is incompatible.
-    } // TODO test on 0.98.5a // TODO, test with fast-render mod. Move to onApplicationLoad if needed. Remove suspend call if needed.
+    //static {
+    //    IncompatibleModChecker.INSTANCE.check$MagicLib(); // Pause and crash as early as possible if a mod is incompatible.
+    //}
+    // TODO... LEAVE THIS TO NUMAN TO FIX! // test on 0.98.5a // test with fast-render mod. Move to onApplicationLoad if needed. Remove suspend call if needed.
 
     ////////////////////////////////////////
     //                                    //
