@@ -26,15 +26,15 @@ internal object MemberMemoryManager {
     private fun getOrInitStore(): MemberMemoryStore {
         val memory = Global.getSector()?.memoryWithoutUpdate ?: return MemberMemoryStore()
 
-        var memberStore = memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
+        val memberStore = memory.get(SECTOR_MEMBER_MEMORY_KEY) as? MemberMemoryStore
             ?: MemberMemoryStore().also { memory.set(SECTOR_MEMBER_MEMORY_KEY, it) }
 
-        // TODO: Should be safe to remove on 0.98.5a
-        if(runCatching { memberStore.getMemberIDs() }.getOrNull() == null ) {
+        /*if (runCatching { memberStore.getMemberIDs() }.getOrNull() == null) {
             Global.getLogger(this.javaClass).warn("MemberMemoryStore had a null variable, creating new instance")
             memberStore = MemberMemoryStore()
             memory.set(SECTOR_MEMBER_MEMORY_KEY, memberStore)
-        }
+        }*/
+        
         return memberStore
     }
 

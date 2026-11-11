@@ -23,12 +23,6 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
     @Transient
     private var tempSummaryCount: Int? = null
-
-    //TODO: Remove on 0.98.5a
-    @Transient
-    @Deprecated("Use userNotifiedBountyIds instead")
-    private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
-
     /** One day between bounty board refreshes. */
     @Transient
     private val boardRefreshInterval: IntervalUtil = run {
