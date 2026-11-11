@@ -1196,9 +1196,16 @@ inline fun String.getTokenReplaced(entity: SectorEntityToken) = Misc.getTokenRep
 inline fun PersonAPI.getAdminSalary() = Misc.getAdminSalary(this)
 
 /**
+ * The officer's base salary.
+ *
  * @since 0.46.0
  */
-inline fun PersonAPI.getOfficerSalary(mercenary: Boolean = Misc.isMercenary(this)) = Misc.getOfficerSalary(this)
+inline fun PersonAPI.getOfficerSalary(mercenary: Boolean = Misc.isMercenary(this)) = Misc.getOfficerSalary(this, mercenary, false, false)
+
+/**
+ * @since 1.5.8
+ */
+inline fun PersonAPI.getOfficerSalary(mercenary: Boolean, checkIfInPopulatedSystem: Boolean, checkActive: Boolean) = Misc.getOfficerSalary(this, mercenary, checkIfInPopulatedSystem, checkActive)
 
 /**
  * MagicLib: Call on a variant id.

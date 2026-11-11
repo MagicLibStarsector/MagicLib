@@ -66,8 +66,9 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
 
         // Auto-size height
         tooltip.heightSoFar += buttonHeight + 22f
-        scrollingPanel.height = tooltip.heightSoFar
-        tooltip.height = tooltip.heightSoFar
+        // Set through position: since 0.98.5a, UIComponentAPI has its own read-only getHeight(), which hides MagicLib's settable `height` extension.
+        scrollingPanel.position.setSize(scrollingPanel.position.width, tooltip.heightSoFar)
+        tooltip.position.setSize(tooltip.position.width, tooltip.heightSoFar)
 
         scrollingPanel.addUIElement(tooltip).inTL(0f, 0f)
         scrollerTooltip.addCustom(scrollingPanel, 0f).position.inTL(0f, 0f)
