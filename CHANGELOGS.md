@@ -90,6 +90,7 @@
 - Improve bounty plot course targeting so it will show up in more situations.
 - The ML_bounty faction is now set as hostile to the player by default.
 - Fix a crash that occurs when clicking a bounty which is in a constellation with a star system that has a null primary star.
+- Fix bounty fleets autofitting after loading a save when they were configured not to. (Reported by |_PHOENIX_| on the forums)
 
 ### MagicPaintjobs
 - Fix the paintjob unlock notifier, as it didn't appear to be working.
