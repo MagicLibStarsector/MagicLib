@@ -705,7 +705,7 @@ public class MagicFleetBuilder {
             //attempt at keeping the variants intact
             if (!autofit) {
                 ship.getVariant().addTag(Tags.TAG_NO_AUTOFIT);
-                ship.getVariant().setSource(VariantSource.STOCK); // Prevents the no_autofit tag from being dropped on save and thus removed on load, losing the tag.
+                ship.getVariant().setSource(VariantSource.REFIT); // Prevents the no_autofit tag from being dropped on save and thus removed on load, losing the tag.
                 // Ideally the source shouldn't need to be REFIT if we got an unmodified variant from SettingsAPI.getVariant, it should be STOCK to reduce the size of the save file.
                 //    However, I couldn't find a way to force no autofit while keeping the source STOCK that works in all contexts.
                 //    Maybe an additional source added to the base-game would work, e.g. [VariantSource.STOCK_NO_AUTOFIT]. functions like STOCK but when loaded in save, the no_autofit tag is automatically added.

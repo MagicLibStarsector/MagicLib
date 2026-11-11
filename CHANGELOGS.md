@@ -9,7 +9,7 @@
 - Add 'FLEET_IGNORED_BY_OTHER_FLEETS' to bounty fleets on creation to prevent bounties from being attacked by other random fleets. (Please let me know if this causes odd functionality somewhere)
 - Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
 - Make bounties intended to spawn CLOSE spawn closer to the core worlds instead of very far away.
-- While your fleet is in the same system as a bounty's fleet, its intel and map marker show the exact location. LunaLib setting `magiclib_bountyLocationRevealInSystem`, default on, turns this off.
+- While your fleet is in the same system as a bounty's fleet, its intel and map marker show the exact location. Disabled by default. Turn it on using the LunaLib setting `magiclib_bountyLocationRevealInSystem`.
 - The MagicLib_ResetBounty command now accepts 'all' as a parameter; this automatically resets every bounty.
 
 ### MagicPaintjobs
@@ -70,7 +70,6 @@
 - Gave the errorShipVariant a paintjob and tag to indicate that it was made in error without ruining immersion.
 - Report variants with missing elements (weapons, hull-mods, fighters) onApplicationLoad, and specify what is missing. This helps users identify crashes before they happen, from variants being created in-game with non-existent elements.
 - Added a space in front of the mod name in mod_info.json to give MagicLib first spot in load order.
-- Added "magiclib_modConflicts" field to mod_info.json. If any mod ID in this list is enabled, prevent the game from completing its loading process and explain why.
 - Added some of the new Misc functions to MiscExt.kt from 0.97a and 0.98a
 - Remove MagicLib-Kotlin.jar and moved all relevant code into MagicLib.jar. No changes need to be made to existing code relying on MagicLib.
 - MagicLib now builds using Gradle.

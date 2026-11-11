@@ -109,6 +109,9 @@ class ExplosionOcclusionRaycast : DamageTakenModifier {
             return explosionMap
         }
 
+        // Armor modules don't update their positions every tick, so do it manually
+        allInRange.forEach { it.exactBounds?.update(it.location, it.facing) }
+
         // blockingModules stop a ray outright. All other modules still take a hit when a ray crosses them, but the ray isn't blocked and continues on to whatever's behind it.
         val blockingModules = allInRange.filterNot { it.hasTag(PASS_THROUGH_OCCLUSION) }.toSet()
 
