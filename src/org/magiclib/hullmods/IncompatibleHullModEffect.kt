@@ -47,7 +47,5 @@ class IncompatibleHullModEffect(
 
     override fun getRequiredItem(): CargoStackAPI? = unwrapped.requiredItem
     override fun applyEffectsAfterShipAddedToCombatEngine(ship: ShipAPI?, id: String?) = unwrapped.applyEffectsAfterShipAddedToCombatEngine(ship, id)
-
-    // TODO: do on 0.98.5
-    // override fun applyEffectsAfterShipCreation2ndPass(ship: ShipAPI?, id: String?) = unwrapped.applyEffectsAfterShipCreation2ndPass(ship, id)
+    override fun applyEffectsAfterShipCreation2ndPass(ship: ShipAPI?, id: String?) = unwrapped.applyEffectsAfterShipCreation2ndPass(ship, id)
 }
