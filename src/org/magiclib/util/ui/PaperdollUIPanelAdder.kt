@@ -21,7 +21,6 @@ import org.magiclib.kotlin.internal.ExtendableCustomUIPanelPlugin.Companion.Cust
 import org.magiclib.kotlin.internal.ExtendableCustomUIPanelPlugin.Companion.anchorInBottomLeftOfParent
 import org.magiclib.kotlin.internal.centerX
 import org.magiclib.kotlin.internal.centerY
-import org.magiclib.kotlin.internal.getChildrenCopy
 import org.magiclib.util.internal.MiscellaneousUtil.armorAtCell
 import org.magiclib.util.internal.MiscellaneousUtil.interpolateColorNicely
 import org.magiclib.util.internal.MiscellaneousUtil.weakestArmorRegion
@@ -54,7 +53,7 @@ class PaperdollUIPanelAdder: BaseEveryFrameCombatPlugin() {
         val state = AppDriver.getInstance().currentState as? CombatState ?: return
         val shipInfo = state.invoke("getShipInfo") as UIPanelAPI
 
-        val uiElements = shipInfo.getChildrenCopy()
+        val uiElements = shipInfo.childrenCopy2
         if (uiElements.any { it is CustomPanelAPI && it.plugin is ExtendableCustomUIPanelPlugin }) return // return if added
         val shipField = shipInfo.getFieldsMatching(fieldAssignableTo = ShipAPI::class.java)[0]
 

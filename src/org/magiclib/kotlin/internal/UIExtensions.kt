@@ -131,10 +131,10 @@ internal var UIComponentAPI.yAlignOffset: Float
     get() = invoke(this.position, "getYAlignOffset") as Float
     set(yOffset) { this.position.setYAlignOffset(yOffset) }
 
-internal fun UIPanelAPI.getChildrenCopy(): List<UIComponentAPI> {
-    @Suppress("UNCHECKED_CAST")
-    return invoke(this, "getChildrenCopy") as List<UIComponentAPI>
-}
+//internal fun UIPanelAPI.getChildrenCopy(): List<UIComponentAPI> {
+//    @Suppress("UNCHECKED_CAST")
+//    return invoke(this, "getChildrenCopy") as List<UIComponentAPI>
+//}
 
 internal fun UIPanelAPI.getChildrenNonCopy(): List<UIComponentAPI> {
     @Suppress("UNCHECKED_CAST")
@@ -142,12 +142,12 @@ internal fun UIPanelAPI.getChildrenNonCopy(): List<UIComponentAPI> {
 }
 
 internal fun UIPanelAPI.findChildWithMethod(methodName: String): UIComponentAPI? {
-    return getChildrenCopy().find { ReflectionUtils.getMethodsMatching(it, methodName).isNotEmpty() }
+    return childrenCopy2.find { ReflectionUtils.getMethodsMatching(it, methodName).isNotEmpty() }
 }
 
-internal fun UIPanelAPI.clearChildren() {
-    invoke(this, "clearChildren")
-}
+//internal fun UIPanelAPI.clearChildren() {
+//    invoke(this, "clearChildren")
+//}
 
 internal fun TooltipMakerAPI.addTooltip(
     to: UIComponentAPI,

@@ -19,7 +19,6 @@ import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.kotlin.internal.findChildWithMethod
-import org.magiclib.kotlin.internal.getChildrenCopy
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.paintjobs.appliers.MagicPaintjobApplierUtils.isIdle
 
@@ -159,8 +158,8 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
 
         val innerPanel = centerTooltip?.invoke("getInnerPanel") as? UIPanelAPI ?: return
 
-        val fleetList1 = innerPanel.getChildrenCopy().find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
-        val fleetList2 = innerPanel.getChildrenCopy().findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+        val fleetList1 = innerPanel.childrenCopy2.find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+        val fleetList2 = innerPanel.childrenCopy2.findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
 
         //, if (centerTooltip is FleetMemberRecoveryDialog) 1 else 0)
         if(fleetList1 != null)
@@ -211,11 +210,11 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
 
         val visual = ui.currentInteractionDialog.visualPanel as? UIPanelAPI ?: return
 
-        val topRightPanel = visual.getChildrenCopy().findLast { it.getFieldsMatching(type = FleetEncounterContextPlugin::class.java).isNotEmpty() } as? UIPanelAPI ?: return
-        val topRightFleetPanel = (topRightPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)
-            ?.getChildrenCopy()?.getOrNull(0) as? UIPanelAPI ?: return // Scroller
-        val topRightPlayerFleet = (topRightFleetPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
-        val topRightEnemyFleet = (topRightFleetPanel.getChildrenCopy().getOrNull(1) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
+        val topRightPanel = visual.childrenCopy2.findLast { it.getFieldsMatching(type = FleetEncounterContextPlugin::class.java).isNotEmpty() } as? UIPanelAPI ?: return
+        val topRightFleetPanel = (topRightPanel.childrenCopy2.getOrNull(0) as? UIPanelAPI)
+            ?.childrenCopy2?.getOrNull(0) as? UIPanelAPI ?: return // Scroller
+        val topRightPlayerFleet = (topRightFleetPanel.childrenCopy2.getOrNull(0) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
+        val topRightEnemyFleet = (topRightFleetPanel.childrenCopy2.getOrNull(1) as? UIPanelAPI)?.invoke("getAllLists") as? List<*> ?: return
 
         topRightPlayerFleet.forEach {
             if (it !is UIComponentAPI) return@forEach
@@ -271,7 +270,7 @@ internal class MagicPaintjobCampaignApplier : EveryFrameScript, RefitScreenListe
 
         val tooltipPanel = tooltipManager!!.getFieldsMatching(type = StandardTooltipV2::class.java).getOrNull(0)?.get(tooltipManager) as? UIPanelAPI
             ?: return
-        val shipList = (tooltipPanel.getChildrenCopy().getOrNull(0) as? UIPanelAPI)?.findChildWithMethod("turnOffCRandHullBars")
+        val shipList = (tooltipPanel.childrenCopy2.getOrNull(0) as? UIPanelAPI)?.findChildWithMethod("turnOffCRandHullBars")
             ?: return
 
         MagicPaintjobApplierUtils.applyPaintjobsToShipList(shipList, true)

@@ -21,7 +21,6 @@ import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
 import org.magiclib.kotlin.internal.findChildWithMethod
-import org.magiclib.kotlin.internal.getChildrenCopy
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.paintjobs.appliers.MagicPaintjobApplierUtils.getScreenPanel
 import java.awt.Color
@@ -96,8 +95,8 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
         */
 
         val innerPanel = centerTooltip.invoke("getInnerPanel") as? UIPanelAPI ?: return
-        val fleetList1 = innerPanel.getChildrenCopy().find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
-        val fleetList2 = innerPanel.getChildrenCopy().findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+        val fleetList1 = innerPanel.childrenCopy2.find { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
+        val fleetList2 = innerPanel.childrenCopy2.findLast { it.getMethodsMatching("turnOffCRandHullBars").isNotEmpty() }
 
         //val fleetList3 = centerTooltip.getFieldsMatching(type = fleetList1.javaClass).getOrNull(0)?.get(centerTooltip) as? UIPanelAPI
         //val fleetList4 = centerTooltip.getFieldsMatching(type = fleetList1.javaClass).getOrNull(1)?.get(centerTooltip) as? UIPanelAPI

@@ -25,7 +25,7 @@ internal object MagicPaintjobRefitPanelCreator {
         val hullmodsPanel = statsAndHullmodsPanel.findChildWithMethod("removeNotApplicableMods") as? UIPanelAPI ?: return
 
         val fleetMember = refitTab.getCurrentMember()
-        val existingElements = hullmodsPanel.getChildrenCopy()
+        val existingElements = hullmodsPanel.childrenCopy2
         val lastElement = existingElements.lastOrNull() ?: return // if children is empty, return
 
         val paintjobButton = existingElements.filterIsInstance<ButtonAPI>().firstOrNull { button ->

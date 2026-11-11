@@ -6,12 +6,9 @@ import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.combat.entities.Ship
-import com.fs.starfarer.title.TitleScreenState
-import com.fs.state.AppDriver
 import org.magiclib.ReflectionUtils
 import org.magiclib.ReflectionUtils.getConstructorsMatching
 import org.magiclib.kotlin.internal.findChildWithMethod
-import org.magiclib.kotlin.internal.getChildrenCopy
 import org.magiclib.util.reflection.UIFinder
 import org.magiclib.util.reflection.boxed.BoxedRefitTab
 
@@ -35,13 +32,13 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
         if (SHIP_PREVIEW_CLASS != null) return
 
         val missionWidget = newCoreUI.findChildWithMethod("getMissionList") as? UIPanelAPI ?: return
-        val holographicBG = missionWidget.getChildrenCopy()[1] // 2 of the same class in the tree here
+        val holographicBG = missionWidget.childrenCopy2[1] // 2 of the same class in the tree here
 
         val missionDetail = holographicBG.let {
             ReflectionUtils.invoke(it, "getCurr")
         } as? UIPanelAPI ?: return
 
-        val missionShipPreview = missionDetail.getChildrenCopy().find {
+        val missionShipPreview = missionDetail.childrenCopy2.find {
             it.javaClass.getConstructorsMatching(parameterTypes = arrayOf(missionDetail.javaClass)).isNotEmpty()
         } as? UIPanelAPI ?: return
 

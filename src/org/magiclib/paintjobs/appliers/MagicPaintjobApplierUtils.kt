@@ -18,12 +18,6 @@ import org.magiclib.ReflectionUtils.get
 import org.magiclib.ReflectionUtils.getFieldsMatching
 import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.ReflectionUtils.invoke
-import org.magiclib.kotlin.internal.getChildrenCopy
-import org.magiclib.kotlin.internal.height
-import org.magiclib.kotlin.internal.parent
-import org.magiclib.kotlin.internal.width
-import org.magiclib.kotlin.internal.x
-import org.magiclib.kotlin.internal.y
 import org.magiclib.paintjobs.MagicPaintjobManager
 import org.magiclib.paintjobs.MagicPaintjobSpec
 import org.magiclib.util.api.getModules
@@ -49,8 +43,8 @@ internal object MagicPaintjobApplierUtils {
         val tempPanel = Global.getSettings().createCustom(width, height, null)
         val tempTMAPI = tempPanel.createUIElement(width, height, false)
         tempTMAPI.addImage(imageSpritePath, width, height, 0f)
-        val tempTMAPIsUIPanel = tempTMAPI.getChildrenCopy()[0] as UIPanelAPI
-        val image = tempTMAPIsUIPanel.getChildrenCopy()[0]
+        val tempTMAPIsUIPanel = tempTMAPI.childrenCopy2[0] as UIPanelAPI
+        val image = tempTMAPIsUIPanel.childrenCopy2[0]
 
         this.addComponent(image)
         return image
@@ -71,7 +65,7 @@ internal object MagicPaintjobApplierUtils {
         if(forceUpdateShinyIcon && members.isNotEmpty()) {
             // Remove all shiny icons
             val memberButton = shipList.invoke("getButtonForMember", members[0]) as? ButtonAPI ?: return
-            memberButton.parent?.getChildrenCopy()?.toList()?.forEach { child ->
+            memberButton.parent?.childrenCopy2?.toList()?.forEach { child ->
                 if(child.getMethodsMatching(name = "isTexClamp").isNotEmpty()) {
                     memberButton.parent?.removeComponent(child)
                 }
