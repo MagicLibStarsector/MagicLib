@@ -128,20 +128,20 @@ object UIFinder {
             if (codex != null)
                 return codex
 
+            if (gameState == GameState.CAMPAIGN && Global.getSector()?.campaignUI?.getActualCurrentTab() == CoreUITabId.FLEET) {
+                //F2 while hovering over ship in the fleet screen. Clicking the question mark in the fleet screen. Does not include hovering over the question mark and pressing F2, that is handled differently for some reason.
+                val coreUI = getCoreUI() as? UIPanelAPI
+
+                val codex = coreUI?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
+                if (codex != null) return codex
+            }
+
+            //Check for the codex that opens when clicking a ship in the title-screen missions.
+            if (gameState == GameState.TITLE) {
+                return getScreenPanel()?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
+            }
+
             //Codex button in main menu and ESC menu
-            return getScreenPanel()?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
-        }
-
-        if (gameState == GameState.CAMPAIGN && Global.getSector()?.campaignUI?.getActualCurrentTab() == CoreUITabId.FLEET) {
-            //F2 while hovering over ship in the fleet screen. Clicking the question mark in the fleet screen. Does not include hovering over the question mark and pressing F2, that is handled differently for some reason.
-            val coreUI = getCoreUI() as? UIPanelAPI
-
-            val codex = coreUI?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
-            if (codex != null) return codex
-        }
-
-        //Check for the codex that opens when clicking a ship in the title-screen missions.
-        if (gameState == GameState.TITLE) {
             return getScreenPanel()?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
         }
 
