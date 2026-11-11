@@ -51,6 +51,10 @@
 ### MagicSubsystems
 - Added FighterAIFormation as a MagicDroneSubsystem formation. This formation gives the drone base-game fighter ai, and allows the modder to set behavior such as ENGAGE or REGROUP.
   
+### MagicAchievements
+- Added `MagicAchievementSpec.requiredMods` to specify mod IDs that must all be enabled for an achievement to load.
+- Added `MagicAchievementManager.addAchievementListener`.
+
 ### Miscellaneous
 - Moved a large amount of code from the 0.98a Starsector mod FleetBuilder into MagicLib.
   * See util.api for all of the new extensions and functions added.
