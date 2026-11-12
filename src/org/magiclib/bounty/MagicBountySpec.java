@@ -1,3 +1,4 @@
+
 package org.magiclib.bounty;
 
 import com.fs.starfarer.api.campaign.FleetAssignment;
@@ -14,6 +15,12 @@ import java.util.Map;
  * The code representation of a bounty json definition.
  */
 public class MagicBountySpec {
+
+    /**
+     * The id of the bounty as specified in the json file.
+     */
+    @NotNull
+    public String id;
 
     /*
      * trigger parameters
@@ -161,13 +168,39 @@ public class MagicBountySpec {
      */
     public String job_pick_script;
     /**
-     * optional, MemKey set to false is added when accepting the job, set to true if the job is sucessful
+     * MemKey set to false is added when accepting the job, set to true if the job is sucessful
      */
+    @NotNull
     public String job_memKey;
     /**
      * optional, can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
      */
     public String job_conclusion_script;
+    /**
+     * optional, Control when this job is accepted
+     * null: Default behavior. Accepted on player choice.
+     * "always": Always accept when bounty can show.
+     * "personal": Bounty accepts automatically in similar fashion to vanilla. A 25% chance once per day (~25%), no more than the maximum magic personal bounty count.
+     * "seen": Accepts automatically when the bounty is seen by the player fleet. Otherwise, remains unaccepted. Note, this will automatically place the bounty fleet into the campaign upon being possible to be shown to the player.
+     */
+    @Nullable
+    public String job_auto_accept;
+    /**
+     * optional, Control whether this job should be repeatable even after it ends.
+     * null: Default behavior. If this bounty is completed, expires, or is dismissed at any time. This bounty can never be taken again.
+     * "always": This bounty can be infinitely repeated even after being destroyed or despawned for any reason.
+     * "if_expired": This bounty only repeats if the bounty end reason is 'ExpiredAfterAccepting' or 'ExpiredWithoutAccepting'
+     * "if_fail": This bounty only repeats if the bounty end reason is not 'Succeeded' or 'Dismissed'
+     */
+    @Nullable
+    public String job_repeatable;
+
+    /**
+     * Whether this job should be visible to the player in the bounty board.
+     * Default: true
+     */
+    public boolean show_in_bounty_board;
+
     /**
      * existing fleet
      * if non empty, the bounty will be placed on the existing fleet with that memkey. OVERRIDES EVERYTHING AFTER!
@@ -214,7 +247,7 @@ public class MagicBountySpec {
      */
     public int target_elite_skills;
     /**
-     * GENERIC, PHASE, CARRIER, ANY from OfficerManagerEvent.SkillPickPreference
+     * ANY from OfficerManagerEvent.SkillPickPreference
      */
     public OfficerManagerEvent.SkillPickPreference target_skill_preference;
     /**
@@ -262,6 +295,10 @@ public class MagicBountySpec {
      * default to false, prevents the enemy from retreating
      */
     public boolean fleet_no_retreat;
+    /**
+     * If not empty, the fleet will be given the memory keys specified here with them set to true
+     */
+    public List<String> fleet_memory_flags;
     /**
      * PASSIVE, GUARDED, AGGRESSIVE, ROAMING, default to GUARDED (campaign.FleetAssignment.orbit_aggressive)
      */
@@ -315,7 +352,13 @@ public class MagicBountySpec {
      */
     public boolean location_defaultToAnyEntity;
 
+    /**
+     * mod id of the mod that created this bounty. This is automatically added by the bounty loader and thus does not need to be specified in the bounty's JSON.
+     */
+    public String source_mod_id;
+
     public MagicBountySpec(
+            String id,
             List<String> trigger_market_id,
             List<String> trigger_marketFaction_any,
             boolean trigger_marketFaction_alliedWith,
@@ -356,6 +399,9 @@ public class MagicBountySpec {
             String job_pick_script,
             String job_memKey,
             String job_conclusion_script,
+            String job_auto_accept,
+            String job_repeatable,
+            boolean show_in_bounty_board,
             String existing_target_memkey,
             String target_importantPersonId,
             String target_first_name,
@@ -384,6 +430,7 @@ public class MagicBountySpec {
             float fleet_composition_quality,
             boolean fleet_transponder,
             boolean fleet_no_retreat,
+            List<String> fleet_memory_flags,
             FleetAssignment fleet_behavior,
             String fleet_attitude,
             String fleet_musicSetId,
@@ -395,8 +442,10 @@ public class MagicBountySpec {
             List<String> location_entities,
             boolean location_prioritizeUnexplored,
             //boolean location_defaultToAnySystem,
-            boolean location_defaultToAnyEntity
+            boolean location_defaultToAnyEntity,
+            String source_mod_id
     ) {
+        this.id = id;
         this.trigger_market_id = trigger_market_id;
         this.trigger_marketFaction_any = trigger_marketFaction_any;
         this.trigger_marketFaction_alliedWith = trigger_marketFaction_alliedWith;
@@ -510,6 +559,9 @@ public class MagicBountySpec {
         this.job_pick_script = job_pick_script;
         this.job_memKey = job_memKey;
         this.job_conclusion_script = job_conclusion_script;
+        this.job_auto_accept = job_auto_accept;
+        this.job_repeatable = job_repeatable;
+        this.show_in_bounty_board = show_in_bounty_board;
         this.existing_target_memkey = existing_target_memkey;
         this.target_importantPersonId = target_importantPersonId;
         this.target_first_name = target_first_name;
@@ -538,6 +590,7 @@ public class MagicBountySpec {
         this.fleet_composition_quality = fleet_composition_quality;
         this.fleet_transponder = fleet_transponder;
         this.fleet_no_retreat = fleet_no_retreat;
+        this.fleet_memory_flags = fleet_memory_flags;
         this.fleet_behavior = fleet_behavior;
         this.fleet_attitude = fleet_attitude_enum;
         this.fleet_musicSetId = fleet_musicSetId;
@@ -550,12 +603,14 @@ public class MagicBountySpec {
         this.location_prioritizeUnexplored = location_prioritizeUnexplored;
         //this.location_defaultToAnySystem = location_defaultToAnySystem;
         this.location_defaultToAnyEntity = location_defaultToAnyEntity;
+        this.source_mod_id = source_mod_id;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MagicBountySpec{");
-        sb.append("\ntrigger_market_id=").append(trigger_market_id);
+        sb.append("\nid=").append(id);
+        sb.append(", \ntrigger_market_id=").append(trigger_market_id);
         sb.append(", \ntrigger_marketFaction_any=").append(trigger_marketFaction_any);
         sb.append(", \ntrigger_marketFaction_alliedWith=").append(trigger_marketFaction_alliedWith);
         sb.append(", \ntrigger_marketFaction_none=").append(trigger_marketFaction_none);
@@ -595,6 +650,9 @@ public class MagicBountySpec {
         sb.append(", \njob_pick_script='").append(job_pick_script).append('\'');
         sb.append(", \njob_memKey='").append(job_memKey).append('\'');
         sb.append(", \njob_conclusion_script='").append(job_conclusion_script).append('\'');
+        sb.append(", \njob_auto_accept='").append(job_auto_accept).append('\'');
+        sb.append(", \njob_repeatable='").append(job_repeatable).append('\'');
+        sb.append(", \nshow_in_bounty_board=").append(show_in_bounty_board);
         sb.append(", \nexisting_target_memkey='").append(existing_target_memkey).append('\'');
         sb.append(", \ntarget_first_name='").append(target_first_name).append('\'');
         sb.append(", \ntarget_last_name='").append(target_last_name).append('\'');
@@ -622,6 +680,7 @@ public class MagicBountySpec {
         sb.append(", \nfleet_composition_quality=").append(fleet_composition_quality);
         sb.append(", \nfleet_transponder=").append(fleet_transponder);
         sb.append(", \nfleet_no_retreat=").append(fleet_no_retreat);
+        sb.append(", \nfleet_memory_flags=").append(fleet_memory_flags);
         sb.append(", \nfleet_behavior=").append(fleet_behavior);
         sb.append(", \nfleet_musicSetId=").append(fleet_musicSetId);
         sb.append(", \nlocation_marketIDs=").append(location_marketIDs);
@@ -632,6 +691,7 @@ public class MagicBountySpec {
         sb.append(", \nlocation_entities=").append(location_entities);
         sb.append(", \nlocation_prioritizeUnexplored=").append(location_prioritizeUnexplored);
         sb.append(", \nlocation_defaultToAnyEntity=").append(location_defaultToAnyEntity);
+        sb.append(", \nsource_mod_id=").append(source_mod_id);
         sb.append('}');
         return sb.toString();
     }

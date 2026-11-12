@@ -7,6 +7,7 @@
         "trigger_market_id": ["market_name"], # Default: no values. Can default to the other preferences if those are defined and the location doesn't exists due to Nexerelin random mode.
                                               # This beats all other conditions; a job will ALWAYS show in this market, even if other conditions fail.
         "trigger_marketFaction_any": ["faction"], # Default: no values. markets of these factions will show the bounty (if other conditions are met).
+                                                  # If the only specified option is "ALL", this will show up on every market (if other conditions are met).
         "trigger_marketFaction_alliedWith": true, # Default: false. if true, markets of all factions whose relationship is at least FAVORABLE to ANY ONE of the factions above will show the bounty (if other conditions are met).
         "trigger_marketFaction_none": ["other_faction"], # Default: no values. markets of factions listed here will never carry the bounty, regardless of other conditions.
         "trigger_marketFaction_enemyWith": false, # Default: false. If true, markets of all factions whose relationship is HOSTILE to EVERY ONE (ALL) of the factions above. Beware when using this parameter with multiple excluded factions.
@@ -78,7 +79,11 @@
         "job_item_reward": { # Default: no item rewards. Lists special items that will be added to the post-battle loot. First value is the item id, second is the number to give the player.
             # Using the same syntax as Console Commands, blueprints may be added. ["fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"]
             "item_A":1,
-            "ship_bp shipId": 1
+            "ship_bp shipId": 1,
+            # For elements that share IDs, such as the shrouded special items which share the exact same ID as their hullmod counterparts, prepend the string with "$itemType" to specify the item type.
+            # Avaliable item types ["$commodity", "$weapon", "$fighter", "$hullmod", "$special"]
+            "$special shrouded_lens":1,
+            "$hullmod shrouded_mantle":1
         },
         "job_type":"assassination", # Default: assassination.
                 # assassination: required only to disable the flagship, may recover it.
@@ -112,6 +117,20 @@
         "job_pick_script": "data.script.FancyScriptThatDoStuff", # Default: no script. Triggered after accepting, can be used to trigger further scripts when the mission is taken, for example you may want to have competing bounty hunters
         "job_memKey":"$jobMemKey",	# Defaults to "$bountyId", memKeys always start with "$". The specified memkey will be set to false when the job is accepted, then true if it is completed.
         "job_conclusion_script":"data.script.FancyScriptThatDoStuff", # Default: no script. Can be used to give additional rewards or add further consequences in case of failure using memkeys to check the outcome
+
+        "job_auto_accept": "always", # Default: null.
+                # Control when this job is accepted
+                # null: Default behavior. Accepted on player choice.
+                # "always": Always accept when the bounty is avaliable.
+                # "personal": Bounty accepts automatically in similar fashion to vanilla. A 25% chance once per day (~25%), no more than the maximum magic personal bounty count.
+                # "seen": Accepts automatically when the bounty is seen by the player fleet. Otherwise, remains unaccepted. Note, this will automatically place the bounty fleet in the campaign upon the bounty being avaliable.
+        "job_repeatable": "always", # Default: null.
+                # Control whether this job should be repeatable even after it ends.
+                # null: Default behavior. If this bounty is completed, expires, or is dismissed at any time. This bounty can never be taken again.
+                # "always": This bounty can be infinitely repeated even after being destroyed or despawned for any reason.
+                # "if_expired": This bounty only repeats if the bounty end reason is 'ExpiredAfterAccepting' or 'ExpiredWithoutAccepting'
+                # "if_fail": This bounty only repeats if the bounty end reason is not 'Succeeded' or 'Dismissed'
+        "show_in_bounty_board": true, # Default: true. Whether this job should be visible to the player in the bounty board.
 
         #TARGET EXISTING FLEET
 
@@ -160,22 +179,33 @@
         "fleet_name":"Fleet Name", # Default: no name.
         "fleet_faction": "ML_bounty", # Required. The faction id from [https://jaghaimo.github.io/starsector-api/classcom_1_1fs_1_1starfarer_1_1api_1_1impl_1_1campaign_1_1ids_1_1Factions.html] or a custom faction id.
         # MagicLib includes a utility bounty faction that is forced to be neutral to everyone but the player under the id ["ML_bounty"].
-        "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]
+        "fleet_flagship_variant":"buffalo2_FS", # Required. The variant ID to use for the Flagship. Can be a list of variants to choose randomly from: [variant1,variant2,variant3]. If a list, variants that do not exist are automatically excluded.
         # Variant files that use ships or weapons from third party mods that may or may not be installed can be put in [data\config\modFiles\magicBounty_variants\shipVariantId.variant] to avoid crashing on launch if said mods are absent. The bounty will need the proper mod requirements to be generated without issue.
         "fleet_flagship_name":"Flagship", # Default: Random.
         "fleet_flagship_alwaysRecoverable": true, # Default: false. Whether the flagship will be always recoverable. Allowing this will still let the player fail the bounty if they were not supposed to recover the flagship.
         "fleet_flagship_autofit": false, # Default: false. Whether the flagship will be autofitted. When false, the Flagship does not receive D-mods or S-mods from the quality override.
-		"fleet_preset_ships": { # Default: no presets. Preset fleet generated with the flagship. First value is the variant id, second is the number of them in the fleet.
-            "ship_variant1":1,
-            "ship_variant2":3,
-        },
+		"fleet_preset_ships": [ # Default: no presets. Defines fixed ship variants used to generate the fleet.
+            ["ship_variant1", 1], # Format: [variant_id, count]. Count defaults to 1 if omitted.
+            ["ship_variant2", 3],
+            ["ship_variant3"], # Adds one copy of this variant.
+            ["ship_variant4", "ship_variant5", "ship_variant6"], # Multiple variants: randomly picks one valid variant from the list. A valid variant is one that exists and does not contain missing elements.
+            ["$first_valid", "ship_variant7", "ship_variant8", "ship_variant9"], # Adding "$first_valid": Use the first valid variant instead of randomly selecting. Useful when you want a priority order among possible variants.
+            ["fake_variant"], # If none of the listed variants exist, the bounty will fail to load.
+            ["$optional", "fake_variant"], # Adding "$optional": Allows no ship to be selected if all variants are invalid, preventing a load failure.
+            ["$first_valid $optional", "fake_variant"], # Equivalent to combining "$first_valid" and "$optional".
+        ],
         "fleet_preset_autofit": true, # Default: false. Whether the preset ships will be autofitted. When false, the preset ships do not receive D-mods or S-mods from the quality override.
         "fleet_scaling_multiplier": 1, # Default: no scaling. Dynamic reinforcements to match that amount of player fleet DP, set to 0 to ignore.
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
         "fleet_composition_faction": "pirates", # Default: bounty fleet faction. Used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
         "fleet_composition_quality": 1, # Default: 1, use 2 for no Dmods.
         "fleet_transponder": false, # Default: true.
-		"fleet_no_retreat": false, #Default: false.
+		"fleet_no_retreat": false, #Default: false. When true, members of this fleet will never retreat in the combat layer.
+		"fleet_memory_flags": [ # When the bounty is accepted, set the specified memory keys to true on this fleet’s MemoryAPI
+            "$noRepImpact", # No rep impact when fighting this fleet
+            "$noShipRecovery", # No recovering any ships from this fleet.
+            "$cfai_makeAlwaysPursue", "$cfai_makeAggressive", # These two flags cause this fleet to almost always chase the player fleet in the campaign layer reguardless of if the player fleet is bigger/has higher FP.
+		],
         "fleet_behavior": "PASSIVE", # Default:"GUARDED". The fleet's behavior on the campaign layer. Options: ["PASSIVE", "GUARDED", "AGGRESSIVE", "ROAMING"].
         "fleet_attitude":"DEFAULT", # Default: depends on faction hostility. Options are ["HOSTILE", "NEUTRAL", "DEFAULT"]. DEFAULT or null means it defaults to the faction's attitude towards you.
         # The musicSetId to use for the battle, defaults to no custom music.

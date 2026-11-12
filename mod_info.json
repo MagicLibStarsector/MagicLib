@@ -1,12 +1,12 @@
 {
   "id": "MagicLib",
-  "name": "MagicLib",
+  "name": " MagicLib",
   "author": "Modding Community: Dark.Revenant, LazyWizard, Nicke, Originem, Rubi, Schaf-Unschaf, Snrasha, Tartiflette, Wisp, Wyvern...",
   "utility": "false",
   # Using the long version format lets the game correctly compare major/minor/patch versions.
-  "version": { "major": '1', "minor": '5', "patch": '6' },
+  "version": { "major": '1', "minor": '6', "patch": "1" },
   "description": "A collection of classes to aid modding. Not a mod in itself, but required by other mods.",
-  "gameVersion": "0.98a-RC7",
+  "gameVersion": "0.98.5a-RC4",
   "dependencies": [
     {
       "id": "lw_lazylib",
@@ -14,6 +14,6 @@
       # "version": "3.0.0" # Remove the specific version for future-proofing.
     }
   ],
-  "jars": [ "jars/MagicLib.jar", "jars/MagicLib-Kotlin.jar" ],
+  "jars": [ "jars/MagicLib.jar"],
   "modPlugin": "org.magiclib.Magic_modPlugin"
 }

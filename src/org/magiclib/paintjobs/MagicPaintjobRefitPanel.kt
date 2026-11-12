@@ -11,20 +11,24 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.loading.specs.HullVariantSpec
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
-import org.magiclib.ReflectionUtils
-import org.magiclib.internalextensions.*
-import org.magiclib.kotlin.*
-import java.awt.Color
-import org.magiclib.paintjobs.MagicPaintjobSelector.createPaintjobSelector
+import org.magiclib.kotlin.alphaf
+import org.magiclib.kotlin.bluef
+import org.magiclib.kotlin.greenf
+import org.magiclib.kotlin.internal.*
+import org.magiclib.kotlin.redf
 import org.magiclib.paintjobs.MagicPaintjobSelector.MagicPaintjobSelectorPlugin
+import org.magiclib.paintjobs.MagicPaintjobSelector.createPaintjobSelector
 import org.magiclib.util.MagicTxt
+import org.magiclib.util.reflection.boxed.BoxedRefitTab
+import java.awt.Color
 
 /**
  * @author Starficz
  */
 internal object MagicPaintjobRefitPanel {
     private const val BACKGROUND_ALPHA = 0.7f
-    internal class MagicPaintjobRefitPanelPlugin(private val refitTab: UIPanelAPI) : BaseCustomUIPanelPlugin() {
+
+    internal class MagicPaintjobRefitPanelPlugin(private val refitTab: BoxedRefitTab) : BaseCustomUIPanelPlugin() {
         lateinit var paintjobPanel: CustomPanelAPI
 
         override fun renderBelow(alphaMult: Float) {
@@ -63,11 +67,11 @@ internal object MagicPaintjobRefitPanel {
             GL11.glPopMatrix()
         }
 
-        private fun drawBorder(x1: Float, y1: Float, x2: Float, y2: Float){
-            GL11.glRectf(x1, y1, x2+1, y1-1)
-            GL11.glRectf(x2, y1, x2+1, y2+1)
-            GL11.glRectf(x1, y2, x1-1, y1-1)
-            GL11.glRectf(x2, y2, x1-1, y2+1)
+        private fun drawBorder(x1: Float, y1: Float, x2: Float, y2: Float) {
+            GL11.glRectf(x1, y1, x2 + 1, y1 - 1)
+            GL11.glRectf(x2, y1, x2 + 1, y2 + 1)
+            GL11.glRectf(x1, y2, x1 - 1, y1 - 1)
+            GL11.glRectf(x2, y2, x1 - 1, y2 + 1)
         }
 
         override fun processInput(events: MutableList<InputEventAPI>?) {
@@ -76,7 +80,8 @@ internal object MagicPaintjobRefitPanel {
                     paintjobPanel.parent?.removeComponent(paintjobPanel)
                     event.consume()
                 } else if (!event.isConsumed && (event.isKeyboardEvent || event.isMouseMoveEvent ||
-                            event.isMouseDownEvent || event.isMouseScrollEvent)) {
+                            event.isMouseDownEvent || event.isMouseScrollEvent)
+                ) {
                     event.consume()
                 }
             }
@@ -86,8 +91,10 @@ internal object MagicPaintjobRefitPanel {
         }
     }
 
-    internal fun createMagicPaintjobRefitPanel(refitTab: UIPanelAPI, refitPanel : UIPanelAPI,
-                                               width: Float, height: Float): CustomPanelAPI {
+    internal fun createMagicPaintjobRefitPanel(
+        refitTab: BoxedRefitTab,
+        width: Float, height: Float
+    ): CustomPanelAPI {
         val endPad = 6f
         val midPad = 5f
         val selectorsPerRow = 3
@@ -97,27 +104,27 @@ internal object MagicPaintjobRefitPanel {
         paintjobPlugin.paintjobPanel = paintjobPanel
 
         // borders are drawn outside of panel, so +2 needed to lineup scrollbar with border
-        val scrollerTooltip = paintjobPanel.createUIElement(width+2f, height, true)
+        val scrollerTooltip = paintjobPanel.createUIElement(width + 2f, height, true)
         scrollerTooltip.position.inTL(0f, 0f)
 
-        val shipDisplay = ReflectionUtils.invoke("getShipDisplay", refitPanel) as UIPanelAPI
-        val baseVariant = ReflectionUtils.invoke("getCurrentVariant", shipDisplay) as HullVariantSpec
+        val baseVariant = refitTab.getCurrentVariant() ?: return paintjobPanel
 
         val currentPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(baseVariant)
         val baseHullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(
-            (baseVariant as ShipVariantAPI).hullSpec, false)
+            (baseVariant as ShipVariantAPI).hullSpec, false
+        )
 
-        val selectorWidth = (paintjobPanel.width-(endPad*2+midPad*(selectorsPerRow-1)))/selectorsPerRow
+        val selectorWidth = (paintjobPanel.width - (endPad * 2 + midPad * (selectorsPerRow - 1))) / selectorsPerRow
         var firstInRow: UIPanelAPI? = null
         var prev: UIPanelAPI? = null
         val selectorPlugins = mutableListOf<MagicPaintjobSelectorPlugin>()
 
         (listOf(null) + baseHullPaintjobs).forEachIndexed { index, paintjobSpec ->
             // make panel
-            val selectorPanel = createPaintjobSelector(baseVariant, paintjobSpec, selectorWidth)
+            val selectorPanel = createPaintjobSelector(baseVariant as HullVariantSpec, paintjobSpec, selectorWidth)
             val selectorPlugin = selectorPanel.plugin as MagicPaintjobSelectorPlugin
             selectorPlugins.add(selectorPlugin)
-            if(currentPaintjob == paintjobSpec) {
+            if (currentPaintjob == paintjobSpec) {
                 selectorPlugin.isSelected = true
                 selectorPlugin.highlightFader.forceIn()
             }
@@ -127,55 +134,63 @@ internal object MagicPaintjobRefitPanel {
                 if (prev == null) {
                     pos.inTL(endPad, endPad)
                     firstInRow = selectorPanel
-                }
-                else if(index % selectorsPerRow == 0){
+                } else if (index % selectorsPerRow == 0) {
                     pos.belowLeft(firstInRow, midPad)
                     firstInRow = selectorPanel
-                }
-                else pos.rightOfTop(prev, midPad)
+                } else pos.rightOfTop(prev, midPad)
                 prev = selectorPanel
             }
 
             // add tooltip to locked paintjobs
-            if(!selectorPlugin.isUnlocked && !paintjobSpec?.unlockConditions.isNullOrBlank()){
+            if (!selectorPlugin.isUnlocked && !paintjobSpec?.unlockConditions.isNullOrBlank()) {
                 scrollerTooltip.addTooltip(selectorPanel, TooltipMakerAPI.TooltipLocation.BELOW, 250f) { tooltip ->
                     tooltip.addTitle(MagicTxt.getString("ml_mp_refit_locked"))
-                    tooltip.addPara(paintjobSpec!!.unlockConditions, 0f)
+                    tooltip.addPara(paintjobSpec.unlockConditions, 0f)
                 }
             }
         }
 
         // sync all the selectors, and apply the paintjob
         for (selectorPlugin in selectorPlugins) {
+            selectorPlugin.onHoverEnter {
+                Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 1f)
+            }
             selectorPlugin.onClick {
                 if (selectorPlugin.isUnlocked || Global.getSettings().isDevMode) {
+                    Global.getSoundPlayer().playUISound("ui_button_pressed", 1f, 1f)
                     selectorPlugins.forEach { it.isSelected = false }
                     selectorPlugin.isSelected = true
 
-                    if(selectorPlugin.paintjobSpec == null) MagicPaintjobManager.removePaintjobFromShip(baseVariant)
-                    else MagicPaintjobManager.applyPaintjob(baseVariant, selectorPlugin.paintjobSpec)
+                    if (selectorPlugin.paintjobSpec == null) {
+                        MagicPaintjobManager.removePaintjobFromShip(baseVariant)
+                    } else {
+                        MagicPaintjobManager.applyPaintjob(baseVariant, selectorPlugin.paintjobSpec)
+                    }
 
-                    baseVariant.moduleVariants?.values?.forEach { moduleVariant ->
+                    (baseVariant as ShipVariantAPI).stationModules?.keys?.forEach { moduleVariantID ->
+                        val moduleVariant = (baseVariant as ShipVariantAPI).getModuleVariant(moduleVariantID) ?: return@forEach
 
-                        if(selectorPlugin.paintjobSpec == null)
+                        if (selectorPlugin.paintjobSpec == null)
                             MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
-                        else{
-                            val moduleHullID = (moduleVariant as ShipVariantAPI).hullSpec.baseHullId
-                            MagicPaintjobManager.getPaintjobsForHull(moduleHullID).firstOrNull {
+                        else {
+                            val moduleHull = moduleVariant.hullSpec
+                            MagicPaintjobManager.getPaintjobsForHull(moduleHull).firstOrNull {
                                 it.paintjobFamily == selectorPlugin.paintjobSpec.paintjobFamily
-                            }?.let { MagicPaintjobManager.applyPaintjob(moduleVariant, it) }
+                            }?.let {
+                                MagicPaintjobManager.applyPaintjob(moduleVariant, it)
+                            }
                         }
                     }
-                    ReflectionUtils.invoke("syncWithCurrentVariant", refitPanel)
-                    ReflectionUtils.invoke("updateModules", shipDisplay)
-                    ReflectionUtils.invoke("updateButtonPositionsToZoomLevel", shipDisplay)
+                    refitTab.syncWithCurrentVariant()
+                    refitTab.updateModules()
+                    refitTab.updateButtonPositionsToZoomLevel()
                 }
             }
         }
 
         // add scroll at end after setting heightSoFar, needed when using addCustom to the tooltip
-        val rows = (baseHullPaintjobs.size/selectorsPerRow) + 1
-        scrollerTooltip.heightSoFar = endPad*2 + prev!!.height*rows + midPad*(rows-1)
+        val rows = (baseHullPaintjobs.size / selectorsPerRow) + 1
+        scrollerTooltip.heightSoFar = endPad * 2 + prev!!.height * rows + midPad * (rows - 1)
         paintjobPanel.addUIElement(scrollerTooltip)
         return paintjobPanel
     }

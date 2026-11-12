@@ -1,0 +1,259 @@
+package org.magiclib.paintjobs.appliers
+
+import com.fs.graphics.Sprite
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignUIAPI
+import com.fs.starfarer.api.combat.ShipVariantAPI
+import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.fleet.FleetMemberViewAPI
+import com.fs.starfarer.api.ui.ButtonAPI
+import com.fs.starfarer.api.ui.UIComponentAPI
+import com.fs.starfarer.api.ui.UIPanelAPI
+import com.fs.starfarer.campaign.fleet.CampaignShipEngineGlow
+import com.fs.starfarer.campaign.fleet.FleetMember
+import com.fs.starfarer.loading.specs.HullVariantSpec
+import com.fs.state.AppDriver
+import org.magiclib.ReflectionUtils
+import org.magiclib.ReflectionUtils.get
+import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.ReflectionUtils.getMethodsMatching
+import org.magiclib.ReflectionUtils.invoke
+import org.magiclib.paintjobs.MagicPaintjobManager
+import org.magiclib.paintjobs.MagicPaintjobSpec
+import org.magiclib.util.api.getModules
+import java.awt.Color
+
+internal object MagicPaintjobApplierUtils {
+    //val shinyIconSprite = "graphics/ui/icons/32x_star_circle.png"
+    val shinyIconSprite = "graphics/magic/icons/shiny_icon.png"
+    val shinyIconColor = Color(255, 255, 255)
+    val shinyIconOpacity = 1f
+
+    fun getScreenPanel(): UIPanelAPI? {
+        val state = AppDriver.getInstance().currentState
+        return state.invoke("getScreenPanel") as? UIPanelAPI
+    }
+
+    fun CampaignUIAPI.isIdle(): Boolean {
+        return currentInteractionDialog == null &&
+                !isShowingDialog &&
+                !isShowingMenu
+    }
+    private fun UIPanelAPI.addImage(imageSpritePath: String, width: Float, height: Float): UIComponentAPI {
+        val tempPanel = Global.getSettings().createCustom(width, height, null)
+        val tempTMAPI = tempPanel.createUIElement(width, height, false)
+        tempTMAPI.addImage(imageSpritePath, width, height, 0f)
+        val tempTMAPIsUIPanel = tempTMAPI.childrenCopy2[0] as UIPanelAPI
+        val image = tempTMAPIsUIPanel.childrenCopy2[0]
+
+        this.addComponent(image)
+        return image
+    }
+
+
+    fun applyPaintjobsToShipList(
+        shipList: UIComponentAPI,
+        showShinyIcon: Boolean = false,
+        forceUpdateShinyIcon: Boolean = false,
+        diffPositioning: Boolean = false,
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        val members = shipList.invoke("getMembers") as? List<FleetMemberAPI> ?: return
+
+        val paintJobMembers = members.filter { member -> MagicPaintjobManager.hasPaintjob(member) }
+
+        if(forceUpdateShinyIcon && members.isNotEmpty()) {
+            // Remove all shiny icons
+            val memberButton = shipList.invoke("getButtonForMember", members[0]) as? ButtonAPI ?: return
+            memberButton.parent?.childrenCopy2?.toList()?.forEach { child ->
+                if(child.getMethodsMatching(name = "isTexClamp").isNotEmpty()) {
+                    memberButton.parent?.removeComponent(child)
+                }
+            }
+        }
+
+        paintJobMembers.forEach { member ->
+            val memberIcon = shipList.invoke("getIconForMember", member) ?: return@forEach
+
+            if (showShinyIcon && MagicPaintjobManager.getCurrentShipPaintjob(member)?.isShiny == true) {
+                val memberButton = shipList.invoke("getButtonForMember", member) as? ButtonAPI ?: return
+                if (memberButton.customData == null || forceUpdateShinyIcon) { // Prevent multiple shiny icons from being applied to the same ship.
+                    val extraSize = 8f
+                    val width = memberButton.width + extraSize
+                    val height = memberButton.height + extraSize
+                    val background = memberButton.parent?.addImage(shinyIconSprite, width, height)
+                    background?.let {
+                        if(!diffPositioning) {
+                            background.position?.rightOfMid(memberButton, -width + extraSize / 2f)
+                        } else {
+                            val pos = memberButton.position
+                            val x: Float
+                            val y: Float
+                            val parent = memberButton.parent ?: return@let
+
+                            //x = pos.x - (pos.width - extraSize) / 2f
+                            //y = parent.height - pos.y - height/2f
+
+                            x = pos.x - parent.x - extraSize/2f
+                            y = pos.y - parent.y - extraSize/2f
+
+                            it.position.inBL(x, y)
+                        }
+                        it.opacity = shinyIconOpacity
+                        (it.invoke("getSprite") as Sprite).color = shinyIconColor
+                    }
+                    memberButton.parent?.invoke("sendToBottomWithinItself", background)
+                    memberButton.customData = "SIP" // Shiny Icon Applied
+                }
+            }
+
+            changeIconSprite(member, memberIcon)
+        }
+    }
+
+    /**
+     * By default, no logic happens if no paint-job is present. This causes issues when removing a paint-job as the paint-job will stay. Enable forceClear in that situation to get it to work anyway.
+     *
+     * forceClear is not enabled by default for optimization reasons.
+     */
+    fun changeIconSprite(member: FleetMemberAPI, memberIcon: Any, forceClear: Boolean = false) {
+
+        // Variant
+
+        val variantPaintJobSpec = MagicPaintjobManager.getCurrentShipPaintjob(member.variant)
+
+        if (variantPaintJobSpec != null || forceClear) {
+            val spriteFields = memberIcon.getFieldsMatching(type = Sprite::class.java)
+            val hullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(member.hullSpec, includeShiny = true, includeHidden = true)
+
+            val variantSpriteMatch = spriteFields.firstNotNullOfOrNull { field ->
+                val sprite = field.get(memberIcon) as? Sprite ?: return@firstNotNullOfOrNull null
+                val textureId = sprite.getFieldsMatching(name = "textureId").firstOrNull()?.get(sprite) as? String ?: return@firstNotNullOfOrNull null
+                val isMatch = textureId == member.hullSpec.spriteName || hullPaintjobs.any { it.spriteId == textureId }
+                if (isMatch) field to textureId else null
+            }
+            //val spriteDirect = memberIcon.getMethodsMatching(returnType = Sprite::class.java).firstOrNull()?.invoke(memberIcon) as? Sprite
+
+            val variantSpriteField = variantSpriteMatch?.first
+            val variantSpriteName = variantSpriteMatch?.second
+
+            if((variantPaintJobSpec != null && variantSpriteName != variantPaintJobSpec.spriteId) // Paint-job is present and sprite is not the correct one.
+                || (variantPaintJobSpec == null && variantSpriteName != member.hullSpec.spriteName)) { // Or paint-job is not present and sprite is not the correct one.
+
+                if (variantSpriteField != null)
+                    makeNewSpriteToReplace(variantPaintJobSpec?.spriteId ?: member.hullSpec.spriteName, variantSpriteField, memberIcon)
+            }
+
+            if (memberIcon is FleetMemberViewAPI) applyEngineColors(member, memberIcon, variantPaintJobSpec)
+        }
+
+        // Variant Modules
+
+        val modules = member.variant.getModules()
+
+        val modulePaintJobSpecs = modules.mapNotNull { (_, module) ->
+            MagicPaintjobManager.getCurrentShipPaintjob(module)
+        }
+        if (modulePaintJobSpecs.isNotEmpty() || forceClear) {
+
+            // Array should be a list of elements which each contain a Sprite, HullVariantSpec, and something obfuscated which seems to contain details on where the module is on its host variant.
+            fun isModuleList(list: List<*>): Boolean {
+                val first = list.firstOrNull() ?: return false
+                return first.getFieldsMatching(type = HullVariantSpec::class.java).isNotEmpty()
+            }
+
+            val iconModuleList = memberIcon
+                .getFieldsMatching(type = List::class.java)
+                .asSequence()
+                .mapNotNull { field -> field.get(memberIcon) as? List<*> }
+                .firstOrNull(::isModuleList)
+
+            iconModuleList?.forEach { iconModule ->
+                if(iconModule == null) return@forEach
+
+                val iconModuleFields = iconModule.getFieldsMatching()
+                val iconVariant = iconModule.get(type = HullVariantSpec::class.java) as? ShipVariantAPI
+                if (iconVariant != null) {
+                    val slotField = iconModuleFields.find { it.type != HullVariantSpec::class.java && it.type != Sprite::class.java } ?: return@forEach
+                    val slot = slotField.get(iconModule)?.get(type = String::class.java)
+
+                    val variant = modules[slot] ?: return@forEach
+
+                    val paintjob = MagicPaintjobManager.getCurrentShipPaintjob(variant)
+                    if (paintjob != null || forceClear) {
+                        val spriteField = iconModule.getFieldsMatching(type = Sprite::class.java).getOrNull(0)
+                        if (spriteField != null) {
+                            val sprite = spriteField.get(iconModule) as? Sprite ?: return@forEach
+                            val variantSpriteName = sprite.getFieldsMatching(name = "textureId").firstOrNull()?.get(sprite) as? String ?: return@forEach
+
+                            if((paintjob != null && variantSpriteName != paintjob.spriteId) // Paint-job is present and sprite is not the correct one.
+                                || (paintjob == null && variantSpriteName != variant.hullSpec.spriteName)) { // Or paint-job is not present and sprite is not the correct one.
+                                makeNewSpriteToReplace(paintjob?.spriteId ?: variant.hullSpec.spriteName, spriteField, iconModule) // Apply new spritef
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Decoration Weapons
+        // In this context, weapon rendering is done in CampaignFleetMemberView.renderWeapons. There, it creates a new sprite and assigns a new texture from the WeaponSpec every frame. This is done from a FleetMember input.
+        // No editable sprite is stored anywhere. This makes it very very hard to apply a paintjob.
+        /*
+        member.hullSpec.builtInWeapons.forEach { weapon ->
+            val paintjobFamily = MagicPaintjobManager.getCurrentShipPaintjob(member)?.paintjobFamily ?: return@forEach
+
+            val weaponSpec = member.variant.getWeaponSpec(weapon.key)
+            val weaponPaintjobs = MagicPaintjobManager.getPaintjobsForWeapon(weaponSpec.weaponId, paintjobFamily)
+            val weaponPaintjob = weaponPaintjobs.getOrNull(0) ?: return@forEach
+        }
+        */
+    }
+
+    private fun applyEngineColors(member: FleetMemberAPI, view: FleetMemberViewAPI, paintjob: MagicPaintjobSpec?) {
+        val spec = paintjob?.engineSpec
+        if (spec != null) {
+            (spec.contrailCampaignColor ?: spec.contrailColor)?.let {
+                view.contrailColor.base = it
+            }
+            (spec.campaignColor ?: spec.color)?.let {
+                view.engineColor.base = it
+                view.engineGlowColor.base = it
+            }
+        } else {
+            val default = CampaignShipEngineGlow(member as FleetMember, 1f)
+            default.contrailColor?.let {
+                view.contrailColor.base = it
+            }
+            default.color?.let {
+                view.engineColor.base = it
+                view.engineGlowColor.base = it
+            }
+        }
+    }
+
+    private fun makeNewSpriteToReplace(
+        newSpriteId: String,
+        onField: ReflectionUtils.ReflectedField,
+        onInstance: Any
+    ) {
+        val spriteToReplace = onField.get(onInstance) as? Sprite ?: return
+
+        val newSpriteAPI = Global.getSettings().getSprite(newSpriteId)?.takeIf { it.textureId != 0 } ?: run {
+            Global.getSettings().loadTexture(newSpriteId)
+            Global.getSettings().getSprite(newSpriteId)
+        }
+        if (newSpriteAPI == null || newSpriteAPI.textureId == 0) return
+        val newSprite = newSpriteAPI.getFieldsMatching(type = Sprite::class.java).getOrNull(0)?.get(newSpriteAPI) as? Sprite ?: return
+
+        newSprite.width = spriteToReplace.width
+        newSprite.height = spriteToReplace.height
+        newSprite.texWidth = spriteToReplace.texWidth
+        newSprite.texHeight = spriteToReplace.texHeight
+        newSprite.alphaMult = spriteToReplace.alphaMult
+        newSprite.centerX = spriteToReplace.centerX
+        newSprite.centerY = spriteToReplace.centerY
+
+        onField.set(onInstance, newSprite)
+    }
+}

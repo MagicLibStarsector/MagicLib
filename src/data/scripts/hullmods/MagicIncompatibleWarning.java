@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 import java.awt.*;
 import java.util.Locale;
 
-import static data.scripts.util.MagicTxt.getString;
-
 @Deprecated
 public class MagicIncompatibleWarning extends BaseHullMod {
 
@@ -27,10 +25,10 @@ public class MagicIncompatibleWarning extends BaseHullMod {
     }
 
 
-    private final String POST0 = getString("conflictTitle");
-    private final String POST1 = getString("conflictTxt1");
-    private final String POST2 = getString("conflictTxt2");
-    private final String POST3 = getString("conflictTxt3");
+    private final String POST0 = MagicTxt.getString("conflictTitle");
+    private final String POST1 = MagicTxt.getString("conflictTxt1");
+    private final String POST2 = MagicTxt.getString("conflictTxt2");
+    private final String POST3 = MagicTxt.getString("conflictTxt3");
     private final Color HL = Global.getSettings().getColor("hColor");
 
     @Override

@@ -7,9 +7,9 @@ import org.apache.log4j.Logger
 import org.lazywizard.lazylib.ext.logging.i
 import org.lwjgl.input.Keyboard
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.LunaWrapper
-import org.magiclib.LunaWrapperSettingsListener
-import org.magiclib.util.MagicSettings
+import org.magiclib.MagicUserSettings
+import org.magiclib.MagicSettingsListener
+import org.magiclib.util.MagicVariables
 
 object MagicSubsystemsManager {
     val log: Logger = Global.getLogger(MagicSubsystemsManager::class.java)
@@ -28,11 +28,7 @@ object MagicSubsystemsManager {
      */
     @JvmStatic
     fun initialize() {
-        reloadSettings()
-
-        if (lunaLibEnabled) {
-            LunaWrapper.addSettingsListener(SubsystemSettingsListener())
-        }
+        MagicUserSettings.addSettingsListener(MagicVariables.MAGICLIB_ID, listener = SubsystemSettingsListener())
     }
 
     /**
@@ -84,8 +80,8 @@ object MagicSubsystemsManager {
      */
     @JvmStatic
     private fun getSubsystemMapForShip(ship: ShipAPI): MutableMap<Class<out MagicSubsystem>, MagicSubsystem>? {
+        @Suppress("UNCHECKED_CAST")
         return ship.customData[CUSTOM_DATA_KEY] as? MutableMap<Class<out MagicSubsystem>, MagicSubsystem>?
-            ?: return null
     }
 
     @JvmStatic
@@ -128,27 +124,20 @@ object MagicSubsystemsManager {
     }
 
     fun reloadSettings() {
-        if (lunaLibEnabled) {
-            infoByDefault = LunaWrapper.getBoolean("MagicLib", "magiclib_subsystems_showInfoDefault") ?: true
-            infoHotkey = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_InfoKeyBind") ?: 23
-            hotkeyList = mutableListOf(
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind1") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind2") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind3") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind4") ?: 0,
-                LunaWrapper.getInt("MagicLib", "magiclib_subsystems_KeyBind5") ?: 0,
-            )
-                .filter { it > 0 }
+        infoByDefault = MagicUserSettings.getBoolean("MagicLib", "magiclib_subsystems_showInfoDefault", default = true)
+        infoHotkey = MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_InfoKeyBind", default = 23)
+        hotkeyList = mutableListOf(
+            MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_KeyBind1"),
+            MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_KeyBind2"),
+            MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_KeyBind3"),
+            MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_KeyBind4"),
+            MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_KeyBind5"),
+        )
+            .filter { it > 0 }
 
-            widgetOffsetX = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetX") ?: 0
-            widgetOffsetY = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_widgetOffsetY") ?: 0
-            infoAlphaFadeout = LunaWrapper.getInt("MagicLib", "magiclib_subsystems_infoTextFadeout") ?: 0
-        } else {
-            infoHotkey = MagicSettings.getInteger("MagicLib", "subsystemInfoKey") ?: 23
-            hotkeyList = MagicSettings.getList("MagicLib", "subsystemKeys")
-                .map { Keyboard.getKeyIndex(it) }
-                .filter { it != 0 }
-        }
+        widgetOffsetX = MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_widgetOffsetX")
+        widgetOffsetY = MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_widgetOffsetY")
+        infoAlphaFadeout = MagicUserSettings.getInt("MagicLib", "magiclib_subsystems_infoTextFadeout")
 
         log.i({ "Loaded hotkey list ${hotkeyList.joinToString { "," }}" })
     }
@@ -164,7 +153,7 @@ object MagicSubsystemsManager {
     }
 }
 
-class SubsystemSettingsListener : LunaWrapperSettingsListener {
+class SubsystemSettingsListener : MagicSettingsListener {
     override fun settingsChanged(modID: String) {
         MagicSubsystemsManager.reloadSettings()
     }

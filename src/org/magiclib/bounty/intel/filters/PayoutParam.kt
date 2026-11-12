@@ -1,4 +1,4 @@
-package org.magiclib.bounty.intel.filters
+/*package org.magiclib.bounty.intel.filters
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.ui.CustomPanelAPI
@@ -106,4 +106,4 @@ class PayoutFilter : ListFilter<BountyInfo, Int> {
     }
 
     override fun isActive(): Boolean = payoutMinimum > -1
-}
+}*/

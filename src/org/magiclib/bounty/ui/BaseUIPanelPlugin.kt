@@ -49,7 +49,7 @@ open class BaseUIPanelPlugin : CustomUIPanelPlugin {
                 c.blue / 255f,
                 c.alpha / 255f * (alphaMult * 1f)
             )
-            GL11.glRectf(pos!!.x, pos!!.y, pos!!.x + pos!!.width, pos!!.y + pos!!.height)
+            GL11.glRectf(pos.x, pos.y, pos.x + pos.width, pos.y + pos.height)
 
             GL11.glDisable(GL11.GL_BLEND)
             GL11.glPopMatrix()

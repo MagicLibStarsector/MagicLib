@@ -7,16 +7,18 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.opengl.GL11
-import org.magiclib.bounty.intel.filters.LocationFilter
+import org.magiclib.bounty.MagicBountyCoordinator
+import org.magiclib.bounty.intel.sorters.TogglePrimarySorter
 import org.magiclib.bounty.ui.BaseUIPanelPlugin
 import org.magiclib.bounty.ui.lists.ListItemUIPanelPlugin
-import org.magiclib.bounty.ui.lists.filtered.FilteredListPanelPlugin
-import org.magiclib.bounty.ui.lists.filtered.ListFilter
+import org.magiclib.bounty.ui.lists.sorted.ListSorter
+import org.magiclib.bounty.ui.lists.sorted.SortedListPanelPlugin
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.util.MagicTxt
 import java.awt.Color
+import kotlin.collections.forEach
 
-class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlugin<BountyInfo>(parentPanel) {
+class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin<BountyInfo>(parentPanel) {
     override val rowWidth
         get() = panelWidth - 4f
     override val rowHeight = 68f
@@ -27,11 +29,11 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
     private var selectedItem: BountyInfo? = null
     private var finalItem: BountyInfo? = null
 
-    override fun getApplicableFilters(): List<ListFilter<BountyInfo, *>> {
-        return listOf(LocationFilter())
+    override fun getApplicableSorters(): List<ListSorter<BountyInfo, *>> {
+        return listOf(TogglePrimarySorter())
     }
 
-    override fun getFiltersFromItem(item: BountyInfo): List<String> {
+    override fun getSortersFromItem(item: BountyInfo): List<String> {
         return listOf(item.getBountyType())
     }
 
@@ -41,9 +43,8 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
     }
 
     override fun shouldMakePanelForItem(item: BountyInfo): Boolean {
-        // Check `shouldShow` first because it doesn't ONLY check that,
-        // it also creates the ActiveBounty if it doesn't exist and should be shown.
-        return item.shouldShow() || item.shouldAlwaysShow()
+        val activeBounty = MagicBountyCoordinator.getInstance().getActiveBounty(item.getBountyId()) ?: return true
+        return activeBounty.spec.show_in_bounty_board
     }
 
     override fun createPanelForItem(tooltip: TooltipMakerAPI, item: BountyInfo): ListItemUIPanelPlugin<BountyInfo> {
@@ -55,9 +56,11 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
     }
 
     override fun layoutPanels(members: List<BountyInfo>): CustomPanelAPI {
-        finalItem = members.lastOrNull()
+        val validMembers = members.filter { shouldMakePanelForItem(it) }
+        getApplicableSorters().forEach { it.loadFromPersistentData(validMembers) }
+        finalItem = validMembers.maxByOrNull { it.getSortIndex() }
 
-        val outerPanelLocal = super.layoutPanels(members)
+        val outerPanelLocal = super.layoutPanels(validMembers)
 
         this.addListener {
             selectedItem = it
@@ -142,9 +145,12 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : FilteredListPanelPlug
         ListItemUIPanelPlugin<BountyInfo>(item) {
         private var wasHovered: Boolean = false
         private var wasSelected: Boolean = false
-        var baseBgColor: Color = Color(255, 255, 255, 0)
-        var hoveredColor: Color = Misc.getBasePlayerColor().setAlpha(75)
-        var selectedColor: Color = Misc.getBasePlayerColor().setAlpha(125)
+        val defaultBgColor: Color = Color(255, 255, 255, 0)
+        val defaultHoveredColor: Color = Misc.getBasePlayerColor().setAlpha(75)
+        val defaultSelectedColor: Color = Misc.getBasePlayerColor().setAlpha(125)
+        var baseBgColor: Color = defaultBgColor
+        var hoveredColor: Color = defaultHoveredColor
+        var selectedColor: Color = defaultSelectedColor
         override var bgColor: Color = baseBgColor
 
         override fun layoutPanel(tooltip: TooltipMakerAPI): CustomPanelAPI {

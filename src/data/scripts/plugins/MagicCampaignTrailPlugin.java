@@ -45,14 +45,21 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
     //A unique CustomCampaignEntity, which allows us to properly call render calls
     private CustomCampaignEntityAPI associatedEntity = null;
 
-    //Ticks all maps, and ensures only the currently-loaded locationAPI has its maps properly loaded
-    @Override
-    public void advance(float amount) {
-        //Returns if we detect a seemingly impossible situation (no player fleet, for example)
+    public void beforeGameSave() {
+        if(associatedEntity != null) {
+            associatedEntity.getContainingLocation().removeEntity(associatedEntity);
+        }
+        associatedEntity = null;
+    }
+    public void afterGameSave() {
         if (Global.getSector() == null || Global.getSector().getPlayerFleet() == null || Global.getSector().getPlayerFleet().getContainingLocation() == null) {
             return;
         }
 
+        recreateTrackerEntityIfNeeded();
+    }
+
+    private void recreateTrackerEntityIfNeeded() {
         //If we don't have an associated entity, or it is in the wrong locationAPI, kill any old one and generate a new one at our new locationAPI
         if (associatedEntity == null || associatedEntity.getContainingLocation() != Global.getSector().getPlayerFleet().getContainingLocation()) {
             if (associatedEntity != null) {
@@ -63,6 +70,17 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
             associatedEntity.setFixedLocation(-100000, -100000);
             associatedEntity.setRadius(0);
         }
+    }
+
+    //Ticks all maps, and ensures only the currently-loaded locationAPI has its maps properly loaded
+    @Override
+    public void advance(float amount) {
+        //Returns if we detect a seemingly impossible situation (no player fleet, for example)
+        if (Global.getSector() == null || Global.getSector().getPlayerFleet() == null || Global.getSector().getPlayerFleet().getContainingLocation() == null) {
+            return;
+        }
+
+        recreateTrackerEntityIfNeeded();
 
         //Ticks the main map
         for (Integer texID : mainMap.keySet()) {

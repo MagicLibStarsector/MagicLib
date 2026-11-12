@@ -17,9 +17,12 @@ import com.fs.starfarer.campaign.rules.Memory;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magiclib.MagicUserSettings;
+import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.util.MagicCampaign;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicVariables;
+import org.magiclib.util.api.FleetUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -78,7 +81,7 @@ public final class ActiveBounty {
     /**
      * The timestamp of when the player accepted the bounty, if they have done so.
      **/
-    private @Nullable Long acceptedBountyTimestamp;
+    public @Nullable Long acceptedBountyTimestamp;
 
     /**
      * The result of the bounty, if there has been a terminus.
@@ -100,6 +103,7 @@ public final class ActiveBounty {
     private @Nullable String rewardFaction;
     private boolean isDespawning = false, hasNoIntel = false;
     private static final Logger LOG = Global.getLogger(ActiveBounty.class);
+    private boolean droppedInBountyBoard = false;
 
     /**
      * @param bountyKey          A unique key for the bounty, as used by [MagicBountyCoordinator].
@@ -126,6 +130,11 @@ public final class ActiveBounty {
         for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
             this.initialBountyFleetPoints += member.getFleetPointCost();
         }
+
+        this.rewardCredits = this.calculateCreditReward(
+                MagicBountyCoordinator.getInstance().getPreScalingCreditRewardMultiplier(),
+                MagicBountyCoordinator.getInstance().getPostScalingCreditRewardMultiplier()
+        );
     }
 
     /**
@@ -134,52 +143,37 @@ public final class ActiveBounty {
      * <br>- Adds Intel to the Intel Manager.
      *
      * @param bountySource  From where the bounty was accepted from.
-     * @param rewardCredits The number of credits to give as a reward. Null or zero if no reward.
      */
-    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardCredits, @Nullable Float rewardReputation, @Nullable String rewardFaction) {
-        this.rewardCredits = rewardCredits;
+    public void acceptBounty(@NotNull SectorEntityToken bountySource, @Nullable Float rewardReputation, @Nullable String rewardFaction) {
+        this.setDroppedInBountyBoard(false);
+
         this.rewardReputation = rewardReputation;
         this.rewardFaction = rewardFaction;
-        acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
+        if(acceptedBountyTimestamp == null)
+            acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
         stage = Stage.Accepted;
         this.bountySource = bountySource;
 
-        //CHECK IF THE FLEET EXIST
-        if (getFleet().getCurrentAssignment() == null) {
-            LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
-            systemLocation.addEntity(getFleet());
-            getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
-            getFleet().getAI().addAssignment(
-                    getSpec().fleet_behavior == null
-                            ? FleetAssignment.ORBIT_AGGRESSIVE
-                            : getSpec().fleet_behavior,
-                    fleetSpawnLocation,
-                    1000000f,
-                    null);
+        ensureFleetInSector();
 
-            //if needed set the bounty faction to neutral with everyone but the player.
-            if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
-                FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
-                for (FactionAPI f : Global.getSector().getAllFactions()) {
-                    if (f != bountyFaction && f != Global.getSector().getPlayerFaction())
-                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
-                }
-            }
-        }
+        var memory = getFleet().getMemoryWithoutUpdate();
 
         // Flag fleet as important so it has a target icon
         Misc.makeImportant(getFleet(), "magicbounty");
         // Add comm reply if needed
-        if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null) {
-            getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_hasReply", true);
+        if (MagicTxt.nullStringIfEmpty(spec.job_comm_reply) != null)
+            memory.set("$MagicLib_Bounty_target_hasReply", true);
+
+        if(spec.fleet_memory_flags != null) {
+            for (String memoryKey : spec.fleet_memory_flags) {
+                if (!memoryKey.startsWith("$"))
+                    memoryKey = "$" + memoryKey;
+                memory.set(memoryKey, true);
+            }
         }
 
-        // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
-        // Otherwise, this would still allow ships to retreat.
-        // See https://fractalsoftworks.com/forum/index.php?topic=5061.msg294053#msg294053.
-        getFleet().getMemoryWithoutUpdate().set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
-        getFleet().getMemoryWithoutUpdate().set("$MagicLib_Bounty_target_fleet", true);
-        getFleet().getMemoryWithoutUpdate().set(spec.job_memKey, true);
+        memory.set("$MagicLib_Bounty_target_fleet", true);
+        memory.set(spec.job_memKey, true);
 
         IntelManagerAPI intelManager = Global.getSector().getIntelManager();
         List<IntelInfoPlugin> existingMagicIntel = intelManager.getIntel(MagicBountyIntel.class);
@@ -187,23 +181,69 @@ public final class ActiveBounty {
 
         // Intel shouldn't already exist since we're just accepting it now, but just in case.
         for (IntelInfoPlugin bounty : existingMagicIntel) {
-            if (((MagicBountyIntel) bounty).bountyKey.equals(this.bountyKey)) {
+            if (((MagicBountyIntel) bounty).bountyKey.equals(this.bountyKey))
                 intelForBounty = (MagicBountyIntel) bounty;
-            }
         }
 
         if (intelForBounty == null) {
             intelForBounty = new MagicBountyIntel(bountyKey);
             intelManager.addIntel(intelForBounty);
+            intelForBounty.setImportant(true);
+            BountyBoardIntelPlugin.getUserNotifiedBountyIds().add(bountyKey); // The player has been notified of this bounty as we just created the intel entry, mark it so if it is not already.
         }
 
-        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
+        if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null)
             Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, false);
+
+        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null)
+            runRuleScript(spec.job_pick_script);
+    }
+
+    /**
+     * Spawns the bounty fleet into the campaign and sets the current assignment if unset. This is called in acceptBounty, but may be called preemptively if desired.
+     */
+    public void ensureFleetInSector() {
+        if (!getFleet().isAlive()) {
+            LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
+            systemLocation.addEntity(getFleet());
+            getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
+        }
+        if (getFleet().getCurrentAssignment() == null) {
+            getFleet().getAI().addAssignment(
+                    getSpec().fleet_behavior == null
+                            ? FleetAssignment.ORBIT_AGGRESSIVE
+                            : getSpec().fleet_behavior,
+                    fleetSpawnLocation,
+                    1000000f,
+                    null);
         }
 
-        if (MagicTxt.nullStringIfEmpty(spec.job_pick_script) != null) {
-            runRuleScript(spec.job_pick_script);
+        if(spec.existing_target_memkey != null)
+            MagicBountyCoordinator.removeStagedFleet(spec.existing_target_memkey); // Only removes the fleet if it exists in sector persistent data, otherwise does nothing.
+
+        //if needed set the bounty faction to neutral with everyone but the player.
+        if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
+            FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
+            for (FactionAPI f : Global.getSector().getAllFactions()) {
+                if (f != bountyFaction) {
+                    if (f != Global.getSector().getPlayerFaction())
+                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.NEUTRAL);
+                    else
+                        f.setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.HOSTILE);
+                }
+            }
         }
+
+        var memory = getFleet().getMemoryWithoutUpdate();
+        // `MagicBountyBattleCreationPlugin` looks for this flag and sets `aiRetreatAllowed = false`.
+        // Otherwise, this would still allow ships to retreat in combat.
+        // See https://fractalsoftworks.com/forum/index.php?topic=5061.msg294053#msg294053.
+        if(!memory.contains(MemFlags.FLEET_FIGHT_TO_THE_LAST))
+            memory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, spec.fleet_no_retreat);
+
+        // Prevent retreating in interaction dialog, no pursue battles
+        if(!memory.contains(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE))
+            memory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, spec.fleet_no_retreat);
     }
 
     /**
@@ -299,11 +339,11 @@ public final class ActiveBounty {
 
         if (intel != null) {
             intel.sendUpdateIfPlayerHasIntel(new Object(), false);
-            if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
-                //Do not despawn bounties placed on existing fleets if it simply expired
-                despawn();
-            }
             endIntel();
+        }
+        if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
+            //Do not despawn bounties placed on existing fleets if it simply expired
+            despawn();
         }
     }
 
@@ -338,6 +378,22 @@ public final class ActiveBounty {
             }
             hasNoIntel = true;
         }
+    }
+
+    /**
+     * Call endIntel after setting the stage to Stage.EndedWithoutPlayerInvolvement
+     */
+    void endIntelWithoutPlayerInvolvement() {
+        stage = Stage.EndedWithoutPlayerInvolvement;
+        endIntel();
+    }
+
+    public boolean isDroppedInBountyBoard() {
+        return droppedInBountyBoard;
+    }
+
+    public void setDroppedInBountyBoard(boolean value) {
+        droppedInBountyBoard = value;
     }
 
     private void runRuleScript(String scriptRuleId) {
@@ -381,14 +437,18 @@ public final class ActiveBounty {
     }
 
     /**
-     * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted.
+     * @return Float.POSITIVE_INFINITY if there is no time limit or quest hasn't been accepted. 1f if the deadline is less than 1f and the bounty fleet is in the current location.
      */
     public @NotNull Float getDaysRemainingToComplete() {
         if (!MagicBountyCoordinator.getInstance().getDeadlinesEnabled())
             return Float.POSITIVE_INFINITY;
 
         if (getSpec().job_deadline > 0 && acceptedBountyTimestamp != null) {
-            return Math.max(0, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
+            float remaining = Math.max(0, getSpec().job_deadline - Global.getSector().getClock().getElapsedDaysSince(acceptedBountyTimestamp));
+            if(remaining < 1f && getFleet().isInCurrentLocation())
+                return 1f;
+            else
+                return remaining;
         } else {
             return Float.POSITIVE_INFINITY;
         }
@@ -408,6 +468,24 @@ public final class ActiveBounty {
 
     public @Nullable SectorEntityToken getBountySource() {
         return bountySource;
+    }
+
+    /**
+     * Returns the show distance for the bounty.
+     * <p>
+     * If the player is inside the bounty's StarSystem, and magiclib_bountyLocationRevealInSystem setting is true, returns {@link MagicBountyLoader.ShowDistance#Exact}.
+     * Otherwise, returns the bounty's show distance normally.
+     */
+    public @NotNull MagicBountyLoader.ShowDistance getShowDistance() {
+        CampaignFleetAPI player = Global.getSector().getPlayerFleet();
+        LocationAPI location = fleetSpawnLocation.getContainingLocation();
+        if (player != null
+                && location instanceof StarSystemAPI
+                && player.getContainingLocation() == location
+                && MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_bountyLocationRevealInSystem", false)) {
+            return MagicBountyLoader.ShowDistance.Exact;
+        }
+        return spec.job_show_distance;
     }
 
     public @NotNull Stage getStage() {

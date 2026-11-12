@@ -11,6 +11,7 @@ import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.graphics.SpriteAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.combat.entities.ship.trackers.MultiBarrelRecoilTracker
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
@@ -18,16 +19,22 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.optFloat
 import org.lazywizard.lazylib.ext.logging.w
-import org.magiclib.LunaWrapper
-import org.magiclib.LunaWrapperSettingsListener
+import org.magiclib.MagicUserSettings
 import org.magiclib.Magic_modPlugin
 import org.magiclib.ReflectionUtils
+import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.ReflectionUtils.getMethodsMatching
 import org.magiclib.kotlin.forEach
 import org.magiclib.kotlin.optColor
 import org.magiclib.kotlin.toStringList
+import org.magiclib.util.MagicLookup
 import org.magiclib.util.MagicMisc
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.MagicVariables
+import org.magiclib.util.api.doesFileExist
+import org.magiclib.util.api.getActualHull
+import org.magiclib.util.api.getEffectiveHullId
+import org.magiclib.util.api.isSkin
 
 object MagicPaintjobManager {
     private val logger = Global.getLogger(MagicPaintjobManager::class.java)
@@ -39,35 +46,45 @@ object MagicPaintjobManager {
     private const val isIntelImportantMemKey = "\$magiclib_isPaintjobIntelImportant"
     private val jsonObjectKey = "unlockedPaintjobs"
 
-    private val unlockedPaintjobsInner = mutableSetOf<String>()
-    private val paintjobsInner = mutableListOf<MagicPaintjobSpec>()
-    private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableListOf<String>()
+    private val paintjobsInner = HashMap<String, MagicPaintjobSpec>() //Paintjob ID -> Paintjob Spec
+    private val weaponPaintjobsInner = HashMap<String, MagicWeaponPaintjobSpec>()
 
-    private val weaponPaintjobsInner = mutableListOf<MagicWeaponPaintjobSpec>()
+    private val unlockedPaintjobsInner = mutableSetOf<String>()
+    private val completedPaintjobIdsThatUserHasBeenNotifiedFor = mutableSetOf<String>()
+    private val advanceIntervalUtil = IntervalUtil(1f, 1f)
 
     const val PJTAG_PERMA_PJ = "MagicLib_PermanentPJ"
     const val PJTAG_SHINY = "MagicLib_ShinyPJ"
+    const val PJTAG_HIDDEN = "MagicLib_HiddenPJ"
 
 
     @JvmStatic
     var isEnabled = true
 
     @JvmStatic
-    val unlockedPaintjobIds: List<String>
-        get() = unlockedPaintjobsInner.toList()
+    val unlockedPaintjobIds: Set<String>
+        get() = unlockedPaintjobsInner.toSet()
 
     @JvmStatic
     val unlockedPaintjobs: List<MagicPaintjobSpec>
-        get() = unlockedPaintjobsInner.mapNotNull { id -> paintjobsInner.firstOrNull { it.id == id } }
+        get() = unlockedPaintjobsInner.mapNotNull { id -> paintjobsInner[id] }
 
     /**
      * Returns the paintjobs that are available to the player.
+     *
      * Shiny paintjobs should not be shown to the player and cannot be manually applied or unlocked.
+     *
+     * Hidden paintjobs should not be shown to the player and cannot be manually applied or unlocked.
      */
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobs(includeShiny: Boolean = false): Set<MagicPaintjobSpec> {
-        return paintjobsInner.filter { it.isShiny == includeShiny }.toSet()
+    fun getPaintjobs(includeShiny: Boolean = false, includeHidden: Boolean = false, includeModules: Boolean = true, includeWings: Boolean = true): Set<MagicPaintjobSpec> {
+        return paintjobsInner.values.filter {
+            (includeShiny || !it.isShiny) &&
+                    (includeHidden || !it.isHidden) &&
+                    (includeModules || !it.isModuleHull) &&
+                    (includeWings || !it.isFighterHull)
+        }.toSet()
     }
 
     init {
@@ -80,43 +97,40 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun onApplicationLoad() {
-        // Set up LunaLib settings.
-        if (Global.getSettings().modManager.isModEnabled("lunalib")) {
-            isEnabled = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
+        // Add LunaLib settings listener.
+        MagicUserSettings.addSettingsListener(MagicVariables.MAGICLIB_ID) { modID ->
+            val lunaIsEnabled =
+                MagicUserSettings.getBoolean(modID, "magiclib_enablePaintjobs", default = true)
 
-            // Add settings listener.
-            LunaWrapper.addSettingsListener(object : LunaWrapperSettingsListener {
-                override fun settingsChanged(modID: String) {
-                    val lunaIsEnabled =
-                        LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enablePaintjobs") ?: true
-
-                    if (isEnabled != lunaIsEnabled) {
-                        isEnabled = lunaIsEnabled
-                        if (isEnabled) {
-                            onGameLoad()
-                            initIntel()
-                        } else {
-                            removeIntel()
-                        }
-                    }
+            if (isEnabled != lunaIsEnabled) {
+                isEnabled = lunaIsEnabled
+                if (isEnabled) {
+                    onGameLoad()
+                    initIntel()
+                } else {
+                    removeIntel()
                 }
-            })
+            }
         }
+
 
         val (paintjobSpecs, weaponPaintjobSpecs) = loadPaintjobs()
 
         paintjobsInner.clear()
-        paintjobsInner.addAll(paintjobSpecs.values)
+        paintjobsInner.putAll(paintjobSpecs)
         weaponPaintjobsInner.clear()
-        weaponPaintjobsInner.addAll(weaponPaintjobSpecs.values)
+        weaponPaintjobsInner.putAll(weaponPaintjobSpecs)
     }
 
     @JvmStatic
     fun onGameLoad() {
         loadUnlockedPaintjobs()
+        markAsAlreadyNotifiedPlayerOfNewUnlock(unlockedPaintjobsInner)
         initIntel()
 
-        Global.getSector().addTransientListener(MagicPaintjobShinyAdder())
+        val shinyAdder = MagicPaintjobShinyAdder()
+        shinyAdder.checkAndApplyShiniesToAllFleetsInPlayerLocation()
+        Global.getSector().addTransientScript(shinyAdder)
         if (!Global.getSector().hasTransientScript(MagicPaintjobRunner::class.java)) {
             Global.getSector().addTransientScript(MagicPaintjobRunner())
         }
@@ -152,8 +166,7 @@ object MagicPaintjobManager {
                     if (id.isBlank()) continue
 
                     val hullId = item.optString("hullId")?.trim()
-                    val hullIds =
-                        (item.optString("hullIds")?.split(",").orEmpty().map { it.trim() } + hullId).filterNotNull()
+                    val hullIds = (item.optString("hullIds")?.split(",").orEmpty().map { it.trim() } + hullId).filterNotNull()
                     val name = item.getString("name").trim()
                     val description = item.getString("description").trim()
                     val unlockConditions = item.getString("unlockConditions").trim()
@@ -176,7 +189,9 @@ object MagicPaintjobManager {
                         getJSONObject("engines")?.let { engineJson ->
                             MagicPaintjobSpec.PaintjobEngineSpec(
                                 engineJson.optColor("color", null),
+                                engineJson.optColor("campaignColor", null),
                                 engineJson.optColor("contrailColor", null),
+                                engineJson.optColor("contrailCampaignColor", null),
                                 engineJson.optFloat("contrailSpawnDistMult").takeIf { !it.isNaN() },
                                 engineJson.optFloat("contrailWidthMultiplier").takeIf { !it.isNaN() },
                                 engineJson.optColor("glowAlternateColor", null),
@@ -204,6 +219,21 @@ object MagicPaintjobManager {
                         }
                     }?.getOrNull()
 
+                    val miscSpec = paintjobJson?.runCatching {
+                        getJSONObject("misc")?.let { miscJson ->
+                            MagicPaintjobSpec.PaintjobMiscSpec(
+                                miscJson.optColor("ventCoreColor", null),
+                                miscJson.optColor("ventFringeColor", null),
+                                miscJson.optColor("overloadColor", null),
+                                miscJson.optColor("explosionFlashColor", null)
+                            )
+                        }
+                    }?.onFailure { e ->
+                        if (!(e is JSONException && e.message?.contains("not found") == true)) {
+                            logger.warn("Unable to load misc JSON of $id paintjob", e)
+                        }
+                    }?.getOrNull()
+
                     var skip = false
                     for (paintjobSpec in newSpecs) {
                         if (paintjobSpec.id == id) {
@@ -218,6 +248,8 @@ object MagicPaintjobManager {
                         }
                     }
 
+                    val validHullIds = hullIds.filter { MagicLookup.getHullSpec(it) != null }
+
                     if (id.isBlank()) {
                         // Just a blank row, no need to warn.
 //                        logger.warn("Paintjob #$i in ${mod.id} by '${mod.author}' has no id, skipping.")
@@ -231,11 +263,13 @@ object MagicPaintjobManager {
                     } else if (spriteId.isBlank()) {
                         logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no spriteId, skipping.")
                         skip = true
-                    } else if (hullIds.none {
-                            kotlin.runCatching { Global.getSettings().getHullSpec(it) }
-                                .getOrNull() != null
-                        }) {
-                        logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has no valid hullIds, skipping.")
+                    } else if (!Global.getSettings().doesFileExist(spriteId)) { // Check if file exists without loading the texture
+                        logger.warn("Paintjob $id in ${mod.id} by '${mod.author}' has missing or unreadable sprite file, skipping.")
+                        skip = true
+                    }
+
+                    if (!skip && validHullIds.isEmpty()) {
+                        logger.info("Paintjob $id in ${mod.id} by '${mod.author}' has no valid hullIds, skipping.")
                         skip = true
                     }
 
@@ -245,8 +279,8 @@ object MagicPaintjobManager {
                                 modId = mod.id,
                                 modName = mod.name,
                                 id = id,
-                                hullId = hullIds.first(),
-                                hullIds = hullIds,
+                                hullId = validHullIds.first(),
+                                hullIds = validHullIds,
                                 name = name,
                                 unlockedAutomatically = unlockedAutomatically,
                                 description = description,
@@ -255,6 +289,7 @@ object MagicPaintjobManager {
                                 tags = tags,
                                 engineSpec = engineSpec,
                                 shieldSpec = shieldSpec,
+                                miscSpec = miscSpec,
                                 paintjobFamily = paintjobFamily
                             )
                                 .also {
@@ -331,12 +366,11 @@ object MagicPaintjobManager {
                     return@forEach
                 }
 
-                /* TODO: Uncomment this for 0.98
                 if (!Global.getSettings().actuallyAllWeaponSpecs.any { it.weaponId in weaponIds }) {
-                    logger.warn("Weapon Paintjob with id: $id has no valid weaponId's, skipping.")
+                    logger.info("Weapon Paintjob with id: $id has no valid weaponId's, skipping.")
                     return@forEach
                 }
-                */
+
                 val spriteMap = weaponPJEntry.getString("spriteMap").split(",").mapNotNull { mapEntry ->
                     val parts = mapEntry.split("->")
                     if (parts.size == 2) {
@@ -346,7 +380,7 @@ object MagicPaintjobManager {
                         null
                     }
                 }.toMap()
-                newSpecs.add(MagicWeaponPaintjobSpec(mod.id, id!!, paintjobFamilies, weaponIds, spriteMap))
+                newSpecs.add(MagicWeaponPaintjobSpec(mod.id, id, paintjobFamilies, weaponIds, spriteMap))
             }.onFailure { e ->
                 logger.warn(
                     "Unable to load weapon paintjob ($id) in ${mod.id} by ${
@@ -362,21 +396,41 @@ object MagicPaintjobManager {
     @JvmStatic
     @JvmOverloads
     fun getPaintjobsForWeapon(weaponId: String, paintjobFamily: String? = null): List<MagicWeaponPaintjobSpec> =
-        weaponPaintjobsInner.filter { spec ->
+        weaponPaintjobsInner.values.filter { spec ->
             weaponId in spec.weaponIds && (paintjobFamily?.let { it in spec.paintjobFamilies } ?: true)
         }
 
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false): List<MagicPaintjobSpec> =
-        getPaintjobsForHull(hullSpec.baseHullId, includeShiny)
+    fun getPaintjobsForHull(hullSpec: ShipHullSpecAPI, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> {
+        val actualHull = hullSpec.getActualHull()
+        val actualHullId = actualHull.hullId
+
+        val effectiveHullId = if (!actualHull.isSkin()) {
+            actualHull.getEffectiveHullId()
+        } else when { // This is a hull skin
+            actualHull.hasTag("ML_NoBasePaintjobs") -> // If a hull skin has the tag 'ML_NoBasePaintjobs', don't give it the base hull's paintjobs ever.
+                actualHullId
+            actualHull.hasTag("ML_ForceBasePaintjobs") -> // If a hull skin has the tag 'ML_ForceBasePaintjobs', always give it the base hull's paintjobs even if it isn't compatible with the base hull.
+                actualHull.baseHull?.hullId ?: actualHull.getEffectiveHullId()
+            else -> actualHull.getEffectiveHullId()
+        }
+
+        return paintjobsInner.values.filter { pj ->
+            (includeShiny || !pj.isShiny) &&
+                    (includeHidden || !pj.isHidden) &&
+                    (actualHullId in pj.hullIds || (effectiveHullId != actualHullId && effectiveHullId in pj.hullIds))
+        }
+    }
 
     @JvmStatic
     @JvmOverloads
-    fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false): List<MagicPaintjobSpec> =
-        paintjobsInner
-            .filter { hullId in it.hullIds }
-            .let { if (includeShiny) it else it.filter { !it.isShiny } }
+    fun getPaintjobsForHull(hullId: String, includeShiny: Boolean = false, includeHidden: Boolean = false): List<MagicPaintjobSpec> =
+        paintjobsInner.values.filter {
+            (includeShiny || !it.isShiny) &&
+                    (includeHidden || !it.isHidden) &&
+                    (hullId in it.hullIds)
+        }
 
     @JvmStatic
     fun saveUnlockedPaintJobs() {
@@ -406,17 +460,13 @@ object MagicPaintjobManager {
                 .getOrThrow()
 
             unlockedPaintjobsInner.addAll(unlockedPJsObj.getJSONArray(jsonObjectKey).toStringList())
-
-            markAsAlreadyNotifiedPlayerOfNewUnlock(unlockedPaintjobsInner)
         }
             .onFailure { logger.warn("Failed to load unlocked paintjobs.", it) }
     }
 
     private fun markAsAlreadyNotifiedPlayerOfNewUnlock(paintjobs: Set<String>) {
         completedPaintjobIdsThatUserHasBeenNotifiedFor.clear()
-        for (paintjobId in paintjobs) {
-            completedPaintjobIdsThatUserHasBeenNotifiedFor.add(paintjobId)
-        }
+        completedPaintjobIdsThatUserHasBeenNotifiedFor.addAll(paintjobs)
     }
 
     /**
@@ -437,19 +487,23 @@ object MagicPaintjobManager {
             return
         }
 
-        paintjobsInner.removeAll { it.id == paintjob.id }
-        paintjobsInner.add(paintjob)
+        paintjobsInner.keys.removeAll { it == paintjob.id }
+        paintjobsInner[paintjob.id] = paintjob
 
         if (Magic_modPlugin.isMagicLibTestMode()) {
             unlockPaintjob(paintjob.id)
         }
     }
 
+    private val pendingUnlockNotifications = mutableSetOf<String>()
+
     @JvmStatic
     fun unlockPaintjob(id: String) {
         if (getPaintjob(id)?.isUnlockable != true) return
 
-        unlockedPaintjobsInner.add(id)
+        if (unlockedPaintjobsInner.add(id))
+            pendingUnlockNotifications.add(id)
+
         saveUnlockedPaintJobs()
     }
 
@@ -463,6 +517,13 @@ object MagicPaintjobManager {
 
         unlockedPaintjobsInner.remove(id)
         saveUnlockedPaintJobs()
+    }
+
+    /**
+     * Returns true if the paintjob with the given ID is unlocked.
+     */
+    fun isPaintjobUnlocked(paintjobID: String): Boolean {
+        return unlockedPaintjobsInner.contains(paintjobID)
     }
 
     @JvmStatic
@@ -507,13 +568,13 @@ object MagicPaintjobManager {
     }
 
     @JvmStatic
-    fun getPaintjob(paintjobId: String): MagicPaintjobSpec? = paintjobsInner.firstOrNull { it.id == paintjobId }
+    fun getPaintjob(paintjobId: String): MagicPaintjobSpec? = paintjobsInner[paintjobId]
 
     @JvmStatic
     fun removePaintjobFromShip(fleetMember: FleetMemberAPI) {
         val variant = fleetMember.variant ?: return
         removePaintjobFromShip(variant)
-        fleetMember.spriteOverride = null
+        //fleetMember.spriteOverride = null
     }
 
     @JvmStatic
@@ -562,30 +623,74 @@ object MagicPaintjobManager {
             ShaderLib.overrideShipTexture(combatShip, spriteId)
         }
 
+        combatShip.engineController?.let { engineController ->
+            val spec = paintjob.engineSpec ?: return@let
+
+            applyPaintjobToEngines(combatShip, paintjob)
+
+            // This is necessary to make contrail color applied in combat
+            spec.contrailColor?.let { contrailColor ->
+                engineController.fadeToOtherColor(
+                    MagicPaintjobHullMod.ID,
+                    null, //spec.color, // may be null
+                    contrailColor, // may be null
+                    1f,
+                    1f
+                )
+            }
+        }
+
+        applyPaintjobToResettables(combatShip, paintjob)
+
+        paintjob.miscSpec?.let { misc ->
+            misc.explosionFlashColor?.let { combatShip.explosionFlashColorOverride = it }
+        }
+
+
+        for (weapon in combatShip.allWeapons) {
+            getPaintjobsForWeapon(weapon.spec.weaponId, paintjob.paintjobFamily).forEach { weaponPaintjob ->
+                applyWeaponPaintjob(weapon, weaponPaintjob)
+            }
+        }
+    }
+
+    internal fun applyPaintjobToEngines(combatShip: ShipAPI, paintjob: MagicPaintjobSpec): Boolean {
+        val spec = paintjob.engineSpec ?: return false
+
+        val engines = combatShip.engineController?.shipEngines
+        if (engines.isNullOrEmpty()) return false
+
+        engines.forEach { shipEngine ->
+            val slot = shipEngine.engineSlot
+            spec.color?.let { slot.color = it }
+            spec.contrailColor?.let { slot.contrailColor = it }
+            spec.contrailSpawnDistMult?.let { slot.contrailSpawnDistMult = it }
+            spec.contrailWidthMultiplier?.let { slot.contrailWidthMultiplier = it }
+            spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
+            spec.glowSizeMult?.let { slot.glowSizeMult = it }
+        }
+        return true
+    }
+
+    /**
+     * Kept separate from [applyPaintjob] for optimization reasons, as the ShipAPI tends to reset these color based parameters and needs them to be re-applied every frame.
+     */
+    internal fun applyPaintjobToResettables(
+        combatShip: ShipAPI,
+        paintjob: MagicPaintjobSpec
+    ) {
+        paintjob.miscSpec?.let { misc ->
+            misc.ventCoreColor?.let { combatShip.ventCoreColor = it }
+            misc.ventFringeColor?.let { combatShip.ventFringeColor = it }
+            misc.overloadColor?.let { combatShip.overloadColor = it }
+        }
+
         combatShip.shield?.let { shield ->
             paintjob.shieldSpec?.let { spec ->
                 spec.innerColor?.let { shield.innerColor = it }
                 spec.ringColor?.let { shield.ringColor = it }
                 spec.innerRotationRate?.let { shield.innerRotationRate = it }
                 spec.ringRotationRate?.let { shield.ringRotationRate = it }
-            }
-        }
-
-        combatShip.engineController?.shipEngines?.forEach { shipEngine ->
-            val slot = shipEngine.engineSlot
-            paintjob.engineSpec?.let { spec ->
-                spec.color?.let { slot.color = it }
-                spec.contrailColor?.let { slot.contrailColor = it }
-                spec.contrailSpawnDistMult?.let { slot.contrailSpawnDistMult = it }
-                spec.contrailWidthMultiplier?.let { slot.contrailWidthMultiplier = it }
-                spec.glowAlternateColor?.let { slot.glowAlternateColor = it }
-                spec.glowSizeMult?.let { slot.glowSizeMult = it }
-            }
-        }
-
-        for (weapon in combatShip.allWeapons) {
-            getPaintjobsForWeapon(weapon.spec.weaponId, paintjob.paintjobFamily).forEach { weaponPaintjob ->
-                applyWeaponPaintjob(weapon, weaponPaintjob)
             }
         }
     }
@@ -601,17 +706,18 @@ object MagicPaintjobManager {
         }
 
         // get all weapon sprites
-        val weaponSprites = ReflectionUtils.getFieldsOfType(weapon, Sprite::class.java).mapNotNull { field ->
-            ReflectionUtils.get(field, weapon) as Sprite?
-        } + ReflectionUtils.getFieldsOfType(weapon, Array<Sprite>::class.java).mapNotNull { field ->
-            ReflectionUtils.get(field, weapon) as Array<Sprite>?
+        val weaponSprites = weapon.getFieldsMatching(type = Sprite::class.java).mapNotNull { field ->
+            field.get(weapon) as Sprite?
+        } + weapon.getFieldsMatching(type = Array<Sprite>::class.java).mapNotNull { field ->
+            @Suppress("UNCHECKED_CAST")
+            field.get(weapon) as Array<Sprite>?
         }.flatMap {
             it.toList()
-        } + ReflectionUtils.getFieldsOfType(weapon, MultiBarrelRecoilTracker::class.java).mapNotNull { field ->
-            ReflectionUtils.get(field, weapon) as MultiBarrelRecoilTracker?
+        } + weapon.getFieldsMatching(type = MultiBarrelRecoilTracker::class.java).mapNotNull { field ->
+            field.get(weapon) as MultiBarrelRecoilTracker?
         }.map { multiBarrelRecoilTracker ->
-            ReflectionUtils.getFieldsOfType(multiBarrelRecoilTracker, Sprite::class.java).mapNotNull { field ->
-                ReflectionUtils.get(field, multiBarrelRecoilTracker) as Sprite?
+            multiBarrelRecoilTracker.getFieldsMatching(type = Sprite::class.java).mapNotNull { field ->
+                field.get(multiBarrelRecoilTracker) as Sprite?
             }
         }.flatten()
 
@@ -619,7 +725,7 @@ object MagicPaintjobManager {
 
         for (weaponSprite in weaponSprites) {
             // it's hard to get a textureId out of a true sprite, so box it into SpriteAPI
-            ReflectionUtils.invoke("setSprite", tempWeaponSprite, weaponSprite)
+            ReflectionUtils.invoke(tempWeaponSprite, "setSprite", weaponSprite)
 
             // make sure only one textureId matches, I don't think it's possible? for multiple, but CYA
             val replacementMap = paintjobSprites.filter { it.key.textureId == tempWeaponSprite.textureId }
@@ -632,11 +738,10 @@ object MagicPaintjobManager {
             } else if (replacementMap.count() == 1) {
                 val (_, replacementSpriteAPI) = replacementMap.entries.first()
                 // unbox the replacement sprite and get its texture, then replace the weapon sprite's texture
-                val replacementSprite = ReflectionUtils.invoke("getSprite", replacementSpriteAPI) as Sprite
-                val replacementTexture = ReflectionUtils.invoke("getTexture", replacementSprite)
-                val setTextureMethod = ReflectionUtils.getMethodsOfName("setTexture", weaponSprite)[0]
-                ReflectionUtils.rawInvoke(setTextureMethod, weaponSprite, replacementTexture)
-
+                val replacementSprite = ReflectionUtils.invoke(replacementSpriteAPI, "getSprite") as Sprite
+                val replacementTexture = ReflectionUtils.invoke(replacementSprite, "getTexture")
+                val setTextureMethod = weaponSprite.getMethodsMatching(name = "setTexture")[0]
+                setTextureMethod.invoke(weaponSprite, replacementTexture)
             }
         }
     }
@@ -655,57 +760,79 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun getCurrentShipPaintjob(variant: ShipVariantAPI): MagicPaintjobSpec? {
+        val hasPaintjobMod = variant.hasHullMod(MagicPaintjobHullMod.ID)
         val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
-        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) ?: return null
 
-        return getPaintjob(paintjobId)
+        return when {
+            !hasPaintjobMod -> { // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
+                if (pjTag != null) removePaintjobFromShip(variant)
+                null
+            }
+            pjTag == null -> { // If the tag is removed but the hull-mod isn't (probably a developer mistake?) Remove the hull-mod.
+                Global.getLogger(MagicPaintjobHullMod::class.java)
+                    .warn("Paintjob tag is missing from variant ${variant.hullVariantId} despite having paintjob hull-mod")
+                variant.removePermaMod(MagicPaintjobHullMod.ID)
+                null
+            }
+            else -> getPaintjob(pjTag.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX))
+        }
     }
 
     @JvmStatic
     fun getCurrentShipPaintjob(fleetMember: FleetMemberAPI): MagicPaintjobSpec? {
         val variant = fleetMember.variant ?: return null
-        val pjTag = variant.tags.firstOrNull { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
-        val paintjobId = pjTag?.removePrefix(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) ?: return null
+        return getCurrentShipPaintjob(variant)
+    }
 
-        // The player can remove the hullmod manually, so if it's not there, remove the paintjob.
-        if (!fleetMember.variant.hasHullMod(MagicPaintjobHullMod.ID)) {
-            removePaintjobFromShip(fleetMember)
-            return null
-        }
+    @JvmStatic
+    fun hasPaintjob(variant: ShipVariantAPI): Boolean {
+        return variant.hasHullMod(MagicPaintjobHullMod.ID) && variant.tags.any { it.startsWith(MagicPaintjobHullMod.PAINTJOB_TAG_PREFIX) }
+    }
 
-        return getPaintjob(paintjobId)
+    @JvmStatic
+    fun hasPaintjob(fleetMember: FleetMemberAPI): Boolean {
+        val variant = fleetMember.variant ?: return false
+        return hasPaintjob(variant)
     }
 
     @JvmStatic
     fun advance(amount: Float) {
         if (!isEnabled) return
-        val intel = getIntel() ?: return
 
-        // For all paintjobs that were just unlocked, show intel update.
-        // Only notify intel if in campaign and not showing a dialog.
-        // If in combat, the intel will be shown when the player returns to the campaign.
-        if (Global.getCurrentState() == GameState.CAMPAIGN && Global.getSector().campaignUI.currentInteractionDialog == null) {
-            for (paintjob in getPaintjobs()) {
-                if (paintjob.isUnlocked() && !completedPaintjobIdsThatUserHasBeenNotifiedFor.contains(paintjob.id)) {
-                    // Player has unlocked a new paintjob! Let's notify them.
+        advanceIntervalUtil.advance(amount)
+
+        if (advanceIntervalUtil.intervalElapsed()) {
+            val intel = getIntel() ?: return
+
+            // For all paintjobs that were just unlocked, show intel update.
+            // Only notify intel if in campaign and not showing a dialog.
+            // If in combat, the intel will be shown when the player returns to the campaign.
+            if (Global.getCurrentState() == GameState.CAMPAIGN && Global.getSector().campaignUI.currentInteractionDialog == null) {
+                for (id in pendingUnlockNotifications) {
+                    if(completedPaintjobIdsThatUserHasBeenNotifiedFor.contains(id))
+                        continue
+
+                    val paintjob = paintjobsInner[id] ?: continue
+                    if (paintjob.isShiny || paintjob.isHidden) continue
 
                     try {
                         intel.tempPaintjobForIntelNotification = paintjob
                         intel.sendUpdateIfPlayerHasIntel(null, false, false)
                         intel.tempPaintjobForIntelNotification = null
-//                        MagicAchievementManager.playSoundEffect(paintjob)
-                        completedPaintjobIdsThatUserHasBeenNotifiedFor.add(paintjob.id)
-                    } catch (e: java.lang.Exception) {
+
+                        completedPaintjobIdsThatUserHasBeenNotifiedFor.add(id)
+                    } catch (e: Exception) {
                         logger.w(ex = e, message = { "Unable to notify intel of paintjob " + paintjob.id })
                     }
                 }
+                pendingUnlockNotifications.clear()
             }
         }
     }
 
     private fun removeIntel() {
         if (Global.getSector() == null) return
-        val intelManager = Global.getSector().intelManager
+        val intelManager = Global.getSector().intelManager ?: return
         while (intelManager.hasIntelOfClass(MagicPaintjobIntel::class.java)) {
             intelManager.removeIntel(intelManager.getFirstIntel(MagicPaintjobIntel::class.java))
         }
@@ -723,4 +850,4 @@ internal class MagicPaintjobRunner : EveryFrameScript {
     }
 }
 
-fun MagicPaintjobSpec.isUnlocked() = MagicPaintjobManager.unlockedPaintjobIds.contains(id)
+fun MagicPaintjobSpec.isUnlocked() = MagicPaintjobManager.isPaintjobUnlocked(id)

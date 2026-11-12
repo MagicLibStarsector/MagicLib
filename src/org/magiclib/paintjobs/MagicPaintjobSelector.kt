@@ -12,8 +12,14 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.loading.specs.HullVariantSpec
 import org.lwjgl.opengl.GL11
 import org.magiclib.ReflectionUtils
-import org.magiclib.internalextensions.*
+import org.magiclib.ReflectionUtils.getConstructorsMatching
 import org.magiclib.kotlin.*
+import org.magiclib.kotlin.internal.bottom
+import org.magiclib.kotlin.internal.centerX
+import org.magiclib.kotlin.internal.left
+import org.magiclib.kotlin.internal.right
+import org.magiclib.kotlin.internal.setSize
+import org.magiclib.kotlin.internal.top
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.max
@@ -196,27 +202,33 @@ internal object MagicPaintjobSelector {
 
         val clonedVariant = hullVariantSpec.clone()
         MagicPaintjobManager.removePaintjobFromShip(clonedVariant)
-        clonedVariant.moduleVariants?.values?.forEach { moduleVariant ->
-            MagicPaintjobManager.removePaintjobFromShip(moduleVariant as ShipVariantAPI)
+
+        (clonedVariant as ShipVariantAPI).stationModules?.keys?.forEach { moduleVariantID ->
+            val moduleVariant = (clonedVariant as ShipVariantAPI).getModuleVariant(moduleVariantID) ?: return@forEach
+            MagicPaintjobManager.removePaintjobFromShip(moduleVariant)
         }
 
-        val shipPreview = ReflectionUtils.instantiate(MagicPaintjobCombatRefitAdder.SHIP_PREVIEW_CLASS!!)!!
-        ReflectionUtils.invoke("setVariant", shipPreview, clonedVariant)
-        ReflectionUtils.invoke("overrideVariant", shipPreview, clonedVariant)
-        ReflectionUtils.invoke("setShowBorder", shipPreview, false)
-        ReflectionUtils.invoke("setScaleDownSmallerShipsMagnitude", shipPreview, 1f)
-        ReflectionUtils.invoke("adjustOverlay", shipPreview, 0f, 0f)
+        val shipPreview = MagicPaintjobCombatRefitAdder.SHIP_PREVIEW_CLASS!!.getConstructorsMatching(numOfParams = 0).first().newInstance()
+        ReflectionUtils.invoke(shipPreview, "setVariant", clonedVariant)
+        ReflectionUtils.invoke(shipPreview, "overrideVariant", clonedVariant)
+        ReflectionUtils.invoke(shipPreview, "setShowBorder", false)
+        ReflectionUtils.invoke(shipPreview, "setScaleDownSmallerShipsMagnitude", 1f)
+        ReflectionUtils.invoke(shipPreview, "adjustOverlay", 0f, 0f)
         (shipPreview as UIPanelAPI).setSize(width, height)
 
         // make the ship list so the ships exist when we try and get them
-        ReflectionUtils.invoke("prepareShip", shipPreview)
+        ReflectionUtils.invoke(shipPreview, "prepareShip")
 
         // if the paintjob exists, replace the sprites
         basePaintjobSpec?.let { paintjob ->
-            for(ship in ReflectionUtils.get(MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!, shipPreview) as Array<ShipAPI>){
-                MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec).firstOrNull {
-                    it.paintjobFamily?.equals(paintjob.paintjobFamily) == true || it.id == paintjob.id
-                }?.let { MagicPaintjobManager.applyPaintjob(ship, it) }
+            @Suppress("UNCHECKED_CAST")
+            for(ship in ReflectionUtils.get(shipPreview, name = MagicPaintjobCombatRefitAdder.SHIPS_FIELD!!) as Array<ShipAPI>){
+                // Checking the id first stops two paintjobs of one family showing the same preview.
+                // Fixes https://github.com/MagicLibStarsector/MagicLib/issues/84.
+                val hullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec)
+                val shipPaintjob = hullPaintjobs.firstOrNull { it.id == paintjob.id }
+                    ?: paintjob.paintjobFamily?.let { family -> hullPaintjobs.firstOrNull { it.paintjobFamily == family } }
+                shipPaintjob?.let { MagicPaintjobManager.applyPaintjob(ship, it) }
             }
         }
 

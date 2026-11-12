@@ -1,0 +1,5 @@
+# Add this file to your mod to change your mod specific paintjob settings.
+{
+    # 1 in 20 chance of spawning a shiny
+    "probability": 20
+}

@@ -46,6 +46,10 @@
         #"job_pick_script": "data.script.script",
         #"job_memKey":"$key",
         #"job_conclusion_script":"data.script.script",
+
+        #"job_auto_accept": null,
+        #"job_repeatable": null,
+        #"show_in_bounty_board": true,
         
 		#"existing_target_memkey":"$memKey",
 
@@ -74,7 +78,7 @@
         "fleet_flagship_name":"",
         "fleet_flagship_alwaysRecoverable": true,
         "fleet_flagship_autofit": false,
-        "fleet_preset_ships": {"variant":1,},
+        "fleet_preset_ships": [["variant"],],
         "fleet_preset_autofit": false,
         "fleet_scaling_multiplier": 0,
         "fleet_min_FP": 0,
@@ -82,6 +86,7 @@
         "fleet_composition_quality": 1,
         "fleet_transponder": false,
 		"fleet_no_retreat": false,
+		"fleet_memory_flags": [],
         "fleet_behavior": "PASSIVE",
         "fleet_attitude": null,
         "fleet_musicSetId": null,

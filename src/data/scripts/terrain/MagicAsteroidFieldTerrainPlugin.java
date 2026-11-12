@@ -18,8 +18,6 @@ import data.scripts.util.MagicTxt;
 import java.awt.*;
 import java.util.Random;
 
-import static data.scripts.terrain.MagicAsteroidBeltTerrainPlugin.*;
-
 /**
  * This is a drop-in replacement for the vanilla AsteroidFieldTerrainPlugin.
  * <p>
@@ -144,34 +142,34 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
             return;
         }
 
-        MutableStat chanceMod = fleet.getCommanderStats().getDynamic().getStat(IMPACT_CHANCE);
+        MutableStat chanceMod = fleet.getCommanderStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_CHANCE);
         if (chanceMod == null) {
             chanceMod = new MutableStat(1f);
         }
-        MutableStat damageChanceMod = fleet.getCommanderStats().getDynamic().getStat(IMPACT_DAMAGE_CHANCE);
+        MutableStat damageChanceMod = fleet.getCommanderStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_DAMAGE_CHANCE);
         if (damageChanceMod == null) {
             damageChanceMod = new MutableStat(1f);
         }
-        MutableStat damageMod = fleet.getCommanderStats().getDynamic().getStat(IMPACT_DAMAGE);
+        MutableStat damageMod = fleet.getCommanderStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_DAMAGE);
         if (damageMod == null) {
             damageMod = new MutableStat(1f);
         }
 
         MemoryAPI mem = fleet.getMemoryWithoutUpdate();
-        if (mem.contains(IMPACT_TIMEOUT)) {
+        if (mem.contains(MagicAsteroidBeltTerrainPlugin.IMPACT_TIMEOUT)) {
             return;
         }
 
-        float expire = mem.getExpire(IMPACT_SKIPPED);
+        float expire = mem.getExpire(MagicAsteroidBeltTerrainPlugin.IMPACT_SKIPPED);
         if (expire < 0) {
             expire = 0;
         }
 
-        float hitProb = expire / DURATION_PER_SKIP * PROB_PER_SKIP;
+        float hitProb = expire / MagicAsteroidBeltTerrainPlugin.DURATION_PER_SKIP * MagicAsteroidBeltTerrainPlugin.PROB_PER_SKIP;
         hitProb *= chanceMod.getModifiedValue();
 
-        if (hitProb > MAX_PROBABILITY) {
-            hitProb = MAX_PROBABILITY;
+        if (hitProb > MagicAsteroidBeltTerrainPlugin.MAX_PROBABILITY) {
+            hitProb = MagicAsteroidBeltTerrainPlugin.MAX_PROBABILITY;
         }
 
         boolean impact = (float) Math.random() < hitProb;
@@ -180,7 +178,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
             FleetMemberAPI target = null;
             float damageMult = fleet.getCurrBurnLevel() - Misc.getGoSlowBurnLevel(fleet);
 
-            boolean doDamage = mem.is(IMPACT_RECENT, true);
+            boolean doDamage = mem.is(MagicAsteroidBeltTerrainPlugin.IMPACT_RECENT, true);
             doDamage &= (float) Math.random() * damageChanceMod.getModifiedValue() > 0.5f;
 
             if (doDamage) {
@@ -202,7 +200,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
                             break;
                     }
 
-                    MutableStat memberDamageChanceMod = m.getStats().getDynamic().getStat(IMPACT_DAMAGE_CHANCE);
+                    MutableStat memberDamageChanceMod = m.getStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_DAMAGE_CHANCE);
                     if (memberDamageChanceMod == null) {
                         memberDamageChanceMod = new MutableStat(1f);
                     }
@@ -218,7 +216,7 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
 
                     damageMult *= damageMod.getModifiedValue();
 
-                    MutableStat memberDamageMod = target.getStats().getDynamic().getStat(IMPACT_DAMAGE);
+                    MutableStat memberDamageMod = target.getStats().getDynamic().getStat(MagicAsteroidBeltTerrainPlugin.IMPACT_DAMAGE);
                     if (memberDamageMod == null) {
                         memberDamageMod = new MutableStat(1f);
                     }
@@ -229,18 +227,18 @@ public class MagicAsteroidFieldTerrainPlugin extends AsteroidFieldTerrainPlugin 
 
             fleet.addScript(new MagicAsteroidImpact(fleet, target, damageMult));
 
-            float damageWindow = MIN_DAMAGE_WINDOW;
+            float damageWindow = MagicAsteroidBeltTerrainPlugin.MIN_DAMAGE_WINDOW;
             damageWindow += (float) Math.random();
 
-            mem.set(IMPACT_SKIPPED, true, 0);
-            mem.set(IMPACT_RECENT, true, damageWindow);
+            mem.set(MagicAsteroidBeltTerrainPlugin.IMPACT_SKIPPED, true, 0);
+            mem.set(MagicAsteroidBeltTerrainPlugin.IMPACT_RECENT, true, damageWindow);
         } else {
-            mem.set(IMPACT_SKIPPED, true, Math.min(expire + DURATION_PER_SKIP,
-                    MAX_SKIPS_TO_TRACK * DURATION_PER_SKIP));
+            mem.set(MagicAsteroidBeltTerrainPlugin.IMPACT_SKIPPED, true, Math.min(expire + MagicAsteroidBeltTerrainPlugin.DURATION_PER_SKIP,
+                    MagicAsteroidBeltTerrainPlugin.MAX_SKIPS_TO_TRACK * MagicAsteroidBeltTerrainPlugin.DURATION_PER_SKIP));
         }
 
-        float timeout = MIN_TIMEOUT + (MAX_TIMEOUT - MIN_TIMEOUT) * (float) Math.random();
-        mem.set(IMPACT_TIMEOUT, true, timeout);
+        float timeout = MagicAsteroidBeltTerrainPlugin.MIN_TIMEOUT + (MagicAsteroidBeltTerrainPlugin.MAX_TIMEOUT - MagicAsteroidBeltTerrainPlugin.MIN_TIMEOUT) * (float) Math.random();
+        mem.set(MagicAsteroidBeltTerrainPlugin.IMPACT_TIMEOUT, true, timeout);
     }
 
     @Override

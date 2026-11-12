@@ -14,6 +14,7 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.loading.VariantSource;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -682,20 +683,33 @@ public class MagicFleetBuilder {
 
     private static FleetMemberAPI generateShip(@Nullable String variant, @Nullable String variantsPath, boolean autofit, boolean verbose) {
         ShipVariantAPI thisVariant = Global.getSettings().getVariant(variant);
-        //if the variant doesn't exist but a custom variant path is defined, try loading it
-        if (thisVariant == null && variantsPath != null) {
+        if (thisVariant != null) {
+            thisVariant = thisVariant.clone();
+        } else if (variantsPath != null) { // if the variant doesn't exist but a custom variant path is defined, try loading it
             thisVariant = MagicCampaign.loadVariant(variantsPath + variant + ".variant");
         }
-        if (thisVariant == null) {
+
+        if (thisVariant == null)
+            return null;
+
+        FleetMemberAPI ship;
+        try {
+            ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, thisVariant);
+        } catch (Exception e) {
+            log.error("Failed to create FleetMemberAPI: " + variant, e);
             return null;
         }
-        FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, thisVariant);
 
         if (ship != null) {
             ship.getVariant().addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
             //attempt at keeping the variants intact
             if (!autofit) {
-                ship.getVariant().addTag("no_autofit");
+                ship.getVariant().addTag(Tags.TAG_NO_AUTOFIT);
+                ship.getVariant().setSource(VariantSource.REFIT); // Prevents the no_autofit tag from being dropped on save and thus removed on load, losing the tag.
+                // Ideally the source shouldn't need to be REFIT if we got an unmodified variant from SettingsAPI.getVariant, it should be STOCK to reduce the size of the save file.
+                //    However, I couldn't find a way to force no autofit while keeping the source STOCK that works in all contexts.
+                //    Maybe an additional source added to the base-game would work, e.g. [VariantSource.STOCK_NO_AUTOFIT]. functions like STOCK but when loaded in save, the no_autofit tag is automatically added.
+                //    Although such a thing does not exist
             }
             if (verbose) log.info("Created " + variant);
             return ship;

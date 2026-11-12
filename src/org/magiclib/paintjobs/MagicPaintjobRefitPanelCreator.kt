@@ -1,15 +1,18 @@
 package org.magiclib.paintjobs
 
 
-import com.fs.starfarer.api.fleet.FleetMemberAPI
-import com.fs.starfarer.api.ui.*
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.ButtonAPI
+import com.fs.starfarer.api.ui.CutStyle
+import com.fs.starfarer.api.ui.UIPanelAPI
 import org.lwjgl.input.Keyboard
 import org.magiclib.ReflectionUtils
-import org.magiclib.internalextensions.*
-import java.awt.Color
+import org.magiclib.kotlin.internal.*
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.paintjobs.MagicPaintjobRefitPanel.createMagicPaintjobRefitPanel
 import org.magiclib.util.MagicTxt
+import org.magiclib.util.reflection.boxed.BoxedRefitTab
+import java.awt.Color
 
 /**
  * @author Starficz
@@ -17,13 +20,12 @@ import org.magiclib.util.MagicTxt
 internal object MagicPaintjobRefitPanelCreator {
     private val PAINTJOB_BUTTON_COLOR = Color(240, 160, 0, 130)
     private val PAINTJOB_BUTTON_TEXT_COLOR = PAINTJOB_BUTTON_COLOR.brighter().setAlpha(255)
-    fun addPaintjobButton(refitTab: UIPanelAPI, inCampaign: Boolean) {
-        val refitPanel = refitTab.findChildWithMethod("syncWithCurrentVariant") as? UIPanelAPI ?: return
-        val statsAndHullmodsPanel = refitPanel.findChildWithMethod("getColorFor") as? UIPanelAPI ?: return
+    fun addPaintjobButton(refitTab: BoxedRefitTab, inCampaign: Boolean) {
+        val statsAndHullmodsPanel = refitTab.refitPanel.findChildWithMethod("getColorFor") as? UIPanelAPI ?: return
         val hullmodsPanel = statsAndHullmodsPanel.findChildWithMethod("removeNotApplicableMods") as? UIPanelAPI ?: return
 
-        val fleetMember = ReflectionUtils.invoke("getMember", refitPanel) as? FleetMemberAPI
-        val existingElements = hullmodsPanel.getChildrenCopy()
+        val fleetMember = refitTab.getCurrentMember()
+        val existingElements = hullmodsPanel.childrenCopy2
         val lastElement = existingElements.lastOrNull() ?: return // if children is empty, return
 
         val paintjobButton = existingElements.filterIsInstance<ButtonAPI>().firstOrNull { button ->
@@ -40,8 +42,11 @@ internal object MagicPaintjobRefitPanelCreator {
         if (paintjobButton != null || buttonShouldNotExist) return
 
         // addHullmods button should always exist in hullmodsPanel
-        val addButton = existingElements.filter { ReflectionUtils.hasMethodOfName("getText", it) }.find {
-            (ReflectionUtils.invoke("getText", it) as String).contains(MagicTxt.getString("ml_mp_refit_vanillaHullmodAddButtonText"))
+        val addButton = existingElements.filter { ReflectionUtils.getMethodsMatching(it, "getText").isNotEmpty() }.find {
+            (ReflectionUtils.invoke(
+                it,
+                "getText",
+            ) as String).contains(MagicTxt.getString("ml_mp_refit_vanillaHullmodAddButtonText"))
         } ?: return
 
         // make a new button
@@ -61,16 +66,15 @@ internal object MagicPaintjobRefitPanelCreator {
         newPaintjobButton.setShortcut(Keyboard.KEY_S, true)
         newPaintjobButton.onClick {
             // width/height calcs here are to match vanilla's hullmod panel sizes when screen size grow/shrink
-            val width = if(inCampaign) (refitTab.width - 343).coerceIn(667f, 700f) else 667f
-            val height = if(inCampaign) (refitTab.height - 12).coerceIn(722f, 800f) else 722f
-            val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, refitPanel, width, height)
+            val width = if (inCampaign) (refitTab.width - 343).coerceIn(667f, 700f) else 667f
+            val height = if (inCampaign) (refitTab.height - 12).coerceIn(722f, 800f) else 722f
+            val paintjobPanel = createMagicPaintjobRefitPanel(refitTab, width, height)
 
-            val coreUI = ReflectionUtils.invoke("getCoreUI", refitPanel) as UIPanelAPI
-            coreUI.addComponent(paintjobPanel)
+            (refitTab.getCoreUI() as UIPanelAPI).addComponent(paintjobPanel)
 
             // the numbers might look like magic, but they are actually offsets from where the vanilla refit panel ends up.
             // the other calcs here do ensure correct relative placement
-            val xOffset = if(inCampaign) (refitTab.width - 1037).coerceIn(6f, 213f) else 6f
+            val xOffset = if (inCampaign) (refitTab.width - 1037).coerceIn(6f, 213f) else 6f
             paintjobPanel.xAlignOffset = refitTab.left - paintjobPanel.left + xOffset
             paintjobPanel.yAlignOffset = refitTab.top - paintjobPanel.top - 6
 

@@ -121,7 +121,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                     activeBounty.acceptBounty(dialog.getInteractionTarget(), activeBounty.calculateCreditReward(
                                     MagicBountyCoordinator.getInstance().getPreScalingCreditRewardMultiplier(),
                                     MagicBountyCoordinator.getInstance().getPostScalingCreditRewardMultiplier()),
-                            bounty.job_reputation_reward, bounty.job_forFaction);
+                            bounty.job_forFaction);
                     removeBountyFromBoard(bountyKey);
 
                     optionSelected(null, OptionId.BACK_TO_BOARD);
@@ -194,7 +194,7 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
 
                             //TEST TO ADD LOCATION MAP
                             SectorEntityToken arrowTarget = null;
-                            switch (bounty.job_show_distance) {
+                            switch (activeBounty.getShowDistance()) {
                                 case Exact:
                                     arrowTarget = activeBounty.getFleetSpawnLocation();
                                     break;
@@ -279,8 +279,9 @@ public final class MagicBountyBarEvent extends MagicPaginatedBarEvent {
                             }
 
                             //DISTANCE
-                            if (bounty.job_show_distance != MagicBountyLoader.ShowDistance.None) {
-                                switch (bounty.job_show_distance) {
+                            MagicBountyLoader.ShowDistance showDistance = activeBounty.getShowDistance();
+                            if (showDistance != MagicBountyLoader.ShowDistance.None) {
+                                switch (showDistance) {
                                     case Vague:
                                         float distance = activeBounty.getFleetSpawnLocation().getContainingLocation().getLocation().length();
                                         String vague = MagicTxt.getString("mb_distance_core");

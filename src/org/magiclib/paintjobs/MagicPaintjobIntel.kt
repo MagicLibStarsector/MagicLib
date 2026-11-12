@@ -61,7 +61,9 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
     override fun createLargeDescriptionImpl(panel: CustomPanelAPI, width: Float, height: Float) {
         val opad = 10f
         val pad = 3f
-        val pjs = MagicPaintjobManager.getPaintjobs().toList()
+        val pjs = MagicPaintjobManager.getPaintjobs(includeModules = false, includeWings = false, includeShiny = true).sortedBy {
+            it.hullIds.first()
+        }
         val mainGridTooltip = panel.createUIElement(width, height, true)
         val baseUnit = opad
         val scaleMult = 5f
@@ -190,7 +192,7 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         return createGrid(
             createFromThisPanel, width, height, cellHeight, cellWidth, padding, pjs
         ) { pjCellTooltip, row, pj, _, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
-            val isUnlocked = MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
+            val isUnlocked = pj.isUnlockable && MagicPaintjobManager.unlockedPaintjobIds.contains(pj.id)
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
             val cellUnderlay = cellPanel.createUIElement(cellWidth, cellHeight, false)
@@ -203,7 +205,11 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             addPaintjobHoverTooltipIfNeeded(pj, cellPanel, pjCellTooltip)
 
-            if (!isUnlocked) {
+            if(pj.isShiny){
+                val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
+                cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
+                cellOverlay.addPara(MagicTxt.getString("ml_mp_shiny_simple"), Color(255,215,0).darker(), pad).position.setXAlignOffset(12f)
+            } else if (!isUnlocked) {
                 val cellOverlay = cellPanel.createUIElement(80f, 10f, false)
                 cellPanel.addUIElement(cellOverlay).inTMid(imageSize / 2).setXAlignOffset(padding)
                 cellOverlay.addPara(MagicTxt.getString("ml_mp_locked"), Misc.getNegativeHighlightColor(), pad)
@@ -211,8 +217,13 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
 
             val shipsThatPjMayApplyTo = Global.getSector().playerFleet.fleetData.membersListCopy
                 .filter { it.hullSpec.baseHullId in pj.hullIds }
-                // If the ship is wearing a permanent paintjob, don't show it in the list.
-                .filter { MagicPaintjobManager.getCurrentShipPaintjob(it)?.isPermanent != true }
+                // If the ship is wearing a permanent or hidden paintjob, don't show it in the list.
+                .filter {
+                    val curPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(it)
+                        if(curPaintjob?.isPermanent != true) false
+                        else if(curPaintjob.isHidden != true) false
+                        else true
+                }
 
             if (shipsThatPjMayApplyTo.any()) {
                 val count = shipsThatPjMayApplyTo.count()
@@ -320,8 +331,12 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                 MagicPaintjobManager.getPaintjobsForHull(ship.hullSpec, includeShiny = false)
             val shipPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(ship)
 
-            val spriteName = ship.spriteOverride ?: shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
-            Global.getSettings().loadTexture(spriteName)
+            val spriteName = // ship.spriteOverride ?: // Note that spriteOverride may return an empty string instead of null, can cause issues if not handled.
+                shipPaintjob?.spriteId ?: ship.hullSpec.spriteName
+
+            if(shipPaintjob != null)
+                Global.getSettings().loadTexture(spriteName)
+
             val shipThumbnailPanel = row.createCustomPanel(imageSize, imageSize, null)
             val shipThumbnailUnderlay = shipThumbnailPanel.createUIElement(imageSize, imageSize, false)
             val shipThumbnailOverlay = shipThumbnailPanel.createUIElement(cellTooltip.widthSoFar, 22f, false)
@@ -405,8 +420,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
             }
 
             hoverElement.onClick { inputEvent ->
-                // If there are no paintjobs for this ship, or the paintjob is permanent, don't show the popup.
-                if (paintjobsForShip.none() || shipPaintjob?.isPermanent == true)
+                // If there are no paintjobs for this ship, or the paintjob is permanent or hidden, don't show the popup.
+                if (paintjobsForShip.none() || shipPaintjob?.isPermanent == true || shipPaintjob?.isHidden == true)
                     return@onClick
 
                 displayPaintjobsForShip()
@@ -685,6 +700,8 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
         ) { pjCellTooltip, row, paintjob, index, xPosOfCellOnRow, yPosOfCellOnRow, rowYPos ->
             val isWearingPj = MagicPaintjobManager.getCurrentShipPaintjob(ship)?.id == paintjob?.id
             val spriteName = paintjob?.spriteId ?: ship.hullSpec.spriteName
+            if(paintjob != null)
+                Global.getSettings().loadTexture(spriteName)
             val isUnlocked = paintjob == null || MagicPaintjobManager.unlockedPaintjobIds.contains(paintjob.id)
 
             val cellPanel = row.createCustomPanel(cellWidth, cellHeight, null)
@@ -701,7 +718,6 @@ class MagicPaintjobIntel : MagicRefreshableBaseIntelPlugin() {
                     setAlignment(Alignment.MID)
                 }
             val title = cellUnderlay.prev
-            Global.getSettings().loadTexture(spriteName)
 
             cellUnderlay.addImage(
                 spriteName, imageSize, imageSize, opad

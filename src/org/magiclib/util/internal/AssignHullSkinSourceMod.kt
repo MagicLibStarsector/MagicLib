@@ -1,0 +1,51 @@
+package org.magiclib.util.internal
+
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.ModSpecAPI
+import org.magiclib.ReflectionUtils.getFieldsMatching
+import org.magiclib.util.api.doesFileExist
+import org.magiclib.util.api.getActualHullId
+import org.magiclib.util.api.isSkin
+
+/**
+ * Sets the missing source mod field on modded hull skins by inferring it from the ship skin's `.skin` file, using reflection to set the field.
+ *
+ * In the base-game, modded ship skins never have a source mod. This is used to fix that.
+ */
+internal object AssignHullSkinSourceMod {
+    fun assignHullSkinSourceMods() {
+        Global.getLogger(this.javaClass).info("Assigning modded hull skin source mods (if present)...")
+        var count = 0
+        val allHullSpecs = Global.getSettings().allShipHullSpecs
+        allHullSpecs.forEach { hull ->
+            if (hull.sourceMod == null && hull.isSkin()) {
+                val sourceMod = getSourceModFromSkin(hull.getActualHullId())
+                if (sourceMod != null) {
+                    hull.getFieldsMatching(type = ModSpecAPI::class.java).getOrNull(0)?.set(hull, sourceMod)
+                    Global.getLogger(this.javaClass).info("Assigning modded hull skin source mod for ${hull.hullId} to modID ${sourceMod.id}.")
+                    count++
+                } else if (hull.shipFilePath.startsWith("data/hulls/")) { // Base game skins typically have a full file path. Mod skins starts with "data/hulls/"
+                    // This is not a base-game hull, yet no sourceMod was found.
+                    Global.getLogger(this.javaClass).info("Could not assign the modded hull skin source mod for ${hull.hullId} at path ${hull.shipFilePath}. Make sure the skinId and file name are equal.")
+                }
+            }
+        }
+
+        if (count > 0)
+            Global.getLogger(this.javaClass).info("Set modded hull skins source mods for $count hulls.")
+        else
+            Global.getLogger(this.javaClass).info("None present, no changes made.")
+    }
+
+    fun getSourceModFromSkin(hullId: String?): ModSpecAPI? {
+        val settings = Global.getSettings()
+
+        val filename = "data/hulls/skins/$hullId.skin"
+        settings.modManager.enabledModsCopy.forEach { mod ->
+            if (settings.doesFileExist(filename, mod.id))
+                return mod
+        }
+
+        return null
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "displayName": "Standard",
+    "fluxCapacitors": 10,
+    "fluxVents": 10,
+    "goalVariant": false,
+    "hullId": "nebula",
+    "hullMods": [],
+    "permaMods": ["ML_skinSwap"],
+    "variantId": "magiclib_nebula_Error",
+    "tags":["VARIANT_MADE_IN_ERROR", "ML_paintjob-magiclib_nebula_errorPaintjob"],
+    "weaponGroups": [{
+        "autofire": true,
+        "mode": "LINKED",
+        "weapons": {
+            "WS 001": "lightdualmg",
+            "WS 002": "lightdualmg",
+            "WS 003": "lightdualmg",
+            "WS 004": "lightdualmg"
+        }
+    }]
+    # Example lore safe description:
+    # During routine servicing, the ship's fabrication systems failed to fully resolve a valid livery profile, instead interpolating between incomplete data points. The resulting coloration is consistent but subtly incorrect, as though derived from an approximation rather than a defined template. The effect is harmless, though automated systems intermittently identify the hull as a different configuration before correcting themselves.
+}

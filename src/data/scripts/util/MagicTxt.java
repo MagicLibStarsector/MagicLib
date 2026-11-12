@@ -15,13 +15,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static data.scripts.util.MagicVariables.MAGICLIB_ID;
-
 @Deprecated
 public class MagicTxt {
 
     public static String getString(String id) {
-        return Global.getSettings().getString(MAGICLIB_ID, id);
+        return Global.getSettings().getString(MagicVariables.MAGICLIB_ID, id);
     }
 
     public static String nullStringIfEmpty(@Nullable String input) {

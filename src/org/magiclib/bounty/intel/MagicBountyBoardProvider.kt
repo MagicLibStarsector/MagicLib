@@ -9,9 +9,6 @@ class MagicBountyBoardProvider: BountyBoardProvider {
             .entries
             .distinctBy { it.key }
             .map { (key, spec) ->
-                if (spec.job_type == MagicBountyLoader.JobType.Assassination)
-                    AssassinationMagicBountyInfo(key, spec)
-                else
                     MagicBountyInfo(key, spec)
             }
     }

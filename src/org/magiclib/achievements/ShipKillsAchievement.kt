@@ -8,6 +8,7 @@ import com.fs.starfarer.api.combat.listeners.ApplyDamageResultAPI
 import com.fs.starfarer.api.combat.listeners.DamageListener
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.mission.FleetSide
+import org.magiclib.kotlin.magicJoinToString
 import org.magiclib.paintjobs.MagicPaintjobManager
 
 /**
@@ -27,10 +28,13 @@ import org.magiclib.paintjobs.MagicPaintjobManager
  * @property killCount Number of ships the player must kill to complete this achievement.
  * @property rewardedPaintjobIds Paintjob IDs to unlock when this achievement is completed.
  */
-abstract class ShipKillsAchievement(
+
+abstract class ShipKillsAchievement @JvmOverloads constructor(
     val playerShipHullIds: List<String>? = null,
     val killCount: Float,
-    val rewardedPaintjobIds: List<String>
+    val rewardedPaintjobIds: List<String> = emptyList(),
+    var generateDescription: Boolean = true,
+    var generateTooltip: Boolean = true,
 ) : MagicAchievement() {
     companion object {
         val shipIdToListener: MutableMap<String, SharedCombatDamageListener> =
@@ -73,11 +77,56 @@ abstract class ShipKillsAchievement(
         val ships = Global.getCombatEngine().ships
 
         for (ship in ships.filter { !it.isAlive && it.id !in killedShipIds }) {
-            processKill(shipIdToListener[ship.id]!!.damageInfoPerShipId[ship.id])
+            processKill(shipIdToListener[ship.id]?.damageInfoPerShipId[ship.id])
             killedShipIds.add(ship.id)
         }
 
         applyShipListeners(ships)
+    }
+
+    override fun getDescription(): String {
+        if (generateDescription) {
+            val sb = StringBuilder("Destroy ${killCount.toInt()} enemies")
+
+            if (playerShipHullIds?.isNotEmpty() == true) {
+                sb.append(
+                    " using a ${
+                        playerShipHullIds.magicJoinToString {
+                            runCatching {
+                                Global.getSettings().getHullSpec(it).hullName
+                            }.getOrDefault(it)
+                        }
+                    }"
+                )
+            }
+
+            sb.append(".")
+            return sb.toString()
+        } else {
+            return super.getDescription()
+        }
+    }
+
+    override fun getTooltip(): String? {
+        return if (generateTooltip && rewardedPaintjobIds.isNotEmpty()) {
+            buildString {
+                append("Awards the ")
+                append(
+                    rewardedPaintjobIds.magicJoinToString(
+                        twoElementSeparator = " and ",
+                        manyElementsFinalSeparator = ", and "
+                    ) {
+                        runCatching {
+                            MagicPaintjobManager.getPaintjob(it)!!.name
+                        }.getOrDefault(it)
+                    })
+                append(" paintjob")
+                if (rewardedPaintjobIds.size > 1) append("s")
+                append(" when completed.")
+            }
+        } else {
+            super.getTooltip()
+        }
     }
 
     override fun onDestroyed() {
@@ -124,7 +173,7 @@ abstract class ShipKillsAchievement(
         val playerDamageRatio = damageInfoPerShipId.amountFromPlayer / totalDamage
 
         if (playerDamageRatio >= (damageRatioOverride ?: damageRatio)) {
-            val maxProgress = maxProgress ?: return
+            val maxProgress = maxProgress
             val prev =
                 (achievementMemory["killsByHull${combatEngine.playerShip?.hullSpec?.hullId}"] as? String?)?.toIntOrNull()
                     ?: 0

@@ -21,21 +21,24 @@ import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin;
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin;
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldSource;
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
+import com.fs.starfarer.api.loading.VariantSource;
 import com.fs.starfarer.api.loading.WeaponGroupSpec;
 import com.fs.starfarer.api.loading.WeaponGroupType;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.campaign.MagicCaptainBuilder;
 import org.magiclib.campaign.MagicFleetBuilder;
+import org.magiclib.util.api.*;
+import org.magiclib.util.internal.MiscellaneousUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,64 +117,54 @@ public class MagicCampaign {
      * @param path variant file full path.
      * @return ship variant object
      */
-    //Credit to Rubi
     public static ShipVariantAPI loadVariant(String path) {
-        ShipVariantAPI variant = null;
+        return loadVariant(path, Level.WARN);
+    }
+
+    /**
+     * Creates a ship variant from a regular variant file.
+     * Used to create variants that requires different mods to be loaded.
+     *
+     * @param path variant file full path.
+     * @param level what level to log with if the variant cannot be loaded. OFF to disable logging.
+     * @return ship variant object
+     */
+    //Credit to Rubi
+    public static ShipVariantAPI loadVariant(String path, Level level) {
+        ShipVariantAPI variant;
         try {
             JSONObject obj = Global.getSettings().loadJSON(path);
             String displayName = obj.getString("displayName");
             int fluxCapacitors = obj.getInt("fluxCapacitors");
             int fluxVents = obj.getInt("fluxVents");
-            boolean goalVariant = false;
-            try {
-                goalVariant = obj.getBoolean("goalVariant");
-            } catch (JSONException ignored) {
-            }
+            boolean goalVariant = obj.optBoolean("goalVariant", false);
+
             String hullId = obj.getString("hullId");
             JSONArray hullMods = obj.getJSONArray("hullMods");
-            JSONArray modules = null;
-            try {
-                modules = obj.getJSONArray("modules");
-            } catch (JSONException ignored) {
-            }
+            JSONArray modules = obj.optJSONArray("modules");
             JSONArray permaMods = obj.getJSONArray("permaMods");
-            JSONArray sMods = null;
-            try {
-                sMods = obj.getJSONArray("sMods");
-            } catch (JSONException ignored) {
-            }
+            JSONArray sMods = obj.optJSONArray("sMods");
+
+            JSONArray sModdedBuiltIns = obj.optJSONArray("sModdedBuiltIns");
+
             //float quality = (float) obj.getDouble("quality"); not used/available in API
             String variantId = obj.getString("variantId");
             JSONArray weaponGroups = obj.getJSONArray("weaponGroups");
-            JSONArray wings = null;
-            try {
-                wings = obj.getJSONArray("wings");
-            } catch (JSONException ignored) {
-            }
+            JSONArray wings = obj.optJSONArray("wings");
 
-            variant = Global.getSettings().createEmptyVariant(variantId, Global.getSettings().getHullSpec(hullId));
+            var hullSpec = Global.getSettings().getHullSpec(hullId);
+
+            variant = HullUtils.createHullVariant(hullSpec);
+            variant.setHullVariantId(variantId);
+
+            int numBuiltIn = variant.getFittedWings().size();
+
+
             variant.setVariantDisplayName(displayName);
             variant.setNumFluxCapacitors(fluxCapacitors);
             variant.setNumFluxVents(fluxVents);
             variant.setGoalVariant(goalVariant);
-            // todo: check if order matters
-            if (sMods != null) {
-                for (int k = 0; k < sMods.length(); k++) {
-                    String sModId = sMods.getString(k);
-                    variant.addPermaMod(sModId, true);
-//                    variant.addPermaMod(sModId);
-                    variant.addMod(sModId);
-                }
-            }
-            if (permaMods != null) {
-                for (int j = 0; j < permaMods.length(); j++) {
-                    String permaModId = permaMods.getString(j);
-                    variant.addPermaMod(permaModId);
-                    if (!variant.getHullMods().contains(permaModId)) {
-                        variant.addMod(permaModId);
-                    }
-                }
-            }
+
             if (hullMods != null) {
                 for (int i = 0; i < hullMods.length(); i++) {
                     String hullModId = hullMods.getString(i);
@@ -180,21 +173,60 @@ public class MagicCampaign {
                     }
                 }
             }
+            if (permaMods != null) {
+                for (int j = 0; j < permaMods.length(); j++) {
+                    String permaModId = permaMods.getString(j);
+                    variant.addPermaMod(permaModId, false);
+                }
+            }
+            if (sMods != null) {
+                for (int k = 0; k < sMods.length(); k++) {
+                    String sModId = sMods.getString(k);
+                    variant.addPermaMod(sModId, true);
+                }
+            }
+            if(sModdedBuiltIns != null) {
+                for (int k = 0; k < sModdedBuiltIns.length(); k++) {
+                    String sModBuiltInId = sModdedBuiltIns.getString(k);
+                    variant.getSModdedBuiltIns().add(sModBuiltInId);
+                }
+            }
+
             if (modules != null) {
                 for (int m = 0; m < modules.length(); m++) {
                     JSONObject module = modules.getJSONObject(m);
-                    // todo this is a very inefficient way to do it (obj length always == 1)
-                    //  but I don't want to deal with Iterators
+                    // this is a very inefficient way to do it (obj length always == 1)
+                    // but I don't want to deal with Iterators
                     JSONArray slots = module.names();
                     for (int s = 0; s < slots.length(); s++) {
                         String slotId = slots.getString(s);
                         String moduleVariantId = module.getString(slotId);
-                        //todo *** Given moduleVariantId instead of path, create ShipVariantAPI using loadVariant() ***
-                        variant.setModuleVariant(slotId, Global.getSettings().getVariant(moduleVariantId));
+
+                        var moduleVariant = Global.getSettings().getVariant(moduleVariantId);
+                        if (moduleVariant == null) {
+                            int lastSlash = path.lastIndexOf("/");
+                            String modulePath = (lastSlash >= 0 ? path.substring(0, lastSlash + 1) : "") + moduleVariantId + ".variant";
+
+                            if (OtherUtils.doesFileExist(Global.getSettings(), modulePath)) {
+                                moduleVariant = loadVariant(modulePath, level);
+                                if (moduleVariant != null) {
+                                    variant.setModuleVariant(slotId, moduleVariant);
+                                } else {
+                                    log.log(level, "Failed to load module variant from " + modulePath);
+                                }
+                            } else {
+                                log.log(level, "Module variant " + moduleVariantId + " not found");
+                            }
+                        } else {
+                            // getVariant returns the shared stock variant, so change only the copy.
+                            ShipVariantAPI moduleCopy = moduleVariant.clone();
+                            moduleCopy.setSource(VariantSource.REFIT);
+                            variant.setModuleVariant(slotId, moduleCopy);
+                        }
                     }
                 }
             }
-            // todo maybe you can do something better with variant.getNonBuiltInWeaponSlots()?
+
             for (int wg = 0; wg < weaponGroups.length(); wg++) {
                 WeaponGroupSpec weaponGroupSpec = new WeaponGroupSpec(WeaponGroupType.LINKED);
                 JSONObject weaponGroup = weaponGroups.getJSONObject(wg);
@@ -202,30 +234,44 @@ public class MagicCampaign {
                 String mode = weaponGroup.getString("mode");
                 JSONObject weapons = weaponGroup.getJSONObject("weapons");
                 JSONArray slots = weapons.names();
-                for (int s = 0; s < slots.length(); s++) {
-                    String slotId = slots.getString(s);
-                    String weaponId = weapons.getString(slotId);
-                    variant.addWeapon(slotId, weaponId);
-                    weaponGroupSpec.addSlot(slotId);
+                if(slots != null) {
+                    for (int s = 0; s < slots.length(); s++) {
+                        String slotId = slots.getString(s);
+                        String weaponId = weapons.getString(slotId);
+                        if(MagicLookup.getWeaponSpec(weaponId) == null) {
+                            log.log(level, "Could not load ship variant at '" + path + "', returning null instead.\nWeapon with id '" + weaponId + "' not found");
+                            return null;
+                        }
+                        variant.addWeapon(slotId, weaponId);
+                        weaponGroupSpec.addSlot(slotId);
+                    }
                 }
                 weaponGroupSpec.setAutofireOnByDefault(autofire);
                 weaponGroupSpec.setType(WeaponGroupType.valueOf(mode));
+
+                //if(!weaponGroupSpec.getSlots().isEmpty())
                 variant.addWeaponGroup(weaponGroupSpec);
             }
             if (wings != null) {
-                int numBuiltIn = Global.getSettings().getVariant(variant.getHullSpec().getHullId() + "_Hull").getFittedWings().size();
                 for (int w = 0; w < wings.length(); w++) {
                     variant.setWingId(numBuiltIn + w, wings.getString(w));
                 }
             }
         } catch (Exception e) {
-            log.warn("could not load ship variant at " + path, e);
+            log.log(level, "Could not load ship variant at '" + path + "', returning null instead.", e);
+            return null;
+        }
+
+        if (VariantUtils.hasMissingSpecs(variant)) {
+            if(level != Level.OFF) {
+                String missingWarning = MiscellaneousUtil.findMissingElements$MagicLib(variant, true).buildMissingWarning();
+                log.warn(String.format("Could not load ship variant at '%s', returning null instead. More details below.\n%s", path, missingWarning));
+            }
+            return null;
         }
 
         //Maintain the S-mods through salvage
-        if (variant != null) {
-            variant.addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
-        }
+        variant.addTag(Tags.VARIANT_ALWAYS_RETAIN_SMODS_ON_SALVAGE);
 
         return variant;
     }
@@ -265,8 +311,9 @@ public class MagicCampaign {
         LocationAPI systemLocation = location.getContainingLocation();
         systemLocation.addEntity(fleet);
         fleet.setLocation(location.getLocation().x, location.getLocation().y);
-        if (order == FleetAssignment.PATROL_SYSTEM) {
-            fleet.addAssignment(order, target.getStarSystem().getStar(), 1000000f);
+        StarSystemAPI targetSystem = target.getStarSystem();
+        if (order == FleetAssignment.PATROL_SYSTEM && targetSystem != null) {
+            fleet.addAssignment(order, targetSystem.getStar(), 1000000f);
         } else {
             fleet.addAssignment(order, target, 1000000f);
         }
@@ -280,8 +327,8 @@ public class MagicCampaign {
         fleet.setTransponderOn(transponderOn);
 
         if (verbose) {
-            log.info("Spawned " + fleet.getName() + " around " + location.getId() + " in the " + location.getStarSystem().getId() + " system.");
-            log.info("Order: " + order.name() + ", target: " + target.getId() + " in the " + target.getStarSystem().getId() + " system.");
+            log.info("Spawned " + fleet.getName() + " around " + location.getId() + " in " + systemLocation.getName() + ".");
+            log.info("Order: " + order.name() + ", target: " + target.getId() + " in " + target.getContainingLocation().getName() + ".");
         }
     }
 
@@ -832,6 +879,8 @@ public class MagicCampaign {
 
         //checking trigger_marketFaction_any and trigger_marketFaction_alliedWith
         if (marketFaction_any != null && !marketFaction_any.isEmpty()) {
+            if(marketFaction_any.size() == 1 && marketFaction_any.get(0).equals("ALL")) // Special case to approve on ALL faction markets.
+                return true;
 
             for (String f : marketFaction_any) {
                 //skip non existing factions
@@ -1106,6 +1155,65 @@ public class MagicCampaign {
     }
     */
 
+    public enum SectorDistance {
+        /** Near the center of the sector, inside the core bounds. */
+        CORE,
+        /** Outside the core but still reasonably near the center. */
+        CLOSE,
+        /** Everything beyond {@link #CLOSE}. */
+        FAR;
+
+        private static final float CORE_THRESHOLD = 0.22f;
+        private static final float CLOSE_THRESHOLD = 0.43f;
+
+        private static final float ANCHOR_CENTER_SHIFT = 0.06f;
+        private static final String ANCHOR_SYSTEM_ID = "Corvus";
+
+        /**
+         * The point distances are measured from. (0,0) in vanilla, but when the anchor system exists it is moved towards the bottom left, closer to the actual center of the core worlds.
+         */
+        private static Vector2f getSectorCenter() {
+            SectorAPI sector = Global.getSector();
+            if (sector != null && sector.getStarSystem(ANCHOR_SYSTEM_ID) != null) {
+                float shift = -MagicVariables.getSectorSize() * ANCHOR_CENTER_SHIFT;
+                return new Vector2f(shift, shift);
+            }
+            return new Vector2f(0f, 0f);
+        }
+
+        /**
+         * Returns true if the given hyperspace location is within the core bounds.
+         * <p>
+         * This can be inaccurate when involving mods that add custom systems, such as Diable Avionics.
+         * The far away diable markets count as part of the core worlds, and thus stretch the core bounds outward.
+         * That makes this a somewhat unreliable function.
+         */
+        private static boolean isWithinCoreBounds(Vector2f hyperspaceLocation) {
+            Vector2f min = Misc.getCoreMin();
+            Vector2f max = Misc.getCoreMax();
+            return hyperspaceLocation.x >= min.x && hyperspaceLocation.x <= max.x
+                    && hyperspaceLocation.y >= min.y && hyperspaceLocation.y <= max.y;
+        }
+
+        /**
+         * Classifies {@code hyperspaceLocation} by its distance from the sector center, as a fraction of the sector size.
+         * <p>
+         * {@link #CORE} additionally requires the location to be within the core bounds.
+         */
+        public static SectorDistance fromLocation(Vector2f hyperspaceLocation) {
+            float dist = Misc.getDistance(getSectorCenter(), hyperspaceLocation);
+            float sectorSize = MagicVariables.getSectorSize();
+
+            if (dist < sectorSize * CORE_THRESHOLD && isWithinCoreBounds(hyperspaceLocation)) {
+                return CORE;
+            } else if (dist < sectorSize * CLOSE_THRESHOLD) {
+                return CLOSE;
+            } else {
+                return FAR;
+            }
+        }
+    }
+
     /**
      * Returns a random target SectorEntityToken given the following parameters:
      *
@@ -1222,10 +1330,10 @@ public class MagicCampaign {
                 for (String this_theme : seek_themes) {
                     if (s.hasTag(this_theme)) {
                         //sort systems by distances because that will come in handy later
-                        float dist = s.getLocation().length();
-                        if (dist < sector_width * 0.33f) {
+                        SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                        if (category == SectorDistance.CORE) {
                             systems_core.add(s);
-                        } else if (dist < sector_width * 0.66f) {
+                        } else if (category == SectorDistance.CLOSE) {
                             systems_close.add(s);
                         } else {
                             systems_far.add(s);
@@ -1241,10 +1349,10 @@ public class MagicCampaign {
                         //check for the 3 bland themes
                         if (s.getTags().contains("theme_misc_skip") || s.getTags().contains("theme_misc") || s.getTags().contains("theme_core_unpopulated")) {
                             //sort systems by distances because that will come in handy later
-                            float dist = s.getLocation().length();
-                            if (dist < sector_width * 0.33f) {
+                            SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                            if (category == SectorDistance.CORE) {
                                 systems_core.add(s);
-                            } else if (dist < sector_width * 0.66f) {
+                            } else if (category == SectorDistance.CLOSE) {
                                 systems_close.add(s);
                             } else {
                                 systems_far.add(s);
@@ -1257,10 +1365,10 @@ public class MagicCampaign {
             //if there isn't any THEME preference, let's add *everything*
             for (StarSystemAPI s : Global.getSector().getStarSystems()) {
                 //sort systems by distances because that will come in handy later
-                float dist = s.getLocation().length();
-                if (dist < sector_width * 0.33f) {
+                SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                if (category == SectorDistance.CORE) {
                     systems_core.add(s);
-                } else if (dist < sector_width * 0.66f) {
+                } else if (category == SectorDistance.CLOSE) {
                     systems_close.add(s);
                 } else {
                     systems_far.add(s);
@@ -1273,10 +1381,10 @@ public class MagicCampaign {
             if (defaultToAnyEntity) {
                 for (StarSystemAPI s : Global.getSector().getStarSystems()) {
                     //sort systems by distances because that will come in handy later
-                    float dist = s.getLocation().length();
-                    if (dist < sector_width * 0.33f) {
+                    SectorDistance category = SectorDistance.fromLocation(s.getLocation());
+                    if (category == SectorDistance.CORE) {
                         systems_core.add(s);
-                    } else if (dist < sector_width * 0.66f) {
+                    } else if (category == SectorDistance.CLOSE) {
                         systems_close.add(s);
                     } else {
                         systems_far.add(s);
@@ -1462,7 +1570,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (1)");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -1488,7 +1596,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (2)");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -1510,7 +1618,7 @@ public class MagicCampaign {
                     if (!validEntities.isEmpty()) {
                         if (verbose) {
                             SectorEntityToken picked = validEntities.pick();
-                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                            log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (3)");
                             return picked;
                         } else return validEntities.pick();
                     }
@@ -1549,7 +1657,7 @@ public class MagicCampaign {
 
                 if (verbose) {
                     SectorEntityToken picked = selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size() - 1));
-                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center");
+                    log.info("Selecting " + picked.getName() + ", in the " + picked.getContainingLocation().getName() + " system, " + picked.getContainingLocation().getLocation().length() + " (" + Misc.getDistanceLY(new Vector2f(), picked.getContainingLocation().getLocation()) + " LY) from the sector's center. (4)");
                     return picked;
                 } else
                     return selectedSystem.getAllEntities().get(MathUtils.getRandomNumberInRange(0, selectedSystem.getAllEntities().size() - 1));

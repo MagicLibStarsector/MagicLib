@@ -1,5 +1,8 @@
 package org.magiclib.paintjobs
 
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.combat.ShipAPI.HullSize
+import com.fs.starfarer.api.combat.ShipHullSpecAPI
 import java.awt.Color
 
 data class MagicPaintjobSpec @JvmOverloads constructor(
@@ -17,19 +20,72 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
     var tags: List<String>?,
     var engineSpec: PaintjobEngineSpec?,
     var shieldSpec: PaintjobShieldSpec?,
+    var miscSpec: PaintjobMiscSpec?,
     var paintjobFamily: String?
 ) {
+
+    /**
+     * Is this paintjob for a hull-module?
+     */
+    val isModuleHull: Boolean
+    /**
+     * Is this paintjob for a fighter hull
+     */
+    val isFighterHull: Boolean
+
+    init {
+        val spec = Global.getSettings().getHullSpec(hullIds.first())
+
+        isModuleHull = spec.hints.contains(ShipHullSpecAPI.ShipTypeHints.MODULE)
+        isFighterHull = spec.hullSize == HullSize.FIGHTER
+    }
+
+    private var shiny = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
+    /**
+     * Override if this paintjob is shiny or not with the input value.
+     *
+     * Loses effect on game restart
+     */
+    fun setShiny(value: Boolean) {
+        shiny = value
+    }
     val isShiny: Boolean
-        get() = tags?.contains(MagicPaintjobManager.PJTAG_SHINY) == true
+        get() = shiny
+
+    private var permanent = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
+    /**
+     * Override if this paintjob is permanent or not with the input value.
+     *
+     * Loses effect on game restart
+     */
+    fun setPermanent(value: Boolean) {
+        permanent = value
+    }
 
     val isPermanent: Boolean
-        get() = tags?.contains(MagicPaintjobManager.PJTAG_PERMA_PJ) == true || isShiny
+        get() = permanent
 
-    val isUnlockable = !isShiny
+    private val hidden = tags?.contains(MagicPaintjobManager.PJTAG_HIDDEN) == true
+    val isHidden: Boolean
+        get() = hidden
+
+    var _isUnlockable = false
+    /**
+     * Make this paintjob unlockable regardless of if this is not normally unlockable.
+     *
+     * Loses effect on game restart
+     */
+    fun setIsUnlockable(value: Boolean) {
+        _isUnlockable = value
+    }
+    val isUnlockable: Boolean
+        get() = _isUnlockable || (!isShiny && !isHidden)
 
     data class PaintjobEngineSpec(
         var color: Color?,
+        var campaignColor: Color?,
         var contrailColor: Color?,
+        var contrailCampaignColor: Color?,
         var	contrailSpawnDistMult: Float?,
         var	contrailWidthMultiplier: Float?,
         var	glowAlternateColor: Color?,
@@ -40,7 +96,14 @@ data class MagicPaintjobSpec @JvmOverloads constructor(
         var innerColor: Color?,
         var ringColor: Color?,
         var innerRotationRate: Float?,
-        var ringRotationRate: Float?,
+        var ringRotationRate: Float?
+    )
+
+    data class PaintjobMiscSpec(
+        var ventCoreColor: Color?,
+        var ventFringeColor: Color?,
+        var overloadColor: Color?,
+        var explosionFlashColor: Color?
     )
 }
 

@@ -2,6 +2,7 @@ package org.magiclib.bounty;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.comm.IntelManagerAPI;
@@ -17,14 +18,11 @@ import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.magiclib.LunaWrapper;
-import org.magiclib.LunaWrapperSettingsListener;
+import org.magiclib.MagicUserSettings;
 import org.magiclib.bounty.intel.BountyBoardIntelPlugin;
 import org.magiclib.bounty.intel.BountyBoardProvider;
-import org.magiclib.util.MagicCampaign;
-import org.magiclib.util.MagicSettings;
-import org.magiclib.util.MagicTxt;
-import org.magiclib.util.MagicVariables;
+import org.magiclib.util.*;
+import org.magiclib.util.api.FleetUtils;
 
 import java.util.*;
 
@@ -42,8 +40,9 @@ public final class MagicBountyCoordinator {
     private static MagicBountyCoordinator instance;
     private static final long MILLIS_PER_DAY = 86400000L;
     private static final Logger LOG = Global.getLogger(MagicBountyCoordinator.class);
-    private static Boolean DEADLINES_ENABLED = false;
+    private static Boolean DEADLINES_ENABLED = true;
     private static final String isIntelImportantMemKey = "$magiclib_isBountyIntelImportant";
+    public static final String STAGED_BOUNTY_FLEETS_KEY = "ml_stagedBountyFleets";
 
     @NotNull
     public static MagicBountyCoordinator getInstance() {
@@ -67,18 +66,12 @@ public final class MagicBountyCoordinator {
 
         initIntel();
 
-        if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
-            LunaWrapper.addSettingsListener(new LunaWrapperSettingsListener() {
-                @Override
-                public void settingsChanged(@NotNull String s) {
-                    DEADLINES_ENABLED = LunaWrapper.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines");
+        MagicUserSettings.addSettingsListener(MagicVariables.MAGICLIB_ID, s -> {
+            DEADLINES_ENABLED = MagicUserSettings.getBoolean(MagicVariables.MAGICLIB_ID, "magiclib_enableBountyDeadlines", DEADLINES_ENABLED);
+        });
 
-                    if (DEADLINES_ENABLED == null) {
-                        DEADLINES_ENABLED = false;
-                    }
-                }
-            });
-        }
+        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY))
+            Global.getSector().getPersistentData().put(STAGED_BOUNTY_FLEETS_KEY, new HashMap<String, CampaignFleetAPI>());
     }
 
     @Nullable
@@ -125,9 +118,6 @@ public final class MagicBountyCoordinator {
     private final static String COMPLETED_BOUNTIES_MEMORY_KEY = "$MagicBounties_completed_keys";
     private final static String BOUNTIES_MARKETBOUNTIES_KEY = "$MagicBounties_bountyBar_bountykeys_";
     private final static String BOUNTIES_SEED_KEY = "$MagicBounties_bountyBarGenSeed";
-    // Default 90
-    private final long UNACCEPTED_BOUNTY_LIFETIME_MILLIS =
-            MagicSettings.getInteger(MagicVariables.MAGICLIB_ID, "bounty_boardRefreshTimePerMarketInDays") * MILLIS_PER_DAY;
 
     /**
      * The multiplier to apply BEFORE any other scaling is applied.
@@ -169,26 +159,51 @@ public final class MagicBountyCoordinator {
     private void cleanUpBounties() {
         for (Iterator<Map.Entry<String, ActiveBounty>> iterator = activeBountiesByKey.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, ActiveBounty> entry = iterator.next();
-            long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - entry.getValue().getBountyCreatedTimestamp());
+            var activeBounty = entry.getValue();
 
-            // Clear out old bounties that were never accepted after UNACCEPTED_BOUNTY_LIFETIME_MILLIS days.
-            if (timestampSinceBountyCreated > UNACCEPTED_BOUNTY_LIFETIME_MILLIS && entry.getValue().getStage() == ActiveBounty.Stage.NotAccepted && getDeadlinesEnabled()) {
+            /*
+            long timestampSinceBountyCreated = Math.max(0, Global.getSector().getClock().getTimestamp() - activeBounty.getBountyCreatedTimestamp());
+            long daysSinceAccepted = timestampSinceBountyCreated / MILLIS_PER_DAY;
+
+            int tempVariableDaysUntilExpire = 90; // temp: get from bounty config like from below when setup
+            //activeBounty.getSpec().job_expire_time // Example
+
+            // Clear out old bounties that were never accepted after daysUntilExpire days.
+            if (tempVariableDaysUntilExpire != -1 && daysSinceAccepted >= tempVariableDaysUntilExpire && activeBounty.getStage() == ActiveBounty.Stage.NotAccepted) {
                 LOG.info(
                         String.format("Removing expired bounty '%s' (not accepted after %d days), \"%s\"",
                                 entry.getKey(),
-                                timestampSinceBountyCreated / MILLIS_PER_DAY,
-                                entry.getValue().getSpec().job_name));
-                entry.getValue().endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
+                                daysSinceAccepted,
+                                activeBounty.getSpec().job_name));
+                activeBounty.endBounty(new ActiveBounty.BountyResult.ExpiredWithoutAccepting());
+                //BountyBoardIntelPlugin.Companion.removeNotifiedBounty(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
                 try {
                     iterator.remove();
                 } catch (Exception e) {
                     LOG.warn("Error removing bounty " + entry.getKey(), e);
                 }
-            } else if (entry.getValue().getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
-                    && entry.getValue().getIntel() == null) {
+            } else */
+            if (activeBounty.getStage().ordinal() >= ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()
+                    && activeBounty.getIntel() == null) {
                 // Remove bounties that have completed and the intel has timed out.
                 iterator.remove();
-                getCompletedBounties().add(entry.getKey());
+
+                String isRepeatable = activeBounty.getSpec().job_repeatable;
+                if(isRepeatable == null) {
+                    getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
+                } else if(isRepeatable.equals("always")) {
+                    BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                } else if(isRepeatable.equals("if_expired")) {
+                    if(activeBounty.getStage() == ActiveBounty.Stage.ExpiredAfterAccepting || activeBounty.getStage() == ActiveBounty.Stage.ExpiredWithoutAccepting)
+                        BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                    else
+                        getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
+                } else if(isRepeatable.equals("if_fail")) {
+                    if(activeBounty.getStage() != ActiveBounty.Stage.Succeeded && activeBounty.getStage() != ActiveBounty.Stage.Dismissed)
+                        BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(entry.getKey()); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
+                    else
+                        getCompletedBounties().add(entry.getKey()); // No longer see this bounty in the future
+                }
             }
         }
     }
@@ -272,17 +287,9 @@ public final class MagicBountyCoordinator {
 
             //CHECK FOR EXISTING FLEET
             if (bountySpec.existing_target_memkey != null) {
-                boolean targetFleetGone = true;
-                for (StarSystemAPI s : Global.getSector().getStarSystems()) {
-                    for (CampaignFleetAPI f : s.getFleets()) {
-                        if (f.getMemoryWithoutUpdate().contains(bountySpec.existing_target_memkey)) {
-                            targetFleetGone = false;
-                            break;
-                        }
-                    }
-                    if (!targetFleetGone) break;
-                }
-                if (targetFleetGone) continue;
+                CampaignFleetAPI targetFleet = getExistingTarget(bountySpec.existing_target_memkey);
+                if (targetFleet == null)
+                    continue;
             }
 
             ActiveBounty activeBounty = getActiveBounty(bountyKey);
@@ -346,10 +353,32 @@ public final class MagicBountyCoordinator {
         String key = BOUNTIES_SEED_KEY;
 
         if (!memoryWithoutUpdate.contains(key) && memoryWithoutUpdate.getLong(key) != 0L) {
-            memoryWithoutUpdate.set(key, Misc.genRandomSeed(), 30f);
+            memoryWithoutUpdate.set(key, Misc.genRandomSeed(), 30f); // If the seed doesn't exist, getLong would always return 0L and thus this code would never be reachable right? Figure this out later.
         }
 
         return Objects.hash(memoryWithoutUpdate.getLong(key) + marketAPI.getId());
+    }
+
+    @Nullable
+    private SectorEntityToken getSuitableTargetLocation(MagicBountySpec spec) {
+        SectorEntityToken suitableTargetLocation;
+        List<String> themeBlocklist = new ArrayList<>(spec.location_themes_blacklist);
+        themeBlocklist.addAll(getBlocklistedThemes());
+
+        suitableTargetLocation = MagicCampaign.findSuitableTarget(
+                spec.location_marketIDs,
+                spec.location_marketFactions,
+                spec.location_distance,
+                spec.location_themes,
+                themeBlocklist,
+                spec.location_entities,
+                //spec.location_defaultToAnySystem,
+                spec.location_defaultToAnyEntity,
+                spec.location_prioritizeUnexplored,
+                Global.getSettings().isDevMode()
+        );
+
+        return suitableTargetLocation;
     }
 
     public ActiveBounty createActiveBounty(String bountyKey, MagicBountySpec spec) {
@@ -360,40 +389,25 @@ public final class MagicBountyCoordinator {
 
         //CHECK IF THE BOUNTY IS ON A NEW FLEET OR EXISTING ONE
         if (spec.existing_target_memkey != null) {
-
             //the bounty is on an existing fleet, so this is pretty quick, the fleet must exist otherwise the bounty cannot be offered
-            for (StarSystemAPI s : Global.getSector().getStarSystems()) {
-                for (CampaignFleetAPI f : s.getFleets()) {
-                    if (f.getMemoryWithoutUpdate().contains(spec.existing_target_memkey)) {
-                        fleet = f;
-                        break;
-                    }
-                }
-                if (fleet != null) break;
-            }
+            fleet = getExistingTarget(spec.existing_target_memkey);
+
             if (fleet == null) {
                 Global.getLogger(MagicBountyCoordinator.class).error("Existing fleet couldn't be found for bounty " + bountyKey);
                 return null;
             }
-            suitableTargetLocation = fleet.getCurrentAssignment().getTarget();
 
+            if (fleet.getCurrentAssignment() != null)
+                suitableTargetLocation = fleet.getCurrentAssignment().getTarget();
+            if (!fleet.isAlive() || suitableTargetLocation == null)
+                suitableTargetLocation = getSuitableTargetLocation(spec);
+
+            if (suitableTargetLocation == null) {
+                Global.getLogger(MagicBountyCoordinator.class).error("No suitable spawn location could be found for bounty " + bountyKey);
+                return null;
+            }
         } else {
-            List<String> themeBlocklist = new ArrayList<>(spec.location_themes_blacklist);
-            themeBlocklist.addAll(getBlocklistedThemes());
-
-            //the bounty has to create the fleet
-            suitableTargetLocation = MagicCampaign.findSuitableTarget(
-                    spec.location_marketIDs,
-                    spec.location_marketFactions,
-                    spec.location_distance,
-                    spec.location_themes,
-                    themeBlocklist,
-                    spec.location_entities,
-                    //spec.location_defaultToAnySystem,
-                    spec.location_defaultToAnyEntity,
-                    spec.location_prioritizeUnexplored,
-                    Global.getSettings().isDevMode()
-            );
+            suitableTargetLocation = getSuitableTargetLocation(spec);
 
             if (suitableTargetLocation == null) {
                 Global.getLogger(MagicBountyCoordinator.class).error("No suitable spawn location could be found for bounty " + bountyKey);
@@ -403,8 +417,7 @@ public final class MagicBountyCoordinator {
             PersonAPI captain = spec.target_importantPersonId != null
                     ? Global.getSector().getImportantPeople().getPerson(spec.target_importantPersonId)
                     : MagicCampaign.createCaptainBuilder(MagicTxt.nullStringIfEmpty(spec.fleet_composition_faction))
-                    // because apparently putting null in the json shows up as "null", a string...
-                    .setIsAI(spec.target_aiCoreId != null && !spec.target_aiCoreId.equals("null"))
+                    .setIsAI(spec.target_aiCoreId != null)
                     .setAICoreType(spec.target_aiCoreId)
                     .setFirstName(MagicTxt.nullStringIfEmpty(spec.target_first_name))
                     .setLastName(MagicTxt.nullStringIfEmpty(spec.target_last_name))
@@ -446,12 +459,10 @@ public final class MagicBountyCoordinator {
                 return null;
             }
 
-            // Add both a constant tag to the fleet as well as the bounty key that it is for.
-            fleet.addTag(MagicBountyLoader.BOUNTY_FLEET_TAG);
-            fleet.addTag(bountyKey);
-
             fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORES_OTHER_FLEETS, true);
             fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_DO_NOT_IGNORE_PLAYER, true);
+
+            fleet.getMemoryWithoutUpdate().set(MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS, true);
 
             // Set fleet to max CR
             for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy()) {
@@ -459,10 +470,29 @@ public final class MagicBountyCoordinator {
             }
         }
 
+        // Add both a constant tag to the fleet as well as the bounty key that it is for.
+        fleet.addTag(MagicBountyLoader.BOUNTY_FLEET_TAG);
+        fleet.addTag(bountyKey);
+
+        if(spec.fleet_musicSetId != null && !spec.fleet_musicSetId.isEmpty())
+            fleet.getMemoryWithoutUpdate().set("$combatMusicSetId", "music_combat_before_custom"); // Set default ambiance music before deployment. This will be overridden by the custom music after combat has unpaused.
+
         ActiveBounty newBounty = new ActiveBounty(bountyKey, fleet, suitableTargetLocation, presetShipIds, spec);
 
         getActiveBounties().put(bountyKey, newBounty);
         configureBountyListeners();
+
+        String auto_accept = spec.job_auto_accept;
+        if(auto_accept != null) {
+            if(auto_accept.equals("always")) {
+                newBounty.acceptBounty(Global.getSector().getPlayerFleet(), spec.job_reputation_reward, spec.job_forFaction);
+            } else if(auto_accept.equals("seen") && !fleet.hasScriptOfClass(MagicBountyFleetListener.class)) {
+                newBounty.ensureFleetInSector();
+                newBounty.acceptedBountyTimestamp = Global.getSector().getClock().getTimestamp();
+                fleet.addScript(new MagicBountyFleetListener(newBounty));
+            }
+        }
+
         return newBounty;
     }
 
@@ -473,18 +503,37 @@ public final class MagicBountyCoordinator {
         Collection<ActiveBounty> bounties = getActiveBounties().values();
 
         for (ActiveBounty bounty : bounties) {
-            boolean doesBountyHaveListener = false;
+            boolean doesBountyHaveBattleListener = false;
 
             for (FleetEventListener eventListener : bounty.getFleet().getEventListeners()) {
                 if (eventListener instanceof MagicBountyBattleListener) {
-                    doesBountyHaveListener = true;
-                    break;
+                    doesBountyHaveBattleListener = true;
+                    // Attempt to add this bounty key if it doesn't already exist, along with the already present one. This lets multiple bounties target the same fleet.
+                    ((MagicBountyBattleListener) eventListener).addBountyKey(bounty.getKey());
                 }
             }
 
-            if (!doesBountyHaveListener) {
+            if (!doesBountyHaveBattleListener)
                 bounty.getFleet().addEventListener(new MagicBountyBattleListener(bounty.getKey()));
-            }
+        }
+    }
+
+    /**
+     * Ends an active bounty and removes the bounty from the active bounties map. Additionally removes this bounty from the completed bounty list, and removes that this bounty has been notified to the player. The bounty must be active for this to function.
+     * <p>
+     * Example Reason: `new ActiveBounty.BountyResult.ExpiredWithoutAccepting()`
+     *
+     * @param bountyKey The key of the bounty to remove.
+     * @param reason The reason for removing the bounty.
+     */
+    private void removeBounty(@NotNull String bountyKey, @NotNull ActiveBounty.BountyResult reason) {
+        ActiveBounty activeBounty = getActiveBounty(bountyKey);
+        if (activeBounty != null) {
+            if(activeBounty.getStage().ordinal() < ActiveBounty.Stage.FailedSalvagedFlagship.ordinal()) // Bounty has not finished in any way?
+                activeBounty.endBounty(reason); // Call the end method
+            getActiveBounties().remove(bountyKey); // Remove active bounty
+            getCompletedBounties().remove(bountyKey); // Allow bounty to be created again.
+            BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(bountyKey); // Prevent immediate re-show in bounty board, and re-notify the player when this bounty can appear again.
         }
     }
 
@@ -502,38 +551,119 @@ public final class MagicBountyCoordinator {
             MagicBountySpec spec = activeBounty.getSpec();
 
             if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
-                Global.getSector().getMemoryWithoutUpdate().set(spec.job_memKey, null);
-            }
-
-            MagicBountyIntel intel = activeBounty.getIntel();
-
-            if (intel != null) {
-                intel.endImmediately();
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey);
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_expired");
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_succeeded");
+                Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_failed");
             }
 
             if (spec.existing_target_memkey == null || spec.existing_target_memkey.isEmpty()) {
                 //Do not despawn bounties placed on existing fleets
                 activeBounty.despawn();
             }
-            activeBounty.endIntel();
+            activeBounty.endIntelWithoutPlayerInvolvement();
+
+            MagicBountyIntel intel = activeBounty.getIntel();
+            if (intel != null) {
+                intel.endImmediately();
+            }
 
             // With the intel expired, move bounty to Completed list.
             cleanUpBounties();
             // Then remove it from the list.
             getCompletedBounties().remove(bountyKey);
+            // Then remove the player being notified of it.
+            BountyBoardIntelPlugin.getUserNotifiedBountyIds().remove(bountyKey);
             // Then reload.
             MagicBountyLoader.loadBountiesFromJSON(false);
         } else {
             MagicBountySpec spec = MagicBountyLoader.BOUNTIES.get(bountyKey);
+            if(spec == null) {
+                MagicBountyLoader.loadBountiesFromJSON(false);
+                spec = MagicBountyLoader.BOUNTIES.get(bountyKey);
+            }
 
             if (spec != null) {
                 if (MagicTxt.nullStringIfEmpty(spec.job_memKey) != null) {
                     Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey);
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_expired");
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_succeeded");
+                    Global.getSector().getMemoryWithoutUpdate().unset(spec.job_memKey + "_failed");
                 }
             } else {
                 throw new RuntimeException(String.format("Couldn't find %s.", bountyKey));
             }
         }
+    }
+
+    /**
+     * Stages a not yet spawned in sector fleet under the given memory key so a bounty can target it via {@code existing_target_memkey}.
+     * <p>
+     * Replaces any existing fleet staged under the same memory key.
+     * <p>
+     * Staged fleets are automatically removed when the relevant ActiveBounty is accepted, as the fleet is now placed in the sector.
+     * <p>
+     * Typically retrieved via {@link #getExistingTarget(String)}.
+     *
+     * @param fleet                the fleet to stage
+     * @param existingTargetMemkey the memory key the bounty refers to
+     */
+    public static void addStagedFleet(@NotNull CampaignFleetAPI fleet, @NotNull String existingTargetMemkey) {
+        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY))
+            Global.getSector().getPersistentData().put(STAGED_BOUNTY_FLEETS_KEY, new HashMap<String, CampaignFleetAPI>());
+
+        @SuppressWarnings("unchecked")
+        Map<String, CampaignFleetAPI> stagedFleets = (Map<String, CampaignFleetAPI>) Global.getSector().getPersistentData().get(STAGED_BOUNTY_FLEETS_KEY);
+
+        stagedFleets.put(existingTargetMemkey, fleet);
+    }
+
+    /**
+     * Removes the fleet staged in sector persistent data. The fleet remains if it exists in the sector.
+     *
+     * @param existingTargetMemkey the memory key the bounty refers to
+     */
+    public static void removeStagedFleet(@NotNull String existingTargetMemkey) {
+        if(!Global.getSector().getPersistentData().containsKey(STAGED_BOUNTY_FLEETS_KEY))
+            Global.getSector().getPersistentData().put(STAGED_BOUNTY_FLEETS_KEY, new HashMap<String, CampaignFleetAPI>());
+
+        @SuppressWarnings("unchecked")
+        Map<String, CampaignFleetAPI> stagedFleets = (Map<String, CampaignFleetAPI>) Global.getSector().getPersistentData().get(STAGED_BOUNTY_FLEETS_KEY);
+
+        stagedFleets.remove(existingTargetMemkey);
+    }
+
+    /**
+     * Returns the fleet with the given memory key set, or null if none is found.
+     * <p>
+     * Checks the staged fleets in the sector's persistent data first
+     * ({@code STAGED_BOUNTY_FLEETS_KEY}), then searches every star system.
+     *
+     * @param existingTargetMemkey the memory key to look for
+     */
+    @Nullable
+    public static CampaignFleetAPI getExistingTarget(@NotNull String existingTargetMemkey) {
+        SectorAPI sector = Global.getSector();
+
+        @SuppressWarnings("unchecked")
+        Map<String, CampaignFleetAPI> stagedFleets = (Map<String, CampaignFleetAPI>) sector.getPersistentData().get(STAGED_BOUNTY_FLEETS_KEY);
+
+        if (stagedFleets != null) {
+            CampaignFleetAPI staged = stagedFleets.get(existingTargetMemkey);
+            if (staged != null) {
+                return staged;
+            }
+        }
+
+        for (StarSystemAPI system : sector.getStarSystems()) {
+            for (CampaignFleetAPI fleet : system.getFleets()) {
+                if (fleet.getMemoryWithoutUpdate().contains(existingTargetMemkey)) {
+                    return fleet;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

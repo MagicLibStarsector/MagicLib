@@ -155,8 +155,13 @@ public class MagicAchievement {
         }
 
         saveChangesWithoutLogging();
-        onCompleted(completedByPlayer);
-        getLogger().info("Achievement completed! " + spec.getId());
+        try {
+            onCompleted(completedByPlayer);
+        } finally {
+            // The achievement is already saved as complete, so tell listeners even if onCompleted threw.
+            getLogger().info("Achievement completed! " + spec.getId());
+            MagicAchievementManager.getInstance().notifyAchievementCompleted(this, completedByPlayer);
+        }
     }
 
     public void onCompleted(@Nullable PersonAPI completedByPlayer) {
@@ -257,7 +262,9 @@ public class MagicAchievement {
             JSONObject memJson = jsonObject.optJSONObject("memory");
 
             if (memJson != null) {
-                for (Iterator<String> it = memJson.keys(); it.hasNext(); ) {
+                @SuppressWarnings("unchecked")
+                Iterator<String> it = memJson.keys();
+                while (it.hasNext()) {
                     String key = it.next();
                     memory.put(key, memJson.get(key));
                 }
@@ -278,6 +285,21 @@ public class MagicAchievement {
         }
 
         return logger;
+    }
+
+    /**
+     * True by default. Override and return false to avoid loading this achievement; for example, to hide it until another achievement is completed.
+     * <p>
+     * While it returns false, its other methods are not called and it isn't shown in the
+     * Intel screen.
+     * <p>
+     * Checked on game start, on save load, after each game save, after any achievement is completed,
+     * and whenever {@link MagicAchievementManager#reloadAchievements(boolean)} runs.
+     *
+     * @since 1.6.0
+     */
+    public boolean shouldLoad() {
+        return true;
     }
 
     /**
@@ -567,6 +589,7 @@ public class MagicAchievement {
      * @deprecated Use {@link #getAchievementMemory()} instead.
      * The method has been renamed to avoid confusion with the vanilla MemoryAPI, which is not persisted outside of saves.
      */
+    @Deprecated
     public @NotNull Map<String, Object> getMemory() {
         if (Global.getSector() == null) return memory;
 

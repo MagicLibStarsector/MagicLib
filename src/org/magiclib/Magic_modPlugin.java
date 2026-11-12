@@ -1,10 +1,14 @@
 package org.magiclib;
 
-import com.fs.starfarer.api.BaseModPlugin;
-import com.fs.starfarer.api.EveryFrameScript;
-import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.*;
+import com.fs.starfarer.api.campaign.RepLevel;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.thoughtworks.xstream.XStream;
+import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
+import org.json.JSONException;
+import org.magiclib.util.MagicModVersions;
+import org.magiclib.util.internal.IncompatibleModChecker;
+import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
 import org.magiclib.achievements.TestingAchievementSpec;
@@ -18,13 +22,21 @@ import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
+import org.magiclib.util.taskscheduler.CombatTaskScheduler;
+import org.magiclib.util.taskscheduler.SectorTaskScheduler;
 
 import java.awt.*;
+import java.util.UUID;
 
 /**
  * Master ModPlugin for MagicLib. Handles all the loading of data and scripts.
  */
+@SuppressWarnings("deprecation")
 public class Magic_modPlugin extends BaseModPlugin {
+    //static {
+    //    IncompatibleModChecker.INSTANCE.check$MagicLib(); // Pause and crash as early as possible if a mod is incompatible.
+    //}
+    // TODO... LEAVE THIS TO NUMAN TO FIX! // test on 0.98.5a // test with fast-render mod. Move to onApplicationLoad if needed. Remove suspend call if needed.
 
     ////////////////////////////////////////
     //                                    //
@@ -46,6 +58,7 @@ public class Magic_modPlugin extends BaseModPlugin {
             throw new ClassNotFoundException(message);
         }
 
+        MagicLookup.INSTANCE.isSetup(); // Triggers MagicLookup's init on first access, which sets up MagicLookup.
 
         //dev-mode pre-loading the bounties to throw a crash if the JSON is messed up on merge
         if (Global.getSettings().isDevMode()) {
@@ -72,10 +85,19 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_test_mode");
 
-        MagicAchievementManager.getInstance();
         MagicAchievementManager.getInstance().onApplicationLoad();
 
         MagicPaintjobManager.onApplicationLoad();
+
+        if ("nebula_Standard".equals(Global.getSettings().getString("errorShipVariant"))) { // If errorShipVariant is unmodified
+            if (Global.getSettings().doesVariantExist("magiclib_nebula_Error")) { // Assure custom variant exists
+                try { Global.getSettings().getSettingsJSON().put("errorShipVariant", "magiclib_nebula_Error"); } // Set new errorShipVariant
+                catch (JSONException ignored) {} // This isn't critical behavior, so no need to do anything if it did not work
+            }
+        }
+        if(!Global.getSettings().doesVariantExist(Global.getSettings().getString("errorShipVariant"))) {
+            throw new RuntimeException("The errorShipVariant of ID '" + Global.getSettings().getString("errorShipVariant") + "' does not exist");
+        }
 
         MagicSubsystemsManager.initialize();
     }
@@ -98,6 +120,8 @@ public class Magic_modPlugin extends BaseModPlugin {
         MagicVariables.loadThemesBlacklist();
         MagicVariables.verbose = Global.getSettings().isDevMode();
         MagicVariables.bounty_test_mode = MagicSettings.getBoolean(MagicVariables.MAGICLIB_ID, "bounty_board_test_mode");
+
+        MagicLookup.INSTANCE.setup$MagicLib(); // Setup MagicLookup again for any changed specs if necessary.
     }
 
     ////////////////////////////////////////
@@ -106,6 +130,7 @@ public class Magic_modPlugin extends BaseModPlugin {
     //                                    //
     ////////////////////////////////////////
 
+    private MagicCampaignTrailPlugin magicCampaignTrailPlugin;
     @Override
     public void onGameLoad(boolean newGame) {
         data.scripts.Magic_modPlugin.onGameLoad(newGame);
@@ -116,14 +141,31 @@ public class Magic_modPlugin extends BaseModPlugin {
         //Add industry item wrangler
         SectorAPI sector = Global.getSector();
         if (sector != null) {
+            sector.addTransientScript(new MagicModVersions());
+            if (!sector.getPersistentData().containsKey("ml_uniqueSaveId"))
+                sector.getPersistentData().put("ml_uniqueSaveId", sector.getSeedString() + "_" + UUID.randomUUID());
+
             sector.addTransientScript(new MagicPaintjobCampaignRefitAdder());
+
+            var paintjobCampaignApplier = new MagicPaintjobCampaignApplier();
+            sector.addTransientScript(paintjobCampaignApplier);
+            sector.getListenerManager().addListener(paintjobCampaignApplier, true);
+
             sector.addTransientListener(new MagicIndustryItemWrangler());
-            sector.addTransientScript(new MagicCampaignTrailPlugin());
+
+            magicCampaignTrailPlugin = new MagicCampaignTrailPlugin();
+            sector.addTransientScript(magicCampaignTrailPlugin);
+
+            var sectorTaskScheduler = new SectorTaskScheduler();
+            sector.addTransientScript(sectorTaskScheduler);
+            SectorTaskScheduler.Companion.setActive$MagicLib(sectorTaskScheduler);
         }
 
         MagicVariables.checkBountySystems();
 
         if (MagicVariables.getMagicBounty()) {
+            Global.getSector().getPlayerFaction().setRelationship(MagicVariables.BOUNTY_FACTION, RepLevel.HOSTILE);
+
             if (newGame) {
                 //add all bounties on a new game
                 MagicBountyLoader.loadBountiesFromJSON(false);
@@ -158,10 +200,13 @@ public class Magic_modPlugin extends BaseModPlugin {
 //        MagicPaintjobManager.getInstance().diable$MagicLib();
 
         MagicPaintjobManager.onGameLoad();
+
+        MemberMemoryManager.onGameLoad();
     }
 
     @Override
     public void beforeGameSave() {
+        data.scripts.Magic_modPlugin.beforeGameSave();
         super.beforeGameSave();
         if (MagicVariables.getMagicBounty()) {
             MagicBountyCoordinator.beforeGameSave();
@@ -169,10 +214,14 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicAchievementManager.getInstance().beforeGameSave();
         MagicPaintjobManager.beforeGameSave();
+        if(magicCampaignTrailPlugin != null)
+            magicCampaignTrailPlugin.beforeGameSave();
+        MemberMemoryManager.beforeGameSave();
     }
 
     @Override
     public void afterGameSave() {
+        data.scripts.Magic_modPlugin.afterGameSave();
         super.afterGameSave();
         if (MagicVariables.getMagicBounty()) {
             MagicBountyCoordinator.afterGameSave();
@@ -180,6 +229,8 @@ public class Magic_modPlugin extends BaseModPlugin {
 
         MagicAchievementManager.getInstance().afterGameSave();
         MagicPaintjobManager.afterGameSave();
+        if(magicCampaignTrailPlugin != null)
+            magicCampaignTrailPlugin.afterGameSave();
     }
 
     /**

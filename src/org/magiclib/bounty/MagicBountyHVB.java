@@ -5,6 +5,7 @@ package org.magiclib.bounty;
  */
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
@@ -24,7 +25,6 @@ import org.magiclib.util.MagicSettings;
 import org.magiclib.util.MagicTxt;
 import org.magiclib.util.MagicVariables;
 
-import java.io.IOException;
 import java.util.*;
 
 public class MagicBountyHVB {
@@ -57,7 +57,7 @@ public class MagicBountyHVB {
         }
 
         try {
-            JSONArray uniqueBountyDataJSON = Global.getSettings().getMergedSpreadsheetDataForMod("bounty_id", VAYRA_UNIQUE_BOUNTIES_FILE, MagicVariables.MAGICLIB_ID);
+            JSONArray uniqueBountyDataJSON = loadHVBData();
 
             int hvb = 0;
 
@@ -180,6 +180,8 @@ public class MagicBountyHVB {
                     }
 
                     MagicBountySpec this_bounty = new MagicBountySpec(
+                            //String id,
+                            bountyId,
                             //List <String> trigger_market_id,
                             new ArrayList<String>(),
                             //List <String> trigger_marketFaction_any,
@@ -263,6 +265,12 @@ public class MagicBountyHVB {
                             "$HVB_" + bountyId,
                             //String job_conclusion_script,
                             null,
+                            //String job_auto_accept
+                            null,
+                            //String job_repeatable
+                            null,
+                            //boolean show_in_bounty_board
+                            true,
                             //String existing_target_memkey;
                             null,
                             // target_importantPersonId
@@ -288,7 +296,7 @@ public class MagicBountyHVB {
                             //int target_elite_skills,
                             -1,
                             //SkillPickPreference target_skill_preference,
-                            OfficerManagerEvent.SkillPickPreference.GENERIC,
+                            OfficerManagerEvent.SkillPickPreference.ANY,
                             //Map <String,Integer> target_skills,
                             null,
                             //String fleet_name,
@@ -319,6 +327,8 @@ public class MagicBountyHVB {
                             false,
                             //boolean fleet_no_retreat,
                             true,
+                            //List<String> fleet_memory_flags
+                            null,
                             //FleetAssignment fleet_behavior,
                             FleetAssignment.DEFEND_LOCATION,
                             // String fleet_behavior,
@@ -342,7 +352,9 @@ public class MagicBountyHVB {
                             //boolean location_defaultToAnySystem
                             //true,
                             //boolean location_defaultToAnyEntity
-                            true
+                            true,
+                            //String source_mod_id
+                            row.getString("source_mod_id")
 
                     );
 
@@ -365,9 +377,35 @@ public class MagicBountyHVB {
                     LOG.info("Successfully converted " + hvb + " HVBs");
                 }
             }
-        } catch (IOException | JSONException exception) {
+        } catch (JSONException exception) {
             LOG.warn("MagicLib - Failed to load HighValueBountyData! - ", exception);
         }
+    }
+
+    private static JSONArray loadHVBData() {
+
+        JSONArray this_bounty_data = new JSONArray();
+
+        for (final ModSpecAPI modSpec : Global.getSettings().getModManager().getEnabledModsCopy()) {
+            try {
+                JSONArray uniqueBountyDataJSON = Global.getSettings().loadCSV(VAYRA_UNIQUE_BOUNTIES_FILE, modSpec.getId());
+
+                for (int i = 0; i < uniqueBountyDataJSON.length(); ++i) {
+                    JSONObject row = uniqueBountyDataJSON.getJSONObject(i);
+                    row.put("source_mod_id", modSpec.getId());
+                    this_bounty_data.put(row);
+                }
+            } catch (final Exception ex) {
+                if (ex instanceof RuntimeException && ex.getMessage().contains("not found in")) {
+                    // Ignore exceptions caused by the mod not having bounties
+                    continue;
+                }
+
+                LOG.fatal(String.format("MagicBountyData was unable to read '%s' for mod %s", VAYRA_UNIQUE_BOUNTIES_FILE, modSpec.getId()), ex);
+            }
+        }
+
+        return this_bounty_data;
     }
 
 
@@ -397,12 +435,12 @@ public class MagicBountyHVB {
         for (MutableCharacterStatsAPI.SkillLevelAPI skill : knownSkills) {
             String skillName = skill.getSkill().getId();
             switch (skillName) {
-                case Skills.WEAPON_DRILLS:
+                /*case Skills.WEAPON_DRILLS:
                     picker.add(MagicTxt.getString("mb_hvb_skillWD"));
                     break;
                 case Skills.AUXILIARY_SUPPORT:
                     picker.add(MagicTxt.getString("mb_hvb_skillAS"));
-                    break;
+                    break;*/
                 case Skills.COORDINATED_MANEUVERS:
                     picker.add(MagicTxt.getString("mb_hvb_skillCM"));
                     break;

@@ -726,6 +726,7 @@ public class MagicRenderPlugin extends BaseEveryFrameCombatPlugin {
     }
 }
 
+@Deprecated
 class MagicRenderer extends BaseCombatLayeredRenderingPlugin {
     private final MagicRenderPlugin parentPlugin;
 

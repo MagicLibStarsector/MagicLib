@@ -1837,6 +1837,7 @@ public class MagicTrailPlugin extends BaseEveryFrameCombatPlugin {
 
 
 //Handles all rendering of the trails, since this now has to be done on a separate plugin to use render layers
+@Deprecated
 class MagicTrailRenderer extends BaseCombatLayeredRenderingPlugin {
     //Our parent plugin, which handles all trail activity *except* rendering
     private final MagicTrailPlugin parentPlugin;

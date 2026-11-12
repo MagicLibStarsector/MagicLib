@@ -3,7 +3,8 @@ fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValu
 # MagicLib: toggle achievements
 magiclib_enableAchievements,Enable Achievements,Boolean,true,,"Disabling achievements will not affect progress.",,,
 magiclib_enablePaintjobs,Enable Paintjobs,Boolean,true,,"Disabling paintjobs will not affect unlocks.",,,
-magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,false,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,
+magiclib_enableBountyDeadlines,Enable Bounty Deadlines,Boolean,true,,"Enabling will cause bounties to have a deadline. After the deadline, the bounty will expire.",,,
+magiclib_bountyLocationRevealInSystem,Reveal Exact Location In System,Boolean,false,,"While your fleet is in the same system as a MagicLib bounty's fleet, the bounty intel and its map marker show the exact hiding place instead of a vague hint.",,,
 
 # MagicSubsystems
 magiclib_subsystems_Header,MagicSubsystems,Header,Subsystems,,,,,
@@ -17,11 +18,24 @@ magiclib_subsystems_InfoKeyBind,Info Keybind,Keycode,23,,"Keybind for viewing su
 magiclib_subsystems_KeyBindText,Description,Text,"Keybinds for subsystems. They are used in order. If any are empty they will be ignored and the next available keybind will be used.",,,,,
 # 56 = left alt
 magiclib_subsystems_KeyBind1,Keybind 1,Keycode,56,,"First assigned keybind",,,
-# 48 = KEY_B
-magiclib_subsystems_KeyBind2,Keybind 2,Keycode,48,,"Second assigned keybind",,,
+# 21 = KEY_Y
+magiclib_subsystems_KeyBind2,Keybind 2,Keycode,21,,"Second assigned keybind",,,
 # 35 = KEY_H
 magiclib_subsystems_KeyBind3,Keybind 3,Keycode,35,,"Third assigned keybind",,,
 # 36 = KEY_J
 magiclib_subsystems_KeyBind4,Keybind 4,Keycode,36,,"Fourth assigned keybind",,,
 # 49 = KEY_N
 magiclib_subsystems_KeyBind5,Keybind 5,Keycode,49,,"Fifth assigned keybind",,,
+
+# MagicMiscellaneous
+magiclib_misc_Header,MagicMisc,Header,Miscellaneous,,,,,
+
+magiclib_AssignMissingSourceMods,Assign Missing Source Mods on Ship Skins,Boolean,true,,"Fixes various issues where a source mod would be expected but are not present.
+By default, ship skins (e.g., Sunder XIV from Ship/Weapon Pack) do not have a source mod assigned.
+This option assigns the appropriate source mod to each hull skin where relevant.
+Changes to this setting will only take effect after game restart.
+
+Example:
+Ensures ship skins correctly display their originating mod in the codex.
+Fixes some mod behavior which relies on detecting which mod a hull skin came from.
+ETC.",,,

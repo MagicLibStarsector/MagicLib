@@ -2,5 +2,11 @@
   "magiclib_achievementunlocked": [
     # Unused vanilla sound effect
     { "file": "sounds/sfx_charscreen/story_point_gain_v3.ogg","pitch": 1,"volume": 1.0 },
-  ]
+  ],
+
+  "music":{
+		"music_combat_before_custom":[
+			{"file":"battle_ambience_01.ogg","source":"sounds/music/music.bin","volume":1}
+		],
+    }
 }

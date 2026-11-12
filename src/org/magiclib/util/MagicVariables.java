@@ -4,7 +4,6 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.SWPModPlugin;
-import data.scripts.VayraModPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +114,7 @@ public class MagicVariables {
         return ibb;
     }
 
+    // This function is likely no longer needed.
     public static boolean getHVB() {
         if (!checkedBounties) checkBountySystems();
         return hvb;
@@ -138,6 +138,7 @@ public class MagicVariables {
             Global.getSector().getMemoryWithoutUpdate().set("$IBB_ACTIVE", false);
         }
 
+        /*
         //check for HVBs presence
         if (Global.getSettings().getModManager().isModEnabled("vayrasector") && VayraModPlugin.UNIQUE_BOUNTIES == true) {
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", true);
@@ -145,6 +146,8 @@ public class MagicVariables {
         } else {
             Global.getSector().getMemoryWithoutUpdate().set("$HVB_ACTIVE", false);
         }
+        */
+
         /*
         //check for Bounties Expanded HVBs presence
         if (Global.getSettings().getModManager().isModEnabled("bountiesexpanded") && Settings.HIGH_VALUE_BOUNTY_ACTIVE == true) {

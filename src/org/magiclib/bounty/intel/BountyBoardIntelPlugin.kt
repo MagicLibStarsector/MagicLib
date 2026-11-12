@@ -8,26 +8,63 @@ import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import org.magiclib.kotlin.elapsedDaysSinceGameStart
+import org.magiclib.bounty.ActiveBounty
 import org.magiclib.util.MagicTxt
 import org.magiclib.util.ui.MagicRefreshableBaseIntelPlugin
 import java.awt.Color
 
 class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
+
     @Transient
     private var lastWidth: Float = 0f
 
     @Transient
     private var lastHeight: Float = 0f
 
-    //    @Transient
-    private var bountiesThatUserHasBeenNotifiedFor = mutableSetOf<String>()
-
-    /**
-     * One day between bounty board refreshes.
-     */
     @Transient
-    private val interval: IntervalUtil = IntervalUtil(1f, 1f)
+    private var tempSummaryCount: Int? = null
+    /** One day between bounty board refreshes. */
+    @Transient
+    private val boardRefreshInterval: IntervalUtil = run {
+        val key = "\$ML_boardRefreshInterval"
+        val value = Global.getSector().memoryWithoutUpdate.get(key) as? IntervalUtil
+            ?: IntervalUtil(1f, 1f).also { Global.getSector().memoryWithoutUpdate[key] = it }
+        value
+    }
+    /** How often a personal bounty can spawn, roughly within ~%25 of one day. */
+    @Transient
+    private val personalBountyInterval = run {
+        val key = "\$ML_personalBountyInterval"
+        val value = Global.getSector().memoryWithoutUpdate.get(key) as? IntervalUtil
+            ?: IntervalUtil(0.75f, 1.25f).also { Global.getSector().memoryWithoutUpdate[key] = it }
+        value
+    }
+    /** How often to reconsider the personalbounty cap (currMaxPersonalBounties), roughly every 7.5-12.5 days. */
+    @Transient
+    private val personalBountyMaxUpdateInterval = run {
+        val key = "\$ML_personalBountyMaxUpdateInterval"
+        val value = Global.getSector().memoryWithoutUpdate.get(key) as? IntervalUtil
+            ?: IntervalUtil(7.5f, 12.5f).also { Global.getSector().memoryWithoutUpdate[key] = it }
+        value
+    }
+    /**
+     * The current target number of concurrently-active personal bounties.
+     * it wanders between MIN_MAGIC_PERSONAL_BOUNTIES and MAX_MAGIC_PERSONAL_BOUNTIES over time rather than sitting at a fixed value.
+     * Backed by sector memory since this plugin instance isn't guaranteed to survive a save/load.
+     */
+    private var currMaxPersonalBounties: Int
+        get() {
+            (Global.getSector().memoryWithoutUpdate.get(CURR_MAX_PERSONAL_BOUNTIES_KEY) as? Int)?.let { return it }
+            val initial = MIN_MAGIC_PERSONAL_BOUNTIES +
+                    (Math.random() * (MAX_MAGIC_PERSONAL_BOUNTIES - MIN_MAGIC_PERSONAL_BOUNTIES + 1)).toInt()
+            Global.getSector().memoryWithoutUpdate[CURR_MAX_PERSONAL_BOUNTIES_KEY] = initial
+            return initial
+        }
+        set(value) {
+            val clamped = value.coerceIn(MIN_MAGIC_PERSONAL_BOUNTIES, MAX_MAGIC_PERSONAL_BOUNTIES)
+            Global.getSector().memoryWithoutUpdate[CURR_MAX_PERSONAL_BOUNTIES_KEY] = clamped
+        }
+
 
     @Transient
     private var tempBountyInfo: BountyInfo? = null
@@ -36,10 +73,10 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     private var scrollPos: Float? = null
 
     init {
-        // Add this as a transient script if it's not already there.
-        if (!Global.getSector().hasTransientScript(BountyBoardIntelPlugin::class.java)) {
-            Global.getSector().addTransientScript(this)
-        }
+        // Replace any board script still running from before a save, so the board that runs is the one in the intel list.
+        // Otherwise notifications come from the old board, and clicking them opens the intel tab with nothing selected.
+        Global.getSector().removeTransientScriptsOfClass(BountyBoardIntelPlugin::class.java)
+        Global.getSector().addTransientScript(this)
 
         loadNotifiedBounties()
     }
@@ -48,6 +85,9 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     override fun hasSmallDescription(): Boolean = false
 
     override fun getName(): String {
+        tempSummaryCount?.let {
+            return "${MagicTxt.getString("mb_intelTitle")} - ${MagicTxt.getString("mb_newBountiesPosted", it.toString())}"
+        }
         if (tempBountyInfo != null) {
             return "${MagicTxt.getString("mb_intelTitle")} - ${tempBountyInfo!!.getBountyName()}"
         }
@@ -64,46 +104,97 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         tc: Color,
         initPad: Float
     ) {
+        if (tempSummaryCount != null) return // summary has no per-bounty bullets
         tempBountyInfo?.addNotificationBulletpoints(info)
     }
 
-    fun saveNotifiedBounties() {
-        Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = bountiesThatUserHasBeenNotifiedFor
+    /**
+     * Marks the bounty as notified and returns true if the player should actually be told about it.
+     */
+    private fun markNotified(bountyInfo: BountyInfo): Boolean {
+        userNotifiedBountyIds.add(bountyInfo.getBountyId())
+        bountyInfo.notifiedUserThatBountyIsAvailable()
+
+        if (bountyInfo.getBountySpec()?.job_auto_accept != null) return false // Auto-accepted bounties don't get a notification.
+
+        return true
     }
 
-    fun loadNotifiedBounties() {
-        if (Global.getSector().persistentData.containsKey(NOTIFIED_BOUNTY_KEY)) {
-            bountiesThatUserHasBeenNotifiedFor =
-                Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as MutableSet<String>
-        }
+    private fun sendBountyUpdate(bountyInfo: BountyInfo) {
+        tempBountyInfo = bountyInfo
+        sendUpdateIfPlayerHasIntel(null, false, false)
+        tempBountyInfo = null
+    }
+
+    private fun sendSummaryUpdate(count: Int) {
+        tempSummaryCount = count
+        sendUpdateIfPlayerHasIntel(null, false, false)
+        tempSummaryCount = null
     }
 
     fun notifyUserThatBountyIsAvailable(bountyInfo: BountyInfo) {
-        bountiesThatUserHasBeenNotifiedFor.add(bountyInfo.getBountyId())
-        saveNotifiedBounties()
+        if (markNotified(bountyInfo)) sendBountyUpdate(bountyInfo)
+    }
 
-        bountyInfo.notifiedUserThatBountyIsAvailable()
+    /** Notifies individually for up to [MAX_INDIVIDUAL_NOTIFICATIONS] bounties, otherwise sends one summary. */
+    fun notifyUserThatBountiesAreAvailable(bounties: List<BountyInfo>) {
+        val announceable = bounties.filter { markNotified(it) }
 
-        this.tempBountyInfo = bountyInfo
-        this.sendUpdateIfPlayerHasIntel(null, false, false)
-        this.tempBountyInfo = null
+        if (announceable.size > MAX_INDIVIDUAL_NOTIFICATIONS)
+            sendSummaryUpdate(announceable.size)
+        else
+            announceable.forEach { sendBountyUpdate(it) }
     }
 
     override fun advance(amount: Float) {
-        // Don't show bounties until the player has been playing for a few days.
-        // This prevents the player from being overwhelmed with bounties right at the start of the game.
-        if (Global.getSector().clock.elapsedDaysSinceGameStart() < 3) return
+        val days = Global.getSector().clock.convertToDays(amount)
 
-        interval.advance(Global.getSector().clock.convertToDays(amount))
-        if (interval.intervalElapsed()) {
-            PROVIDERS
-                .flatMap { it.getBounties() }
-                .filter { !bountiesThatUserHasBeenNotifiedFor.contains(it.getBountyId()) }
-                .firstOrNull { it.shouldShow() }
-                ?.let {
+        personalBountyInterval.advance(days)
+        personalBountyMaxUpdateInterval.advance(days)
+
+        fun getPersonalBounties(): List<BountyInfo> =
+            PROVIDERS.flatMap { it.getBounties() }
+                .filter { it.shouldShow() }
+                .filter { it.getBountySpec()?.job_auto_accept == "personal" }
+        fun getActiveCount(personalBounties: List<BountyInfo>) = personalBounties.count { it.getActiveBounty()!!.stage == ActiveBounty.Stage.Accepted }
+
+        // Only reconsider the cap while we're not already sitting above it, then mostly nudge by +/-1 and occasionally reroll entirely.
+        if (personalBountyMaxUpdateInterval.intervalElapsed()) {
+            val personalBounties = getPersonalBounties()
+            val activeCount = getActiveCount(personalBounties)
+
+            if (activeCount <= currMaxPersonalBounties || activeCount == 0) {
+                currMaxPersonalBounties = when {
+                    Math.random() < 0.05 -> MIN_MAGIC_PERSONAL_BOUNTIES +
+                            (Math.random() * (MAX_MAGIC_PERSONAL_BOUNTIES - MIN_MAGIC_PERSONAL_BOUNTIES + 1)).toInt()
+                    Math.random() < 0.5 -> currMaxPersonalBounties - 1
+                    else -> currMaxPersonalBounties + 1
+                }
+            }
+        }
+
+        // Once under the (wandering) cap there's a 25% chance per elapsed interval that a bounty actually spawns.
+        if (personalBountyInterval.intervalElapsed() && Math.random().toFloat() >= 0.75f) {
+            val personalBounties = getPersonalBounties()
+            val activeCount = getActiveCount(personalBounties)
+
+            if (activeCount < currMaxPersonalBounties) {
+                val personalBountiesFree = personalBounties.filter { it.getActiveBounty()!!.stage == ActiveBounty.Stage.NotAccepted }
+                personalBountiesFree.randomOrNull()?.let {
+                    it.getActiveBounty()!!.acceptBounty(
+                        Global.getSector().playerFleet,
+                        it.getBountySpec()!!.job_reputation_reward,
+                        it.getBountySpec()!!.job_forFaction
+                    )
                     notifyUserThatBountyIsAvailable(it)
                 }
+            }
         }
+
+        boardRefreshInterval.advance(days)
+        if (!boardRefreshInterval.intervalElapsed()) return
+
+        notifyAllAvailableBounties()
     }
 
     fun layoutPanel(panel: CustomPanelAPI, width: Float = lastWidth, height: Float = lastHeight) {
@@ -115,6 +206,7 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
 
         val availableBounties: MutableList<BountyInfo> = PROVIDERS
             .flatMap { it.getBounties() }
+            .filter { it.shouldAlwaysShow() || it.shouldShow() }
             .toMutableList()
 
         val bountyListPanel = bountyList.layoutPanels(availableBounties)
@@ -152,7 +244,8 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             availableBounties
                 .firstOrNull { desiredItem == it.getBountyId() }
                 ?.let {
-                    bountyList.itemClicked(it)
+                    if(bountyList.shouldMakePanelForItem(it))
+                        bountyList.itemClicked(it)
                 }
         }
     }
@@ -168,13 +261,33 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
         return "00000Bounties"
     }
 
-    override fun getIntelTags(map: SectorMapAPI?): Set<String>? {
+    override fun getIntelTags(map: SectorMapAPI?): Set<String> {
         val tags = super.getIntelTags(map)
         tags.add(Tags.INTEL_BOUNTY)
         return tags
     }
 
     companion object {
+        private val instance: BountyBoardIntelPlugin?
+            get() = Global.getSector().transientScripts.find { it.javaClass == BountyBoardIntelPlugin::class.java } as? BountyBoardIntelPlugin
+
+        // These constant values should instead be a setting somewhere that can be modified by other mods.
+        var MIN_MAGIC_PERSONAL_BOUNTIES = 1
+        var MAX_MAGIC_PERSONAL_BOUNTIES = 2
+        private const val CURR_MAX_PERSONAL_BOUNTIES_KEY = "\$ML_currMaxPersonalBounties"
+
+        @JvmStatic
+        var userNotifiedBountyIds: MutableSet<String> = mutableSetOf()
+            private set
+
+        private fun loadNotifiedBounties() {
+            @Suppress("UNCHECKED_CAST")
+            val existing = Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] as? MutableSet<String>
+            userNotifiedBountyIds = existing ?: mutableSetOf<String>().also {
+                Global.getSector().persistentData[NOTIFIED_BOUNTY_KEY] = it
+            }
+        }
+
         var lastSelectedBountyId: String? = null
         const val NOTIFIED_BOUNTY_KEY = "ml_notifiedBountyKeys"
         val PROVIDERS = mutableListOf<BountyBoardProvider>()
@@ -188,6 +301,26 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
             (Global.getSector().intelManager.getFirstIntel(BountyBoardIntelPlugin::class.java) as BountyBoardIntelPlugin).apply {
                 refreshPanel()
             }
+        }
+
+        /**
+         * The maximum number of bounties that can be notified to the player at once before they are summarized into a single notification.
+         */
+        const val MAX_INDIVIDUAL_NOTIFICATIONS = 3
+
+        /**
+         * Evaluates every bounty from every provider that has not yet been notified to the player.
+         *
+         * [BountyInfo.shouldShow] creates any bounty that should currently be available, and the player is notified once about each newly available bounty.
+         */
+        @JvmStatic
+        fun notifyAllAvailableBounties() {
+            val board = instance ?: return
+            val newBounties = PROVIDERS
+                .flatMap { it.getBounties() }
+                .filter { it.getBountyId() !in userNotifiedBountyIds }
+                .filter { it.shouldShow() }
+            board.notifyUserThatBountiesAreAvailable(newBounties)
         }
     }
 }

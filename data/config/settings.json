@@ -1,5 +1,7 @@
 {
   "plugins": {
+    "CombatTaskScheduler": "org.magiclib.util.taskscheduler.CombatTaskScheduler",
+    "OMEPaperdollCombatUIAdder":"org.magiclib.util.ui.PaperdollUIPanelAdder",
     "ML_fakeBeamPlugin": "org.magiclib.plugins.MagicFakeBeamPlugin",
     "ML_spriteRenderManager": "org.magiclib.plugins.MagicRenderPlugin",
     "MagicTrailPlugin": "org.magiclib.plugins.MagicTrailPlugin",
@@ -7,6 +9,7 @@
     "MagicAchievementCombatScript": "org.magiclib.achievements.MagicAchievementCombatScript",
     "MagicSubsystemsCombatPlugin":"org.magiclib.subsystems.MagicSubsystemsCombatPlugin",
     "MagicPaintjobCombatRefitAdder":"org.magiclib.paintjobs.MagicPaintjobCombatRefitAdder",
+    "MagicPaintjobCombatApplier":"org.magiclib.paintjobs.appliers.MagicPaintjobCombatApplier",
 
     "old_ML_fakeBeamPlugin": "data.scripts.plugins.MagicFakeBeamPlugin",
     "old_ML_spriteRenderManager": "data.scripts.plugins.MagicRenderPlugin",
@@ -52,13 +55,16 @@
       "magicLibIcon": "graphics/magic/icons/magiclib_icon.webp",
     },
     "ui": {
-      "ship_arrow": "graphics/warroom/ship_arrow.png"
+      "ship_arrow": "graphics/warroom/ship_arrow.png",
+      "32x_star_circle": "graphics/ui/icons/32x_star_circle.png",
+      "shiny_icon": "graphics/magic/icons/shiny_icon.png"
     },
     "icons": {
       "lock": "graphics/magic/icons/lockIcon.png"
     }
   },
   "ruleCommandPackages": [
-    "org.magiclib.bounty.rulecmd"
+    "org.magiclib.bounty.rulecmd",
+    "org.magiclib.paintjobs.rulecmd"
   ]
 }

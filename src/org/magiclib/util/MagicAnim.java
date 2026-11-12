@@ -49,8 +49,8 @@ public class MagicAnim {
 //        value *= (max-min) + min;
 //        return value;
 
-        float magicNumber = -(min - max) / 2;
-        return (float) (FastTrig.cos((x - min) * (1 / (max - min)) * MathUtils.FPI)) * magicNumber + magicNumber + min;
+        float magicNumber = (max - min) / 2;
+        return -(float) (FastTrig.cos((x - min) * (1 / (max - min)) * MathUtils.FPI)) * magicNumber + magicNumber + min;
     }
 
     /**
@@ -127,7 +127,7 @@ public class MagicAnim {
             return toMax;
         }
         float magicNumber = -(toMax - toMin) / 2;
-        return (float) (FastTrig.cos((x - fromMin) * (1 / (fromMax - fromMin)) * MathUtils.FPI)) * magicNumber + magicNumber + toMin;
+        return (float) (FastTrig.cos((x - fromMin) * (1 / (fromMax - fromMin)) * MathUtils.FPI)) * magicNumber - magicNumber + toMin;
     }
 
     /**
@@ -161,7 +161,7 @@ public class MagicAnim {
         }
 
         float magicNumber = -(toMax - toMin) / 2;
-        return (float) (FastTrig.cos((x - fromMin) * (1 / (fromMax - fromMin)) * MathUtils.FPI * 2)) * magicNumber + magicNumber + toMin;
+        return (float) (FastTrig.cos((x - fromMin) * (1 / (fromMax - fromMin)) * MathUtils.FPI * 2)) * magicNumber - magicNumber + toMin;
     }
 
 

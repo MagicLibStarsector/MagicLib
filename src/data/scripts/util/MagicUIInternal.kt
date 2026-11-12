@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GLContext
 /**
  * @since 0.46.0
  */
+@Suppress("DEPRECATION")
 @Deprecated("Switch to org.magiclib")
 class MagicUIInternal {
     companion object {
