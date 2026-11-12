@@ -65,7 +65,7 @@ Version 1.6.0
 - Added FighterAIFormation as a MagicDroneSubsystem formation. This formation gives the drone base-game fighter ai, and allows the modder to set behavior such as ENGAGE or REGROUP.
   
 ### MagicAchievements
-- Added `MagicAchievementSpec.requiredMods` to specify mod IDs that must all be enabled for an achievement to load.
+- Added new column `requiredMods` to specify mod IDs that must all be enabled for an achievement to load.
 - Added `MagicAchievementManager.addAchievementListener`.
 
 ### Miscellaneous

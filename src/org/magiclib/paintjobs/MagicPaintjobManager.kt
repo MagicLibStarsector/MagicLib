@@ -14,7 +14,6 @@ import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.combat.entities.ship.trackers.MultiBarrelRecoilTracker
 import org.dark.shaders.util.ShaderLib
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.lazywizard.lazylib.ext.json.optFloat
@@ -434,13 +433,24 @@ object MagicPaintjobManager {
 
     @JvmStatic
     fun saveUnlockedPaintJobs() {
-        // Ensure that we have the latest unlocked pjs before saving
-        loadUnlockedPaintjobs()
-        if (unlockedPaintjobsInner.isEmpty()) return
+        writeUnlockedPaintjobs(lockedId = null)
+    }
+
+    /**
+     * Writes the unlocked paintjobs to the common file, without [lockedId].
+     */
+    private fun writeUnlockedPaintjobs(lockedId: String?) {
+        // Ensure that we have the latest unlocked pjs before saving, so that unlocks saved by another game aren't lost.
+        val saved = readUnlockedPaintjobsFile().filter { it != lockedId }
+        // When paintjobs are turned off, the saved unlocks aren't loaded, but they're still kept in the file.
+        if (isEnabled) unlockedPaintjobsInner.addAll(saved)
+        val unlocked = (unlockedPaintjobsInner + saved).toList()
+        // Locking the last unlocked paintjob still has to write the empty list.
+        if (unlocked.isEmpty() && lockedId == null) return
 
         runCatching {
             val unlockedPJsObj = JSONObject()
-            unlockedPJsObj.put(jsonObjectKey, unlockedPaintjobsInner.toList())
+            unlockedPJsObj.put(jsonObjectKey, unlocked)
             val indentation = 3
             Global.getSettings().writeTextFileToCommon(commonFilename, unlockedPJsObj.toString(indentation))
         }
@@ -450,19 +460,24 @@ object MagicPaintjobManager {
     @JvmStatic
     fun loadUnlockedPaintjobs() {
         if (!isEnabled) return
+        unlockedPaintjobsInner.addAll(readUnlockedPaintjobsFile())
+    }
 
+    /**
+     * The paintjob ids in the common file. Empty when there's no file or it can't be read.
+     */
+    private fun readUnlockedPaintjobsFile(): List<String> =
         runCatching {
             val unlockedPJsObj = runCatching {
-                val result = JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename))
-                if (result.length() > 0) result
-                else return // If there's no valid paintjob file, bail out.
-            }.recover { JSONObject().apply { put(jsonObjectKey, JSONArray()) } }
-                .getOrThrow()
+                JSONObject(Global.getSettings().readTextFileFromCommon(commonFilename))
+            }.getOrNull()
 
-            unlockedPaintjobsInner.addAll(unlockedPJsObj.getJSONArray(jsonObjectKey).toStringList())
+            // If there's no valid paintjob file, nothing is unlocked.
+            if (unlockedPJsObj == null || unlockedPJsObj.length() == 0) emptyList()
+            else unlockedPJsObj.getJSONArray(jsonObjectKey).toStringList()
         }
             .onFailure { logger.warn("Failed to load unlocked paintjobs.", it) }
-    }
+            .getOrDefault(emptyList())
 
     private fun markAsAlreadyNotifiedPlayerOfNewUnlock(paintjobs: Set<String>) {
         completedPaintjobIdsThatUserHasBeenNotifiedFor.clear()
@@ -501,9 +516,11 @@ object MagicPaintjobManager {
     fun unlockPaintjob(id: String) {
         if (getPaintjob(id)?.isUnlockable != true) return
 
-        if (unlockedPaintjobsInner.add(id))
-            pendingUnlockNotifications.add(id)
+        // Already unlocked means it's already in the file, or it's unlocked automatically at every launch.
+        // Saving reads and writes the file, so skip it. Mods call this on every game load.
+        if (!unlockedPaintjobsInner.add(id)) return
 
+        pendingUnlockNotifications.add(id)
         saveUnlockedPaintJobs()
     }
 
@@ -516,7 +533,8 @@ object MagicPaintjobManager {
             return
 
         unlockedPaintjobsInner.remove(id)
-        saveUnlockedPaintJobs()
+        // Not saveUnlockedPaintJobs(): it reads the file first, which would unlock the paintjob again.
+        writeUnlockedPaintjobs(lockedId = id)
     }
 
     /**
