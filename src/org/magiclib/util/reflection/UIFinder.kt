@@ -115,7 +115,7 @@ object UIFinder {
                 //Combat F2 with ship selected, simulator ship F2.
                 if (appState.getMethodsMatching("getRibbon").isNotEmpty()) {
                     val ribbon = appState.safeInvoke("getRibbon") as? UIPanelAPI?
-                    val temp = ribbon?.safeInvoke("getParent") as? UIPanelAPI?
+                    val temp = ribbon?.parent
                     val codex = temp?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
                     if (codex != null) return codex
                 }
