@@ -706,7 +706,7 @@ public class MagicAchievementManager {
                         newAchievementSpecs.add(spec);
                     }
                 } catch (Exception e) {
-                    logger.warn("Unable to load achievement #" + i + " (" + id + ") in " + mod.getId() + " by " + mod.getAuthor().substring(0, 30) + " from file " + specsFilename, e);
+                    logger.warn("Unable to load achievement #" + i + " (" + id + ") in " + mod.getId() + " by " + MagicMisc.takeFirst(String.valueOf(mod.getAuthor()), 30) + " from file " + specsFilename, e);
                 }
             }
         }
