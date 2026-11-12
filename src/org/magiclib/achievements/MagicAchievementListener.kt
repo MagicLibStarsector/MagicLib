@@ -7,7 +7,7 @@ import com.fs.starfarer.api.characters.PersonAPI
  *
  * Add with [MagicAchievementManager.addAchievementListener] from your mod plugin's `onApplicationLoad`.
  *
- * @since 1.5.8
+ * @since 1.6.0
  */
 fun interface MagicAchievementListener {
     /**

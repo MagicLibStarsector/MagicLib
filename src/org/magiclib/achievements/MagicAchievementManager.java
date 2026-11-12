@@ -203,14 +203,14 @@ public class MagicAchievementManager {
      * <p>
      * Listeners aren't saved across game sessions. Add them in your mod plugin's <code>onApplicationLoad</code>.
      *
-     * @since 1.5.8
+     * @since 1.6.0
      */
     public void addAchievementListener(@NotNull MagicAchievementListener listener) {
         achievementListeners.add(listener);
     }
 
     /**
-     * @since 1.5.8
+     * @since 1.6.0
      */
     public void removeAchievementListener(@NotNull MagicAchievementListener listener) {
         achievementListeners.remove(listener);

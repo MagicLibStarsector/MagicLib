@@ -22,7 +22,7 @@ open class MagicAchievementSpec(
      * Mod IDs that must *all* be enabled for this achievement to load.
      * Set from the `requiredMods` column of magic_achievements.csv.
      *
-     * @since 1.5.8
+     * @since 1.6.0
      */
     var requiredMods: List<String> = emptyList()
 

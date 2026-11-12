@@ -296,7 +296,7 @@ public class MagicAchievement {
      * Checked on game start, on save load, after each game save, after any achievement is completed,
      * and whenever {@link MagicAchievementManager#reloadAchievements(boolean)} runs.
      *
-     * @since 1.5.8
+     * @since 1.6.0
      */
     public boolean shouldLoad() {
         return true;
