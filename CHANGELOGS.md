@@ -1,3 +1,10 @@
+# 1.6.2
+## Bug Fixes
+### MagicAchievements
+- Fixed achievement progress stored in achievement memory being lost when the game was saved and loaded.
+  - This made it harder or impossible to get `And Over The Ashes`, `Slayer`, and `Revisionist`.
+- Improved `ShipKillsAchievement` performance in large battles (now 16x faster, 140µs per call -> 9µs).
+
 # 1.6.1
 ## Bug Fixes
 ### MagicSubsystems
