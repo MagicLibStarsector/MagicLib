@@ -15,7 +15,7 @@ internal var UIComponentAPI.fader: Fader?
         invoke( this, "setFader", fader)
     }
 
-internal var UIComponentAPI.opacity: Float
+/*internal var UIComponentAPI.opacity: Float
     get() = invoke(this, "getOpacity") as Float
     set(alpha) {
         invoke(this, "setOpacity", alpha)
@@ -25,7 +25,7 @@ internal var UIComponentAPI.parent: UIPanelAPI?
     get() = invoke(this, "getParent") as UIPanelAPI?
     set(parent) {
         invoke(this, "setParent", parent)
-    }
+    }*/
 
 internal fun UIComponentAPI.setMouseOverPad(pad1: Float, pad2: Float, pad3: Float, pad4: Float) {
     invoke(this, "setMouseOverPad", pad1, pad2, pad3, pad4)
@@ -83,23 +83,25 @@ internal var UIComponentAPI.enabled: Boolean
         invoke(this, "setEnabled", enabled)
     }
 
+/*
 internal var UIComponentAPI.width
     get() = this.position.width
     set(width) { this.position.setSize(width, this.position.height) }
 
 internal var UIComponentAPI.height
     get() = this.position.height
-    set(height) { this.position.setSize(this.position.width, height) }
+    set(height) { this.position.setSize(this.position.width, height) }*/
 
 internal fun UIComponentAPI.setSize(width: Float, height: Float){
     this.position.setSize(width, height)
 }
 
+/*
 internal val UIComponentAPI.x
     get() = this.position.x
 
 internal val UIComponentAPI.y
-    get() = this.position.y
+    get() = this.position.y*/
 
 internal val UIComponentAPI.left
     get() = this.x

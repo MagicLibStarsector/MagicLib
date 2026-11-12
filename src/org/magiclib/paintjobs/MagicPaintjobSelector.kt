@@ -20,7 +20,6 @@ import org.magiclib.kotlin.internal.left
 import org.magiclib.kotlin.internal.right
 import org.magiclib.kotlin.internal.setSize
 import org.magiclib.kotlin.internal.top
-import org.magiclib.kotlin.internal.width
 import org.magiclib.util.MagicTxt
 import java.awt.Color
 import kotlin.math.max

@@ -25,7 +25,6 @@ import org.magiclib.bounty.MagicBountySpec
 import org.magiclib.bounty.MagicBountyUtilsInternal
 import org.magiclib.bounty.ui.InteractiveUIPanelPlugin
 import org.magiclib.kotlin.internal.addTooltip
-import org.magiclib.kotlin.internal.width
 import org.magiclib.kotlin.interpolateColor
 import org.magiclib.kotlin.setAlpha
 import org.magiclib.kotlin.ucFirst

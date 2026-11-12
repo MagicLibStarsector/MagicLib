@@ -11,7 +11,6 @@ import org.magiclib.bounty.ui.lists.sorted.ListSorter
 import org.magiclib.bounty.ui.lists.sorted.Sortable
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.internal.addTooltip
-import org.magiclib.kotlin.internal.height
 import org.magiclib.kotlin.internal.setSize
 import org.magiclib.util.MagicTxt
 import java.awt.Color
