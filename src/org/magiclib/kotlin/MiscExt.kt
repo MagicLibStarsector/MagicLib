@@ -1528,6 +1528,11 @@ inline fun CampaignFleetAPI.getMaxOfficers() = Misc.getMaxOfficers(this)
 inline fun CampaignFleetAPI.getNumNonMercOfficers() = Misc.getNumNonMercOfficers(this)
 
 /**
+ * @since 1.6.2
+ */
+inline fun CampaignFleetAPI.getNumActiveNonMercOfficers() = Misc.getNumActiveNonMercOfficers(this)
+
+/**
  * @since 0.46.0
  */
 inline fun CampaignFleetAPI.getMercs() = Misc.getMercs(this)
@@ -2132,3 +2137,37 @@ inline fun ShipAPI.getWeaponSkin(weaponId: String, type: Misc.WeaponSkinType) = 
  */
 inline fun ShipAPI.getWeaponSkin(cat: String, weaponId: String, type: Misc.WeaponSkinType) = Misc.getWeaponSkin(cat, weaponId, this, type)
 
+/**
+ * @since 1.6.2
+ */
+inline fun PersonAPI.isOfficerActive() = Misc.isOfficerActive(this)
+
+/**
+ * @since 1.6.2
+ */
+inline fun PersonAPI.combatPayEnabled() = Misc.combatPayEnabled(this)
+
+/**
+ * @since 1.6.2
+ */
+inline fun PersonAPI.getCombatPay(member: FleetMemberAPI) = Misc.getCombatPay(this, member)
+
+/**
+ * @since 1.6.2
+ */
+inline fun CampaignFleetAPI.isPlayerSupportFleet() = Misc.isPlayerSupportFleet(this)
+
+/**
+ * @since 1.6.2
+ */
+inline fun CampaignFleetAPI.isFleetCivOnly() = Misc.isFleetCivOnly(this)
+
+/**
+ * @since 1.6.2
+ */
+inline fun FleetMemberAPI.isFleetCivOnly(withCrewFraction: Boolean) = Misc.computeFleetMemberCrewSalary(this, withCrewFraction)
+
+/**
+ * @since 1.6.2
+ */
+inline fun LocationAPI.isInCivilizedSpace() = Misc.isInCivilizedSpace()
