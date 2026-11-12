@@ -1,4 +1,4 @@
-# 1.6.2
+Version 1.6.2
 ## Bug Fixes
 ### MagicAchievements
 - Fixed achievement progress stored in achievement memory being lost when the game was saved and loaded.
@@ -11,7 +11,7 @@
 - Fixed letters appearing as boxes
 
 
-# 1.6.0
+Version 1.6.0
 ## For users
 ### MagicBounty
 - Bounties persist in the intel board if the player has previously been notified of them, instead of disappearing when out of comms range.
