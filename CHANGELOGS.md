@@ -1,3 +1,9 @@
+# 1.6.1
+## Bug Fixes
+### MagicSubsystems
+- Fixed letters appearing as boxes
+
+
 # 1.6.0
 ## For users
 ### MagicBounty
