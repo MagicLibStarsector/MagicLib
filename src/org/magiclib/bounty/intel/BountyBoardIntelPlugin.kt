@@ -73,10 +73,10 @@ class BountyBoardIntelPlugin : MagicRefreshableBaseIntelPlugin() {
     private var scrollPos: Float? = null
 
     init {
-        // Add this as a transient script if it's not already there.
-        if (!Global.getSector().hasTransientScript(BountyBoardIntelPlugin::class.java)) {
-            Global.getSector().addTransientScript(this)
-        }
+        // Replace any board script still running from before a save, so the board that runs is the one in the intel list.
+        // Otherwise notifications come from the old board, and clicking them opens the intel tab with nothing selected.
+        Global.getSector().removeTransientScriptsOfClass(BountyBoardIntelPlugin::class.java)
+        Global.getSector().addTransientScript(this)
 
         loadNotifiedBounties()
     }

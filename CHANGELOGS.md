@@ -10,7 +10,7 @@
 - Stop ending bounties that have passed their deadline if in the same location as it, like the base-game bounties.
 - Make bounties intended to spawn CLOSE spawn closer to the core worlds instead of very far away.
 - While your fleet is in the same system as a bounty's fleet, its intel and map marker show the exact location. Disabled by default. Turn it on using the LunaLib setting `magiclib_bountyLocationRevealInSystem`.
-- The MagicLib_ResetBounty command now accepts 'all' as a parameter; this automatically resets every bounty.
+- The MagicLib_ResetBounty command now accepts 'all' as a parameter; this automatically resets every bounty. 
 
 ### MagicPaintjobs
 - Paintjobs now show up in more contexts. Including but not limited to: campaign fleets, campaign tooltips, interaction dialog, interaction dialog dialogs, combat map screen, combat deployment dialog.
@@ -94,6 +94,7 @@
 - The ML_bounty faction is now set as hostile to the player by default.
 - Fix a crash that occurs when clicking a bounty which is in a constellation with a star system that has a null primary star.
 - Fix bounty fleets autofitting after loading a save when they were configured not to. (Reported by |_PHOENIX_| on the forums)
+- Fixed displayed intel not opening the bounty board after saving.
 
 ### MagicPaintjobs
 - Fix the paintjob unlock notifier, as it didn't appear to be working.
