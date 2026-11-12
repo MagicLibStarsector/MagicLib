@@ -2166,8 +2166,3 @@ inline fun CampaignFleetAPI.isFleetCivOnly() = Misc.isFleetCivOnly(this)
  * @since 1.6.2
  */
 inline fun FleetMemberAPI.isFleetCivOnly(withCrewFraction: Boolean) = Misc.computeFleetMemberCrewSalary(this, withCrewFraction)
-
-/**
- * @since 1.6.2
- */
-inline fun LocationAPI.isInCivilizedSpace() = Misc.isInCivilizedSpace()
