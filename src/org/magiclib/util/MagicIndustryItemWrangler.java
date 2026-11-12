@@ -17,6 +17,7 @@ public class MagicIndustryItemWrangler extends BaseCampaignEventListener {
 
     private static final Map ITEMS_PRIORITIES = new HashMap(); // should really be typed <String,ItemPriority>
 
+    @SuppressWarnings("unchecked")
     public MagicIndustryItemWrangler() {
         super(false);
         Map<String, Float> items = MagicSettings.getFloatMap(MagicVariables.MAGICLIB_ID, "itemPriorities");
@@ -45,6 +46,7 @@ public class MagicIndustryItemWrangler extends BaseCampaignEventListener {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public static void addItemPriority(String itemId, ItemPriority priority) {
         ITEMS_PRIORITIES.put(itemId, priority);
     }

@@ -2,7 +2,6 @@ package org.magiclib.paintjobs
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
-import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -111,7 +110,7 @@ internal object MagicPaintjobRefitPanel {
 
         val currentPaintjob = MagicPaintjobManager.getCurrentShipPaintjob(baseVariant)
         val baseHullPaintjobs = MagicPaintjobManager.getPaintjobsForHull(
-            (baseVariant as ShipVariantAPI).hullSpec, false
+            baseVariant.hullSpec, false
         )
 
         val selectorWidth = (paintjobPanel.width - (endPad * 2 + midPad * (selectorsPerRow - 1))) / selectorsPerRow
@@ -167,8 +166,8 @@ internal object MagicPaintjobRefitPanel {
                         MagicPaintjobManager.applyPaintjob(baseVariant, selectorPlugin.paintjobSpec)
                     }
 
-                    (baseVariant as ShipVariantAPI).stationModules?.keys?.forEach { moduleVariantID ->
-                        val moduleVariant = (baseVariant as ShipVariantAPI).getModuleVariant(moduleVariantID) ?: return@forEach
+                    baseVariant.stationModules?.keys?.forEach { moduleVariantID ->
+                        val moduleVariant = baseVariant.getModuleVariant(moduleVariantID) ?: return@forEach
 
                         if (selectorPlugin.paintjobSpec == null)
                             MagicPaintjobManager.removePaintjobFromShip(moduleVariant)

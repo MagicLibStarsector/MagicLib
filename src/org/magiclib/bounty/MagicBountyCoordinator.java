@@ -208,6 +208,7 @@ public final class MagicBountyCoordinator {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
     public List<String> getCompletedBounties() {
         if (completedBountyKeys == null) {
@@ -311,6 +312,7 @@ public final class MagicBountyCoordinator {
         return Math.max(0, marketAPI.getSize() - 3 + offersAtSizeThree);
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public List<String> getBountiesAcceptedAtMarket(@NotNull MarketAPI marketAPI) {
         MemoryAPI memoryAPI = marketAPI.getMemory();
@@ -331,6 +333,7 @@ public final class MagicBountyCoordinator {
      * Marks the bounty as blocking a slot on the market until expiration (default 30 days).
      * Until expiration, another bounty cannot take that slot. This prevents accepting all bounties from a market at once.
      */
+    @SuppressWarnings("unchecked")
     public void setBlockBountyAtMarket(@NotNull MarketAPI marketAPI, @NotNull String bountyId) {
         MemoryAPI memoryAPI = marketAPI.getMemoryWithoutUpdate();
         List<String> bountiesBlockedAtMarket = memoryAPI.get(BOUNTIES_MARKETBOUNTIES_KEY) != null

@@ -33,6 +33,7 @@ public class MagicMisc {
      *
      * @since 1.3.0
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> toMap(JSONObject jsonObj) throws JSONException {
         Map<String, Object> map = new HashMap<>();
         Iterator<String> keys = jsonObj.keys();

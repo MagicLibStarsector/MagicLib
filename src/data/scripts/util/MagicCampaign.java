@@ -1344,8 +1344,8 @@ public class MagicCampaign {
      * @param postId                   post from campaign.ids.Ranks
      * @param isMarketAdmin
      * @param industrialPlanning_level skill level for market admin
-     * @param spaceOperation_level     skill level for market admin
-     * @param groundOperations_level   skill level for market admin
+     * //@param spaceOperation_level     skill level for market admin
+     * //@param groundOperations_level   skill level for market admin
      * @param commScreenPosition       position order in the comm screen, 0 is the admin position
      * @return
      */

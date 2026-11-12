@@ -169,7 +169,7 @@ abstract class MagicDroneSubsystem(ship: ShipAPI) : MagicSubsystem(ship) {
     open fun spawnDrone(): ShipAPI {
         Global.getCombatEngine().getFleetManager(ship.owner).isSuppressDeploymentMessages = true
 
-        val fleetSide = FleetSide.values()[ship.owner]
+        val fleetSide = FleetSide.entries[ship.owner]
         val fighter = CombatUtils.spawnShipOrWingDirectly(
             getDroneVariant(),
             FleetMemberType.FIGHTER_WING,

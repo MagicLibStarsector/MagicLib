@@ -19,7 +19,7 @@ public class MagicFakeBeamPlugin extends BaseEveryFrameCombatPlugin {
     private SpriteAPI core = Global.getSettings().getSprite("beams", "fakeBeamCore");
     private SpriteAPI fringe = Global.getSettings().getSprite("beams", "fakeBeamFringe");
 
-    public static List<fakeBeamData> BEAMS = new ArrayList();
+    public static List<fakeBeamData> BEAMS = new ArrayList<>();
 
     /**
      * Fake beam renderer

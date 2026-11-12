@@ -18,6 +18,7 @@ import java.util.*;
 public class MagicTargetListAchievement extends MagicAchievement {
     protected String KEY = "magictargetlist_targets";
 
+    @SuppressWarnings("unchecked")
     public Map<String, Data> getTargets() {
         Object obj = getAchievementMemory().get(KEY);
 

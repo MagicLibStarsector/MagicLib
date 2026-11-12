@@ -15,8 +15,6 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static data.scripts.util.MagicTxt.getString;
-
 @Deprecated
 public class MagicInterferenceWarning extends BaseHullMod {
 
@@ -29,9 +27,9 @@ public class MagicInterferenceWarning extends BaseHullMod {
 
     //maintain status for the player ship in combat        
     private final Map<String, Integer> SHIPS = new HashMap<>();
-    private final String UI1 = getString("interferenceUItitle");
-    private final String UI2 = getString("-");
-    private final String UI3 = getString("interferenceUItxt");
+    private final String UI1 = MagicTxt.getString("interferenceUItitle");
+    private final String UI2 = MagicTxt.getString("-");
+    private final String UI3 = MagicTxt.getString("interferenceUItxt");
 
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
@@ -55,10 +53,10 @@ public class MagicInterferenceWarning extends BaseHullMod {
     }
 
     //description
-    private final String DESC0 = getString("interferenceWarning");
-    private final String DESC1 = getString("interferenceWeak");
-    private final String DESC2 = getString("interferenceMild");
-    private final String DESC3 = getString("interferenceStrong");
+    private final String DESC0 = MagicTxt.getString("interferenceWarning");
+    private final String DESC1 = MagicTxt.getString("interferenceWeak");
+    private final String DESC2 = MagicTxt.getString("interferenceMild");
+    private final String DESC3 = MagicTxt.getString("interferenceStrong");
     private final String DESC4 = String.valueOf(MagicInterference.getRates().get("WEAK"));
     private final String DESC5 = String.valueOf(MagicInterference.getRates().get("MILD"));
     private final String DESC6 = String.valueOf(MagicInterference.getRates().get("STRONG"));
@@ -83,15 +81,15 @@ public class MagicInterferenceWarning extends BaseHullMod {
     //detailed description    
     private final Color HL = Global.getSettings().getColor("hColor");
     private final Color BAD = Misc.getNegativeHighlightColor();
-    private final String TTIP0 = getString("interferenceTitle");
-    private final String TTIP1 = getString("interferenceTxt1");
-    private final String TTIP2 = getString("interferenceTxt2");
-    private final String TTIP3 = getString("interferenceTxt3");
-    private final String TTIP4 = getString("interferenceSource");
-    private final String TTIP5 = getString("interferenceEffect");
-    private final String TTIP6 = getString("interferenceHullmod1");
-    private final String TTIP7 = getString("interferenceHullmod2");
-    private final String TTIP8 = getString("interferenceHullmod3");
+    private final String TTIP0 = MagicTxt.getString("interferenceTitle");
+    private final String TTIP1 = MagicTxt.getString("interferenceTxt1");
+    private final String TTIP2 = MagicTxt.getString("interferenceTxt2");
+    private final String TTIP3 = MagicTxt.getString("interferenceTxt3");
+    private final String TTIP4 = MagicTxt.getString("interferenceSource");
+    private final String TTIP5 = MagicTxt.getString("interferenceEffect");
+    private final String TTIP6 = MagicTxt.getString("interferenceHullmod1");
+    private final String TTIP7 = MagicTxt.getString("interferenceHullmod2");
+    private final String TTIP8 = MagicTxt.getString("interferenceHullmod3");
 
     @Override
     public void addPostDescriptionSection(TooltipMakerAPI tooltip, ShipAPI.HullSize hullSize, ShipAPI ship, float width, boolean isForModSpec) {
