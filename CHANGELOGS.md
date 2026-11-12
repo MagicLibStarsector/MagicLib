@@ -1,4 +1,4 @@
-# 1.5.8
+# 1.6.0
 ## For users
 ### MagicBounty
 - Bounties persist in the intel board if the player has previously been notified of them, instead of disappearing when out of comms range.

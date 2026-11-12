@@ -823,6 +823,7 @@ tasks.register<Zip>("packageMod") {
     archiveFileName.set(zipName)
     // Where to put the zip
     destinationDirectory.set(layout.projectDirectory)
+    includeEmptyDirs = false
 
     // Wrap everything inside a top-level folder named after this project's root directory,
     // so the zip extracts to a single "<ProjectName>/" folder ready to drop into /mods/.
@@ -850,6 +851,8 @@ tasks.register<Zip>("packageMod") {
         packageIncludeExtensions.forEach { ext -> include("*.$ext") }
         // Personal Claude Code instructions. Not part of the mod.
         exclude("CLAUDE.local.md")
+        // Notes for whoever makes the release. Not part of the mod.
+        exclude("release_checklist.md")
     }
 }
 
