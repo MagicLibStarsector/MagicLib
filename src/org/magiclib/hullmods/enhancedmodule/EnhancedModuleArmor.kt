@@ -33,10 +33,10 @@ class EnhancedModuleArmor: BaseHullMod() {
             if (!hasListenerOfClass(T::class.java)) addListener(create())
         }
 
-        private fun ShipAPI.addOcclusionTag() {
+        private fun ShipAPI.addOcclusionTag(isArmor: Boolean) {
             when {
                 variant.hasHullMod(HullMods.VASTBULK) -> addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-                !variant.hasHullMod(HULL_MOD_ID) || hasTag(HULL_MOD_ID) -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                !isArmor -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
             }
         }
 
@@ -44,8 +44,10 @@ class EnhancedModuleArmor: BaseHullMod() {
          * Inner content only runs once, even if called multiple times.
          *
          * Add all hull-mods or tags before running.
-         * */
-        fun apply(ship: ShipAPI) {
+         * @param occlusionOnly If set to true, avoid hulking the module making it untargetable. Only apply occlusion and nothing else.
+         */
+        @JvmOverloads
+        fun apply(ship: ShipAPI, occlusionOnly: Boolean = false) {
             if (ship.childModulesCopy.isEmpty() && ship.parentStation == null) return // Must be a moduled ship or a module itself.
             val parent = ship.parentStation ?: ship
 
@@ -55,14 +57,21 @@ class EnhancedModuleArmor: BaseHullMod() {
             val children = parent.childModulesCopy
             if (children.isNotEmpty()) {
                 parent.addListenerIfAbsent { ExplosionOcclusionRaycast() }
-                parent.addOcclusionTag()
+                parent.addOcclusionTag(isArmor = false)
 
                 children.forEach { module ->
                     module.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+
                     if (module.variant.hasHullMod(HULL_MOD_ID) // Apply to module in specific
-                        || module.hasTag(HULL_MOD_ID) // Apply to module in specific, without editing the variant
+                        || module.hasTag(HULL_MOD_ID) // Apply to module in specific, without needing the hull-mod to be added.
                         || parent.variant.hasHullMod(HULL_MOD_ID)) // Apply to all modules
-                        module.addListenerIfAbsent { ArmorModuleChild(module) }
+                    {
+                        module.addOcclusionTag(isArmor = true)
+                        if (!occlusionOnly)
+                            module.addListenerIfAbsent { ArmorModuleChild(module) }
+                    } else {
+                        module.addOcclusionTag(isArmor = false)
+                    }
                 }
             }
         }
