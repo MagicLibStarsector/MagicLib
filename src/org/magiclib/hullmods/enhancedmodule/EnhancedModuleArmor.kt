@@ -41,15 +41,14 @@ class EnhancedModuleArmor: BaseHullMod() {
         }
 
         /**
-         * Inner content only runs once, even if called multiple times.
+         * Only works on parent ship. Inner content only runs once, even if called multiple times.
          *
          * Add all hull-mods or tags before running.
          * @param occlusionOnly If set to true, avoid hulking the module making it untargetable. Only apply occlusion and nothing else.
          */
         @JvmOverloads
-        fun apply(ship: ShipAPI, occlusionOnly: Boolean = false) {
-            if (ship.childModulesCopy.isEmpty() && ship.parentStation == null) return // Must be a moduled ship or a module itself.
-            val parent = ship.parentStation ?: ship
+        fun apply(parent: ShipAPI, occlusionOnly: Boolean = false) {
+            if (parent.childModulesCopy.isEmpty()) return
 
             if (parent.hasTag(MODULE_LISTENERS_ADDED)) return
             parent.addTag(MODULE_LISTENERS_ADDED)
@@ -78,7 +77,7 @@ class EnhancedModuleArmor: BaseHullMod() {
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
-        apply(ship)
+        apply(ship.parentStation ?: ship)
     }
 
     class ArmorModuleChild(val module: ShipAPI): DamageListener, HullDamageAboutToBeTakenListener, AdvanceableListener {
