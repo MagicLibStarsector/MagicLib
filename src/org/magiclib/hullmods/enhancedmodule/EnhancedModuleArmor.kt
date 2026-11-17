@@ -47,6 +47,7 @@ class EnhancedModuleArmor: BaseHullMod() {
          * @param occlusionOnly If set to true, avoid hulking the module making it untargetable. Only apply occlusion and nothing else.
          */
         @JvmOverloads
+        @JvmStatic
         fun apply(parent: ShipAPI, occlusionOnly: Boolean = false) {
             if (parent.childModulesCopy.isEmpty()) return
 
