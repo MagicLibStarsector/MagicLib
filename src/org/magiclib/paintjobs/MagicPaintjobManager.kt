@@ -757,9 +757,7 @@ object MagicPaintjobManager {
                 val (_, replacementSpriteAPI) = replacementMap.entries.first()
                 // unbox the replacement sprite and get its texture, then replace the weapon sprite's texture
                 val replacementSprite = ReflectionUtils.invoke(replacementSpriteAPI, "getSprite") as Sprite
-                val replacementTexture = ReflectionUtils.invoke(replacementSprite, "getTexture")
-                val setTextureMethod = weaponSprite.getMethodsMatching(name = "setTexture")[0]
-                setTextureMethod.invoke(weaponSprite, replacementTexture)
+                weaponSprite.texture = replacementSprite.texture
             }
         }
     }

@@ -20,15 +20,17 @@ object UIFinder {
 
     @JvmStatic
     fun getScreenPanel(): UIPanelAPI? {
-        val state = AppDriver.getInstance().currentState
-        return state.safeInvoke("getScreenPanel") as? UIPanelAPI
+        return Global.getSettings().screenPanel
+        //val state = AppDriver.getInstance().currentState
+        //return state.safeInvoke("getScreenPanel") as? UIPanelAPI
     }
 
     // Tip: Core UI is a child of the screen panel
     /** Only functions in the campaign state */
     @JvmStatic
     fun getCoreUI(): CoreUIAPI? {
-        val state = AppDriver.getInstance().currentState
+        return Global.getSector()?.campaignUI?.core2
+        /*val state = AppDriver.getInstance().currentState
         if (state is CampaignUIAPI) {
             return (state.currentInteractionDialog?.let { dialog ->
                 dialog.safeInvoke("getCoreUI") as? CoreUIAPI
@@ -36,7 +38,7 @@ object UIFinder {
         }// else if (state is TitleScreenState || state is CombatState) {
         //  return null
         //  }
-        return null
+        return null*/
     }
 
     @JvmOverloads
@@ -67,7 +69,7 @@ object UIFinder {
                 null
             //return getBorderContainer()?.findChildWithMethod("goBackToParentIfNeeded") as? UIPanelAPI
         } else { // Get title-screen mission refit tab
-            val delegateChild = getScreenPanel()?.findChildWithMethod("dismiss") as? UIPanelAPI ?: return null
+            val delegateChild = Global.getSettings().screenPanel?.findChildWithMethod("dismiss") as? UIPanelAPI ?: return null
             val oldCoreUI = delegateChild.findChildWithMethod("getMissionInstance") as? UIPanelAPI ?: return null
             val holographicBG = oldCoreUI.findChildWithMethod("forceFoldIn") ?: return null
 
@@ -138,11 +140,11 @@ object UIFinder {
 
             //Check for the codex that opens when clicking a ship in the title-screen missions.
             if (gameState == GameState.TITLE) {
-                return getScreenPanel()?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
+                return Global.getSettings().screenPanel?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
             }
 
             //Codex button in main menu and ESC menu
-            return getScreenPanel()?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
+            return Global.getSettings().screenPanel?.childrenCopy2?.find { it is CodexDialogAPI } as? CodexDialogAPI
         }
 
         return null
