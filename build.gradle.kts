@@ -2,6 +2,7 @@ import java.util.zip.ZipFile
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 import java.io.ByteArrayOutputStream
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 
 /*
@@ -20,6 +21,8 @@ val modDependencies = gradle.extra["modDependencies"] as List<String>
 val packageIncludes = gradle.extra["packageIncludes"] as List<String>
 @Suppress("UNCHECKED_CAST")
 val packageIncludeExtensions = gradle.extra["packageIncludeExtensions"] as List<String>
+@Suppress("UNCHECKED_CAST")
+val packageExcludes = if (gradle.extra.has("packageExcludes")) gradle.extra["packageExcludes"] as List<String> else emptyList()
 @Suppress("UNCHECKED_CAST")
 val otherDependencies = gradle.extra["otherDependencies"] as List<String>
 val libsFolder = gradle.extra["libsFolder"] as String
@@ -162,13 +165,20 @@ tasks.withType<JavaCompile>().configureEach {
 kotlin {
     compilerOptions {
         javaParameters = true
-        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
-        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1
+        //Pin the kotlin version to the kotlin runtime that is shipped with LazyLib
+        apiVersion = KotlinVersion.KOTLIN_2_1
+        languageVersion = KotlinVersion.KOTLIN_2_1
     }
 }
 
 tasks.test {
     enabled = false
+}
+
+//Gradle 9 defaults archives to reproducible mode, which stamps every entry with 1980-02-01.
+//Keep the real file modification dates in the jar and the release zip instead.
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = true
 }
 
 tasks.jar {
@@ -244,12 +254,34 @@ fun jarDeclaresAnnotationProcessor(jarFile: File): Boolean {
     }.getOrDefault(false)
 }
 
+//True if the jar bundles at least one .java/.kt source file (not just .class files).
+fun jarHasSourceEntries(jarFile: File): Boolean = runCatching {
+    ZipFile(jarFile).use { zip ->
+        zip.entries().asSequence().any { !it.isDirectory && (it.name.endsWith(".java") || it.name.endsWith(".kt")) }
+    }
+}.getOrDefault(false)
+
+//For a jar at <mod>/jars/.../x.jar, returns <mod>/src if it exists and contains java/kt files.
+//Returns null for jars that don't live under a "jars" folder (e.g. the local libs folder).
+fun findModSrcDir(jarFile: File): File? {
+    var dir: File? = jarFile.parentFile
+    while (dir != null) {
+        if (dir.name == "jars") {
+            return File(dir.parentFile, "src").takeIf { src ->
+                src.isDirectory && src.walkTopDown().any { it.isFile && (it.extension == "java" || it.extension == "kt") }
+            }
+        }
+        dir = dir.parentFile
+    }
+    return null
+}
+
 //Stages a mod-dependency jar as a local Maven artifact under modDepsRepoDir, so it can be added
 //as "modjars:<jarBaseName>:local". This mirrors stageStarsectorApi() below: the maven layout +
 //"-sources.jar" naming convention is what lets IntelliJ automatically attach sources/docs for a
 //compileOnly dependency.
 //Starsector mod jars typically bundle their .java/.kt source files alongside the .class files
-//in the same jar.
+//in the same jar. If they have not, fall back the /src sources if present.
 fun stageModDependency(jarFile: File): String {
     val jarBaseName = jarFile.nameWithoutExtension
     val artifactDir = File(modDepsRepoDir, "modjars/$jarBaseName/local")
@@ -263,8 +295,30 @@ fun stageModDependency(jarFile: File): String {
         jarFile.copyTo(dstJar, overwrite = true)
     }
 
-    if (!dstSources.exists() || dstSources.lastModified() < jarFile.lastModified()) {
-        extractSourceEntriesOnly(jarFile, dstSources)
+    if (jarHasSourceEntries(jarFile)) {
+        //Preferred: sources bundled in the jar itself.
+        if (!dstSources.exists() || dstSources.lastModified() < jarFile.lastModified()) {
+            extractSourceEntriesOnly(jarFile, dstSources)
+        }
+    } else {
+        //Fallback: no sources in the jar, so use the owning mod's /src folder if it has one.
+        val modSrc = findModSrcDir(jarFile)
+        if (modSrc != null) {
+            val srcMtime = modSrc.walkTopDown().filter { it.isFile }.maxOfOrNull { it.lastModified() } ?: 0L
+            if (!dstSources.exists() || dstSources.lastModified() < maxOf(srcMtime, jarFile.lastModified())) {
+                dstSources.delete()
+                ant.withGroovyBuilder {
+                    "zip"(
+                        "destfile" to dstSources.absolutePath,
+                        "basedir" to modSrc.absolutePath,
+                        "includes" to "**/*.java,**/*.kt,**/*.kts"
+                    )
+                }
+            }
+        } else {
+            //Nothing to attach; make sure a stale sources jar from an earlier sync doesn't linger.
+            dstSources.delete()
+        }
     }
 
     if (!pomFile.exists()) {
@@ -391,14 +445,12 @@ data class GitCommandResult(val exitCode: Int, val output: String) {
     val ok: Boolean get() = exitCode == 0
 }
 
-//Everything involved in keeping CommunityApiDocs in sync lives inside this one ValueSource's
-//obtain(): the interval throttle, the initial clone, and the incremental fetch+reset.
-//
-//Returns the newest mtime across every file under the checked-out src/ folder, or -1 if there's no
-//usable checkout. That value is also what Gradle compares between builds: it only changes when
-//content actually changed (a fresh clone or a fetch that moved the tip), which is exactly when the
-//rest of the build needs to know to rebuild the sources jar - and it staying the same is what lets
-//Gradle skip everything else on a cache hit once the interval hasn't elapsed.
+//Keeps CommunityApiDocs checked out and (subject to the interval throttle) up to date.
+//Runs inside obtain() rather than plain build-script code because Gradle re-invokes obtain() on
+//every build - even on a configuration-cache hit - to check whether the result changed. That's
+//what makes the interval actually fire on a schedule instead of only on a cache miss.
+//Returns the newest mtime under src/, or -1 if there's no usable checkout. Gradle also uses this
+//return value to decide whether anything downstream needs to be rebuilt.
 abstract class CommunityApiDocsSyncSource : ValueSource<Long, CommunityApiDocsSyncSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         val repoPath: Property<File>
@@ -429,9 +481,8 @@ abstract class CommunityApiDocsSyncSource : ValueSource<Long, CommunityApiDocsSy
 
         if (needsCheck) {
             if (!gitDir.exists()) {
-                //First time only: a full (but still shallow, --depth 1) clone. Cloned into a temp
-                //folder and swapped in atomically so a build interrupted mid-clone never leaves a
-                //half-checked-out repo behind for the next run to trip over.
+                //First time only: shallow clone into a temp folder, then swap it in atomically so
+                //an interrupted build never leaves a half-checked-out repo behind.
                 log.lifecycle("Cloning CommunityApiDocs into $repoPath ...")
                 repoPath.parentFile?.mkdirs()
                 val freshDir = File(repoPath.parentFile, "${repoPath.name}.tmp")
@@ -456,18 +507,14 @@ abstract class CommunityApiDocsSyncSource : ValueSource<Long, CommunityApiDocsSy
                     freshDir.deleteRecursively()
                     log.warn(
                         result.output.substringAfter('\n') +
-                        "\nCould not clone CommunityApiDocs (offline, or git isn't installed?). " +
-                        "Falling back to vanilla Starsector API sources for hover docs."
+                                "\nCould not clone CommunityApiDocs (offline, or git isn't installed?). " +
+                                "Falling back to vanilla Starsector API sources for hover docs."
                     )
                 }
             } else {
-                //Already cloned: fetch just the new tip commit - `--depth 1` clones set up a
-                //single-branch tracking config, so this pulls down only what changed, not the whole
-                //repo again - then force the working tree to match it. `origin/HEAD` is the symbolic
-                //ref git points at the remote's default branch at clone time, so this tracks that
-                //branch without hardcoding "main" vs "master". Using fetch+reset rather than `git
-                //pull` sidesteps merge/ff-only failures entirely - there are never local commits
-                //here worth preserving.
+                //Already cloned: fetch just the new tip commit and force the working tree to match
+                //it, rather than `git pull`, since there are never local commits worth preserving
+                //here. origin/HEAD tracks whatever the remote's default branch is.
                 log.lifecycle("Fetching CommunityApiDocs updates...")
                 val fetched = runGit(repoPath, "fetch", "--depth", "1", "origin", timeoutSeconds = 60)
                 if (fetched.ok && runGit(repoPath, "reset", "--hard", "origin/HEAD", timeoutSeconds = 30).ok) {
@@ -487,14 +534,10 @@ abstract class CommunityApiDocsSyncSource : ValueSource<Long, CommunityApiDocsSy
         return dir.walkTopDown().filter { it.isFile }.maxOfOrNull { it.lastModified() } ?: -1L
     }
 
-    //Runs `git <args>` in `dir` via ExecOperations - the pattern Gradle actually supports for
-    //starting external processes from configuration-time code (a raw ProcessBuilder/Runtime.exec
-    //call is what triggers "Starting an external process during configuration time is unsupported"
-    //once the configuration cache is on). ExecOperations.exec() has no timeout parameter and blocks
-    //until the process exits, so rather than trying to kill a hung process from the Java side, the
-    //timeout is enforced by git itself: GIT_TERMINAL_PROMPT=0 stops it from ever blocking on an
-    //interactive credential prompt, and http.lowSpeedLimit/http.lowSpeedTime tell git to abort on
-    //its own if a transfer stalls.
+    //Runs `git <args>` in `dir` via ExecOperations, since a raw ProcessBuilder call would trip
+    //the "external process during configuration" restriction. There's no timeout parameter here,
+    //so hangs are bounded on git's side instead: GIT_TERMINAL_PROMPT=0 skips credential prompts,
+    //and http.lowSpeedLimit/Time abort a stalled transfer.
     private fun runGit(dir: File, vararg args: String, timeoutSeconds: Long = 30): GitCommandResult {
         val output = ByteArrayOutputStream()
         val result = execOperations.exec {
@@ -515,10 +558,8 @@ abstract class CommunityApiDocsSyncSource : ValueSource<Long, CommunityApiDocsSy
     }
 }
 
-//Resolves (and, subject to the interval/throttle inside CommunityApiDocsSyncSource, updates)
-//CommunityApiDocs, returning its .../src folder to use as sources-jar content, or null if there
-//isn't one (auto-update disabled and nothing checked out yet, or the clone/fetch failed with
-//nothing to fall back on).
+//Resolves CommunityApiDocs' src/ folder for use as sources-jar content (triggering the
+//clone/update inside CommunityApiDocsSyncSource along the way), or null if there isn't one.
 fun resolveCommunityApiDocsSrc(): File? {
     val mtime = providers.of(CommunityApiDocsSyncSource::class.java) {
         parameters.repoPath.set(communityApiDocsPath)
@@ -529,6 +570,7 @@ fun resolveCommunityApiDocsSrc(): File? {
     if (mtime < 0) return null
     return File(communityApiDocsPath, "src").takeIf { it.exists() }
 }
+
 
 //Stages the Starsector API as a local Maven repo under build/starsector-api/.
 //Using a maven layout (not flatDir) because IntelliJ only reliably attaches sources when the
@@ -583,7 +625,7 @@ fun stageStarsectorApi(): File {
     val sourcesFresh = if (useCommunityDocs) {
         dstSources.exists() && dstSources.lastModified() >= communityDocsMtime
     } else {
-        !srcZip.exists() || (dstSources.exists() && dstSources.lastModified() >= srcZip.lastModified())
+        !srcZip.exists() || (dstSources.exists() && dstSources.lastModified() == srcZip.lastModified())
     }
     if (jarFresh && sourcesFresh && pomFile.exists()) return repoDir
 
@@ -610,7 +652,10 @@ fun stageStarsectorApi(): File {
             }
         }
     } else {
-        stageIfStale(srcZip, dstSources)
+        if (srcZip.exists()) {
+            srcZip.copyTo(dstSources, overwrite = true)
+            dstSources.setLastModified(srcZip.lastModified())
+        }
     }
 
     //Minimal POM. Gradle's maven resolver needs one to recognise the artifact and to look up the -sources classifier.
@@ -849,11 +894,12 @@ tasks.register<Zip>("packageMod") {
     // 3. Include any project-root files matching packageIncludeExtensions.
     from(projectDir) {
         packageIncludeExtensions.forEach { ext -> include("*.$ext") }
-        // Personal Claude Code instructions. Not part of the mod.
-        exclude("CLAUDE.local.md")
-        // Notes for whoever makes the release. Not part of the mod.
-        exclude("release_checklist.md")
+    }
+
+    // 4. Always exclude anything matching packageExcludes. Task-level excludes apply to every from() above,
+    // so they override packageIncludes and packageIncludeExtensions. Bare names/globs (no "/") are
+    // prefixed with "**/" so they match at any depth, e.g. src/notes/CLAUDE.local.md.
+    packageExcludes.forEach { pattern ->
+        exclude(if ('/' in pattern) pattern else "**/$pattern")
     }
 }
-
-
