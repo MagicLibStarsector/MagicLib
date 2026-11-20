@@ -85,6 +85,9 @@ class ExplosionOcclusionRaycastSimple: DamageTakenModifier {
             return explosionMap
         }
 
+        // Armor modules don't update their positions every tick, so do it manually
+        potentialOcclusions.forEach { it.exactBounds?.update(it.location, it.facing) }
+
         val hitsMap = mutableMapOf<ShipAPI, Int>()
 
         // if we have 2 things in range, then we need to do the raycast
