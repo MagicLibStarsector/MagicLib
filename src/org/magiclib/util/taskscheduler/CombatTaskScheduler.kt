@@ -61,7 +61,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
 
         @JvmStatic
         fun getOnBattleStartPersistentTasks(): Collection<Task> {
-            return onBattleStartSector.toList()
+            return onBattleStartPersistent.toList()
         }
 
         /**
