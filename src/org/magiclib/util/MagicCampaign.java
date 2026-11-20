@@ -1426,7 +1426,8 @@ public class MagicCampaign {
             boolean noPBH = false;
             if (avoid_themes.contains(MagicVariables.AVOID_BLACKHOLE_PULSAR)) noPBH = true;
             boolean noPop = false;
-            if (avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)) noPop = true;
+            if (avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)
+                    || avoid_themes.contains(MagicVariables.AVOID_COLONIZED_SYSTEM)) noPop = true;
 
             if (!systems_core.isEmpty()) {
                 for (int i = 0; i < systems_core.size(); i++) {
