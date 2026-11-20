@@ -207,6 +207,8 @@ public final class ActiveBounty {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
             systemLocation.addEntity(getFleet());
             getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
+            if (spec.existing_target_memkey == null)
+                getFleet().setTransponderOn(spec.fleet_transponder);
         }
         if (getFleet().getCurrentAssignment() == null) {
             getFleet().getAI().addAssignment(

@@ -199,7 +199,7 @@
         "fleet_min_FP": 100, # Default: no minimum. Minimal total fleet size, set to -1 to ignore.
         "fleet_composition_faction": "pirates", # Default: bounty fleet faction. Used if the extra ships don't match the fleet's faction. For example a pirate fleet of Hegemony deserters. Required for min FP and player adjustment.
         "fleet_composition_quality": 1, # Default: 1, use 2 for no Dmods.
-        "fleet_transponder": false, # Default: true.
+        "fleet_transponder": false, # Default: false. Whether the bounty fleet has its transponder on.
 		"fleet_no_retreat": false, #Default: false. When true, members of this fleet will never retreat in the combat layer.
 		"fleet_memory_flags": [ # When the bounty is accepted, set the specified memory keys to true on this fleet’s MemoryAPI
             "$noRepImpact", # No rep impact when fighting this fleet
