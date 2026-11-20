@@ -50,8 +50,8 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
         }
 
         @JvmStatic
-        fun getOnUnpauseTasks(): Collection<Task> {
-            return active?.onUnpause?.toList() ?: emptyList()
+        fun getOnPauseTasks(): Collection<Task> {
+            return active?.onPause?.toList() ?: emptyList()
         }
 
         @JvmStatic
@@ -119,9 +119,9 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
         }
 
         /**
-         * Runs [action] when the game is unpaused.
+         * Runs [action] when the game is paused.
          *
-         * If [repeat] is true, the task will be repeated every time the game is unpaused.
+         * If [repeat] is true, the task will be repeated every time the game is paused.
          *
          * If [repeat] is false, the task will only run once.
          *
@@ -129,7 +129,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
          */
         @JvmStatic
         @JvmOverloads
-        fun performOnUnpause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performOnPause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val active = getActiveOrNull() ?: return handle
 
@@ -139,7 +139,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
                 handle = handle
             )
 
-            active.onUnpause.add(task)
+            active.onPause.add(task)
 
             return handle
         }
@@ -198,7 +198,7 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
     private var engine: CombatEngineAPI? = null
 
     private val combatTimeQueue = PriorityQueue<TimedTask>()
-    private val onUnpause = mutableListOf<Task>()
+    private val onPause = mutableListOf<Task>()
     private var wasPaused = false
 
     private var init = false
@@ -219,11 +219,11 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
                 init = true
             } else if (currentState == GameState.COMBAT) {
                 this.engine = Global.getCombatEngine()
-                if (engine != null) {
+                engine?.let { engine ->
                     combatTimeQueue.clear()
 
-                    onUnpause.clear()
-                    wasPaused = false
+                    onPause.clear()
+                    wasPaused = engine.isPaused
 
                     active = this
 
@@ -241,8 +241,8 @@ class CombatTaskScheduler : BaseEveryFrameCombatPlugin() {
             if (engine != null) {
                 val paused = engine.isPaused
 
-                // detect unpause
-                if (wasPaused && !paused) runCallbacks(onUnpause, "onUnpause callback")
+                // detect pause
+                if (!wasPaused && paused) runCallbacks(onPause, "onPause callback")
                 wasPaused = paused
 
                 drainDueTasks(combatTimeQueue, (engine.getTotalElapsedTime(false) * 1000).toLong(), "deferred combatTime task")
