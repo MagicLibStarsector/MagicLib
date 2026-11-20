@@ -1312,9 +1312,11 @@ public class MagicCampaign {
         if (
                 (distance == null || distance.equals("")) &&
                         (seek_themes == null || seek_themes.isEmpty()) &&
-                        (entities == null || entities.isEmpty())
+                        (entities == null || entities.isEmpty()) &&
+                        ((entityIDs != null && !entityIDs.isEmpty()) || (marketFactions != null && !marketFactions.isEmpty()))
         ) {
-            //there was no fallback filters defined, this is a wrap
+            // Specific entities or markets were requested but none exist, so don't spawn somewhere random.
+            // With no preferences at all, fall through to the defaults below.
             return null;
         }
 
