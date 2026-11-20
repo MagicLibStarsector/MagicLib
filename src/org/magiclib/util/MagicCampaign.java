@@ -859,6 +859,9 @@ public class MagicCampaign {
 
         //checking trigger_marketFaction_none and trigger_marketFaction_enemyWith
         if (marketFaction_none != null && !marketFaction_none.isEmpty()) {
+            // enemyWith needs the market to be hostile to every excluded faction, not just one.
+            int excludedFactions = 0;
+            boolean hostileToAll = true;
             for (String f : marketFaction_none) {
                 //skip non existing factions
                 if (Global.getSector().getFaction(f) == null) {
@@ -871,9 +874,15 @@ public class MagicCampaign {
                 FactionAPI this_faction = Global.getSector().getFaction(f);
                 if (market.getFaction() == this_faction) {
                     return false; //is one of the excluded factions
-                } else if (marketFaction_enemyWith && market.getFaction().isAtBest(this_faction, RepLevel.HOSTILE)) {
-                    return true; //is hostile with one of the excluded factions
                 }
+                excludedFactions++;
+                if (!market.getFaction().isAtBest(this_faction, RepLevel.HOSTILE)) {
+                    hostileToAll = false;
+                }
+            }
+
+            if (marketFaction_enemyWith && excludedFactions > 0 && hostileToAll) {
+                return true; //is hostile with every excluded faction
             }
         }
 
