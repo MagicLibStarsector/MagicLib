@@ -253,11 +253,14 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
             textTooltip.addPara(this.getBountyType(), Misc.getGrayColor(), 0f)
         }
 
-        textTooltip.addPara(
-            "Base reward: ${Misc.getDGSCredits(this.getBountyPayout().toFloat())}",
-            Misc.getHighlightColor(),
-            0f
-        )
+        val payout = this.getBountyPayout()
+        if (payout > 0) {
+            textTooltip.addPara(
+                "Base reward: ${Misc.getDGSCredits(payout.toFloat())}",
+                Misc.getHighlightColor(),
+                0f
+            )
+        }
         tooltip.addImageWithText(2f)
 
         val activeBountyLocal: ActiveBounty = getActiveBounty()
