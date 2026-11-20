@@ -1644,7 +1644,7 @@ public class MagicCampaign {
                 if (prioritizeUnexplored) {
                     //Lets try for unexplored systems in the desired range band and add the required entity there
                     for (StarSystemAPI s : distance_priority.get(i)) {
-                        if (s.isEnteredByPlayer()) {
+                        if (!s.isEnteredByPlayer()) {
                             randomSystemFallback.add(s);
                         }
                     }
