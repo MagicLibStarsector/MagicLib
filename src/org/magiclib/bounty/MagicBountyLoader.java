@@ -173,10 +173,8 @@ public class MagicBountyLoader {
                 memKey = getString(bountyId, "job_memKey");
             }
 
-            float reputation = 0.05f;
-            if (getInt(bountyId, "job_reputation_reward") != null) {
-                reputation = (float) getInt(bountyId, "job_reputation_reward") / 100f;
-            }
+            // Default 5 rep
+            float reputation = (float) getInt(bountyId, "job_reputation_reward", 5) / 100f;
 
             String reply = MagicTxt.getString("mb_comm_reply");
             if (getString(bountyId, "job_comm_reply") == null) {
