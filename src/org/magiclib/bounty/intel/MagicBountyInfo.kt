@@ -193,7 +193,8 @@ open class MagicBountyInfo(val bountyKey: String, private val bountySpec: MagicB
 
         //check if close enough to receive from an offering faction, only if it hasn't already been seen by the player
         if(!BountyBoardIntelPlugin.userNotifiedBountyIds.contains(this.getBountyId()) &&
-            (bountySpec.trigger_market_id.isNotEmpty() || bountySpec.trigger_marketFaction_any.isNotEmpty() || bountySpec.trigger_marketFaction_none.isNotEmpty())) {
+            (bountySpec.trigger_market_id.isNotEmpty() || bountySpec.trigger_marketFaction_any.isNotEmpty() || bountySpec.trigger_marketFaction_none.isNotEmpty()
+                    || bountySpec.trigger_market_minSize > 0)) {
             val rangeToShowBounties = 10f
             var withinRange = false
             for (system in Misc.getNearbyStarSystems(Global.getSector().playerFleet, rangeToShowBounties)) {
