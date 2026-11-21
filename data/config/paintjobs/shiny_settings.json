@@ -1,5 +1,5 @@
 # Add this file to your mod to change your mod specific paintjob settings.
 {
-    # 1 in 20 chance of spawning a shiny
-    "probability": 20
+    "probability": 20, # 1 in 20 chance of spawning a shiny
+    "survival_probability": 25, # Overrides "probability" with this when in survival mode. Shinies are always recoverable, so it is advised to keep them rarer in survival mode to avoid affecting game balance.
 }
