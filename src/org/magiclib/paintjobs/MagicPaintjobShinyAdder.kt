@@ -57,7 +57,7 @@ class MagicPaintjobShinyAdder : EveryFrameScript {
                     runCatching {
                         val shinySettings = settings.loadJSON("data/config/paintjobs/shiny_settings.json", mod)
                             if (!Misc.isExtended()) shinySettings.optInt("probability", defaultProbability)
-                            else shinySettings.optInt("survival_probability", defaultProbability)
+                            else shinySettings.optInt("survival_probability", shinySettings.optInt("probability", defaultProbability))
                     }.getOrDefault(defaultProbability)
                 }
         }
