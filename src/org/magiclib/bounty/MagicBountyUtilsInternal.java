@@ -147,6 +147,7 @@ public class MagicBountyUtilsInternal {
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$targetFaction", () -> bounty.getFleet().getFaction().getDisplayNameWithArticle());
         // Deprecated in 1.1.2
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$faction", () -> bounty.getFleet().getFaction().getDisplayNameWithArticle());
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$rank", () -> bounty.getFleet().getCommander().getRank());
         // The reward the bounty pays, after scaling and rounding. A bounty without a credit reward keeps job_credit_reward.
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$reward", () -> bounty.getRewardCredits() != null
                 ? Misc.getDGSCredits(bounty.getRewardCredits())
