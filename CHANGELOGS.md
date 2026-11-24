@@ -1,9 +1,18 @@
 Version 1.6.2
+## For modders
+### MagicBounty
+- Added 'survival_probability' to decide the probability of shiny ships showing up in survival, as shinies are always recoverable.
+### Miscellaneous
+- Added MagicDeferredDHullRestore to fix .skin 'restoreToBaseHull' functionality which was broken in the 0.98.5a update.
 ## Bug Fixes
 ### MagicAchievements
 - Fixed achievement progress stored in achievement memory being lost when the game was saved and loaded.
   - This made it harder or impossible to get `And Over The Ashes`, `Slayer`, and `Revisionist`.
 - Improved `ShipKillsAchievement` performance in large battles (now 16x faster, 140µs per call -> 9µs).
+### MagicBounty
+- Added '$rank' substitution for bounty strings.
+### MagicSubsystems
+- Fix onStateSwitched not giving the old state.
 
 # 1.6.1
 ## Bug Fixes
