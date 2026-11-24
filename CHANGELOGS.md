@@ -1,20 +1,50 @@
 Version 1.6.2
 ## For modders
 ### MagicBounty
+- Added '$rank' substitution for bounty strings.
+### MagicPaintjobs
 - Added 'survival_probability' to decide the probability of shiny ships showing up in survival, as shinies are always recoverable.
 ### Miscellaneous
 - Added MagicDeferredDHullRestore to fix .skin 'restoreToBaseHull' functionality which was broken in the 0.98.5a update.
+- Added `includeInactive` to `getAssignedOfficers` and `getUnassignedOfficers`.
+- Added extensions for the new 0.98.5a `Misc` functions: `getNumActiveNonMercOfficers`, `isOfficerActive`, `combatPayEnabled`, `getCombatPay`, `isPlayerSupportFleet` and `isFleetCivOnly`.
+
 ## Bug Fixes
 ### MagicAchievements
 - Fixed achievement progress stored in achievement memory being lost when the game was saved and loaded.
   - This made it harder or impossible to get `And Over The Ashes`, `Slayer`, and `Revisionist`.
 - Improved `ShipKillsAchievement` performance in large battles (now 16x faster, 140µs per call -> 9µs).
 ### MagicBounty
-- Added '$rank' substitution for bounty strings.
+- Fixed `$constellation` crashing in places without a constellation, like the core worlds or hyperspace.
+- Fixed crash when a bounty on an existing fleet has no `fleet_faction`.
+- Fixed `findSuitableTarget` crashing when there are themes to avoid but none to target.
+- Fixed `findSuitableTarget` returning nothing instead of using its defaults when no location keys are set.
+- Fixed `$reward` showing the base reward instead of the scaled one.
+- Fixed bounties with no credit reward showing a negative base reward.
+- Fixed a missing `job_reputation_reward` costing 1 reputation instead of adding 5.
+- Fixed `job_show_fleet: "text"` not working.
+- Fixed bounty fleets ignoring `fleet_transponder`.
+- Fixed bounties that only use `trigger_market_minSize` as a trigger not being limited to markets within 10 LY like other bounty board bounties are.
+- Fixed `trigger_marketFaction_enemyWith` only needing hostility with one faction in `trigger_marketFaction_none` instead of all of them.
+- Fixed `theme_already_colonized` in `location_themes_blacklist` not stopping bounty fleets from spawning in systems with markets.
+- Fixed `prioritizeUnexplored` preferring explored systems.
+- Fixed bounties with `fleet_faction: "ML_bounty"` showing "Target: target" in their intel.
 ### MagicSubsystems
-- Fix onStateSwitched not giving the old state.
+- Fix `onStateSwitched` not giving the old state.
+### Combat
+- Fixed `MagicFakeBeam` not damaging fighters' hull or armor.
+- Fixed `MagicFakeBeam.getShipCollisionPoint` returning a wrong point instead of null when the beam misses a shielded ship.
+- Fixed `ExplosionOcclusionRaycastSimple` not updating module locations when explosion hit-checking.
+- Fixed every module on ships with `ML_enhancedModuleArmor` blocking explosions, not just the armor modules.
+### MagicPaintjobs
+- Fixed paintjobs searching the deployment screen every frame, even when it wasn't open.
+- Fixed unlocking a paintjob while the feature is disabled erasing previously unlocked paintjobs.
+- Fixed `lockPaintjob` not locking the paintjob.
+### Miscellaneous
+- Fixed `MagicCampaignTrailPlugin.addTrailMemberAnimated` with `locationAPICulling` crashing the game when the player leaves a system that has two or more trails.
+- Fixed `findNearestJumpPointTo` never returning wormholes, even with `allowWormhole = true`.
 
-# 1.6.1
+Version 1.6.1
 ## Bug Fixes
 ### MagicSubsystems
 - Fixed letters appearing as boxes

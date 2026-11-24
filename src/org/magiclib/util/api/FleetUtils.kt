@@ -18,7 +18,7 @@ private fun FleetDataAPI.filterOfficers(
         val isAssigned = getMemberWithCaptain(it) != null
         isAssigned == assigned &&
                 (includeMercenaries || !it.isMercenary()) &&
-                (includeInactive || !it.isOfficerActive())
+                (includeInactive || it.isOfficerActive())
     }
 }
 

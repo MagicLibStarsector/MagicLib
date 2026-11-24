@@ -819,7 +819,7 @@ inline fun FleetMemberAPI.isShipRecoverable(
  * @since 0.46.0
  */
 inline fun SectorEntityToken.findNearestJumpPointTo(allowWormhole: Boolean = false) =
-    Misc.findNearestJumpPointTo(this)
+    Misc.findNearestJumpPointTo(this, allowWormhole)
 
 /**
  * @since 0.46.0
@@ -2165,4 +2165,4 @@ inline fun CampaignFleetAPI.isFleetCivOnly() = Misc.isFleetCivOnly(this)
 /**
  * @since 1.6.2
  */
-inline fun FleetMemberAPI.isFleetCivOnly(withCrewFraction: Boolean) = Misc.computeFleetMemberCrewSalary(this, withCrewFraction)
+inline fun FleetMemberAPI.computeFleetMemberCrewSalary(withCrewFraction: Boolean) = Misc.computeFleetMemberCrewSalary(this, withCrewFraction)

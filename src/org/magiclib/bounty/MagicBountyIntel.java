@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.magiclib.util.MagicDeserializable;
 import org.magiclib.util.MagicTxt;
+import org.magiclib.util.MagicVariables;
 
 import java.awt.*;
 import java.util.List;
@@ -53,6 +54,18 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
     @Nullable
     private ActiveBounty getBounty() {
         return MagicBountyCoordinator.getInstance().getActiveBounty(bountyKey);
+    }
+
+    /**
+     * The target faction to use in the intel text, or null (for example if using the MagicBounty faction).
+     */
+    @Nullable
+    private static FactionAPI getTargetFactionIfExistsAndNotBountyFaction(@NotNull ActiveBounty bounty) {
+        FactionAPI target = bounty.getTargetFaction();
+        if (target == null || MagicVariables.BOUNTY_FACTION.equals(target.getId())) {
+            return null;
+        }
+        return target;
     }
 
     @Override
@@ -153,14 +166,15 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                     unindent(info);
                 }
 
-                if (bounty.getTargetFaction() != null) {
+                FactionAPI targetFactionToDisplay = getTargetFactionIfExistsAndNotBountyFaction(bounty);
+                if (targetFactionToDisplay != null) {
                     bullet(info);
                     //"Target: %s"
                     info.addPara(MagicTxt.getString("mb_intelTarget"),
                             PADDING_INFO_SUBTITLE,
                             Misc.getGrayColor(),
                             bounty.getTargetFactionTextColor(),
-                            bounty.getTargetFaction().getDisplayName());
+                            targetFactionToDisplay.getDisplayName());
                     unindent(info);
                 }
 
@@ -306,9 +320,10 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
 
                 //This is an %s mission, to get the reward you will need to %s.
                 if (bounty.getSpec().job_show_type) {
+                    FactionAPI targetFactionToDisplay = getTargetFactionIfExistsAndNotBountyFaction(bounty);
                     switch (bounty.getSpec().job_type) {
                         case Assassination:
-                            if (bounty.getTargetFaction() == null) {
+                            if (targetFactionToDisplay == null) {
                                 info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
@@ -320,16 +335,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                         MagicTxt.getString("mb_intelType0") +
                                                 MagicTxt.getString("mb_type_assassination1") +
                                                 MagicTxt.getString("mb_intelType1") +
-                                                bounty.getTargetFaction().getDisplayName() +
+                                                targetFactionToDisplay.getDisplayName() +
                                                 MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(MagicTxt.getString("mb_type_assassination1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_assassination1"), targetFactionToDisplay.getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
                         case Destruction:
-                            if (bounty.getTargetFaction() == null) {
+                            if (targetFactionToDisplay == null) {
                                 info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
@@ -341,16 +356,16 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                         MagicTxt.getString("mb_intelType0") +
                                                 MagicTxt.getString("mb_type_destruction1") +
                                                 MagicTxt.getString("mb_intelType1") +
-                                                bounty.getTargetFaction().getDisplayName() +
+                                                targetFactionToDisplay.getDisplayName() +
                                                 MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(MagicTxt.getString("mb_type_destruction1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_destruction1"), targetFactionToDisplay.getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
                         case Obliteration:
-                            if (bounty.getTargetFaction() == null) {
+                            if (targetFactionToDisplay == null) {
                                 info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
@@ -362,17 +377,17 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                         MagicTxt.getString("mb_intelType0") +
                                                 MagicTxt.getString("mb_type_obliteration1") +
                                                 MagicTxt.getString("mb_intelType1") +
-                                                bounty.getTargetFaction().getDisplayName() +
+                                                targetFactionToDisplay.getDisplayName() +
                                                 MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(MagicTxt.getString("mb_type_obliteration1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_obliteration1"), targetFactionToDisplay.getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
                         case Neutralization:
                         case Neutralisation:
-                            if (bounty.getTargetFaction() == null) {
+                            if (targetFactionToDisplay == null) {
                                 info.addPara(MagicTxt.getString("mb_intelType"),
                                         PADDING_DESC,
                                         Misc.getTextColor(),
@@ -384,11 +399,11 @@ public class MagicBountyIntel extends BaseIntelPlugin implements MagicDeserializ
                                         MagicTxt.getString("mb_intelType0") +
                                                 MagicTxt.getString("mb_type_neutralisation1") +
                                                 MagicTxt.getString("mb_intelType1") +
-                                                bounty.getTargetFaction().getDisplayName() +
+                                                targetFactionToDisplay.getDisplayName() +
                                                 MagicTxt.getString("mb_intelType2"),
                                         PADDING_DESC
                                 );
-                                label.setHighlight(MagicTxt.getString("mb_type_neutralisation1"), bounty.getTargetFaction().getDisplayName());
+                                label.setHighlight(MagicTxt.getString("mb_type_neutralisation1"), targetFactionToDisplay.getDisplayName());
                                 label.setHighlightColors(Misc.getHighlightColor(), bounty.getTargetFactionTextColor());
                             }
                             break;
