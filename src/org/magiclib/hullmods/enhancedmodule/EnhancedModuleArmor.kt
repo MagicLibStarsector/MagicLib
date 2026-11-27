@@ -33,21 +33,23 @@ class EnhancedModuleArmor: BaseHullMod() {
             if (!hasListenerOfClass(T::class.java)) addListener(create())
         }
 
-        private fun ShipAPI.addOcclusionTag() {
+        private fun ShipAPI.addOcclusionTag(isArmor: Boolean) {
             when {
                 variant.hasHullMod(HullMods.VASTBULK) -> addTag(ExplosionOcclusionRaycast.DEDUCT_FIRST_HIT_RAYCAST)
-                !variant.hasHullMod(HULL_MOD_ID) || hasTag(HULL_MOD_ID) -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
+                !isArmor -> addTag(ExplosionOcclusionRaycast.PASS_THROUGH_OCCLUSION)
             }
         }
 
         /**
-         * Inner content only runs once, even if called multiple times.
+         * Only works on parent ship. Inner content only runs once, even if called multiple times.
          *
          * Add all hull-mods or tags before running.
-         * */
-        fun apply(ship: ShipAPI) {
-            if (ship.childModulesCopy.isEmpty() && ship.parentStation == null) return // Must be a moduled ship or a module itself.
-            val parent = ship.parentStation ?: ship
+         * @param occlusionOnly If set to true, avoid hulking the module making it untargetable. Only apply occlusion and nothing else.
+         */
+        @JvmOverloads
+        @JvmStatic
+        fun apply(parent: ShipAPI, occlusionOnly: Boolean = false) {
+            if (parent.childModulesCopy.isEmpty()) return
 
             if (parent.hasTag(MODULE_LISTENERS_ADDED)) return
             parent.addTag(MODULE_LISTENERS_ADDED)
@@ -55,21 +57,28 @@ class EnhancedModuleArmor: BaseHullMod() {
             val children = parent.childModulesCopy
             if (children.isNotEmpty()) {
                 parent.addListenerIfAbsent { ExplosionOcclusionRaycast() }
-                parent.addOcclusionTag()
+                parent.addOcclusionTag(isArmor = false)
 
                 children.forEach { module ->
                     module.addListenerIfAbsent { ExplosionOcclusionRaycast() }
+
                     if (module.variant.hasHullMod(HULL_MOD_ID) // Apply to module in specific
-                        || module.hasTag(HULL_MOD_ID) // Apply to module in specific, without editing the variant
+                        || module.hasTag(HULL_MOD_ID) // Apply to module in specific, without needing the hull-mod to be added.
                         || parent.variant.hasHullMod(HULL_MOD_ID)) // Apply to all modules
-                        module.addListenerIfAbsent { ArmorModuleChild(module) }
+                    {
+                        module.addOcclusionTag(isArmor = true)
+                        if (!occlusionOnly)
+                            module.addListenerIfAbsent { ArmorModuleChild(module) }
+                    } else {
+                        module.addOcclusionTag(isArmor = false)
+                    }
                 }
             }
         }
     }
 
     override fun advanceInCombat(ship: ShipAPI, amount: Float) {
-        apply(ship)
+        apply(ship.parentStation ?: ship)
     }
 
     class ArmorModuleChild(val module: ShipAPI): DamageListener, HullDamageAboutToBeTakenListener, AdvanceableListener {

@@ -76,8 +76,8 @@ class SectorTaskScheduler : EveryFrameScript {
         }
 
         @JvmStatic
-        fun getOnUnpauseTasks(): Collection<Task> {
-            return active?.onUnpause?.toList() ?: emptyList()
+        fun getOnPauseTasks(): Collection<Task> {
+            return active?.onPause?.toList() ?: emptyList()
         }
 
         @JvmStatic
@@ -164,9 +164,9 @@ class SectorTaskScheduler : EveryFrameScript {
         }
 
         /**
-         * Runs [action] when the game is unpaused.
+         * Runs [action] when the game is paused.
          *
-         * If [repeat] is true, the task will be repeated every time the game is unpaused.
+         * If [repeat] is true, the task will be repeated every time the game is paused.
          *
          * If [repeat] is false, the task will only run once.
          *
@@ -174,7 +174,7 @@ class SectorTaskScheduler : EveryFrameScript {
          */
         @JvmStatic
         @JvmOverloads
-        fun performOnUnpause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
+        fun performOnPause(repeat: Boolean = false, action: TaskSchedulerUtils.TaskAction): TaskHandle {
             val handle = TaskHandle()
             val active = getActiveOrNull() ?: return handle
 
@@ -184,7 +184,7 @@ class SectorTaskScheduler : EveryFrameScript {
                 handle = handle
             )
 
-            active.onUnpause.add(task)
+            active.onPause.add(task)
 
             return handle
         }
@@ -250,7 +250,7 @@ class SectorTaskScheduler : EveryFrameScript {
 
     private var battleStarted = false
     private val sectorTimeQueue = PriorityQueue<TimedTask>()
-    private val onUnpause = mutableListOf<Task>()
+    private val onPause = mutableListOf<Task>()
     private var wasPaused = false
 
     private val afterPlayerBattle = mutableListOf<Task>()
@@ -264,6 +264,7 @@ class SectorTaskScheduler : EveryFrameScript {
         val paused = sector.isPaused
 
         if (!init) {
+            wasPaused = sector.isPaused
             initAfterFirstAdvance = false
             init = true
         } else if (!initAfterFirstAdvance) {
@@ -276,7 +277,7 @@ class SectorTaskScheduler : EveryFrameScript {
             battleStarted = false
         }
 
-        if (wasPaused && !paused) runCallbacks(onUnpause, "onUnpause callback")
+        if (!wasPaused && paused) runCallbacks(onPause, "onPause callback")
         wasPaused = paused
 
         drainDueTasks(sectorTimeQueue, sector.clock.timestamp, "deferred sectorTime task")

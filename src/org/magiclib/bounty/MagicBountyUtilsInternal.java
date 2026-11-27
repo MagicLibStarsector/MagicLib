@@ -3,6 +3,7 @@ package org.magiclib.bounty;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
+import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.CoreRuleTokenReplacementGeneratorImpl;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -146,11 +147,21 @@ public class MagicBountyUtilsInternal {
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$targetFaction", () -> bounty.getFleet().getFaction().getDisplayNameWithArticle());
         // Deprecated in 1.1.2
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$faction", () -> bounty.getFleet().getFaction().getDisplayNameWithArticle());
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$reward", () -> Misc.getDGSCredits(bounty.getSpec().job_credit_reward));
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$rank", () -> bounty.getFleet().getCommander().getRank());
+        // The reward the bounty pays, after scaling and rounding. A bounty without a credit reward keeps job_credit_reward.
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$reward", () -> bounty.getRewardCredits() != null
+                ? Misc.getDGSCredits(bounty.getRewardCredits())
+                : Misc.getDGSCredits(bounty.getSpec().job_credit_reward));
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$name", () -> bounty.getFleet().getCommander().getNameString());
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$firstName", () -> bounty.getFleet().getCommander().getName().getFirst());
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$lastName", () -> bounty.getFleet().getCommander().getName().getLast());
-        replaced = MagicTxt.replaceAllIfPresent(replaced, "$constellation", () -> bounty.getFleetSpawnLocation().getContainingLocation().getConstellation().getName());
+        // The core worlds and hyperspace have no constellation. Like vanilla's location text, name the system instead.
+        replaced = MagicTxt.replaceAllIfPresent(replaced, "$constellation", () -> {
+            LocationAPI location = bounty.getFleetSpawnLocation().getContainingLocation();
+            return location.getConstellation() != null
+                    ? location.getConstellation().getName()
+                    : location.getNameWithNoType();
+        });
         replaced = MagicTxt.replaceAllIfPresent(replaced, "$shipFleet", () -> {
             if (bounty.getFleet().getFleetData().getMembersListCopy().size() == 1) {
                 return MagicTxt.getString("mb_var_ship");

@@ -399,6 +399,13 @@ public class MagicFakeBeam {
         if (ship.getCollisionClass() == CollisionClass.NONE) {
             return null;
         }
+        // The game only updates a ship's bounds when something is touching it, so fast fighters often have old bounds.
+        // Update them before checking for a hit.
+        BoundsAPI bounds = ship.getExactBounds();
+        if (bounds != null) {
+            bounds.update(ship.getLocation(), ship.getFacing());
+        }
+
         ShieldAPI shield = ship.getShield();
 
         // Check hit point when shield is off.
@@ -422,11 +429,12 @@ public class MagicFakeBeam {
                 if (tmp1 != null && shield.isWithinArc(tmp1)) {
                     return MathUtils.getPoint(tmp1, 1, aim);
                 } else {
-                    return MathUtils.getPoint(
-                            CollisionUtils.getCollisionPoint(segStart, segEnd, ship),
-                            1,
-                            aim
-                    );
+                    Vector2f hullPoint = CollisionUtils.getCollisionPoint(segStart, segEnd, ship);
+                    // Missed the hull too. getPoint would treat null as (0, 0).
+                    if (hullPoint == null) {
+                        return null;
+                    }
+                    return MathUtils.getPoint(hullPoint, 1, aim);
                 }
             }
         }

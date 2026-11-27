@@ -52,6 +52,12 @@ val packageIncludeExtensions = listOf(
     "txt"
 )
 
+//Files always left out of the zip, overriding the includes above. Ant-style patterns; a name without "/" matches at any depth.
+val packageExcludes = listOf(
+    "/release_checklist.md",
+    "CLAUDE.local.md"
+)
+
 //Additional jars to include, like libraries you ship with your mod.
 //Paths are relative to this projects root directory.
 val otherDependencies = listOf<String>(
@@ -114,6 +120,7 @@ gradle.extra["zipName"] = zipName
 gradle.extra["modDependencies"] = modDependencies
 gradle.extra["packageIncludes"] = packageIncludes
 gradle.extra["packageIncludeExtensions"] = packageIncludeExtensions
+gradle.extra["packageExcludes"] = packageExcludes
 gradle.extra["otherDependencies"] = otherDependencies
 gradle.extra["libsFolder"] = libsFolder
 gradle.extra["devResolution"] = devResolution

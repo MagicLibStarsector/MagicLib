@@ -20,6 +20,7 @@ import org.magiclib.util.MagicTrailObject;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -97,15 +98,19 @@ public class MagicCampaignTrailPlugin implements EveryFrameScript {
         }
 
         //Ticks the animated map
-        for (Float ID : animMap.keySet()) {
+        //Uses an iterator so culled trackers can be removed mid-loop. Removing through the map threw a
+        //ConcurrentModificationException as soon as two animated trails were culled, such as on a hyperspace jump
+        Iterator<Map.Entry<Float, MagicCampaignTrailTracker>> animIterator = animMap.entrySet().iterator();
+        while (animIterator.hasNext()) {
+            MagicCampaignTrailTracker tracker = animIterator.next().getValue();
             //If the tracker we just found is in the wrong LocationAPI, we either delete it or don't tick it, depending on its setting
-            if (animMap.get(ID).locationAPI != Global.getSector().getPlayerFleet().getContainingLocation()) {
-                if (animMap.get(ID).locationAPICulling) {
-                    animMap.remove(ID);
+            if (tracker.locationAPI != Global.getSector().getPlayerFleet().getContainingLocation()) {
+                if (tracker.locationAPICulling) {
+                    animIterator.remove();
                 }
             } else {
-                animMap.get(ID).tickTimersInTrail(amount);
-                animMap.get(ID).clearAllDeadObjects();
+                tracker.tickTimersInTrail(amount);
+                tracker.clearAllDeadObjects();
             }
         }
     }

@@ -114,7 +114,7 @@ private object FleetsHelper {
         targetFP: Float
     ) {
         val divisor = params.combatPts + params.freighterPts + params.tankerPts
-        +params.transportPts + params.linerPts + params.utilityPts
+        params.transportPts + params.linerPts + params.utilityPts
         params.combatPts *= targetFP / divisor
         params.freighterPts *= targetFP / divisor
         params.tankerPts *= targetFP / divisor

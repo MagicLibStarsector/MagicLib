@@ -19,7 +19,7 @@ class MagicPaintjobCombatRefitAdder : BaseEveryFrameCombatPlugin() {
     }
     override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
         if(Global.getCurrentState() != GameState.TITLE) return
-        val screenPanel = UIFinder.getScreenPanel() ?: return
+        val screenPanel = Global.getSettings().screenPanel ?: return
         cacheShipPreviewClass(screenPanel)
         if (!MagicPaintjobManager.isEnabled) return // return if not enabled
 

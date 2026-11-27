@@ -58,7 +58,7 @@ class BountyListPanelPlugin(parentPanel: CustomPanelAPI) : SortedListPanelPlugin
     override fun layoutPanels(members: List<BountyInfo>): CustomPanelAPI {
         val validMembers = members.filter { shouldMakePanelForItem(it) }
         getApplicableSorters().forEach { it.loadFromPersistentData(validMembers) }
-        finalItem = validMembers.maxByOrNull { it.getSortIndex() }
+        finalItem = validMembers.sortedBy { it.getSortIndex() }.lastOrNull()
 
         val outerPanelLocal = super.layoutPanels(validMembers)
 

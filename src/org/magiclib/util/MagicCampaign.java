@@ -859,6 +859,9 @@ public class MagicCampaign {
 
         //checking trigger_marketFaction_none and trigger_marketFaction_enemyWith
         if (marketFaction_none != null && !marketFaction_none.isEmpty()) {
+            // enemyWith needs the market to be hostile to every excluded faction, not just one.
+            int excludedFactions = 0;
+            boolean hostileToAll = true;
             for (String f : marketFaction_none) {
                 //skip non existing factions
                 if (Global.getSector().getFaction(f) == null) {
@@ -871,9 +874,15 @@ public class MagicCampaign {
                 FactionAPI this_faction = Global.getSector().getFaction(f);
                 if (market.getFaction() == this_faction) {
                     return false; //is one of the excluded factions
-                } else if (marketFaction_enemyWith && market.getFaction().isAtBest(this_faction, RepLevel.HOSTILE)) {
-                    return true; //is hostile with one of the excluded factions
                 }
+                excludedFactions++;
+                if (!market.getFaction().isAtBest(this_faction, RepLevel.HOSTILE)) {
+                    hostileToAll = false;
+                }
+            }
+
+            if (marketFaction_enemyWith && excludedFactions > 0 && hostileToAll) {
+                return true; //is hostile with every excluded faction
             }
         }
 
@@ -1303,9 +1312,11 @@ public class MagicCampaign {
         if (
                 (distance == null || distance.equals("")) &&
                         (seek_themes == null || seek_themes.isEmpty()) &&
-                        (entities == null || entities.isEmpty())
+                        (entities == null || entities.isEmpty()) &&
+                        ((entityIDs != null && !entityIDs.isEmpty()) || (marketFactions != null && !marketFactions.isEmpty()))
         ) {
-            //there was no fallback filters defined, this is a wrap
+            // Specific entities or markets were requested but none exist, so don't spawn somewhere random.
+            // With no preferences at all, fall through to the defaults below.
             return null;
         }
 
@@ -1403,7 +1414,7 @@ public class MagicCampaign {
         if (avoid_themes != null && !avoid_themes.isEmpty()) {
             // remove any blacklisted themes that are explicitly requested.
             // this is to allow a bounty to spawn in a hardcoded-blacklisted system (e.g. gate hauler system).
-            avoid_themes.removeAll(seek_themes);
+            if (seek_themes != null) avoid_themes.removeAll(seek_themes);
 
             //merge default theme blacklist if needed 
             if (avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)) {
@@ -1415,7 +1426,8 @@ public class MagicCampaign {
             boolean noPBH = false;
             if (avoid_themes.contains(MagicVariables.AVOID_BLACKHOLE_PULSAR)) noPBH = true;
             boolean noPop = false;
-            if (avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)) noPop = true;
+            if (avoid_themes.contains(MagicVariables.AVOID_OCCUPIED_SYSTEM)
+                    || avoid_themes.contains(MagicVariables.AVOID_COLONIZED_SYSTEM)) noPop = true;
 
             if (!systems_core.isEmpty()) {
                 for (int i = 0; i < systems_core.size(); i++) {
@@ -1632,7 +1644,7 @@ public class MagicCampaign {
                 if (prioritizeUnexplored) {
                     //Lets try for unexplored systems in the desired range band and add the required entity there
                     for (StarSystemAPI s : distance_priority.get(i)) {
-                        if (s.isEnteredByPlayer()) {
+                        if (!s.isEnteredByPlayer()) {
                             randomSystemFallback.add(s);
                         }
                     }

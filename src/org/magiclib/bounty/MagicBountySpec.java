@@ -506,6 +506,8 @@ public class MagicBountySpec {
                 this.job_show_fleet = MagicBountyLoader.ShowFleet.Flagship;
             } else if (job_show_fleet.equalsIgnoreCase("flagshipText")) {
                 this.job_show_fleet = MagicBountyLoader.ShowFleet.FlagshipText;
+            } else if (job_show_fleet.equalsIgnoreCase("text")) {
+                this.job_show_fleet = MagicBountyLoader.ShowFleet.Text;
             } else if (job_show_fleet.equalsIgnoreCase("vanilla")) {
                 this.job_show_fleet = MagicBountyLoader.ShowFleet.Vanilla;
             } else if (job_show_fleet.equalsIgnoreCase("none")) {

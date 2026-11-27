@@ -147,10 +147,18 @@ abstract class ShipKillsAchievement @JvmOverloads constructor(
             }
         }
 
-        // Remove listeners from ships that aren't in combat anymore (e.g. from a previous battle)
-        shipIdToListener.keys.filter { storedShipId -> storedShipId !in shipsInCombat.map { it.id } }
-            .forEach { shipIdToListener.remove(it) }
+        // Remove listeners from ships that aren't in combat anymore (e.g. from a previous battle).
+        for (ship in shipsInCombat) {
+            shipIdsInCombat.add(ship.id)
+        }
+        shipIdToListener.keys.retainAll(shipIdsInCombat)
+        shipIdsInCombat.clear()
     }
+
+    /**
+     * Reused by [applyShipListeners] so it doesn't allocate a new set every frame. Empty between calls.
+     */
+    private val shipIdsInCombat = HashSet<String>()
 
     open fun processKill(damageInfoPerShipId: SharedCombatDamageListener.DamageInfo?) {
         if (damageInfoPerShipId == null) return

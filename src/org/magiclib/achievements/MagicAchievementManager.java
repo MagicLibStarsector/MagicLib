@@ -328,6 +328,11 @@ public class MagicAchievementManager {
         // This does a full load check, remove any scheduled one.
         isShouldLoadAchievementsCheckPending = false;
 
+        // Before reading, save achievements so any unsaved memory is saved.
+        if (areAchievementsEnabled) {
+            saveAchievements(false, false);
+        }
+
         // Generate fresh, unused achievements from the specs.
         // Skip specs whose required mods are missing before loading their script class, which may depend on those mods.
         // Any saved progress for them is kept below as an "unloaded" achievement.
@@ -756,6 +761,12 @@ public class MagicAchievementManager {
         // No reason to add intel to the save.
         removeIntel();
 
+        // Save all achievements' memory because some may remove data from memory in `beforeGameSave()` and re-add it in `afterGameSave()`.
+        // We do want achievemenets to be able to keep bad data out of saves, but memory is intentionally kept in the achievement file and we need to persist that.
+        if (areAchievementsEnabled) {
+            saveAchievements(false, false);
+        }
+
         for (MagicAchievement achievement : achievements.values()) {
             if (!achievement.isComplete()) {
                 achievement.beforeGameSave();
@@ -844,7 +855,21 @@ public class MagicAchievementManager {
                 }
             }
         }
+
+        // Changes to achievement memory don't write the file on their own. Saving or loading the game writes them,
+        // and this keeps them if the player quits without saving. Only writes if something changed.
+        long now = System.currentTimeMillis();
+        if (now - lastPeriodicSaveMillis >= periodicSaveIntervalMillis) {
+            lastPeriodicSaveMillis = now;
+            saveAchievements(false, false);
+        }
     }
+
+    /**
+     * Real time between checks for unsaved achievement progress while in the campaign.
+     */
+    private static final long periodicSaveIntervalMillis = 30_000L;
+    private long lastPeriodicSaveMillis = System.currentTimeMillis();
 
     /**
      * Set of achievement IDs that have thrown an error in their advanceInCombat method.

@@ -7,7 +7,7 @@ import com.thoughtworks.xstream.XStream;
 import org.magiclib.paintjobs.appliers.MagicPaintjobCampaignApplier;
 import org.json.JSONException;
 import org.magiclib.util.MagicModVersions;
-import org.magiclib.util.internal.IncompatibleModChecker;
+import org.magiclib.campaign.MagicDeferredDHullRestore;
 import org.magiclib.util.membermemory.MemberMemoryManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.magiclib.achievements.MagicAchievementManager;
@@ -22,7 +22,6 @@ import org.magiclib.subsystems.MagicSubsystemsManager;
 import org.magiclib.terrain.MagicAsteroidBeltTerrainPlugin;
 import org.magiclib.terrain.MagicAsteroidFieldTerrainPlugin;
 import org.magiclib.util.*;
-import org.magiclib.util.taskscheduler.CombatTaskScheduler;
 import org.magiclib.util.taskscheduler.SectorTaskScheduler;
 
 import java.awt.*;
@@ -159,6 +158,8 @@ public class Magic_modPlugin extends BaseModPlugin {
             var sectorTaskScheduler = new SectorTaskScheduler();
             sector.addTransientScript(sectorTaskScheduler);
             SectorTaskScheduler.Companion.setActive$MagicLib(sectorTaskScheduler);
+
+            sector.addTransientScript(new MagicDeferredDHullRestore());
         }
 
         MagicVariables.checkBountySystems();

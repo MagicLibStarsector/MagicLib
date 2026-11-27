@@ -578,6 +578,9 @@ public class MagicAchievement {
 
     /**
      * A map for storing arbitrary data. Works like the vanilla MemoryAPI, except it is saved outside of save files.
+     * <p>
+     * Changes are saved when the game is saved or loaded, every 30 seconds in the campaign,
+     * and when anything calls {@link #saveChanges()}..
      */
     public @NotNull Map<String, Object> getAchievementMemory() {
         return memory;

@@ -76,10 +76,9 @@ internal class MagicPaintjobCombatApplier : BaseEveryFrameCombatPlugin() {
     private var prevForceUpdateShinyIcon = false
     //private var centerTooltipHash: Int = 0
     private fun applyPaintJobsOnTooltip(state: CombatState, engine: CombatEngine) {
-        if (!state.isShowingDeploymentDialog // No need to run this code if the tooltip is not open
-            && engine.isPaused // Just to be sure
-        ) return
-        // When a dialog is open in combat, combat is probably paused so performance isn't as needed. Members in dialog pickers can move around, especially in the fancy simulator dialog which may reset sprites. So run this function every frame if the dialog is open.
+        // No need to run this code if the tooltip is not open
+        if (!state.isShowingDeploymentDialog) return
+        // Members in dialog pickers can move around, especially in the fancy simulator dialog which may reset sprites. So run this function every frame while the dialog is open.
 
         val centerTooltip = getScreenPanel()?.findChildWithMethod("fleetMemberClicked") as? UIPanelAPI ?: return
 

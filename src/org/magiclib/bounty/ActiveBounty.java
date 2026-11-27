@@ -207,6 +207,8 @@ public final class ActiveBounty {
             LocationAPI systemLocation = fleetSpawnLocation.getContainingLocation();
             systemLocation.addEntity(getFleet());
             getFleet().setLocation(fleetSpawnLocation.getLocation().x, fleetSpawnLocation.getLocation().y);
+            if (spec.existing_target_memkey == null)
+                getFleet().setTransponderOn(spec.fleet_transponder);
         }
         if (getFleet().getCurrentAssignment() == null) {
             getFleet().getAI().addAssignment(
@@ -222,7 +224,7 @@ public final class ActiveBounty {
             MagicBountyCoordinator.removeStagedFleet(spec.existing_target_memkey); // Only removes the fleet if it exists in sector persistent data, otherwise does nothing.
 
         //if needed set the bounty faction to neutral with everyone but the player.
-        if (spec.fleet_faction.equals(MagicVariables.BOUNTY_FACTION)) {
+        if (MagicVariables.BOUNTY_FACTION.equals(spec.fleet_faction)) {
             FactionAPI bountyFaction = Global.getSector().getFaction(MagicVariables.BOUNTY_FACTION);
             for (FactionAPI f : Global.getSector().getAllFactions()) {
                 if (f != bountyFaction) {

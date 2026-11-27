@@ -491,6 +491,7 @@ public abstract class MagicSubsystem {
      * @param newState
      */
     public void setState(State newState) {
+        State oldState = state;
         if (newState == State.IN) {
             state = State.IN;
             stateInterval.setInterval(getInDuration(), getInDuration());
@@ -507,7 +508,7 @@ public abstract class MagicSubsystem {
         } else if (newState == State.READY) {
             state = State.READY;
         }
-        onStateSwitched(newState);
+        onStateSwitched(oldState);
     }
 
     /**
