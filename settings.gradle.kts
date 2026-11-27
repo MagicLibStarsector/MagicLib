@@ -120,6 +120,7 @@ gradle.extra["zipName"] = zipName
 gradle.extra["modDependencies"] = modDependencies
 gradle.extra["packageIncludes"] = packageIncludes
 gradle.extra["packageIncludeExtensions"] = packageIncludeExtensions
+gradle.extra["packageExcludes"] = packageExcludes
 gradle.extra["otherDependencies"] = otherDependencies
 gradle.extra["libsFolder"] = libsFolder
 gradle.extra["devResolution"] = devResolution
