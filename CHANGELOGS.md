@@ -15,6 +15,7 @@ Version 1.6.2
   - This made it harder or impossible to get `And Over The Ashes`, `Slayer`, and `Revisionist`.
 - Improved `ShipKillsAchievement` performance in large battles (now 16x faster, 140µs per call -> 9µs).
 ### MagicBounty
+- Fixed the last bounty board entry sometimes clipping outside the menu.
 - Fixed `$constellation` crashing in places without a constellation, like the core worlds or hyperspace.
 - Fixed crash when a bounty on an existing fleet has no `fleet_faction`.
 - Fixed `findSuitableTarget` crashing when there are themes to avoid but none to target.

@@ -45,10 +45,10 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
         this.buttons[sorterButtonLocal] = SorterButtonHandler()
         sorterButtonLocal.position.inTMid(22f)
 
-        val listHeight = panelHeight - buttonHeight - 22f
+        val listHeight = panelHeight - buttonHeight - 22f - 4f
         val holdingPanel = outerPanelLocal.createCustomPanel(panelWidth, listHeight, null)
         innerPanel = holdingPanel
-        
+
         val scrollerTooltip: TooltipMakerAPI = holdingPanel.createUIElement(panelWidth, listHeight, true)
         val scrollingPanel: CustomPanelAPI =
             holdingPanel.createCustomPanel(panelWidth, 0f, null) // Height is assigned later
@@ -63,10 +63,11 @@ abstract class SortedListPanelPlugin<T : Sortable<T>>(parentPanel: CustomPanelAP
                 lastItem = placeItem(tooltip, rowPlugin!!, lastItem)
             }
 
-        // Auto-size height
-        tooltip.heightSoFar += buttonHeight + 22f
-        scrollingPanel.position.setSize(scrollingPanel.position.width, tooltip.heightSoFar)
-        tooltip.position.setSize(tooltip.position.width, tooltip.heightSoFar)
+        // Auto-size height.
+        val contentHeight = maxOf(getListHeight(sortedMembers.size), tooltip.heightSoFar) + opad
+        tooltip.heightSoFar = contentHeight
+        scrollingPanel.position.setSize(scrollingPanel.position.width, contentHeight)
+        tooltip.position.setSize(tooltip.position.width, contentHeight)
 
         scrollingPanel.addUIElement(tooltip).inTL(0f, 0f)
         scrollerTooltip.addCustom(scrollingPanel, 0f).position.inTL(0f, 0f)
